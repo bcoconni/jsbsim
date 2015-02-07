@@ -2,7 +2,8 @@ include_directories(${CXXTEST_INCLUDE_DIR})
 
 set(UNIT_TESTS FGColumnVector3Test
                StringUtilitiesTest
-               FGJSBBaseTest)
+               FGJSBBaseTest
+               FGMatrix33Test)
 
 foreach(test ${UNIT_TESTS})
   cxxtest_add_test(${test} ${test}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${test}.h)
