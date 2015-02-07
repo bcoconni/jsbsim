@@ -47,6 +47,18 @@ if (NOT (CYTHON_FOUND AND PYTHONLIBS_FOUND))
 endif()
 
 ################################################################################
+# Build the unit tests (needs CxxTest)                                         #
+################################################################################
+
+find_package(CxxTest)
+
+if (CXXTEST_FOUND)
+  include_directories(${CMAKE_CURRENT_LIST_DIR}/src)
+  enable_testing()
+  add_subdirectory(tests/unit_tests)
+endif(CXXTEST_FOUND)
+
+################################################################################
 # Packaging                                                                    #
 ################################################################################
 
