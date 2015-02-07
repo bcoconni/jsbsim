@@ -1,5 +1,9 @@
 include_directories(${CXXTEST_INCLUDE_DIR})
 
-CXXTEST_ADD_TEST(FGColumnVector3Test FGColumnVector3Test.cpp ${CMAKE_CURRENT_SOURCE_DIR}/FGColumnVector3Test.h)
+set(UNIT_TESTS FGColumnVector3Test
+               StringUtilitiesTest)
 
-target_link_libraries(FGColumnVector3Test libJSBSim)
+foreach(test ${UNIT_TESTS})
+  cxxtest_add_test(${test} ${test}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${test}.h)
+  target_link_libraries(${test} libJSBSim)
+endforeach()
