@@ -8,6 +8,6 @@ set(UNIT_TESTS FGColumnVector3Test
                FGLocationTest)
 
 foreach(test ${UNIT_TESTS})
-  cxxtest_add_test(${test} ${test}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${test}.h)
-  target_link_libraries(${test} libJSBSim)
+  cxxtest_add_test(${test}1 ${test}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${test}.h)
+  target_link_libraries(${test}1 libJSBSim)
 endforeach()
