@@ -2,7 +2,7 @@
 #
 # A regression test that checks that IC are correctly read from the IC file then
 # loaded in the ic/ properties. It also checks that the correct ICs are reported
-# in the data written in CSV files. 
+# in the data written in CSV files.
 #
 # Copyright (c) 2015 Bertrand Coconnier
 #
@@ -84,9 +84,9 @@ class TestInitialConditions(unittest.TestCase):
                 continue
 
             var['value'] = float(var_tag.text)
-            if var_tag.attrib.has_key('unit') and var_tag.attrib['unit'] == var['unit']:
+            if 'unit' in var_tag.attrib and var_tag.attrib['unit'] == var['unit']:
                 var['value'] *= var['conv']
-        
+
         # Initialize the script
         fdm = CreateFDM(self.sandbox)
         fdm.load_script(script_path)
