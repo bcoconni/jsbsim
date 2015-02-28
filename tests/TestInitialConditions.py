@@ -29,14 +29,14 @@ ktstofps = 1.68781
 radtodeg = 57.295779513082320876798154814105
 mtoft = 1.0 / 0.3048
 
-class TestICOutput(unittest.TestCase):
+class TestInitialConditions(unittest.TestCase):
     def setUp(self):
         self.sandbox = SandBox()
 
     def tearDown(self):
         self.sandbox.erase()
 
-    def test_IC_output(self):
+    def test_initial_conditions(self):
         # A dictionary that contains the XML tags to extract from the IC file
         # along with the name of the properties that contain the values
         # extracted from the IC file.
@@ -127,7 +127,7 @@ class TestICOutput(unittest.TestCase):
             self.assertAlmostEqual(value, csv_value, delta=1E-7,
                                    msg="%s is %f != %f" % (var['tag'], value, csv_value))
 
-suite = unittest.TestLoader().loadTestsFromTestCase(TestICOutput)
+suite = unittest.TestLoader().loadTestsFromTestCase(TestInitialConditions)
 test_result = unittest.TextTestRunner(verbosity=2).run(suite)
 if test_result.failures or test_result.errors:
     sys.exit(-1) # 'make test' will report the test failed.
