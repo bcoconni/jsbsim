@@ -40,3 +40,18 @@ if (INSTALL_PYTHON_MODULE)
   install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install)")
 endif()
 
+# Run valgrind (a memory checker) on a selected subset of scripts
+find_program(VALGRIND_COMMAND NAMES valgrind)
+
+set(VALGRIND_SCRIPTS c1723
+                     737_cruise
+                     J2461)
+
+if (VALGRIND_COMMAND)
+  set(VALGRIND_OPTIONS --tool=memcheck --leak-check=full --leak-resolution=high)
+  foreach(script ${VALGRIND_SCRIPTS})
+    add_test(NAME Valgrind_${script} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+             COMMAND ${VALGRIND_COMMAND} ${VALGRIND_OPTIONS}
+                     ${CMAKE_BINARY_DIR}/src/JSBSim scripts/${script}.xml)
+  endforeach()
+endif(VALGRIND_COMMAND)
