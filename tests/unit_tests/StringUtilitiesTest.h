@@ -47,8 +47,10 @@ public:
     TS_ASSERT(is_number("-1.0e+1"));
     TS_ASSERT(!is_number(empty));
     TS_ASSERT(!is_number("125x5#"));
+#if !defined(_LIBCPP_VERSION) && _MSC_VER < 1700 && __cplusplus < 201103L
     TS_ASSERT_EQUALS(to_string(1234), std::string("1234"));
     TS_ASSERT_EQUALS(to_string(-987456), std::string("-987456"));
+#endif
   }
 
   void testSplit() {
