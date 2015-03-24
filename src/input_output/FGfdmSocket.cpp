@@ -57,7 +57,7 @@ using std::string;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGfdmSocket.cpp,v 1.30 2015/02/27 04:06:15 dpculp Exp $");
+IDENT(IdSrc,"$Id: FGfdmSocket.cpp,v 1.31 2015/03/22 12:19:31 bcoconni Exp $");
 IDENT(IdHdr,ID_FDMSOCKET);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
