@@ -77,6 +77,16 @@ public:
     TS_ASSERT_EQUALS(replace(empty, std::string("x"), std::string("a")), empty);
     TS_ASSERT_EQUALS(replace(std::string(" xyzzu "), std::string("x"),
                              std::string("a")), std::string(" ayzzu "));
+    TS_ASSERT_EQUALS(replace(std::string("xyzzu"), std::string("x"),
+                             std::string("a")), std::string("ayzzu"));
+    TS_ASSERT_EQUALS(replace(std::string("xyzzu"), std::string("u"),
+                             std::string("a")), std::string("xyzza"));
+    TS_ASSERT_EQUALS(replace(std::string("xyzzu"), std::string("z"),
+                             std::string("y")), std::string("xyyzu"));
+    TS_ASSERT_EQUALS(replace(std::string("xyzzu"), std::string("yzz"),
+                             std::string("ab")), std::string("xabzzu"));
+    TS_ASSERT_EQUALS(replace(std::string("xyzzu"), std::string("b"),
+                             std::string("w")), std::string("xyzzu"));
   }
 
 private:
