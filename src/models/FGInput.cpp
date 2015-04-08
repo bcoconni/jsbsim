@@ -104,7 +104,8 @@ bool FGInput::Load(Element* el)
   } else if (type == "QTJSBSIM") {
     Input = new FGUDPInputSocket(FDMExec);
   } else if (type != string("NONE")) {
-    cerr << "Unknown type of input specified in config file" << endl;
+    cerr << element->ReadFrom()
+         << "Unknown type of input specified in config file" << endl;
   }
 
   if (!Input) return false;
