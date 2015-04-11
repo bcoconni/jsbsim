@@ -27,6 +27,7 @@ set(PYTHON_TESTS ResetOutputFiles
                  TestFuelTanksInertia
                  TestInputSocket
                  TestInitialConditions
+                 CheckScripts
                  TestGndReactions)
 
 foreach(test ${PYTHON_TESTS})
