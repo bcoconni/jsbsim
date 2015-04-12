@@ -462,7 +462,7 @@ Hal V. Engel hvengel@astound.net
         </tank>
         <tank type="FUEL">    <!-- Tank number 3 left drop -->
             <location unit="IN">
-                <x> 97,5 </x>
+                <x> 97.5 </x>
                 <y> -198 </y>
                 <z> -25 </z>
             </location>
