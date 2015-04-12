@@ -98,6 +98,9 @@ set(CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/"
                                "/.deps/"
                                "/.libs/"
                                "/CVS/"
+                               "/scripts/blank.xml"
+                               "/scripts/StellarJ_Fly.xml"
+                               "/scripts/WK450.xml"
                                "${CPACK_SOURCE_IGNORE_FILES}")
 include (CPack)
 
