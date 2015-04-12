@@ -67,8 +67,14 @@ Element_ptr FGModelLoader::Open(Element *el)
     }
     catch(string& e) {
       cerr << endl << el->ReadFrom()
-           << "Could not open file: " << e << endl;
+           << "Could not open file: " << fname << endl << e << endl;
       return NULL;
+    }
+
+    if (file.empty()) {
+        cerr << endl << el->ReadFrom()
+             << "Could not open file: " << fname << endl;
+        return NULL;
     }
 
     if (CachedFiles.find(file) != CachedFiles.end())
