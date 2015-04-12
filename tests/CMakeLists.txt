@@ -28,6 +28,7 @@ set(PYTHON_TESTS ResetOutputFiles
                  TestInputSocket
                  TestInitialConditions
                  CheckScripts
+                 CheckAircrafts
                  TestGndReactions)
 
 foreach(test ${PYTHON_TESTS})
