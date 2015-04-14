@@ -1,7 +1,7 @@
 # CheckScripts.py
 #
-# A test case that checks that all the scripts can be read by JSBSim without
-# issuing errors.
+# A regression test that checks that all the scripts can be read by JSBSim
+# without issuing errors.
 #
 # Copyright (c) 2015 Bertrand Coconnier
 #
