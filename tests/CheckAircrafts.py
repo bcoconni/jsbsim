@@ -19,7 +19,7 @@
 # this program; if not, see <http://www.gnu.org/licenses/>
 #
 
-import os, unittest, sys
+import os, unittest, sys, string
 import xml.etree.ElementTree as et
 from JSBSim_utils import SandBox, append_xml, CreateFDM
 
@@ -53,10 +53,10 @@ class CheckAircrafts(unittest.TestCase):
                 continue
 
             # Is f an aircraft definition file ?
-            if tree.getroot().tag != 'fdm_config':
+            if string.upper(tree.getroot().tag) != 'FDM_CONFIG':
                 continue
 
-            if d in ('XB-70', 'fokker50'):
+            if d in ('XB-70', 'fokker50', 'blank'):
                 continue
 
             fdm = CreateFDM(self.sandbox)
