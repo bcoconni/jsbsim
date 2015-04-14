@@ -56,7 +56,7 @@ class CheckAircrafts(unittest.TestCase):
             if string.upper(tree.getroot().tag) != 'FDM_CONFIG':
                 continue
 
-            if d in ('XB-70', 'fokker50', 'blank'):
+            if d in ('blank'):
                 continue
 
             fdm = CreateFDM(self.sandbox)
