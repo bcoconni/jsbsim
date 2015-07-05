@@ -336,8 +336,6 @@ protected:
 
   static std::queue <Message> Messages;
 
-  void Debug(int) {};
-
   static unsigned int messageId;
 
   static const double radtodeg;

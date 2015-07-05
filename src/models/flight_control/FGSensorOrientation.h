@@ -72,7 +72,7 @@ Syntax:
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-class FGSensorOrientation  : public FGJSBBase
+class FGSensorOrientation : public FGJSBBase
 {
 public:
   FGSensorOrientation(Element* element)
@@ -98,8 +98,6 @@ public:
 
     CalculateTransformMatrix();
   }
-
-//  ~FGSensorOrientation();
 
 protected:
   FGColumnVector3 vOrient;
@@ -130,9 +128,6 @@ protected:
     // the transformed accelerometer frame. So, the next line is commented out.
     // mT = mT.Inverse();
   }
-
-private:
-  void Debug(int from);
 };
 }
 #endif
