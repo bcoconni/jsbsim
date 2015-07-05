@@ -262,7 +262,13 @@ void FGLGear::ResetToIC(void)
   WheelSlip = 0.0;
 
   // Initialize Lagrange multipliers
-  memset(LMultiplier, 0, sizeof(LMultiplier));
+  for (int i=0; i < 3; i++) {
+    LMultiplier[i].ForceJacobian.InitMatrix();
+    LMultiplier[i].MomentJacobian.InitMatrix();
+    LMultiplier[i].Min = 0.0;
+    LMultiplier[i].Max = 0.0;
+    LMultiplier[i].value = 0.0;
+  }
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
