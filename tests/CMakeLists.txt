@@ -29,6 +29,7 @@ set(PYTHON_TESTS ResetOutputFiles
                  TestInitialConditions
                  CheckScripts
                  CheckAircrafts
+                 CheckOutputRate
                  TestGndReactions)
 
 foreach(test ${PYTHON_TESTS})
