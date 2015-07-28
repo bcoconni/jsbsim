@@ -31,3 +31,5 @@ src/.libs/
 *.diff
 *.png
 *.catalog
+documentation/*
+*.Doxygen.WarnLog
