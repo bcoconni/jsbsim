@@ -33,3 +33,4 @@ src/.libs/
 *.catalog
 documentation/*
 *.Doxygen.WarnLog
+TAGS
