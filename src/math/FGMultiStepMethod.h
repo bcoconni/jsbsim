@@ -95,6 +95,12 @@ public:
     case eAdamsBashforth3:
       val = (dt / 12.0) * (23.0 * valDot[0] - 16.0 * valDot[1] + 5.0 * valDot[2]);
       break;
+    case eAdamsBashforth4:
+      val = (dt / 24.0) * (55.0 * valDot[0] - 59.0 * valDot[1] + 37.0 * valDot[2] - 9.0 * valDot[3]);
+      break;
+    case eAdamsBashforth5:
+      val = (dt / 720.) * (1901.0 * valDot[0] - 2774.0 * valDot[1] + 2616.0 * valDot[2] - 1274.0 * valDot[3] + 251.0 * valDot[4]);
+      break;
     default:
       break;
     }
