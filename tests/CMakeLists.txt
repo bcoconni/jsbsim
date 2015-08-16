@@ -31,9 +31,10 @@ set(PYTHON_TESTS ResetOutputFiles
                  CheckAircrafts
                  CheckOutputRate
                  TestAccelerometer
+                 TestCosineGust
+                 CheckDebugLvl
                  TestOrbit
-                 TestGndReactions
-                 TestCosineGust)
+                 TestGndReactions)
 
 foreach(test ${PYTHON_TESTS})
   add_test(${test} ${PYTHON_EXECUTABLE} ${test}.py ${CMAKE_SOURCE_DIR})
