@@ -43,7 +43,7 @@ INCLUDES
 #include "math/FGLocation.h"
 #include "math/FGQuaternion.h"
 #include "math/FGMatrix33.h"
-#include <deque>
+#include "math/FGMultiStepMethod.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -57,7 +57,6 @@ FORWARD DECLARATIONS
 
 namespace JSBSim {
 
-using std::deque;
 class FGInitialCondition;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -138,10 +137,10 @@ public:
 
     FGColumnVector3 vInertialPosition;
 
-    deque <FGColumnVector3> dqPQRidot;
-    deque <FGColumnVector3> dqUVWidot;
-    deque <FGColumnVector3> dqInertialVelocity;
-    deque <FGQuaternion>    dqQtrndot;
+    FGMultiStepMethod<FGColumnVector3> mPQRidot;
+    FGMultiStepMethod<FGColumnVector3> mUVWidot;
+    FGMultiStepMethod<FGColumnVector3> mInertialVelocity;
+    FGMultiStepMethod<FGQuaternion>    mQtrndot;
   };
 
   /** Constructor.
@@ -156,10 +155,6 @@ public:
 
   /// Destructor
   ~FGPropagate();
-
-  /// These define the indices use to select the various integrators.
-  enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
-                       eAdamsBashforth3, eAdamsBashforth4, eBuss1, eBuss2, eLocalLinearization, eAdamsBashforth5};
 
   /** Initializes the FGPropagate class after instantiation and prior to first execution.
       The base class FGModel::InitModel is called first, initializing pointers to the
@@ -622,25 +617,8 @@ private:
   double VehicleRadius;
   FGColumnVector3 LocalTerrainVelocity, LocalTerrainAngularVelocity;
 
-  eIntegrateType integrator_rotational_rate;
-  eIntegrateType integrator_translational_rate;
-  eIntegrateType integrator_rotational_position;
-  eIntegrateType integrator_translational_position;
-
   void CalculateInertialVelocity(void);
   void CalculateUVW(void);
-
-  void Integrate( FGColumnVector3& Integrand,
-                  FGColumnVector3& Val,
-                  deque <FGColumnVector3>& ValDot,
-                  double dt,
-                  eIntegrateType integration_type);
-
-  void Integrate( FGQuaternion& Integrand,
-                  FGQuaternion& Val,
-                  deque <FGQuaternion>& ValDot,
-                  double dt,
-                  eIntegrateType integration_type);
 
   void UpdateLocationMatrices(void);
   void UpdateBodyMatrices(void);

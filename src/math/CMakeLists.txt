@@ -26,7 +26,8 @@ set(HEADERS FGColumnVector3.h
             FGModelFunctions.h
             LagrangeMultiplier.h
             FGNelderMead.h
-            FGStateSpace.h)
+            FGStateSpace.h
+            FGMultiStepMethod.h)
 
 add_full_path_name(MATH_SRC "${SOURCES}")
 add_full_path_name(MATH_HDR "${HEADERS}")

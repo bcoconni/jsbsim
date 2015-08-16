@@ -96,15 +96,10 @@ FGPropagate::FGPropagate(FGFDMExec* fdmex)
   /// These define the indices use to select the various integrators.
   // eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2, eAdamsBashforth3, eAdamsBashforth4};
 
-  integrator_rotational_rate = eRectEuler;
-  integrator_translational_rate = eAdamsBashforth2;
-  integrator_rotational_position = eRectEuler;
-  integrator_translational_position = eAdamsBashforth3;
-
-  VState.dqPQRidot.resize(5, FGColumnVector3(0.0,0.0,0.0));
-  VState.dqUVWidot.resize(5, FGColumnVector3(0.0,0.0,0.0));
-  VState.dqInertialVelocity.resize(5, FGColumnVector3(0.0,0.0,0.0));
-  VState.dqQtrndot.resize(5, FGQuaternion(0.0,0.0,0.0));
+  VState.mPQRidot.setMethod(eRectEuler);
+  VState.mUVWidot.setMethod(eAdamsBashforth2);
+  VState.mQtrndot.setMethod(eRectEuler);
+  VState.mInertialVelocity.setMethod(eAdamsBashforth3);
 
   bind();
   Debug(0);
@@ -127,15 +122,10 @@ bool FGPropagate::InitModel(void)
   VState.vLocation.SetEllipse(in.SemiMajor, in.SemiMinor);
   VState.vLocation.SetAltitudeAGL(4.0);
 
-  VState.dqPQRidot.resize(5, FGColumnVector3(0.0,0.0,0.0));
-  VState.dqUVWidot.resize(5, FGColumnVector3(0.0,0.0,0.0));
-  VState.dqInertialVelocity.resize(5, FGColumnVector3(0.0,0.0,0.0));
-  VState.dqQtrndot.resize(5, FGColumnVector3(0.0,0.0,0.0));
-
-  integrator_rotational_rate = eRectEuler;
-  integrator_translational_rate = eAdamsBashforth2;
-  integrator_rotational_position = eRectEuler;
-  integrator_translational_position = eAdamsBashforth3;
+  VState.mPQRidot.setMethod(eRectEuler);
+  VState.mUVWidot.setMethod(eAdamsBashforth2);
+  VState.mQtrndot.setMethod(eRectEuler);
+  VState.mInertialVelocity.setMethod(eAdamsBashforth3);
 
   return true;
 }
@@ -184,18 +174,14 @@ void FGPropagate::SetInitialState(const FGInitialCondition *FGIC)
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// Initialize the past value deques
 
 void FGPropagate::InitializeDerivatives()
 {
-  for (int i=0; i<5; i++) {
-    VState.dqPQRidot[i] = in.vPQRidot;
-    VState.dqUVWidot[i] = in.vUVWidot;
-    VState.dqInertialVelocity[i] = VState.vInertialVelocity;
-    VState.dqQtrndot[i] = in.vQtrndot;
-  }
+  VState.mPQRidot.setInitialDerivative(in.vPQRidot);
+  VState.mUVWidot.setInitialDerivative(in.vUVWidot);
+  VState.mInertialVelocity.setInitialDerivative(VState.vInertialVelocity);
+  VState.mQtrndot.setInitialDerivative(in.vQtrndot);
 }
-
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 /*
 Purpose: Called on a schedule to perform EOM integration
@@ -223,12 +209,18 @@ bool FGPropagate::Run(bool Holding)
 
   double dt = in.DeltaT * rate;  // The 'stepsize'
 
+  VState.mPQRidot.setTimeStep(dt);
+  VState.mUVWidot.setTimeStep(dt);
+  VState.mInertialVelocity.setTimeStep(dt);
+  VState.mQtrndot.setTimeStep(dt);
+
   // Propagate rotational / translational velocity, angular /translational position, respectively.
 
-  Integrate(VState.qAttitudeECI,      in.vQtrndot,          VState.dqQtrndot,          dt, integrator_rotational_position);
-  Integrate(VState.vPQRi,             in.vPQRidot,          VState.dqPQRidot,          dt, integrator_rotational_rate);
-  Integrate(VState.vInertialPosition, VState.vInertialVelocity, VState.dqInertialVelocity, dt, integrator_translational_position);
-  Integrate(VState.vInertialVelocity, in.vUVWidot,          VState.dqUVWidot,          dt, integrator_translational_rate);
+  VState.qAttitudeECI += VState.mQtrndot.integrate(in.vQtrndot);
+  VState.qAttitudeECI.Normalize();
+  VState.vPQRi += VState.mPQRidot.integrate(in.vPQRidot);
+  VState.vInertialPosition += VState.mInertialVelocity.integrate(VState.vInertialVelocity);
+  VState.vInertialVelocity += VState.mUVWidot.integrate(in.vUVWidot);
 
   // CAUTION : the order of the operations below is very important to get transformation
   // matrices that are consistent with the new state of the vehicle
@@ -289,145 +281,6 @@ void FGPropagate::CalculateInertialVelocity(void)
 void FGPropagate::CalculateUVW(void)
 {
   VState.vUVW = Ti2b * (VState.vInertialVelocity - (in.vOmegaPlanet * VState.vInertialPosition));
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-void FGPropagate::Integrate( FGColumnVector3& Integrand,
-                             FGColumnVector3& Val,
-                             deque <FGColumnVector3>& ValDot,
-                             double dt,
-                             eIntegrateType integration_type)
-{
-  ValDot.push_front(Val);
-  ValDot.pop_back();
-
-  switch(integration_type) {
-  case eRectEuler:       Integrand += dt*ValDot[0];
-    break;
-  case eTrapezoidal:     Integrand += 0.5*dt*(ValDot[0] + ValDot[1]);
-    break;
-  case eAdamsBashforth2: Integrand += dt*(1.5*ValDot[0] - 0.5*ValDot[1]);
-    break;
-  case eAdamsBashforth3: Integrand += (1/12.0)*dt*(23.0*ValDot[0] - 16.0*ValDot[1] + 5.0*ValDot[2]);
-    break;
-  case eAdamsBashforth4: Integrand += (1/24.0)*dt*(55.0*ValDot[0] - 59.0*ValDot[1] + 37.0*ValDot[2] - 9.0*ValDot[3]);
-    break;
-  case eAdamsBashforth5: Integrand += dt*((1901./720.)*ValDot[0] - (1387./360.)*ValDot[1] + (109./30.)*ValDot[2] - (637./360.)*ValDot[3] + (251./720.)*ValDot[4]);
-    break;
-  case eNone: // do nothing, freeze translational rate
-    break;
-  case eBuss1:
-  case eBuss2:
-  case eLocalLinearization:
-    throw("Can only use Buss (1 & 2) or local linearization integration methods in for rotational position!");
-  default:
-    break;
-  }
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-void FGPropagate::Integrate( FGQuaternion& Integrand,
-                             FGQuaternion& Val,
-                             deque <FGQuaternion>& ValDot,
-                             double dt,
-                             eIntegrateType integration_type)
-{
-  ValDot.push_front(Val);
-  ValDot.pop_back();
-
-  switch(integration_type) {
-  case eRectEuler:       Integrand += dt*ValDot[0];
-    break;
-  case eTrapezoidal:     Integrand += 0.5*dt*(ValDot[0] + ValDot[1]);
-    break;
-  case eAdamsBashforth2: Integrand += dt*(1.5*ValDot[0] - 0.5*ValDot[1]);
-    break;
-  case eAdamsBashforth3: Integrand += (1/12.0)*dt*(23.0*ValDot[0] - 16.0*ValDot[1] + 5.0*ValDot[2]);
-    break;
-  case eAdamsBashforth4: Integrand += (1/24.0)*dt*(55.0*ValDot[0] - 59.0*ValDot[1] + 37.0*ValDot[2] - 9.0*ValDot[3]);
-    break;
-  case eAdamsBashforth5: Integrand += dt*((1901./720.)*ValDot[0] - (1387./360.)*ValDot[1] + (109./30.)*ValDot[2] - (637./360.)*ValDot[3] + (251./720.)*ValDot[4]);
-    break;
-  case eBuss1:
-    {
-      // This is the first order method as described in Samuel R. Buss paper[6].
-      // The formula from Buss' paper is transposed below to quaternions and is
-      // actually the exact solution of the quaternion differential equation
-      // qdot = 1/2*w*q when w is constant.
-      Integrand = Integrand * QExp(0.5 * dt * VState.vPQRi);
-    }
-    return; // No need to normalize since the quaternion exponential is always normal
-  case eBuss2:
-    {
-      // This is the 'augmented second-order method' from S.R. Buss paper [6].
-      // Unlike Runge-Kutta or Adams-Bashforth, it is a one-pass second-order
-      // method (see reference [6]).
-      FGColumnVector3 wi = VState.vPQRi;
-      FGColumnVector3 wdoti = in.vPQRidot;
-      FGColumnVector3 omega = wi + 0.5*dt*wdoti + dt*dt/12.*wdoti*wi;
-      Integrand = Integrand * QExp(0.5 * dt * omega);
-    }
-    return; // No need to normalize since the quaternion exponential is always normal
-  case eLocalLinearization:
-    {
-      // This is the local linearization algorithm of Barker et al. (see ref. [7])
-      // It is also a one-pass second-order method. The code below is based on the
-      // more compact formulation issued from equation (107) of ref. [8]. The
-      // constants C1, C2, C3 and C4 have the same value than those in ref. [7] pp. 11
-      FGColumnVector3 wi = 0.5 * VState.vPQRi;
-      FGColumnVector3 wdoti = 0.5 * in.vPQRidot;
-      double omegak2 = DotProduct(VState.vPQRi, VState.vPQRi);
-      double omegak = omegak2 > 1E-6 ? sqrt(omegak2) : 1E-6;
-      double rhok = 0.5 * dt * omegak;
-      double C1 = cos(rhok);
-      double C2 = 2.0 * sin(rhok) / omegak;
-      double C3 = 4.0 * (1.0 - C1) / (omegak*omegak);
-      double C4 = 4.0 * (dt - C2) / (omegak*omegak);
-      FGColumnVector3 Omega = C2*wi + C3*wdoti + C4*wi*wdoti;
-      FGQuaternion q;
-
-      q(1) = C1 - C4*DotProduct(wi, wdoti);
-      q(2) = Omega(eP);
-      q(3) = Omega(eQ);
-      q(4) = Omega(eR);
-
-      Integrand = Integrand * q;
-
-      /* Cross check with ref. [7] pp.11-12 formulas and code pp. 20
-      double pk = VState.vPQRi(eP);
-      double qk = VState.vPQRi(eQ);
-      double rk = VState.vPQRi(eR);
-      double pdotk = in.vPQRidot(eP);
-      double qdotk = in.vPQRidot(eQ);
-      double rdotk = in.vPQRidot(eR);
-      double Ap = -0.25 * (pk*pdotk + qk*qdotk + rk*rdotk);
-      double Bp = 0.25 * (pk*qdotk - qk*pdotk);
-      double Cp = 0.25 * (pdotk*rk - pk*rdotk);
-      double Dp = 0.25 * (qk*rdotk - qdotk*rk);
-      double C2p = sin(rhok) / omegak;
-      double C3p = 2.0 * (1.0 - cos(rhok)) / (omegak*omegak);
-      double H = C1 + C4 * Ap;
-      double G = -C2p*rk - C3p*rdotk + C4*Bp;
-      double J = C2p*qk + C3p*qdotk - C4*Cp;
-      double K = C2p*pk + C3p*pdotk - C4*Dp;
-
-      cout << "q:       " << q << endl;
-
-      // Warning! In the paper of Barker et al. the quaternion components are not
-      // ordered the same way as in JSBSim (see equations (2) and (3) of ref. [7]
-      // as well as the comment just below equation (3))
-      cout << "FORTRAN: " << H << " , " << K << " , " << J << " , " << -G << endl;*/
-    }
-    break; // The quaternion q is not normal so the normalization needs to be done.
-  case eNone: // do nothing, freeze rotational rate
-    break;
-  default:
-    break;
-  }
-
-  Integrand.Normalize();
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -636,7 +489,6 @@ void FGPropagate::WriteStateFile(int num)
 
   string filename = FDMExec->GetFullAircraftPath();
 
-  string sim_time = to_string((double)FDMExec->GetSimTime());
   if (filename.empty()) filename = "initfile.";
   else                  filename.append("/initfile.");
 
@@ -777,10 +629,18 @@ void FGPropagate::bind(void)
   PropertyManager->Tie("attitude/pitch-rad", this, (int)eTht, (PMF)&FGPropagate::GetEuler);
   PropertyManager->Tie("attitude/heading-true-rad", this, (int)ePsi, (PMF)&FGPropagate::GetEuler);
 
-  PropertyManager->Tie("simulation/integrator/rate/rotational", (int*)&integrator_rotational_rate);
-  PropertyManager->Tie("simulation/integrator/rate/translational", (int*)&integrator_translational_rate);
-  PropertyManager->Tie("simulation/integrator/position/rotational", (int*)&integrator_rotational_position);
-  PropertyManager->Tie("simulation/integrator/position/translational", (int*)&integrator_translational_position);
+  PropertyManager->Tie("simulation/integrator/rate/rotational", &VState.mPQRidot,
+                       &FGMultiStepMethod<FGColumnVector3>::getMethod,
+                       &FGMultiStepMethod<FGColumnVector3>::setMethod);
+  PropertyManager->Tie("simulation/integrator/rate/translational", &VState.mUVWidot,
+                       &FGMultiStepMethod<FGColumnVector3>::getMethod,
+                       &FGMultiStepMethod<FGColumnVector3>::setMethod);
+  PropertyManager->Tie("simulation/integrator/position/rotational", &VState.mQtrndot,
+                       &FGMultiStepMethod<FGQuaternion>::getMethod,
+                       &FGMultiStepMethod<FGQuaternion>::setMethod);
+  PropertyManager->Tie("simulation/integrator/position/translational", &VState.mInertialVelocity,
+                       &FGMultiStepMethod<FGColumnVector3>::getMethod,
+                       &FGMultiStepMethod<FGColumnVector3>::setMethod);
 
   PropertyManager->Tie("simulation/write-state-file", this, (iPMF)0, &FGPropagate::WriteStateFile);
 }
