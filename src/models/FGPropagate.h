@@ -51,7 +51,7 @@ INCLUDES
 DEFINITIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#define ID_PROPAGATE "$Id: FGPropagate.h,v 1.81 2014/05/17 15:15:53 jberndt Exp $"
+#define ID_PROPAGATE "$Id: FGPropagate.h,v 1.82 2015/08/22 18:09:00 bcoconni Exp $"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -94,7 +94,7 @@ CLASS DOCUMENTATION
     @endcode
 
     @author Jon S. Berndt, Mathias Froehlich, Bertrand Coconnier
-    @version $Id: FGPropagate.h,v 1.81 2014/05/17 15:15:53 jberndt Exp $
+    @version $Id: FGPropagate.h,v 1.82 2015/08/22 18:09:00 bcoconni Exp $
   */
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -568,7 +568,7 @@ public:
   void SetDistanceAGL(double tt);
   void SetDistanceAGLKm(double tt);
 
-  void SetInitialState(const FGInitialCondition *);
+  void SetInitialState(const FGInitialCondition*);
   void SetLocation(const FGLocation& l);
   void SetLocation(const FGColumnVector3& lv)
   {
