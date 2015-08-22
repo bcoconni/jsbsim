@@ -1,8 +1,8 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- Header:       FGMultiStepMethod.h
+ Header:       FGTimeMarching.h
  Author:       Bertrand Coconnier
- Date started: 08/15/15
+ Date started: 08/22/15
 
  ------------- Copyright (C) 2015  Bertrand Coconnier -------------
 
@@ -27,21 +27,18 @@
 SENTRY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#ifndef FGMULTISTEPMETHOD_H
-#define FGMULTISTEPMETHOD_H
+#ifndef FGTIMEMARCHING_H
+#define FGTIMEMARCHING_H
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#include <deque>
-#include "FGTimeMarching.h"
-
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#define ID_MULTISTEPMETHOD "$Id$"
+#define ID_TIMEMARCHING "$Id$"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -49,6 +46,8 @@ FORWARD DECLARATIONS
 
 namespace JSBSim
 {
+
+class FGPropagate;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS DOCUMENTATION
@@ -58,74 +57,16 @@ CLASS DOCUMENTATION
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-/// These define the indices use to select the various integrators.
-enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
-                     eAdamsBashforth3, eAdamsBashforth4, eBuss1, eBuss2,
-                     eLocalLinearization, eAdamsBashforth5};
-
-template<class T> class FGMultiStepMethod : public FGTimeMarching
+class FGTimeMarching
 {
 public:
-  FGMultiStepMethod(FGPropagate* pg)
-    : FGTimeMarching(pg), step(0), method(eRectEuler) {}
-
-  void Update(void) { v0 += dv; }
-  void setMethod(int t) { method = (eIntegrateType)t; }
-
-  int getMethod(void) const { return (int)method; }
-  void setInitialCondition(const T& v) { v0 = v; }
-  void setInitialDerivative(const T& ICdot) {
-    valDot.assign(5, ICdot);
-    step = 0;
-  }
-
-  T integrate(const T& dot) {
-    if (dt > 0.) {
-      valDot.push_front(dot);
-      valDot.pop_back();
-
-      switch(method) {
-      case eRectEuler:
-        dv = dt * valDot[0];
-        break;
-      case eAdamsBashforth2:
-        if (step == 0) {
-          ++step;
-          dv = dt * valDot[0];
-          Notify();
-          break;
-        }
-        else if (step == 1) {
-          ++step;
-          valDot.pop_front();
-          valDot.push_back(valDot.back());
-          dv = 0.5 * dt * (dot + valDot[0]);
-          break;
-        }
-        dv = dt * (1.5 * valDot[0] - 0.5 * valDot[1]);
-        break;
-      case eAdamsBashforth3:
-        dv = (dt / 12.0) * (23.0 * valDot[0] - 16.0 * valDot[1] + 5.0 * valDot[2]);
-        break;
-      case eAdamsBashforth4:
-        dv = (dt / 24.0) * (55.0 * valDot[0] - 59.0 * valDot[1] + 37.0 * valDot[2] - 9.0 * valDot[3]);
-        break;
-      case eAdamsBashforth5:
-        dv = (dt / 720.) * (1901.0 * valDot[0] - 2774.0 * valDot[1] + 2616.0 * valDot[2] - 1274.0 * valDot[3] + 251.0 * valDot[4]);
-        break;
-      default:
-        break;
-      }
-    }
-
-    return v0 + dv;
-  }
-
-private:
-  unsigned int step;
-  T v0, dv;
-  eIntegrateType method;
-  std::deque<T> valDot;
+  FGTimeMarching(FGPropagate* pg) : Propagate(pg), dt(0.0) {}
+  void setTimeStep(double _dt) { dt = _dt; }
+  virtual void Update(void) = 0;
+  void Notify(void);
+protected:
+  FGPropagate* Propagate;
+  double dt;
 };
 
 } // namespace

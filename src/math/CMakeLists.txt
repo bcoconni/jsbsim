@@ -10,7 +10,8 @@ set(SOURCES FGColumnVector3.cpp
             FGRungeKutta.cpp
             FGModelFunctions.cpp
             FGNelderMead.cpp
-            FGStateSpace.cpp)
+            FGStateSpace.cpp
+            FGTimeMarching.cpp)
 
 set(HEADERS FGColumnVector3.h
             FGFunction.h
@@ -27,7 +28,8 @@ set(HEADERS FGColumnVector3.h
             LagrangeMultiplier.h
             FGNelderMead.h
             FGStateSpace.h
-            FGMultiStepMethod.h)
+            FGMultiStepMethod.h
+            FGTimeMarching.h)
 
 add_full_path_name(MATH_SRC "${SOURCES}")
 add_full_path_name(MATH_HDR "${HEADERS}")

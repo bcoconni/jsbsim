@@ -88,13 +88,20 @@ CLASS IMPLEMENTATION
 
 FGPropagate::FGPropagate(FGFDMExec* fdmex)
   : FGModel(fdmex),
-    VehicleRadius(0)
+    VState(this),
+    VehicleRadius(0),
+    hold(false)
 {
   Debug(0);
   Name = "FGPropagate";
 
   /// These define the indices use to select the various integrators.
   // eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2, eAdamsBashforth3, eAdamsBashforth4};
+
+  Algorithms.push_back(&VState.mPQRidot);
+  Algorithms.push_back(&VState.mUVWidot);
+  Algorithms.push_back(&VState.mInertialVelocity);
+  Algorithms.push_back(&VState.mQtrndot);
 
   VState.mPQRidot.setMethod(eRectEuler);
   VState.mUVWidot.setMethod(eAdamsBashforth2);
@@ -226,11 +233,20 @@ bool FGPropagate::Run(bool Holding)
   VState.vInertialPosition = VState.mInertialVelocity.integrate(VState.vInertialVelocity);
   VState.vInertialVelocity = VState.mUVWidot.integrate(in.vUVWidot);
 
+  if (!hold) {
+    vector<FGTimeMarching*>::iterator it;
+    for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
+      (*it)->Update();
+  }
+
+  FDMExec->SetTrimStatus(hold);
+  hold = false;
+
   // CAUTION : the order of the operations below is very important to get transformation
   // matrices that are consistent with the new state of the vehicle
 
   // 1. Update the Earth position angle (EPA)
-  VState.vLocation.IncrementEarthPositionAngle(in.vOmegaPlanet(eZ)*(in.DeltaT*rate));
+  VState.vLocation.IncrementEarthPositionAngle(in.vOmegaPlanet(eZ)*dt);
 
   // 2. Update the Ti2ec and Tec2i transforms from the updated EPA
   Ti2ec = VState.vLocation.GetTi2ec(); // ECI to ECEF transform
