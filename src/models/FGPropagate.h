@@ -594,7 +594,9 @@ public:
     double DeltaT;
   } in;
 
-  void Hold(void) { hold = true; }
+  void IncompleteTimeStep(void) { incomplete = true; }
+  bool TimeStepIsIncomplete(void) { return incomplete; }
+  void Register(FGTimeMarching* algo) { Algorithms.push_back(algo); }
 
 private:
 
@@ -623,7 +625,7 @@ private:
   double VehicleRadius;
   FGColumnVector3 LocalTerrainVelocity, LocalTerrainAngularVelocity;
 
-  bool hold;
+  bool incomplete;
 
   void CalculateInertialVelocity(void);
   void CalculateUVW(void);

@@ -364,10 +364,12 @@ bool FGFDMExec::Run(void)
   // returns true if success, false if complete
   if (Script != 0 && !IntegrationSuspended()) success = Script->RunScript();
 
-  for (unsigned int i = 0; i < Models.size(); i++) {
-    LoadInputs(i);
-    Models[i]->Run(holding);
-  }
+  do {
+    for (unsigned int i = 0; i < Models.size(); i++) {
+      LoadInputs(i);
+      Models[i]->Run(holding);
+    }
+  } while (Propagate->TimeStepIsIncomplete());
 
   if (ResetMode) {
     unsigned int mode = ResetMode;

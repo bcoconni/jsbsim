@@ -590,7 +590,7 @@ private:
   double sim_time;
   bool holding;
   bool IncrementThenHolding;
-  int TimeStepsUntilHold;
+  unsigned int TimeStepsUntilHold;
   bool Constructing;
   bool modelLoaded;
   bool IsChild;

@@ -90,7 +90,7 @@ FGPropagate::FGPropagate(FGFDMExec* fdmex)
   : FGModel(fdmex),
     VState(this),
     VehicleRadius(0),
-    hold(false)
+    incomplete(false)
 {
   Debug(0);
   Name = "FGPropagate";
@@ -220,6 +220,8 @@ bool FGPropagate::Run(bool Holding)
 
   double dt = in.DeltaT * rate;  // The 'stepsize'
 
+  incomplete = false;
+
   VState.mPQRidot.setTimeStep(dt);
   VState.mUVWidot.setTimeStep(dt);
   VState.mInertialVelocity.setTimeStep(dt);
@@ -232,20 +234,21 @@ bool FGPropagate::Run(bool Holding)
   VState.vInertialPosition = VState.mInertialVelocity.integrate(VState.vInertialVelocity);
   VState.vInertialVelocity = VState.mUVWidot.integrate(in.vUVWidot);
 
-  if (!hold) {
+  if (!incomplete) {
     vector<FGTimeMarching*>::iterator it;
     for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
       (*it)->Update();
+
+    // CAUTION : the order of the operations below is very important to get
+    // transformation matrices that are consistent with the new state of the
+    // vehicle
+
+    // 1. Update the Earth position angle (EPA)
+    VState.vLocation.IncrementEarthPositionAngle(in.vOmegaPlanet(eZ)*dt);
+    FDMExec->EnableOutput();
   }
-
-  // FDMExec->SetTrimStatus(hold);
-  hold = false;
-
-  // CAUTION : the order of the operations below is very important to get transformation
-  // matrices that are consistent with the new state of the vehicle
-
-  // 1. Update the Earth position angle (EPA)
-  VState.vLocation.IncrementEarthPositionAngle(in.vOmegaPlanet(eZ)*dt);
+  else
+    FDMExec->DisableOutput();
 
   // 2. Update the Ti2ec and Tec2i transforms from the updated EPA
   Ti2ec = VState.vLocation.GetTi2ec(); // ECI to ECEF transform
@@ -254,8 +257,8 @@ bool FGPropagate::Run(bool Holding)
   // 3. Update the location from the updated Ti2ec and inertial position
   VState.vLocation = Ti2ec*VState.vInertialPosition;
 
-  // 4. Update the other "Location-based" transformation matrices from the updated
-  //    vLocation vector.
+  // 4. Update the other "Location-based" transformation matrices from the
+  //    updated vLocation vector.
   UpdateLocationMatrices();
 
   // 5. Update the "Orientation-based" transformation matrices from the updated
