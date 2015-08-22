@@ -54,12 +54,13 @@ class TestOrbit(unittest.TestCase):
         fdm.set_property_value('ic/r-rad_sec', 0.0)
         fdm.run_ic()
 
-        # fdm.run()
-        # fdm.set_property_value('simulation/integrator/rate/translational', 2)
-        # fdm.set_property_value('simulation/integrator/position/translational', 2)
-        # fdm.run()
-        # fdm.set_property_value('simulation/integrator/rate/translational', 3)
-        # fdm.set_property_value('simulation/integrator/position/translational', 3)
+        for i in xrange(10):
+            fdm.run()
+
+        self.assertAlmostEqual(fdm.get_property_value('position/epa-rad') / RotationRate,
+                               1.0, delta=1E-8)
+        self.assertAlmostEqual(fdm.get_property_value('simulation/frame') * 0.1,
+                               1.0, delta=1E-8)
 
         ExecuteUntil(fdm, 10800.)
 
