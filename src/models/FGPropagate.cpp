@@ -228,7 +228,6 @@ bool FGPropagate::Run(bool Holding)
   // Propagate rotational / translational velocity, angular /translational position, respectively.
 
   VState.qAttitudeECI = VState.mQtrndot.integrate(in.vQtrndot);
-  VState.qAttitudeECI.Normalize();
   VState.vPQRi = VState.mPQRidot.integrate(in.vPQRidot);
   VState.vInertialPosition = VState.mInertialVelocity.integrate(VState.vInertialVelocity);
   VState.vInertialVelocity = VState.mUVWidot.integrate(in.vUVWidot);
@@ -239,7 +238,7 @@ bool FGPropagate::Run(bool Holding)
       (*it)->Update();
   }
 
-  FDMExec->SetTrimStatus(hold);
+  // FDMExec->SetTrimStatus(hold);
   hold = false;
 
   // CAUTION : the order of the operations below is very important to get transformation
@@ -655,7 +654,7 @@ void FGPropagate::bind(void)
   PropertyManager->Tie("simulation/integrator/rate/translational", &VState.mUVWidot,
                        &FGMultiStepMethod<FGColumnVector3>::getMethod,
                        &FGMultiStepMethod<FGColumnVector3>::setMethod);
-  PropertyManager->Tie("simulation/integrator/position/rotational", &VState.mQtrndot,
+  PropertyManager->Tie("simulation/integrator/position/rotational", static_cast<FGMultiStepMethod<FGQuaternion>*>(&VState.mQtrndot),
                        &FGMultiStepMethod<FGQuaternion>::getMethod,
                        &FGMultiStepMethod<FGQuaternion>::setMethod);
   PropertyManager->Tie("simulation/integrator/position/translational", &VState.mInertialVelocity,

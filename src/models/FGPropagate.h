@@ -142,7 +142,7 @@ public:
     FGMultiStepMethod<FGColumnVector3> mPQRidot;
     FGMultiStepMethod<FGColumnVector3> mUVWidot;
     FGMultiStepMethod<FGColumnVector3> mInertialVelocity;
-    FGMultiStepMethod<FGQuaternion>    mQtrndot;
+    FGMultiStepMethodQ                 mQtrndot;
   };
 
   /** Constructor.

@@ -79,7 +79,7 @@ public:
     step = 0;
   }
 
-  T integrate(const T& dot) {
+  virtual T integrate(const T& dot) {
     if (dt > 0.) {
       valDot.push_front(dot);
       valDot.pop_back();
@@ -89,19 +89,19 @@ public:
         dv = dt * valDot[0];
         break;
       case eAdamsBashforth2:
-        if (step == 0) {
-          ++step;
-          dv = dt * valDot[0];
-          Notify();
-          break;
-        }
-        else if (step == 1) {
-          ++step;
-          valDot.pop_front();
-          valDot.push_back(valDot.back());
-          dv = 0.5 * dt * (dot + valDot[0]);
-          break;
-        }
+        // if (step == 0) {
+        //   ++step;
+        //   dv = dt * valDot[0];
+        //   Notify();
+        //   break;
+        // }
+        // else if (step == 1) {
+        //   ++step;
+        //   valDot.pop_front();
+        //   valDot.push_back(valDot.back());
+        //   dv = 0.5 * dt * (dot + valDot[0]);
+        //   break;
+        // }
         dv = dt * (1.5 * valDot[0] - 0.5 * valDot[1]);
         break;
       case eAdamsBashforth3:
@@ -116,18 +116,34 @@ public:
       default:
         break;
       }
+      return v0 + dv;
     }
 
-    return v0 + dv;
+    dv = dt * dv;
+    return v0;
   }
 
-private:
+protected:
   unsigned int step;
   T v0, dv;
   eIntegrateType method;
   std::deque<T> valDot;
 };
 
+class FGMultiStepMethodQ : public FGMultiStepMethod<FGQuaternion>
+{
+public:
+  FGMultiStepMethodQ(FGPropagate* pg) : FGMultiStepMethod<FGQuaternion>(pg) {}
+  void Update(void) {
+    FGMultiStepMethod<FGQuaternion>::Update();
+    v0.Normalize();
+  }
+  FGQuaternion integrate(const FGQuaternion& dot) {
+    FGQuaternion q = FGMultiStepMethod<FGQuaternion>::integrate(dot);
+    q.Normalize();
+    return q;
+  }
+};
 } // namespace
 
 #endif
