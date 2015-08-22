@@ -171,6 +171,10 @@ void FGPropagate::SetInitialState(const FGInitialCondition *FGIC)
   VState.vPQRi = VState.vPQR + Ti2b * in.vOmegaPlanet;
 
   CalculateInertialVelocity(); // Translational position derivative
+  VState.mPQRidot.setInitialCondition(VState.vPQRi);
+  VState.mUVWidot.setInitialCondition(VState.vInertialVelocity);
+  VState.mInertialVelocity.setInitialCondition(VState.vInertialPosition);
+  VState.mQtrndot.setInitialCondition(VState.qAttitudeECI);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,11 +220,11 @@ bool FGPropagate::Run(bool Holding)
 
   // Propagate rotational / translational velocity, angular /translational position, respectively.
 
-  VState.qAttitudeECI += VState.mQtrndot.integrate(in.vQtrndot);
+  VState.qAttitudeECI = VState.mQtrndot.integrate(in.vQtrndot);
   VState.qAttitudeECI.Normalize();
-  VState.vPQRi += VState.mPQRidot.integrate(in.vPQRidot);
-  VState.vInertialPosition += VState.mInertialVelocity.integrate(VState.vInertialVelocity);
-  VState.vInertialVelocity += VState.mUVWidot.integrate(in.vUVWidot);
+  VState.vPQRi = VState.mPQRidot.integrate(in.vPQRidot);
+  VState.vInertialPosition = VState.mInertialVelocity.integrate(VState.vInertialVelocity);
+  VState.vInertialVelocity = VState.mUVWidot.integrate(in.vUVWidot);
 
   // CAUTION : the order of the operations below is very important to get transformation
   // matrices that are consistent with the new state of the vehicle

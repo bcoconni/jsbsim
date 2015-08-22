@@ -39,8 +39,8 @@ class TestOrbit(unittest.TestCase):
         fdm.set_dt(0.1)
         fdm.set_property_value('simulation/gravity-model', 0)
         fdm.set_property_value('simulation/output/log_rate_hz', 1.)
-        fdm.set_property_value('simulation/integrator/rate/translational', 1)
-        fdm.set_property_value('simulation/integrator/position/translational', 1)
+        fdm.set_property_value('simulation/integrator/rate/translational', 3)
+        fdm.set_property_value('simulation/integrator/position/translational', 3)
 
         slr = fdm.get_property_value('inertial/sea-level-radius_ft')
         R0 = slr + fdm.get_property_value('ic/h-sl-ft')
@@ -54,12 +54,12 @@ class TestOrbit(unittest.TestCase):
         fdm.set_property_value('ic/r-rad_sec', 0.0)
         fdm.run_ic()
 
-        fdm.run()
-        fdm.set_property_value('simulation/integrator/rate/translational', 2)
-        fdm.set_property_value('simulation/integrator/position/translational', 2)
-        fdm.run()
-        fdm.set_property_value('simulation/integrator/rate/translational', 3)
-        fdm.set_property_value('simulation/integrator/position/translational', 3)
+        # fdm.run()
+        # fdm.set_property_value('simulation/integrator/rate/translational', 2)
+        # fdm.set_property_value('simulation/integrator/position/translational', 2)
+        # fdm.run()
+        # fdm.set_property_value('simulation/integrator/rate/translational', 3)
+        # fdm.set_property_value('simulation/integrator/position/translational', 3)
 
         ExecuteUntil(fdm, 10800.)
 

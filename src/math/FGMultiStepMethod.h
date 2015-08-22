@@ -65,7 +65,7 @@ enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
 template<class T> class FGMultiStepMethod
 {
 public:
-  FGMultiStepMethod() : dt(0.0), method(eRectEuler) {
+  FGMultiStepMethod() : step(0), dt(0.0), method(eRectEuler) {
     T zero;
     valDot.resize(5, zero);
   }
@@ -74,41 +74,56 @@ public:
   void setMethod(int t) { method = (eIntegrateType)t; }
 
   int getMethod(void) const { return (int)method; }
+  void setInitialCondition(const T& v) { v0 = v; }
   void setInitialDerivative(const T& ICdot) {
     for (int i=0; i < 5; ++i)
       valDot[i] = ICdot;
+    step = 0;
   }
 
   T integrate(const T& dot) {
-    T val;
+    if (dt > 0.) {
+      valDot.push_front(dot);
+      valDot.pop_back();
 
-    valDot.push_front(dot);
-    valDot.pop_back();
-
-    switch(method) {
-    case eRectEuler:
-      val = dt * valDot[0];
-      break;
-    case eAdamsBashforth2:
-      val = dt * (1.5 * valDot[0] - 0.5 * valDot[1]);
-      break;
-    case eAdamsBashforth3:
-      val = (dt / 12.0) * (23.0 * valDot[0] - 16.0 * valDot[1] + 5.0 * valDot[2]);
-      break;
-    case eAdamsBashforth4:
-      val = (dt / 24.0) * (55.0 * valDot[0] - 59.0 * valDot[1] + 37.0 * valDot[2] - 9.0 * valDot[3]);
-      break;
-    case eAdamsBashforth5:
-      val = (dt / 720.) * (1901.0 * valDot[0] - 2774.0 * valDot[1] + 2616.0 * valDot[2] - 1274.0 * valDot[3] + 251.0 * valDot[4]);
-      break;
-    default:
-      break;
+      switch(method) {
+      case eRectEuler:
+        v0 += dt * valDot[0];
+        break;
+      case eAdamsBashforth2:
+        if (step == 0) {
+          ++step;
+          return v0 + dt * valDot[0];
+        }
+        else if (step == 1) {
+          ++step;
+          valDot.pop_front();
+          valDot.push_back(valDot.back());
+          v0 += 0.5 * dt * (dot + valDot[0]);
+          break;
+        }
+        v0 += dt * (1.5 * valDot[0] - 0.5 * valDot[1]);
+        break;
+      case eAdamsBashforth3:
+        v0 += (dt / 12.0) * (23.0 * valDot[0] - 16.0 * valDot[1] + 5.0 * valDot[2]);
+        break;
+      case eAdamsBashforth4:
+        v0 += (dt / 24.0) * (55.0 * valDot[0] - 59.0 * valDot[1] + 37.0 * valDot[2] - 9.0 * valDot[3]);
+        break;
+      case eAdamsBashforth5:
+        v0 += (dt / 720.) * (1901.0 * valDot[0] - 2774.0 * valDot[1] + 2616.0 * valDot[2] - 1274.0 * valDot[3] + 251.0 * valDot[4]);
+        break;
+      default:
+        break;
+      }
     }
 
-    return val;
+    return v0;
   }
 
 private:
+  unsigned int step;
+  T v0;
   double dt;
   eIntegrateType method;
   std::deque<T> valDot;
