@@ -183,10 +183,10 @@ public:
       @return true if the execution succeeded. */
   bool SetDirectivesFile(const std::string& fname);
   /// Enables the output generation for all output instances.
-  void Enable(void);
+  void Enable(void) { enabled = true; }
   /// Disables the output generation for all output instances.
-  void Disable(void);
-  /** Toggles the output generation for an ouput instances.
+  void Disable(void) { enabled = false; }
+  /** Toggles the output generation of each ouput instance.
       @param idx ID of the output instance which output generation will be
                  toggled.
       @result false if the instance does not exist otherwise returns the status
@@ -224,6 +224,7 @@ public:
 
 private:
   std::vector<FGOutputType*> OutputTypes;
+  bool enabled;
 
   void Debug(int from);
 };

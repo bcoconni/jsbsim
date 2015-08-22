@@ -65,6 +65,7 @@ FGOutput::FGOutput(FGFDMExec* fdmex) : FGModel(fdmex)
   typedef int (FGOutput::*iOPV)(void) const;
 
   Name = "FGOutput";
+  enabled = true;
 
   PropertyManager->Tie("simulation/force-output", this, (iOPV)0, &FGOutput::ForceOutput, false);
 
@@ -101,11 +102,14 @@ bool FGOutput::InitModel(void)
 
 bool FGOutput::Run(bool Holding)
 {
+  if (FDMExec->GetTrimStatus()) return true;
   if (FGModel::Run(Holding)) return true;
+  if (Holding) return false;
+  if (!enabled) return true;
 
   vector<FGOutputType*>::iterator it;
   for (it = OutputTypes.begin(); it != OutputTypes.end(); ++it)
-    (*it)->Run(Holding);
+    (*it)->Run();
 
   return false;
 }
@@ -126,24 +130,6 @@ void FGOutput::SetStartNewOutput(void)
   vector<FGOutputType*>::iterator it;
   for (it = OutputTypes.begin(); it != OutputTypes.end(); ++it)
     (*it)->SetStartNewOutput();
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-void FGOutput::Enable(void)
-{
-  vector<FGOutputType*>::iterator it;
-  for (it = OutputTypes.begin(); it != OutputTypes.end(); ++it)
-    (*it)->Enable();
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-void FGOutput::Disable(void)
-{
-  vector<FGOutputType*>::iterator it;
-  for (it = OutputTypes.begin(); it != OutputTypes.end(); ++it)
-    (*it)->Disable();
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

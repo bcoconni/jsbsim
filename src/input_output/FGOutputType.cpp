@@ -171,12 +171,10 @@ bool FGOutputType::InitModel(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGOutputType::Run(bool Holding)
+bool FGOutputType::Run(void)
 {
-  if (FDMExec->GetTrimStatus()) return true;
-  if (FGModel::Run(Holding)) return true;
+  if (FGModel::Run(false)) return true;
   if (!enabled) return true;
-  if (Holding) return false;
 
   RunPreFunctions();
   Print();
