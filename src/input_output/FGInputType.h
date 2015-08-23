@@ -87,8 +87,8 @@ public:
   /// Destructor
   virtual ~FGInputType();
 
-  /** Set the idx for this output instance
-      @param idx ID of the output instance that is constructed
+  /** Set the idx for this input instance
+      @param idx ID of the input instance that is constructed
    */
   void SetIdx(unsigned int idx);
 
@@ -114,13 +114,13 @@ public:
    */
   virtual void Read(bool Holding) = 0;
 
-  /// Enables the output generation.
+  /// Enables the input generation.
   void Enable(void) { enabled = true; }
-  /// Disables the output generation.
+  /// Disables the input generation.
   void Disable(void) { enabled = false; }
-  /** Toggles the output generation.
-      @result the output generation status i.e. true if the output has been
-              enabled, false if the output has been disabled. */
+  /** Toggles the input generation.
+      @result the input generation status i.e. true if the input has been
+              enabled, false if the input has been disabled. */
   bool Toggle(void) {enabled = !enabled; return enabled;}
 
   /** Overwrites the name identifier under which the input will be read.
