@@ -36,7 +36,6 @@ INCLUDES
 
 #include <deque>
 #include "FGTimeMarchingScheme.h"
-#include "FGQuaternion.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -75,7 +74,7 @@ public:
 
   int getMethod(void) const { return (int)method; }
   void setInitialCondition(const T& v) { v0 = v; }
-  void setInitialDerivative(const T& ICdot) {
+  virtual void setInitialDerivative(const T& ICdot) {
     valDot.assign(5, ICdot);
     step = 0;
   }
@@ -129,21 +128,6 @@ protected:
   T v0, dv;
   eIntegrateType method;
   std::deque<T> valDot;
-};
-
-class FGMultiStepMethodQ : public FGMultiStepMethod<FGQuaternion>
-{
-public:
-  FGMultiStepMethodQ(FGPropagate* pg) : FGMultiStepMethod<FGQuaternion>(pg) {}
-  void MoveToNextStep(void) {
-    FGMultiStepMethod<FGQuaternion>::MoveToNextStep();
-    v0.Normalize();
-  }
-  FGQuaternion integrate(const FGQuaternion& dot) {
-    FGQuaternion q = FGMultiStepMethod<FGQuaternion>::integrate(dot);
-    q.Normalize();
-    return q;
-  }
 };
 } // namespace
 

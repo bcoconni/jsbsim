@@ -44,6 +44,7 @@ INCLUDES
 #include "math/FGQuaternion.h"
 #include "math/FGMatrix33.h"
 #include "math/FGMultiStepMethod.h"
+#include "math/FGQuatODEIntegration.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -142,7 +143,7 @@ public:
     FGMultiStepMethod<FGColumnVector3> mPQRidot;
     FGMultiStepMethod<FGColumnVector3> mUVWidot;
     FGMultiStepMethod<FGColumnVector3> mInertialVelocity;
-    FGMultiStepMethodQ                 mQtrndot;
+    FGQuatODEIntegration               mQtrndot;
   };
 
   /** Constructor.
@@ -586,7 +587,6 @@ public:
 
   struct Inputs {
     FGColumnVector3 vPQRidot;
-    FGQuaternion vQtrndot;
     FGColumnVector3 vUVWidot;
     FGColumnVector3 vOmegaPlanet;
     double SemiMajor;

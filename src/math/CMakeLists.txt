@@ -11,7 +11,8 @@ set(SOURCES FGColumnVector3.cpp
             FGModelFunctions.cpp
             FGNelderMead.cpp
             FGStateSpace.cpp
-            FGTimeMarchingScheme.cpp)
+            FGTimeMarchingScheme.cpp
+            FGQuatODEIntegration.cpp)
 
 set(HEADERS FGColumnVector3.h
             FGFunction.h
@@ -29,7 +30,8 @@ set(HEADERS FGColumnVector3.h
             FGNelderMead.h
             FGStateSpace.h
             FGMultiStepMethod.h
-            FGTimeMarchingScheme.h)
+            FGTimeMarchingScheme.h
+            FGQuatODEIntegration.h)
 
 add_full_path_name(MATH_SRC "${SOURCES}")
 add_full_path_name(MATH_HDR "${HEADERS}")

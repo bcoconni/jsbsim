@@ -394,7 +394,6 @@ void FGFDMExec::LoadInputs(unsigned int idx)
   switch(idx) {
   case ePropagate:
     Propagate->in.vPQRidot     = Accelerations->GetPQRidot();
-    Propagate->in.vQtrndot     = Accelerations->GetQuaterniondot();
     Propagate->in.vUVWidot     = Accelerations->GetUVWidot();
     Propagate->in.DeltaT       = dT;
     break;

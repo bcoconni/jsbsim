@@ -176,6 +176,10 @@ public:
       @param m the rotation matrix */
   FGQuaternion(const FGMatrix33& m);
 
+  /// Copying by assigning the vector valued components.
+  FGQuaternion(double q1, double q2, double q3, double q4) : mCacheValid(false)
+    { data[0] = q1; data[1] = q2; data[2] = q3; data[3] = q4; }
+
   /// Destructor.
   ~FGQuaternion() {}
 
@@ -313,7 +317,7 @@ public:
       conserved.
       @param q reference to an FGQuaternion instance
       @return reference to a quaternion object  */
-  const FGQuaternion& operator=(const FGQuaternion& q) {
+  FGQuaternion& operator=(const FGQuaternion& q) {
     // Copy the master values ...
     data[0] = q.data[0];
     data[1] = q.data[1];
@@ -457,8 +461,6 @@ public:
     return FGQuaternion( data[0], -data[1], -data[2], -data[3] );
   }
 
-  friend FGQuaternion operator*(double, const FGQuaternion&);
-
   /** Length of the vector.
 
       Compute and return the euclidean norm of this vector.
@@ -487,12 +489,7 @@ public:
 
   std::string Dump(const std::string& delimiter) const;
 
-  friend FGQuaternion QExp(const FGColumnVector3& omega);
-
 private:
-  /** Copying by assigning the vector valued components.  */
-  FGQuaternion(double q1, double q2, double q3, double q4) : mCacheValid(false)
-    { data[0] = q1; data[1] = q2; data[2] = q3; data[3] = q4; }
 
   /** Computation of derived values.
       This function recomputes the derived values like euler angles and
@@ -543,7 +540,7 @@ private:
     Multiply the Vector with a scalar value.
 */
 inline FGQuaternion operator*(double scalar, const FGQuaternion& q) {
-  return FGQuaternion(scalar*q.data[0], scalar*q.data[1], scalar*q.data[2], scalar*q.data[3]);
+  return FGQuaternion(scalar*q(1), scalar*q(2), scalar*q(3), scalar*q(4));
 }
 
 /** Quaternion exponential
@@ -552,16 +549,11 @@ inline FGQuaternion operator*(double scalar, const FGQuaternion& q) {
     the vector 'omega'.
 */
 inline FGQuaternion QExp(const FGColumnVector3& omega) {
-  FGQuaternion qexp;
   double angle = omega.Magnitude();
   double sina_a = angle > 0.0 ? sin(angle)/angle : 1.0;
 
-  qexp.data[0] = cos(angle);
-  qexp.data[1] = omega(1) * sina_a;
-  qexp.data[2] = omega(2) * sina_a;
-  qexp.data[3] = omega(3) * sina_a;
-
-  return qexp;
+  return FGQuaternion(cos(angle), omega(1) * sina_a, omega(2) * sina_a,
+                      omega(3) * sina_a);
 }
 
 /** Write quaternion to a stream.

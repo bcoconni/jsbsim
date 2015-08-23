@@ -48,16 +48,6 @@ COMMENTS, REFERENCES,  and NOTES
     Wiley & Sons, 1979 ISBN 0-471-03032-5
 [5] Bernard Etkin, "Dynamics of Flight, Stability and Control", Wiley & Sons,
     1982 ISBN 0-471-08936-2
-[6] S. Buss, "Accurate and Efficient Simulation of Rigid Body Rotations",
-    Technical Report, Department of Mathematics, University of California,
-    San Diego, 1999
-[7] Barker L.E., Bowles R.L. and Williams L.H., "Development and Application of
-    a Local Linearization Algorithm for the Integration of Quaternion Rate
-    Equations in Real-Time Flight Simulation Problems", NASA TN D-7347,
-    December 1973
-[8] Phillips W.F, Hailey C.E and Gebert G.A, "Review of Attitude Representations
-    Used for Aircraft Kinematics", Journal Of Aircraft Vol. 38, No. 4,
-    July-August 2001
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 INCLUDES
@@ -191,7 +181,7 @@ void FGPropagate::InitializeDerivatives()
   VState.mPQRidot.setInitialDerivative(in.vPQRidot);
   VState.mUVWidot.setInitialDerivative(in.vUVWidot);
   VState.mInertialVelocity.setInitialDerivative(VState.vInertialVelocity);
-  VState.mQtrndot.setInitialDerivative(in.vQtrndot);
+  VState.mQtrndot.setInitialDerivative(VState.vPQRi);
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 /*
@@ -229,7 +219,7 @@ bool FGPropagate::Run(bool Holding)
 
   // Propagate rotational / translational velocity, angular /translational position, respectively.
 
-  VState.qAttitudeECI = VState.mQtrndot.integrate(in.vQtrndot);
+  VState.qAttitudeECI = VState.mQtrndot.integrate(VState.vPQRi, in.vPQRidot);
   VState.vPQRi = VState.mPQRidot.integrate(in.vPQRidot);
   VState.vInertialPosition = VState.mInertialVelocity.integrate(VState.vInertialVelocity);
   VState.vInertialVelocity = VState.mUVWidot.integrate(in.vUVWidot);

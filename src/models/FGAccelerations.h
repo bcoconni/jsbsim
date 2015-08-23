@@ -135,17 +135,6 @@ public:
       @return false if no error */
   bool Run(bool Holding);
 
-  /** Retrieves the time derivative of the body orientation quaternion.
-      Retrieves the time derivative of the body orientation quaternion based on
-      the rate of change of the orientation between the body and the ECI frame.
-      The quaternion returned is represented by an FGQuaternion reference. The
-      quaternion is 1-based, so that the first element can be retrieved using
-      the "()" operator.
-      units rad/sec^2
-      @return The time derivative of the body orientation quaternion.
-  */
-  const FGQuaternion& GetQuaterniondot(void) const {return vQtrndot;}
-
   /** Retrieves the body axis acceleration.
       Retrieves the computed body axis accelerations based on the
       applied forces and accounting for a rotating body frame.
@@ -387,7 +376,6 @@ private:
 
   FGColumnVector3 vPQRdot, vPQRidot;
   FGColumnVector3 vUVWdot, vUVWidot;
-  FGQuaternion vQtrndot;
   FGColumnVector3 vBodyAccel;
   FGColumnVector3 vGravAccel;
   FGColumnVector3 vFrictionForces;
@@ -398,7 +386,6 @@ private:
   int HoldDown;
 
   void CalculatePQRdot(void);
-  void CalculateQuatdot(void);
   void CalculateUVWdot(void);
 
   void ResolveFrictionForces(double dt);
