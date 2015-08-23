@@ -90,7 +90,7 @@ FGPropagate::FGPropagate(FGFDMExec* fdmex)
   : FGModel(fdmex),
     VState(this),
     VehicleRadius(0),
-    incomplete(false)
+    IncompleteTimeStep(false)
 {
   Debug(0);
   Name = "FGPropagate";
@@ -220,7 +220,7 @@ bool FGPropagate::Run(bool Holding)
 
   double dt = in.DeltaT * rate;  // The 'stepsize'
 
-  incomplete = false;
+  IncompleteTimeStep = false;
 
   VState.mPQRidot.setTimeStep(dt);
   VState.mUVWidot.setTimeStep(dt);
@@ -234,10 +234,10 @@ bool FGPropagate::Run(bool Holding)
   VState.vInertialPosition = VState.mInertialVelocity.integrate(VState.vInertialVelocity);
   VState.vInertialVelocity = VState.mUVWidot.integrate(in.vUVWidot);
 
-  if (!incomplete) {
-    vector<FGTimeMarching*>::iterator it;
+  if (!IncompleteTimeStep) {
+    vector<FGTimeMarchingScheme*>::iterator it;
     for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
-      (*it)->Update();
+      (*it)->MoveToNextStep();
 
     // CAUTION : the order of the operations below is very important to get
     // transformation matrices that are consistent with the new state of the
@@ -245,10 +245,7 @@ bool FGPropagate::Run(bool Holding)
 
     // 1. Update the Earth position angle (EPA)
     VState.vLocation.IncrementEarthPositionAngle(in.vOmegaPlanet(eZ)*dt);
-    FDMExec->EnableOutput();
   }
-  else
-    FDMExec->DisableOutput();
 
   // 2. Update the Ti2ec and Tec2i transforms from the updated EPA
   Ti2ec = VState.vLocation.GetTi2ec(); // ECI to ECEF transform

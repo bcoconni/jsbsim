@@ -35,7 +35,7 @@ INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 #include <deque>
-#include "FGTimeMarching.h"
+#include "FGTimeMarchingScheme.h"
 #include "FGQuaternion.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,13 +64,13 @@ enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
                      eAdamsBashforth3, eAdamsBashforth4, eBuss1, eBuss2,
                      eLocalLinearization, eAdamsBashforth5};
 
-template<class T> class FGMultiStepMethod : public FGTimeMarching
+template<class T> class FGMultiStepMethod : public FGTimeMarchingScheme
 {
 public:
   FGMultiStepMethod(FGPropagate* pg)
-    : FGTimeMarching(pg), step(0), method(eRectEuler) {}
+    : FGTimeMarchingScheme(pg), step(0), method(eRectEuler) {}
 
-  void Update(void) { v0 += dv; }
+  void MoveToNextStep(void) { v0 += dv; }
   void setMethod(int t) { method = (eIntegrateType)t; }
 
   int getMethod(void) const { return (int)method; }
@@ -93,7 +93,7 @@ public:
         if (step == 0) {
           ++step;
           dv = dt * valDot[0];
-          Notify();
+          NotifyOfIncompleteTimeStep();
           break;
         }
         else if (step == 1) {
@@ -135,8 +135,8 @@ class FGMultiStepMethodQ : public FGMultiStepMethod<FGQuaternion>
 {
 public:
   FGMultiStepMethodQ(FGPropagate* pg) : FGMultiStepMethod<FGQuaternion>(pg) {}
-  void Update(void) {
-    FGMultiStepMethod<FGQuaternion>::Update();
+  void MoveToNextStep(void) {
+    FGMultiStepMethod<FGQuaternion>::MoveToNextStep();
     v0.Normalize();
   }
   FGQuaternion integrate(const FGQuaternion& dot) {

@@ -594,9 +594,9 @@ public:
     double DeltaT;
   } in;
 
-  void IncompleteTimeStep(void) { incomplete = true; }
-  bool TimeStepIsIncomplete(void) { return incomplete; }
-  void Register(FGTimeMarching* algo) { Algorithms.push_back(algo); }
+  void NotifyOfIncompleteTimeStep(void) { IncompleteTimeStep = true; }
+  bool IsTimeStepIncomplete(void) { return IncompleteTimeStep; }
+  void Register(FGTimeMarchingScheme* algo) { Algorithms.push_back(algo); }
 
 private:
 
@@ -620,12 +620,12 @@ private:
 
   FGQuaternion Qec2b;
 
-  std::vector<FGTimeMarching*> Algorithms;
+  std::vector<FGTimeMarchingScheme*> Algorithms;
 
   double VehicleRadius;
   FGColumnVector3 LocalTerrainVelocity, LocalTerrainAngularVelocity;
 
-  bool incomplete;
+  bool IncompleteTimeStep;
 
   void CalculateInertialVelocity(void);
   void CalculateUVW(void);

@@ -1,6 +1,6 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- Header:       FGTimeMarching.h
+ Header:       FGTimeMarchingScheme.h
  Author:       Bertrand Coconnier
  Date started: 08/22/15
 
@@ -27,8 +27,8 @@
 SENTRY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#ifndef FGTIMEMARCHING_H
-#define FGTIMEMARCHING_H
+#ifndef FGTIMEMARCHINGSCHEME_H
+#define FGTIMEMARCHINGSCHEME_H
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 INCLUDES
@@ -38,7 +38,7 @@ INCLUDES
 DEFINITIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#define ID_TIMEMARCHING "$Id$"
+#define ID_TIMEMARCHINGSCHEME "$Id$"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -57,14 +57,14 @@ CLASS DOCUMENTATION
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-class FGTimeMarching
+class FGTimeMarchingScheme
 {
 public:
-  FGTimeMarching(FGPropagate* pg) : Propagate(pg), dt(0.0) {}
-  virtual ~FGTimeMarching() {}
+  FGTimeMarchingScheme(FGPropagate* pg) : Propagate(pg), dt(0.0) {}
+  virtual ~FGTimeMarchingScheme() {}
   void setTimeStep(double _dt) { dt = _dt; }
-  virtual void Update(void) = 0;
-  void Notify(void);
+  virtual void MoveToNextStep(void) = 0;
+  void NotifyOfIncompleteTimeStep(void);
 protected:
   FGPropagate* Propagate;
   double dt;

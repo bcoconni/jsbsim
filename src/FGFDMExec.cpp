@@ -366,10 +366,14 @@ bool FGFDMExec::Run(void)
 
   do {
     for (unsigned int i = 0; i < Models.size(); i++) {
+      // Skip the input and output steps if we are in the middle of a step
+      if (Propagate->IsTimeStepIncomplete()
+          && (i == eInput || i == eOutput)) continue;
+
       LoadInputs(i);
       Models[i]->Run(holding);
     }
-  } while (Propagate->TimeStepIsIncomplete());
+  } while (Propagate->IsTimeStepIncomplete());
 
   if (ResetMode) {
     unsigned int mode = ResetMode;

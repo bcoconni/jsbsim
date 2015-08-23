@@ -1,9 +1,9 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Module: FGTimeMarching.cpp
+Module: FGTimeMarchingScheme.cpp
 Author: Bertrand Coconnier
 Date started: 08/22/2015
-Purpose: Manages time marching algorithms
+Purpose: Manages time marching schemes
 
  ------------- Copyright (C) 2015 Bertrand Coconnier  -------------
 
@@ -29,21 +29,21 @@ INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 #include "models/FGPropagate.h"
-#include "FGTimeMarching.h"
+#include "FGTimeMarchingScheme.h"
 
 using namespace std;
 
 namespace JSBSim {
 
 IDENT(IdSrc,"$Id$");
-IDENT(IdHdr,ID_TIMEMARCHING);
+IDENT(IdHdr,ID_TIMEMARCHINGSCHEME);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-void FGTimeMarching::Notify(void)
+void FGTimeMarchingScheme::NotifyOfIncompleteTimeStep(void)
 {
-  Propagate->IncompleteTimeStep();
+  Propagate->NotifyOfIncompleteTimeStep();
 }
 }
