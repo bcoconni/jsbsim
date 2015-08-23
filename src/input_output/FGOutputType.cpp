@@ -46,7 +46,7 @@ INCLUDES
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGOutputType.cpp,v 1.16 2015/08/16 15:27:18 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGOutputType.cpp,v 1.17 2015/08/23 09:43:31 bcoconni Exp $");
 IDENT(IdHdr,ID_OUTPUTTYPE);
 
 using namespace std;

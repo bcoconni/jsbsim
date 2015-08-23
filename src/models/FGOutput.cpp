@@ -53,7 +53,7 @@ using namespace std;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGOutput.cpp,v 1.85 2015/08/16 13:19:52 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGOutput.cpp,v 1.86 2015/08/23 09:43:31 bcoconni Exp $");
 IDENT(IdHdr,ID_OUTPUT);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

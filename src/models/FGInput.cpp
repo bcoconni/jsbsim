@@ -50,7 +50,7 @@ using namespace std;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGInput.cpp,v 1.33 2015/04/08 19:35:00 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGInput.cpp,v 1.34 2015/08/23 09:43:31 bcoconni Exp $");
 IDENT(IdHdr,ID_INPUT);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

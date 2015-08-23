@@ -46,7 +46,7 @@ INCLUDES
 DEFINITIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#define ID_INPUT "$Id: FGInput.h,v 1.12 2015/04/02 13:02:29 ehofman Exp $"
+#define ID_INPUT "$Id: FGInput.h,v 1.13 2015/08/23 09:43:31 bcoconni Exp $"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -81,7 +81,7 @@ CLASS DOCUMENTATION
 
     The class FGInput is the manager of the inputs requested by the user. It
     manages a list of instances derived from the abstract class FGInputType.
-    @version $Id: FGInput.h,v 1.12 2015/04/02 13:02:29 ehofman Exp $
+    @version $Id: FGInput.h,v 1.13 2015/08/23 09:43:31 bcoconni Exp $
  */
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
