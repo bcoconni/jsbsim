@@ -125,10 +125,10 @@ public:
   bool SetDirectivesFile(const std::string& fname);
 
   /// Enables the input generation for all input instances.
-  void Enable(void);
+  void Enable(void) { enabled = true; }
   /// Disables the input generation for all input instances.
-  void Disable(void);
-  /** Toggles the input generation for an ouput instances.
+  void Disable(void) { enabled = false; }
+  /** Toggles the input generation of each input instance.
       @param idx ID of the input instance which input generation will be
                  toggled.
       @result false if the instance does not exist otherwise returns the status
@@ -152,6 +152,7 @@ public:
 
 private:
   std::vector<FGInputType*> InputTypes;
+  bool enabled;
 
   void Debug(int from);
 };
