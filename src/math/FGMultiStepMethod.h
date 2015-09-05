@@ -66,7 +66,7 @@ enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
 template<class T> class FGMultiStepMethod : public FGTimeMarchingScheme
 {
 public:
-  FGMultiStepMethod(FGPropagate* pg)
+  explicit FGMultiStepMethod(FGPropagate* pg)
     : FGTimeMarchingScheme(pg), step(0), method(eRectEuler) {}
 
   void MoveToNextStep(void) { v0 += dv; }
@@ -86,6 +86,7 @@ public:
 
       switch(method) {
       case eRectEuler:
+      case eTrapezoidal:
         dv = dt * valDot[0];
         break;
       case eAdamsBashforth2:
@@ -113,13 +114,16 @@ public:
       case eAdamsBashforth5:
         dv = (dt / 720.) * (1901.0 * valDot[0] - 2774.0 * valDot[1] + 2616.0 * valDot[2] - 1274.0 * valDot[3] + 251.0 * valDot[4]);
         break;
-      default:
+      case eNone: // do nothing, freeze
+        dv *= 0.0;
         break;
+      default:
+        throw("Unrecognized integration method.");
       }
       return v0 + dv;
     }
 
-    dv = dt * dv;
+    dv *= dt;
     return v0;
   }
 
