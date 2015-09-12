@@ -97,6 +97,8 @@ FGPropagate::FGPropagate(FGFDMExec* fdmex)
   VState.mQtrndot.setMethod(eRectEuler);
   VState.mInertialVelocity.setMethod(eAdamsBashforth3);
 
+  in.EarthPosition = 0;
+
   bind();
   Debug(0);
 }
@@ -123,6 +125,9 @@ bool FGPropagate::InitModel(void)
   VState.mQtrndot.setMethod(eRectEuler);
   VState.mInertialVelocity.setMethod(eAdamsBashforth3);
 
+  in.EarthPosition->SetAngle(0.0);
+  vOmegaPlanet = in.EarthPosition->GetRotationAxis();
+
   return true;
 }
 
@@ -135,8 +140,11 @@ void FGPropagate::SetInitialState(const FGInitialCondition *FGIC)
   // Set the position lat/lon/radius
   VState.vLocation = FGIC->GetPosition();
 
-  Ti2ec = VState.vLocation.GetTi2ec(); // ECI to ECEF transform
-  Tec2i = Ti2ec.Transposed();          // ECEF to ECI frame transform
+  *in.EarthPosition = FGIC->GetEarthPositionIC();
+
+  Ti2ec = in.EarthPosition->GetTi2ec();
+  Tec2i = in.EarthPosition->GetTec2i();
+  vOmegaPlanet = in.EarthPosition->GetRotationAxis();
 
   VState.vInertialPosition = Tec2i * VState.vLocation;
 
@@ -164,7 +172,7 @@ void FGPropagate::SetInitialState(const FGInitialCondition *FGIC)
   // expressed in the body frame.
   VState.vPQR = FGIC->GetPQRRadpsIC();
 
-  VState.vPQRi = VState.vPQR + Ti2b * in.vOmegaPlanet;
+  VState.vPQRi = VState.vPQR + Ti2b * vOmegaPlanet;
 
   CalculateInertialVelocity(); // Translational position derivative
   VState.mPQRidot.setInitialCondition(VState.vPQRi);
@@ -232,12 +240,12 @@ bool FGPropagate::Run(bool Holding)
     // vehicle
 
     // 1. Update the Earth position angle (EPA)
-    VState.vLocation.IncrementEarthPositionAngle(in.vOmegaPlanet(eZ)*dt);
+    in.EarthPosition->IncrementAngle(dt);
   }
 
   // 2. Update the Ti2ec and Tec2i transforms from the updated EPA
-  Ti2ec = VState.vLocation.GetTi2ec(); // ECI to ECEF transform
-  Tec2i = Ti2ec.Transposed();          // ECEF to ECI frame transform
+  Ti2ec = in.EarthPosition->GetTi2ec();
+  Tec2i = in.EarthPosition->GetTec2i();
 
   // 3. Update the location from the updated Ti2ec and inertial position
   VState.vLocation = Ti2ec*VState.vInertialPosition;
@@ -257,7 +265,7 @@ bool FGPropagate::Run(bool Holding)
   RecomputeLocalTerrainVelocity();
   VehicleRadius = GetRadius(); // Calculate current aircraft radius from center of planet
 
-  VState.vPQR = VState.vPQRi - Ti2b * in.vOmegaPlanet;
+  VState.vPQR = VState.vPQRi - Ti2b * vOmegaPlanet;
 
   VState.qAttitudeLocal = Tl2b.GetQuaternion();
 
@@ -277,7 +285,7 @@ bool FGPropagate::Run(bool Holding)
 
 void FGPropagate::CalculateInertialVelocity(void)
 {
-  VState.vInertialVelocity = Tb2i * VState.vUVW + (in.vOmegaPlanet * VState.vInertialPosition);
+  VState.vInertialVelocity = Tb2i * VState.vUVW + (vOmegaPlanet * VState.vInertialPosition);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -287,7 +295,7 @@ void FGPropagate::CalculateInertialVelocity(void)
 
 void FGPropagate::CalculateUVW(void)
 {
-  VState.vUVW = Ti2b * (VState.vInertialVelocity - (in.vOmegaPlanet * VState.vInertialPosition));
+  VState.vUVW = Ti2b * (VState.vInertialVelocity - (vOmegaPlanet * VState.vInertialPosition));
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -296,7 +304,7 @@ void FGPropagate::UpdateLocationMatrices(void)
 {
   Tl2ec = VState.vLocation.GetTl2ec(); // local to ECEF transform
   Tec2l = Tl2ec.Transposed();          // ECEF to local frame transform
-  Ti2l  = VState.vLocation.GetTi2l();  // ECI to local frame transform
+  Ti2l  = Tec2l * Ti2ec;               // ECI to local frame transform
   Tl2i  = Ti2l.Transposed();           // local to ECI transform
 }
 
@@ -336,7 +344,7 @@ void FGPropagate::SetInertialVelocity(const FGColumnVector3& Vi) {
 
 void FGPropagate::SetInertialRates(const FGColumnVector3& vRates) {
   VState.vPQRi = Ti2b * vRates;
-  VState.vPQR = VState.vPQRi - Ti2b * in.vOmegaPlanet;
+  VState.vPQR = VState.vPQRi - Ti2b * vOmegaPlanet;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -408,8 +416,6 @@ void FGPropagate::SetVState(const VehicleState& vstate)
 {
   //ToDo: Shouldn't all of these be set from the vstate vector passed in?
   VState.vLocation = vstate.vLocation;
-  Ti2ec = VState.vLocation.GetTi2ec(); // useless ?
-  Tec2i = Ti2ec.Transposed();
   UpdateLocationMatrices();
   SetInertialOrientation(vstate.qAttitudeECI);
   RecomputeLocalTerrainVelocity();
@@ -417,7 +423,7 @@ void FGPropagate::SetVState(const VehicleState& vstate)
   VState.vUVW = vstate.vUVW;
   vVel = Tb2l * VState.vUVW;
   VState.vPQR = vstate.vPQR;
-  VState.vPQRi = VState.vPQR + Ti2b * in.vOmegaPlanet;
+  VState.vPQRi = VState.vPQR + Ti2b * vOmegaPlanet;
   VState.vInertialPosition = vstate.vInertialPosition;
 }
 
@@ -439,8 +445,6 @@ void FGPropagate::UpdateVehicleState(void)
 void FGPropagate::SetLocation(const FGLocation& l)
 {
   VState.vLocation = l;
-  Ti2ec = VState.vLocation.GetTi2ec(); // useless ?
-  Tec2i = Ti2ec.Transposed();
   UpdateVehicleState();
 }
 
@@ -621,7 +625,6 @@ void FGPropagate::bind(void)
   PropertyManager->Tie("position/ecef-y-ft", this, eY, (PMF)&FGPropagate::GetLocation);
   PropertyManager->Tie("position/ecef-z-ft", this, eZ, (PMF)&FGPropagate::GetLocation);
 
-  PropertyManager->Tie("position/epa-rad", this, &FGPropagate::GetEarthPositionAngle);
   PropertyManager->Tie("metrics/terrain-radius", this, &FGPropagate::GetLocalTerrainRadius);
 
   PropertyManager->Tie("attitude/phi-rad", this, (int)ePhi, (PMF)&FGPropagate::GetEuler);
@@ -692,7 +695,7 @@ void FGPropagate::Debug(int from)
          << reset << endl;
     cout << endl;
     cout << highint << "  Earth Position Angle (deg): " << setw(8) << setprecision(3) << reset
-         << GetEarthPositionAngleDeg() << endl;
+         << in.EarthPosition->GetAngleDeg() << endl;
     cout << endl;
     cout << highint << "  Body velocity (ft/sec): " << setw(8) << setprecision(3) << reset << VState.vUVW << endl;
     cout << highint << "  Local velocity (ft/sec): " << setw(8) << setprecision(3) << reset << vVel << endl;

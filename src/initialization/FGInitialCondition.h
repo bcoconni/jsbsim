@@ -49,6 +49,7 @@ INCLUDES
 
 #include "math/FGLocation.h"
 #include "math/FGQuaternion.h"
+#include "math/FGEarthPosition.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -663,6 +664,13 @@ public:
       @return true if initialization file (version 1) called for trim. */
   bool NeedTrim(void) const { return needTrim == 0 ? false : true; }
 
+  /** Return the initial Earth Position Angle in radians.
+      This is the initial relative orientation of the ECEF frame with respect to
+      the Inertial frame.
+      @return the Earth fixed frame (ECEF) rotation offset about the axis with
+              respect to the Inertial (ECI) frame in radians. */
+  const FGEarthPosition& GetEarthPositionIC(void) const { return EarthPosition; }
+
   void bind(FGPropertyManager* pm);
 
 private:
@@ -681,6 +689,8 @@ private:
   altitudeset lastAltitudeSet;
   unsigned int enginesRunning;
   int needTrim;
+
+  FGEarthPosition EarthPosition;
 
   FGFDMExec *fdmex;
   FGAtmosphere* Atmosphere;

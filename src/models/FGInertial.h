@@ -42,6 +42,7 @@ INCLUDES
 
 #include "FGModel.h"
 #include "math/FGColumnVector3.h"
+#include "math/FGEarthPosition.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -86,11 +87,7 @@ public:
   double SLgravity(void) const {return gAccelReference;}
   double gravity(void) const {return gAccel;}
   double omega(void) const {return RotationRate;}
-  const FGColumnVector3& GetOmegaPlanet() const {return vOmegaPlanet;}
-  void SetOmegaPlanet(double rate) {
-    RotationRate = rate;
-    vOmegaPlanet = FGColumnVector3( 0.0, 0.0, RotationRate );
-  }
+  FGEarthPosition GetEarthPosition(void) const {return FGEarthPosition(RotationRate);}
   double GetGAccel(double r) const;
   FGColumnVector3 GetGravityJ2(const FGColumnVector3& position) const;
   double GetRefRadius(void) const {return RadiusReference;}
@@ -103,7 +100,6 @@ public:
   } in;
 
 private:
-  FGColumnVector3 vOmegaPlanet;
   double gAccel;
   double gAccelReference;
   double RadiusReference;

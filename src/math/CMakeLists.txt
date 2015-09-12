@@ -31,7 +31,8 @@ set(HEADERS FGColumnVector3.h
             FGStateSpace.h
             FGMultiStepMethod.h
             FGTimeMarchingScheme.h
-            FGQuatODEIntegration.h)
+            FGQuatODEIntegration.h
+            FGEarthPosition.h)
 
 add_full_path_name(MATH_SRC "${SOURCES}")
 add_full_path_name(MATH_HDR "${HEADERS}")

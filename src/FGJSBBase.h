@@ -331,13 +331,6 @@ public:
 
   static double GaussianRandomNumber(void);
 
-protected:
-  static Message localMsg;
-
-  static std::queue <Message> Messages;
-
-  static unsigned int messageId;
-
   static const double radtodeg;
   static const double degtorad;
   static const double hptoftlbssec;
@@ -358,6 +351,13 @@ protected:
   static const double slugtolb;
   static const double kgtolb;
   static const double kgtoslug;
+
+protected:
+  static Message localMsg;
+
+  static std::queue <Message> Messages;
+
+  static unsigned int messageId;
   static const std::string needed_cfg_version;
   static const std::string JSBSim_version;
 

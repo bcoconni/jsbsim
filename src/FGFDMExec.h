@@ -579,6 +579,8 @@ public:
       @param FGIC The initial conditions that will be passed to the simulation. */
   void Initialize(FGInitialCondition *FGIC);
 
+  const FGEarthPosition& GetEarthPosition(void) const { return EarthPosition; }
+
 private:
   int Error;
   unsigned int Frame;
@@ -638,6 +640,8 @@ private:
   std::vector <std::string> PropertyCatalog;
   std::vector <childData*> ChildFDMList;
   std::vector <FGModel*> Models;
+
+  FGEarthPosition EarthPosition;
 
   bool ReadFileHeader(Element*);
   bool ReadChild(Element*);

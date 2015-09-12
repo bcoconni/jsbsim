@@ -9,21 +9,21 @@
  -------           (C) 2011  Ola Røer Thorsen (ola@silentwings.no) -----------
 
  This program is free software; you can redistribute it and/or modify it under
- the terms of the GNU Lesser General Public License as published by the Free Software
- Foundation; either version 2 of the License, or (at your option) any later
- version.
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2 of the License, or (at your option) any
+ later version.
 
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
  details.
 
- You should have received a copy of the GNU Lesser General Public License along with
- this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- Place - Suite 330, Boston, MA  02111-1307, USA.
+ You should have received a copy of the GNU Lesser General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc., 59
+ Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
- Further information about the GNU Lesser General Public License can also be found on
- the world wide web at http://www.gnu.org.
+ Further information about the GNU Lesser General Public License can also be
+ found on the world wide web at http://www.gnu.org.
 
 HISTORY
 -------------------------------------------------------------------------------
@@ -64,9 +64,9 @@ CLASS DOCUMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 /** FGLocation holds an arbitrary location in the Earth centered Earth fixed
-    reference frame (ECEF). The coordinate frame ECEF has its center in the middle
-    of the earth. The X-axis points from the center of the Earth towards a
-    location with zero latitude and longitude on the Earth surface. The Y-axis
+    reference frame (ECEF). The coordinate frame ECEF has its center in the
+    middle of the earth. The X-axis points from the center of the Earth towards
+    a location with zero latitude and longitude on the Earth surface. The Y-axis
     points from the center of the Earth towards a location with zero latitude
     and 90 deg East longitude on the Earth surface. The Z-axis points from the
     Earth center to the geographic north pole.
@@ -83,34 +83,26 @@ CLASS DOCUMENTATION
     the Y-axis points east and the Z-axis points to the center of the Earth.
 
     Since the local frame is determined by the location (and NOT by the
-    orientation of the  vehicle IN any frame), this class also provides the
+    orientation of the vehicle IN any frame), this class also provides the
     rotation matrices required to transform from the Earth centered (ECEF) frame
-    to the local horizontal frame and back. This class also "owns" the
-    transformations that go from the inertial frame (Earth-centered Inertial, or
-    ECI) to and from the ECEF frame, as well as to and from the local frame.
-    Again, this is because the ECI, ECEF, and local frames do not involve the
-    actual orientation of the vehicle - only the location on the Earth surface,
-    and the angular difference between the ECI and ECEF frames. There are
-    conversion functions for conversion of position vectors given in the one
-    frame to positions in the other frame.
-
-    To keep the transformation matrices between the ECI and ECEF frames up to
-    date, the Earth angular position must be updated by calling
-    SetEarthPositionAngle() or IncrementEarthPositionAngle(). This must be done
-    prior to any conversion from and to the ECI frame.
+    to the local horizontal frame and back. Again, this is because the ECEF, and
+    local frames do not involve the actual orientation of the vehicle - only the
+    location on the Earth surface.  There are conversion functions for
+    conversion of position vectors given in the one frame to positions in the
+    other frame.
 
     The Earth centered reference frame is NOT an inertial frame since it rotates
     with the Earth.
 
-    The cartesian coordinates (X,Y,Z) in the Earth centered frame are the master values. All other
-    values are computed from these master values and are cached as long as the
-    location is changed by access through a non-const member function. Values
-    are cached to improve performance. It is best practice to work with a
-    natural set of master values. Other parameters that are derived from these
-    master values are calculated only when needed, and IF they are needed and
-    calculated, then they are cached (stored and remembered) so they do not need
-    to be re-calculated until the master values they are derived from are
-    themselves changed (and become stale).
+    The cartesian coordinates (X,Y,Z) in the Earth centered frame are the master
+    values. All other values are computed from these master values and are
+    cached as long as the location is changed by access through a non-const
+    member function. Values are cached to improve performance. It is best
+    practice to work with a natural set of master values. Other parameters that
+    are derived from these master values are calculated only when needed, and IF
+    they are needed and calculated, then they are cached (stored and remembered)
+    so they do not need to be re-calculated until the master values they are
+    derived from are themselves changed (and become stale).
 
     Accuracy and round off
 
@@ -233,20 +225,6 @@ public:
       and semiminor axis lengths */
   void SetEllipse(double semimajor, double semiminor);
 
-  /** Sets the Earth position angle.
-      This is the relative orientation of the ECEF frame with respect to the
-      Inertial frame.
-      @param EPA Earth fixed frame (ECEF) rotation offset about the axis with
-                 respect to the Inertial (ECI) frame in radians. */
-  void SetEarthPositionAngle(double EPA) {epa = EPA; mCacheValid = false;}
-
-  /** Increments the Earth position angle.
-      This is the relative orientation of the ECEF frame with respect to the
-      Inertial frame.
-      @param delta delta to the Earth fixed frame (ECEF) rotation offset about the axis with
-                 respect to the Inertial (ECI) frame in radians. */
-  void IncrementEarthPositionAngle(double delta) {epa += delta; mCacheValid = false;}
-
   /** Get the longitude.
       @return the longitude in rad of the location represented with this
       class instance. The returned values are in the range between
@@ -307,13 +285,6 @@ public:
     else
       return -mTec2l(3,3)/cLat;
   }
-
-  /** Return the Earth Position Angle.
-      This is the relative orientation of the ECEF frame with respect to the
-      Inertial frame.
-      @return the Earth fixed frame (ECEF) rotation offset about the axis with
-              respect to the Inertial (ECI) frame in radians. */
-  double GetEPA() const {return epa;}
 
   /** Get the distance from the center of the earth.
       @return the distance of the location represented with this class
@@ -413,34 +384,6 @@ public:
       the earth centered frame to the local horizontal frame. */
   const FGMatrix33& GetTec2l(void) const { ComputeDerived(); return mTec2l; }
 
-  /** Transform matrix from inertial to earth centered frame.
-      @return a const reference to the rotation matrix of the transform from
-      the inertial frame to the earth centered frame (ECI to ECEF).
-      @see SetEarthPositionAngle
-      @see IncrementEarthPositionAngle */
-  const FGMatrix33& GetTi2ec(void) const { ComputeDerived(); return mTi2ec; }
-
-  /** Transform matrix from the earth centered to inertial frame.
-      @return a const reference to the rotation matrix of the transform from
-      the earth centered frame to the inertial frame (ECEF to ECI).
-      @see SetEarthPositionAngle
-      @see IncrementEarthPositionAngle */
-  const FGMatrix33& GetTec2i(void) const { ComputeDerived(); return mTec2i; }
-
-  /** Transform matrix from the inertial to local horizontal frame.
-      @return a const reference to the rotation matrix of the transform from
-      the inertial frame to the local horizontal frame.
-      @see SetEarthPositionAngle
-      @see IncrementEarthPositionAngle */
-  const FGMatrix33& GetTi2l(void) const {ComputeDerived(); return mTi2l;}
-
-  /** Transform matrix from local horizontal to inertial frame.
-      @return a const reference to the rotation matrix of the transform from
-      the local horizontal frame to the inertial frame.
-      @see SetEarthPositionAngle
-      @see IncrementEarthPositionAngle */
-  const FGMatrix33& GetTl2i(void) const {ComputeDerived(); return mTl2i;}
-
   /** Conversion from Local frame coordinates to a location in the
       earth centered and fixed frame.
       This function calculates the FGLocation of an object which position
@@ -518,7 +461,7 @@ public:
   /** Sets this location via the supplied location object.
       @param v A location object reference.
       @return a reference to the FGLocation object. */
-  const FGLocation& operator=(const FGLocation& l);
+  FGLocation& operator=(const FGLocation& l);
 
   /** This operator returns true if the ECEF location vectors for the two
       location objects are equal. */
@@ -631,12 +574,6 @@ private:
   /** The cached rotation matrices from and to the associated frames. */
   mutable FGMatrix33 mTl2ec;
   mutable FGMatrix33 mTec2l;
-  mutable FGMatrix33 mTi2ec;
-  mutable FGMatrix33 mTec2i;
-  mutable FGMatrix33 mTi2l;
-  mutable FGMatrix33 mTl2i;
-
-  double epa;
 
   /* Terms for geodetic latitude calculation. Values are from WGS84 model */
   double a;    // Earth semimajor axis in feet

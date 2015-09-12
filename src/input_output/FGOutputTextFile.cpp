@@ -369,7 +369,7 @@ void FGOutputTextFile::Print(void)
     outstream << ((FGColumnVector3)Propagate->GetInertialPosition()).Dump(delimeter) << delimeter;
     outstream << ((FGColumnVector3)Propagate->GetLocation()).Dump(delimeter) << delimeter;
     outstream.precision(14);
-    outstream << Propagate->GetEarthPositionAngleDeg() << delimeter;
+    outstream << FDMExec->GetEarthPosition().GetAngleDeg() << delimeter;
     outstream << Propagate->GetDistanceAGL() << delimeter;
     outstream << Propagate->GetTerrainElevation();
     outstream.precision(10);

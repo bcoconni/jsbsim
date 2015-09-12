@@ -83,7 +83,8 @@ CLASS IMPLEMENTATION
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Constructor
 
-FGFDMExec::FGFDMExec(FGPropertyManager* root, unsigned int* fdmctr) : Root(root), FDMctr(fdmctr)
+FGFDMExec::FGFDMExec(FGPropertyManager* root, unsigned int* fdmctr)
+  : Root(root), FDMctr(fdmctr), EarthPosition(0.0)
 {
   Frame           = 0;
   Error           = 0;
@@ -547,7 +548,7 @@ void FGFDMExec::LoadInputs(unsigned int idx)
     Accelerations->in.Ti2b     = Propagate->GetTi2b();
     Accelerations->in.Tb2i     = Propagate->GetTb2i();
     Accelerations->in.Tec2b    = Propagate->GetTec2b();
-    Accelerations->in.Tec2i    = Propagate->GetTec2i();
+    Accelerations->in.Tec2i    = EarthPosition.GetTec2i();
     Accelerations->in.qAttitudeECI = Propagate->GetQuaternionECI();
     Accelerations->in.Moment   = Aircraft->GetMoments();
     Accelerations->in.GroundMoment  = GroundReactions->GetMoments();
@@ -574,12 +575,14 @@ void FGFDMExec::LoadInputs(unsigned int idx)
 
 void FGFDMExec::LoadPlanetConstants(void)
 {
-  Propagate->in.vOmegaPlanet     = Inertial->GetOmegaPlanet();
-  Accelerations->in.vOmegaPlanet = Inertial->GetOmegaPlanet();
+  EarthPosition                  = Inertial->GetEarthPosition();
+  Propagate->in.EarthPosition    = &EarthPosition;
+  Accelerations->in.vOmegaPlanet = EarthPosition.GetRotationAxis();
   Propagate->in.SemiMajor        = Inertial->GetSemimajor();
   Propagate->in.SemiMinor        = Inertial->GetSemiminor();
   Auxiliary->in.SLGravity        = Inertial->SLgravity();
   Auxiliary->in.ReferenceRadius  = Inertial->GetRefRadius();
+  instance->Tie("position/epa-rad", &EarthPosition, &FGEarthPosition::GetAngle);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

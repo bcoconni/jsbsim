@@ -45,6 +45,7 @@ INCLUDES
 #include "math/FGMatrix33.h"
 #include "math/FGMultiStepMethod.h"
 #include "math/FGQuatODEIntegration.h"
+#include "math/FGEarthPosition.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -416,10 +417,6 @@ public:
       */
   double GetLocalTerrainRadius(void) const;
 
-  double GetEarthPositionAngle(void) const { return VState.vLocation.GetEPA(); }
-
-  double GetEarthPositionAngleDeg(void) const { return GetEarthPositionAngle()*radtodeg;}
-
   const FGColumnVector3& GetTerrainVelocity(void) const { return LocalTerrainVelocity; }
   const FGColumnVector3& GetTerrainAngularVelocity(void) const { return LocalTerrainAngularVelocity; }
   void RecomputeLocalTerrainVelocity();
@@ -445,67 +442,75 @@ public:
   const FGLocation& GetLocation(void) const { return VState.vLocation; }
   double GetLocation(int i) const { return VState.vLocation(i); }
 
-  /** Retrieves the local-to-body transformation matrix.
-      The quaternion class, being the means by which the orientation of the
-      vehicle is stored, manages the local-to-body transformation matrix.
-      @return a reference to the local-to-body transformation matrix.  */
+  /** Retrieves the transform matrix from the local horizontal to the body
+      frame. The quaternion class, being the means by which the orientation of
+      the vehicle is stored, manages the local-to-body transformation matrix.
+      Note that the so-called local horizontal frame is also known as the NED
+      frame (for North, East, Down).
+      @return a const reference to the rotation matrix of the transform from
+      the local horizontal frame to the body frame (NED to body). */
   const FGMatrix33& GetTl2b(void) const { return Tl2b; }
 
-  /** Retrieves the body-to-local transformation matrix.
-      The quaternion class, being the means by which the orientation of the
-      vehicle is stored, manages the body-to-local transformation matrix.
-      @return a reference to the body-to-local matrix.  */
+  /** Retrieves the transform matrix from the body to the local horizontal
+      frame. The quaternion class, being the means by which the orientation of
+      the vehicle is stored, manages the body-to-local transformation matrix.
+      Note that the so-called local horizontal frame is also known as the NED
+      frame (for North, East, Down).
+      @return a const reference to the rotation matrix of the transform from
+      the body frame to the local horizontal frame (body to NED). */
   const FGMatrix33& GetTb2l(void) const { return Tb2l; }
 
-  /** Retrieves the ECEF-to-body transformation matrix.
-      @return a reference to the ECEF-to-body transformation matrix.  */
+  /** Retrieves the transform matrix from the earth centered to the body frame.
+      @return a const reference to the rotation matrix of the transform from
+      the earth centered to the body frame (ECEF to body). */
   const FGMatrix33& GetTec2b(void) const { return Tec2b; }
 
-  /** Retrieves the body-to-ECEF transformation matrix.
-      @return a reference to the body-to-ECEF matrix.  */
+  /** Retrieves the transform matrix from the body to the earth centered frame.
+      @return a const reference to the rotation matrix of the transform from
+      the body to the earth centered frame (body to ECEF). */
   const FGMatrix33& GetTb2ec(void) const { return Tb2ec; }
 
-  /** Retrieves the ECI-to-body transformation matrix.
-      @return a reference to the ECI-to-body transformation matrix.  */
+  /** Retrieves the transform matrix from the inertial to the body frame.
+      @return a const reference to the rotation matrix of the transform from
+      the inertial to the body frame (ECI to body). */
   const FGMatrix33& GetTi2b(void) const { return Ti2b; }
 
-  /** Retrieves the body-to-ECI transformation matrix.
-      @return a reference to the body-to-ECI matrix.  */
+  /** Retrieves the transform matrix from the body to the inertial frame.
+      @return a const reference to the rotation matrix of the transform from
+      the body to the inertial frame (body to ECI). */
   const FGMatrix33& GetTb2i(void) const { return Tb2i; }
 
-  /** Retrieves the ECEF-to-ECI transformation matrix.
-      @return a reference to the ECEF-to-ECI transformation matrix.  */
-  const FGMatrix33& GetTec2i(void) const { return Tec2i; }
-
-  /** Retrieves the ECI-to-ECEF transformation matrix.
-      @return a reference to the ECI-to-ECEF matrix.  */
-  const FGMatrix33& GetTi2ec(void) const { return Ti2ec; }
-
-  /** Retrieves the ECEF-to-local transformation matrix.
-      Retrieves the ECEF-to-local transformation matrix. Note that the so-called
-      local from is also know as the NED frame (for North, East, Down).
-      @return a reference to the ECEF-to-local matrix.  */
+  /** Retrieves the transform matrix from the earth centered to the local
+      horizontal frame. Note that the so-called local horizontal frame is also
+      known as the NED frame (for North, East, Down).
+      @return a const reference to the rotation matrix of the transform from
+      the earth centered frame to the local horizontal frame (ECEF to NED). */
   const FGMatrix33& GetTec2l(void) const { return Tec2l; }
 
-  /** Retrieves the local-to-ECEF transformation matrix.
-      Retrieves the local-to-ECEF transformation matrix. Note that the so-called
-      local from is also know as the NED frame (for North, East, Down).
-      @return a reference to the local-to-ECEF matrix.  */
+  /** Retrieves the transform matrix from the local horizontal to the earth
+      centered frame. Note that the so-called local horizontal frame is also
+      known as the NED frame (for North, East, Down).
+      @return a const reference to the rotation matrix of the transform from
+      the local horizontal frame to the earth centered frame (NED to ECEF). */
   const FGMatrix33& GetTl2ec(void) const { return Tl2ec; }
 
-  /** Retrieves the local-to-inertial transformation matrix.
-      @return a reference to the local-to-inertial transformation matrix.  */
+  /** Retrieves the transform matrix from the local horizontal to the inertial
+      frame. Note that the so-called local horizontal frame is also known as the
+      NED frame (for North, East, Down).
+      @return a const reference to the rotation matrix of the transform from
+      the local horizontal frame to the inertial frame (NED to ECI). */
   const FGMatrix33& GetTl2i(void) const { return Tl2i; }
 
-  /** Retrieves the inertial-to-local transformation matrix.
-      @return a reference to the inertial-to-local matrix.  */
+  /** Retrieves the transform matrix from the inertial to the local horizontal
+      frame. Note that the so-called local horizontal frame is also known as the
+      NED frame (for North, East, Down).
+      @return a const reference to the rotation matrix of the transform from
+      the inertial frame to the local horizontal frame (ECI to NED). */
   const FGMatrix33& GetTi2l(void) const { return Ti2l; }
 
   const VehicleState& GetVState(void) const { return VState; }
 
   void SetVState(const VehicleState& vstate);
-
-  void SetEarthPositionAngle(double epa) {VState.vLocation.SetEarthPositionAngle(epa);}
 
   void SetInertialOrientation(const FGQuaternion& Qi);
   void SetInertialVelocity(const FGColumnVector3& Vi);
@@ -522,7 +527,7 @@ public:
 
   void SetPQR(unsigned int i, double val) {
     VState.vPQR(i) = val;
-    VState.vPQRi = VState.vPQR + Ti2b * in.vOmegaPlanet;
+    VState.vPQRi = VState.vPQR + Ti2b * vOmegaPlanet;
   }
 
   void SetUVW(unsigned int i, double val) {
@@ -586,7 +591,7 @@ public:
   struct Inputs {
     FGColumnVector3 vPQRidot;
     FGColumnVector3 vUVWidot;
-    FGColumnVector3 vOmegaPlanet;
+    FGEarthPosition* EarthPosition;
     double SemiMajor;
     double SemiMinor;
     double DeltaT;
@@ -625,6 +630,7 @@ private:
 
   double VehicleRadius;
   FGColumnVector3 LocalTerrainVelocity, LocalTerrainAngularVelocity;
+  FGColumnVector3 vOmegaPlanet;
 
   bool IncompleteTimeStep;
 
