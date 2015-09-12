@@ -182,6 +182,7 @@ void FGPropagate::InitializeDerivatives()
   VState.mInertialVelocity.setInitialDerivative(VState.vInertialVelocity);
   VState.mQtrndot.setInitialDerivative(VState.vPQRi);
 }
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 /*
 Purpose: Called on a schedule to perform EOM integration
@@ -211,10 +212,9 @@ bool FGPropagate::Run(bool Holding)
 
   IncompleteTimeStep = false;
 
-  VState.mPQRidot.setTimeStep(dt);
-  VState.mUVWidot.setTimeStep(dt);
-  VState.mInertialVelocity.setTimeStep(dt);
-  VState.mQtrndot.setTimeStep(dt);
+  vector<FGTimeMarchingScheme*>::iterator it;
+  for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
+    (*it)->setTimeStep(dt);
 
   // Propagate rotational / translational velocity, angular /translational position, respectively.
 
@@ -224,7 +224,6 @@ bool FGPropagate::Run(bool Holding)
   VState.vInertialVelocity = VState.mUVWidot.integrate(in.vUVWidot);
 
   if (!IncompleteTimeStep) {
-    vector<FGTimeMarchingScheme*>::iterator it;
     for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
       (*it)->Propagate();
 
