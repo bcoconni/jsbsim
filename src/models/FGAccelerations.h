@@ -153,7 +153,7 @@ public:
       Retrieves the computed body axis accelerations based on the applied forces.
       The ECI frame being an inertial frame this vector does not contain the
       Coriolis and centripetal accelerations. The vector is expressed in the
-      Body frame.
+      ECI frame.
       The vector returned is represented by an FGColumnVector3 reference. The
       vector for the acceleration in Body frame is organized (Aix, Aiy, Aiz). The
       vector is 1-based, so that the first element can be retrieved using the
