@@ -106,8 +106,6 @@ public:
   /** The current vehicle state vector structure contains the translational and
     angular position, and the translational and angular velocity. */
   struct VehicleState {
-    VehicleState(FGPropagate* pg)
-      : mPQRidot(pg), mUVWidot(pg), mInertialVelocity(pg), mQtrndot(pg) {}
     /** Represents the current location of the vehicle in Earth centered Earth
         fixed (ECEF) frame.
         units ft */
@@ -594,9 +592,12 @@ public:
     double DeltaT;
   } in;
 
-  void NotifyOfIncompleteTimeStep(void) { IncompleteTimeStep = true; }
+  void NotifyIncompleteTimeStep(void) { IncompleteTimeStep = true; }
   bool IsTimeStepIncomplete(void) { return IncompleteTimeStep; }
-  void Register(FGTimeMarchingScheme* algo) { Algorithms.push_back(algo); }
+  void Register(FGTimeMarchingScheme* algo) {
+    Algorithms.push_back(algo);
+    algo->Register(this);
+  }
 
 private:
 

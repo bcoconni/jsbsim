@@ -42,8 +42,8 @@ IDENT(IdHdr,ID_TIMEMARCHINGSCHEME);
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-void FGTimeMarchingScheme::NotifyOfIncompleteTimeStep(void)
+void FGTimeMarchingScheme::NotifyIncompleteTimeStep(void)
 {
-  Propagate->NotifyOfIncompleteTimeStep();
+  subject->NotifyIncompleteTimeStep();
 }
 }

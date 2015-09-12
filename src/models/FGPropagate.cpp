@@ -78,7 +78,6 @@ CLASS IMPLEMENTATION
 
 FGPropagate::FGPropagate(FGFDMExec* fdmex)
   : FGModel(fdmex),
-    VState(this),
     VehicleRadius(0),
     IncompleteTimeStep(false)
 {
@@ -88,10 +87,10 @@ FGPropagate::FGPropagate(FGFDMExec* fdmex)
   /// These define the indices use to select the various integrators.
   // eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2, eAdamsBashforth3, eAdamsBashforth4};
 
-  Algorithms.push_back(&VState.mPQRidot);
-  Algorithms.push_back(&VState.mUVWidot);
-  Algorithms.push_back(&VState.mInertialVelocity);
-  Algorithms.push_back(&VState.mQtrndot);
+  Register(&VState.mPQRidot);
+  Register(&VState.mUVWidot);
+  Register(&VState.mInertialVelocity);
+  Register(&VState.mQtrndot);
 
   VState.mPQRidot.setMethod(eRectEuler);
   VState.mUVWidot.setMethod(eAdamsBashforth2);
@@ -227,7 +226,7 @@ bool FGPropagate::Run(bool Holding)
   if (!IncompleteTimeStep) {
     vector<FGTimeMarchingScheme*>::iterator it;
     for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
-      (*it)->MoveToNextStep();
+      (*it)->Propagate();
 
     // CAUTION : the order of the operations below is very important to get
     // transformation matrices that are consistent with the new state of the

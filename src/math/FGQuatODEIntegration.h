@@ -61,10 +61,9 @@ CLASS DECLARATION
 class FGQuatODEIntegration : public FGMultiStepMethod<FGQuaternion>
 {
 public:
-  explicit FGQuatODEIntegration(FGPropagate* pg)
-    : FGMultiStepMethod<FGQuaternion>(pg) {}
+  explicit FGQuatODEIntegration() {}
 
-  void MoveToNextStep(void);
+  void Propagate(void);
 
   void setInitialDerivative(const FGColumnVector3& omegaECI) {
     // vQtrndot is the quaternion derivative on current body rates.

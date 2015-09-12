@@ -66,10 +66,9 @@ enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
 template<class T> class FGMultiStepMethod : public FGTimeMarchingScheme
 {
 public:
-  explicit FGMultiStepMethod(FGPropagate* pg)
-    : FGTimeMarchingScheme(pg), step(0), method(eRectEuler) {}
+  explicit FGMultiStepMethod() : step(0), method(eRectEuler) {}
 
-  void MoveToNextStep(void) { v0 += dv; }
+  void Propagate(void) { v0 += dv; }
   void setMethod(int t) { method = (eIntegrateType)t; }
 
   int getMethod(void) const { return (int)method; }
@@ -93,7 +92,7 @@ public:
         if (step == 0) {
           ++step;
           dv = dt * valDot[0];
-          NotifyOfIncompleteTimeStep();
+          NotifyIncompleteTimeStep();
           break;
         }
         else if (step == 1) {

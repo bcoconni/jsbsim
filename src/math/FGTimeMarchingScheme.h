@@ -60,13 +60,15 @@ CLASS DECLARATION
 class FGTimeMarchingScheme
 {
 public:
-  explicit FGTimeMarchingScheme(FGPropagate* pg) : Propagate(pg), dt(0.0) {}
+  explicit FGTimeMarchingScheme() : dt(0.0) {}
   virtual ~FGTimeMarchingScheme() {}
   void setTimeStep(double _dt) { dt = _dt; }
-  virtual void MoveToNextStep(void) = 0;
-  void NotifyOfIncompleteTimeStep(void);
+  virtual void Propagate(void) = 0;
+  void Register(FGPropagate* pg) { subject = pg; }
 protected:
-  FGPropagate* Propagate;
+  void NotifyIncompleteTimeStep(void);
+
+  FGPropagate* subject;
   double dt;
 };
 

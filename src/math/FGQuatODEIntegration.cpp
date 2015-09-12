@@ -56,7 +56,7 @@ IDENT(IdHdr,ID_QUATODEINTEGRATION);
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-void FGQuatODEIntegration::MoveToNextStep(void)
+void FGQuatODEIntegration::Propagate(void)
 {
   switch(method) {
   case eBuss1:
@@ -65,7 +65,7 @@ void FGQuatODEIntegration::MoveToNextStep(void)
     v0 *= dq;
     return;
   default:
-    FGMultiStepMethod<FGQuaternion>::MoveToNextStep();
+    FGMultiStepMethod<FGQuaternion>::Propagate();
     v0.Normalize();
   }
 }
