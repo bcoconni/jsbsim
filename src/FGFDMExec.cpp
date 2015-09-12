@@ -309,6 +309,8 @@ bool FGFDMExec::Allocate(void)
   Accelerations = (FGAccelerations*)Models[eAccelerations];
   Output = (FGOutput*)Models[eOutput];
 
+  Propagate->Register(&EarthPosition);
+
   // Initialize planet (environment) constants
   LoadPlanetConstants();
 

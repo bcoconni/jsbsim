@@ -37,6 +37,7 @@ INCLUDES
 #include <cmath>
 #include "FGMatrix33.h"
 #include "FGJSBBase.h"
+#include "FGTimeMarchingScheme.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -58,7 +59,7 @@ CLASS DOCUMENTATION
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-class FGEarthPosition
+class FGEarthPosition : public FGTimeMarchingScheme
 {
 public:
   explicit FGEarthPosition(double rotation_rate)
@@ -77,14 +78,10 @@ public:
       Inertial frame.
       @param angle Earth fixed frame (ECEF) rotation offset about the axis with
                    respect to the Inertial (ECI) frame in radians. */
-  void SetAngle(double angle) { epa = angle; UpdateTransformMatrices(); }
-
-  /** Increments the Earth position angle.
-      This is the relative orientation of the ECEF frame with respect to the
-      Inertial frame. The Earth rotation rate is constant and the angle is
-      incremented by the time increment times the rotation rate.
-      @param dt time increment in seconds. */
-  void IncrementAngle(double dt) { epa += dt*RotationAxis(3); UpdateTransformMatrices(); }
+  void SetAngle(double angle) {
+    epa = angle;
+    UpdateTransformMatrices();
+  }
 
   /** Retrieves the transform matrix from the inertial to the earth centered
       frame.
@@ -102,6 +99,15 @@ public:
       @see SetAngle */
   const FGMatrix33& GetTec2i(void) const { return Tec2i; }
   const FGColumnVector3& GetRotationAxis(void) const { return RotationAxis; }
+
+  /** Increments the Earth position angle.
+      This is the relative orientation of the ECEF frame with respect to the
+      Inertial frame. The Earth rotation rate is constant and the angle is
+      incremented by the time increment times the rotation rate. */
+  void Propagate(void) {
+    epa += dt * RotationAxis(3);
+    UpdateTransformMatrices();
+  }
 
 private:
   void UpdateTransformMatrices(void)

@@ -200,12 +200,12 @@ Notes:   [JB] Run in standalone mode, SeaLevelRadius will be reference radius.
 At the top of this Run() function, see several "shortcuts" (or, aliases) being
 set up for use later, rather than using the longer class->function() notation.
 
-This propagation is done using the current state values
-and current derivatives. Based on these values we compute an approximation to the
-state values for (now + dt).
+This propagation is done using the current state values and current
+derivatives. Based on these values we compute an approximation to the state
+values for (now + dt).
 
-In the code below, variables named beginning with a small "v" refer to a
-a column vector, variables named beginning with a "T" refer to a transformation
+In the code below, variables named beginning with a small "v" refer to a column
+vector, variables named beginning with a "T" refer to a transformation
 matrix. ECEF refers to Earth Centered Earth Fixed. ECI refers to Earth Centered
 Inertial.
 
@@ -224,7 +224,8 @@ bool FGPropagate::Run(bool Holding)
   for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
     (*it)->setTimeStep(dt);
 
-  // Propagate rotational / translational velocity, angular /translational position, respectively.
+  // Propagate rotational / translational velocity, angular /translational
+  // position, respectively.
 
   VState.qAttitudeECI = VState.mQtrndot.integrate(VState.vPQRi, in.vPQRidot);
   VState.vPQRi = VState.mPQRidot.integrate(in.vPQRidot);
@@ -234,31 +235,29 @@ bool FGPropagate::Run(bool Holding)
   if (!IncompleteTimeStep) {
     for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
       (*it)->Propagate();
-
-    // CAUTION : the order of the operations below is very important to get
-    // transformation matrices that are consistent with the new state of the
-    // vehicle
-
-    // 1. Update the Earth position angle (EPA)
-    in.EarthPosition->IncrementAngle(dt);
   }
 
-  // 2. Update the Ti2ec and Tec2i transforms from the updated EPA
+  // CAUTION : the order of the operations below is very important to get
+  // transformation matrices that are consistent with the new state of the
+  // vehicle
+
+  // 1. Update the Ti2ec and Tec2i transforms from the updated EPA
   Ti2ec = in.EarthPosition->GetTi2ec();
   Tec2i = in.EarthPosition->GetTec2i();
 
-  // 3. Update the location from the updated Ti2ec and inertial position
+  // 2. Update the location from the updated Ti2ec and inertial position
   VState.vLocation = Ti2ec*VState.vInertialPosition;
 
-  // 4. Update the other "Location-based" transformation matrices from the
+  // 3. Update the other "Location-based" transformation matrices from the
   //    updated vLocation vector.
   UpdateLocationMatrices();
 
-  // 5. Update the "Orientation-based" transformation matrices from the updated
+  // 4. Update the "Orientation-based" transformation matrices from the updated
   //    orientation quaternion and vLocation vector.
   UpdateBodyMatrices();
 
-  // Translational position derivative (velocities are integrated in the inertial frame)
+  // Translational position derivative (velocities are integrated in the
+  // inertial frame)
   CalculateUVW();
 
   // Set auxilliary state variables
@@ -269,7 +268,8 @@ bool FGPropagate::Run(bool Holding)
 
   VState.qAttitudeLocal = Tl2b.GetQuaternion();
 
-  // Compute vehicle velocity wrt ECEF frame, expressed in Local horizontal frame.
+  // Compute vehicle velocity wrt ECEF frame, expressed in Local horizontal
+  // frame.
   vVel = Tb2l * VState.vUVW;
 
   Debug(2);
