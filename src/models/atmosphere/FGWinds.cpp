@@ -132,7 +132,7 @@ bool FGWinds::InitModel(void)
   vCosineGust.InitMatrix();
 
   oneMinusCosineGust.gustProfile.Running = false;
-  oneMinusCosineGust.gustProfile.elapsedTime = 0.0;
+  oneMinusCosineGust.gustProfile.startTime = 0.0;
 
   return true;
 }
@@ -292,7 +292,7 @@ void FGWinds::Turbulence(double h)
 
 
     double
-      T_V = in.totalDeltaT, // for compatibility of nomenclature
+      T_V = in.DeltaT * rate, // for compatibility of nomenclature
       sig_p = 1.9/sqrt(L_w*b_w)*sig_w, // Yeager1998, eq. (8)
       //sig_q = sqrt(M_PI/2/L_w/b_w), // eq. (14)
       //sig_r = sqrt(2*M_PI/3/L_w/b_w), // eq. (17)
@@ -409,11 +409,12 @@ double FGWinds::CosineGustProfile(double startDuration, double steadyDuration, d
 void FGWinds::CosineGust()
 {
   struct OneMinusCosineProfile& profile = oneMinusCosineGust.gustProfile;
+  double elapsedTime = FDMExec->GetSimTime() - profile.startTime;
 
   double factor = CosineGustProfile( profile.startupDuration,
                                      profile.steadyDuration,
                                      profile.endDuration,
-                                     profile.elapsedTime);
+                                     elapsedTime);
   // Normalize the gust wind vector
   oneMinusCosineGust.vWind.Normalize();
 
@@ -436,14 +437,19 @@ void FGWinds::CosineGust()
 
   vCosineGust = factor * oneMinusCosineGust.vWindTransformed * oneMinusCosineGust.magnitude;
 
-  profile.elapsedTime += in.totalDeltaT;
-
-  if (profile.elapsedTime > (profile.startupDuration + profile.steadyDuration + profile.endDuration)) {
+  if (elapsedTime > (profile.startupDuration + profile.steadyDuration + profile.endDuration)) {
     profile.Running = false;
-    profile.elapsedTime = 0.0;
     oneMinusCosineGust.vWindTransformed.InitMatrix(0.0);
     vCosineGust.InitMatrix(0);
   }
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+void FGWinds::StartGust(bool running)
+{
+  oneMinusCosineGust.gustProfile.Running = running;
+  oneMinusCosineGust.gustProfile.startTime = FDMExec->GetSimTime();
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

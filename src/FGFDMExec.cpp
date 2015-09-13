@@ -415,7 +415,7 @@ void FGFDMExec::LoadInputs(unsigned int idx)
     Winds->in.Tl2b             = Propagate->GetTl2b();
     Winds->in.Tw2b             = Auxiliary->GetTw2b();
     Winds->in.V                = Auxiliary->GetVt();
-    Winds->in.totalDeltaT      = dT * Winds->GetRate();
+    Winds->in.DeltaT           = dT;
     break;
   case eAuxiliary:
     Auxiliary->in.Pressure     = Atmosphere->GetPressure();

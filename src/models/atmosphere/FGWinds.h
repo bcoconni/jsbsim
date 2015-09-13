@@ -225,13 +225,13 @@ public:
   // and fades out over specified durations.
   struct OneMinusCosineProfile {
     bool Running;           ///<- This flag is set true through FGWinds::StartGust().
-    double elapsedTime;     ///<- Stores the elapsed time for the ongoing gust.
+    double startTime;       ///<- Stores the time at which the ongoing gust started.
     double startupDuration; ///<- Specifies the time it takes for the gust startup transient.
     double steadyDuration;  ///<- Specifies the duration of the steady gust.
     double endDuration;     ///<- Specifies the time it takes for the gust to subsude.
     OneMinusCosineProfile() ///<- The constructor.
     {
-      elapsedTime = 0.0;
+      startTime = 0.0;
       Running = false;
       startupDuration = 2;
       steadyDuration = 4;
@@ -276,7 +276,7 @@ public:
 
   // 1 - Cosine gust setters
   /// Initiates the execution of the gust.
-  virtual void StartGust(bool running) {oneMinusCosineGust.gustProfile.Running = running;}
+  virtual void StartGust(bool running);
   ///Specifies the duration of the startup portion of the gust.
   virtual void StartupGustDuration(double dur) {oneMinusCosineGust.gustProfile.startupDuration = dur;}
   ///Specifies the length of time that the gust is at a steady, full strength.
@@ -313,7 +313,7 @@ public:
     double planetRadius;
     FGMatrix33 Tl2b;
     FGMatrix33 Tw2b;
-    double totalDeltaT;
+    double DeltaT;
   } in;
 
 private:
