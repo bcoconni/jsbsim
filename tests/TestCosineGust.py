@@ -50,9 +50,9 @@ class TestCosineGust(unittest.TestCase):
             wn = fdm.get_property_value('atmosphere/total-wind-north-fps')
             we = fdm.get_property_value('atmosphere/total-wind-east-fps')
             wd = fdm.get_property_value('atmosphere/total-wind-down-fps')
+            wmag = math.sqrt(wn*wn + we*we + wd*wd)
 
             if t >= start_time and t <= end_time:
-                wmag = math.sqrt(wn*wn + we*we + wd*wd)
                 t -= start_time
                 if t <= startup_duration:
                     self.assertAlmostEqual(0.5 * magnitude * (1.0 - math.cos(math.pi*t/startup_duration)),
@@ -66,6 +66,8 @@ class TestCosineGust(unittest.TestCase):
                         if t <= end_duration:
                             self.assertAlmostEqual(0.5 * magnitude * (1.0 + math.cos(math.pi*t/end_duration)),
                                                    wmag, delta=1E-3)
+            else:
+                self.assertAlmostEqual(wmag, 0.0, delta=1E-8)
 
             t = fdm.get_property_value('simulation/sim-time-sec')
 
