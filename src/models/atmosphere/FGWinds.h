@@ -314,6 +314,7 @@ public:
     FGMatrix33 Tl2b;
     FGMatrix33 Tw2b;
     double DeltaT;
+    double SimTime;
   } in;
 
 private:

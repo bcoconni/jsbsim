@@ -47,6 +47,7 @@ class TestCosineGust(unittest.TestCase):
 
         while fdm.get_property_value('simulation/run_id') == 0:
             fdm.run()
+            t = fdm.get_property_value('simulation/sim-time-sec')
             wn = fdm.get_property_value('atmosphere/total-wind-north-fps')
             we = fdm.get_property_value('atmosphere/total-wind-east-fps')
             wd = fdm.get_property_value('atmosphere/total-wind-down-fps')
@@ -69,7 +70,6 @@ class TestCosineGust(unittest.TestCase):
             else:
                 self.assertAlmostEqual(wmag, 0.0, delta=1E-8)
 
-            t = fdm.get_property_value('simulation/sim-time-sec')
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestCosineGust)
 test_result = unittest.TextTestRunner(verbosity=2).run(suite)

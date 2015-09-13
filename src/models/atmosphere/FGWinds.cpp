@@ -211,15 +211,14 @@ void FGWinds::Turbulence(double h)
     if (Rhythmicity > 1.0) Rhythmicity = 1.0;
 
     // generate a sine wave corresponding to turbulence rate in hertz
-    double time = FDMExec->GetSimTime();
-    double sinewave = sin( time * TurbRate * 6.283185307 );
+    double sinewave = sin( in.SimTime * TurbRate * 6.283185307 );
 
     double random = 0.0;
     if (target_time == 0.0) {
       strength = random = 1 - 2.0*(double(rand())/double(RAND_MAX));
-      target_time = time + 0.71 + (random * 0.5);
+      target_time = in.SimTime + 0.71 + (random * 0.5);
     }
-    if (time > target_time) {
+    if (in.SimTime > target_time) {
       spike = 1.0;
       target_time = 0.0;
     }
@@ -409,7 +408,7 @@ double FGWinds::CosineGustProfile(double startDuration, double steadyDuration, d
 void FGWinds::CosineGust()
 {
   struct OneMinusCosineProfile& profile = oneMinusCosineGust.gustProfile;
-  double elapsedTime = FDMExec->GetSimTime() - profile.startTime;
+  double elapsedTime = in.SimTime - profile.startTime;
 
   double factor = CosineGustProfile( profile.startupDuration,
                                      profile.steadyDuration,
@@ -449,7 +448,7 @@ void FGWinds::CosineGust()
 void FGWinds::StartGust(bool running)
 {
   oneMinusCosineGust.gustProfile.Running = running;
-  oneMinusCosineGust.gustProfile.startTime = FDMExec->GetSimTime();
+  oneMinusCosineGust.gustProfile.startTime = in.SimTime;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
