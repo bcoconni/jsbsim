@@ -599,7 +599,7 @@ public:
 
   void NotifyIncompleteTimeStep(void) { IncompleteTimeStep = true; }
   bool IsTimeStepIncomplete(void) { return IncompleteTimeStep; }
-  void Register(FGTimeMarchingScheme* algo) {
+  void AttachTimeMarchingScheme(FGTimeMarchingScheme* algo) {
     Algorithms.push_back(algo);
     algo->Register(this);
   }

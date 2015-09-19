@@ -87,10 +87,10 @@ FGPropagate::FGPropagate(FGFDMExec* fdmex)
   /// These define the indices use to select the various integrators.
   // eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2, eAdamsBashforth3, eAdamsBashforth4};
 
-  Register(&VState.mPQRidot);
-  Register(&VState.mUVWidot);
-  Register(&VState.mInertialVelocity);
-  Register(&VState.mQtrndot);
+  AttachTimeMarchingScheme(&VState.mPQRidot);
+  AttachTimeMarchingScheme(&VState.mUVWidot);
+  AttachTimeMarchingScheme(&VState.mInertialVelocity);
+  AttachTimeMarchingScheme(&VState.mQtrndot);
 
   VState.mPQRidot.setMethod(eRectEuler);
   VState.mUVWidot.setMethod(eAdamsBashforth2);
@@ -217,15 +217,15 @@ bool FGPropagate::Run(bool Holding)
   if (Holding) return false;
 
   double dt = in.DeltaT * rate;  // The 'stepsize'
-
-  IncompleteTimeStep = false;
-
   vector<FGTimeMarchingScheme*>::iterator it;
+
   for (it = Algorithms.begin(); it != Algorithms.end(); ++it)
     (*it)->setTimeStep(dt);
 
   // Propagate rotational / translational velocity, angular /translational
   // position, respectively.
+
+  IncompleteTimeStep = false;
 
   VState.qAttitudeECI = VState.mQtrndot.integrate(VState.vPQRi, in.vPQRidot);
   VState.vPQRi = VState.mPQRidot.integrate(in.vPQRidot);

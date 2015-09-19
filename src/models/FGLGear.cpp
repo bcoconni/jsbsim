@@ -224,6 +224,10 @@ FGLGear::FGLGear(Element* el, FGFDMExec* fdmex, int number, const struct Inputs&
   Peak = staticFCoeff;
   Curvature = 1.03;
 
+  fdmex->AttachTimeMarchingScheme(&TakeoffDistanceTraveled);
+  fdmex->AttachTimeMarchingScheme(&TakeoffDistanceTraveled50ft);
+  fdmex->AttachTimeMarchingScheme(&LandingDistanceTraveled);
+
   ResetToIC();
 
   Debug(0);
@@ -247,7 +251,9 @@ void FGLGear::ResetToIC(void)
   WOW = lastWOW = false;
   FirstContact = false;
   StartedGroundRun = false;
-  LandingDistanceTraveled = TakeoffDistanceTraveled = TakeoffDistanceTraveled50ft = 0.0;
+  TakeoffDistanceTraveled.setInitialCondition(0.0);
+  TakeoffDistanceTraveled50ft.setInitialCondition(0.0);
+  LandingDistanceTraveled.setInitialCondition(0.0);
   MaximumStrutForce = MaximumStrutTravel = 0.0;
   SinkRate = GroundSpeed = 0.0;
 
@@ -276,6 +282,9 @@ const FGColumnVector3& FGLGear::GetBodyForces(FGSurface *surface)
   double gearPos = 1.0;
 
   vFn.InitMatrix();
+  TakeoffDistanceTraveled.setTimeStep(in.TotalDeltaT);
+  TakeoffDistanceTraveled50ft.setTimeStep(in.TotalDeltaT);
+  LandingDistanceTraveled.setTimeStep(in.TotalDeltaT);
 
   if (isRetractable) gearPos = GetGearUnitPos();
 
@@ -486,7 +495,7 @@ void FGLGear::ResetReporting(void)
     StartedGroundRun = false;
     LandingReported = false;
     TakeoffReported = true;
-    LandingDistanceTraveled = 0.0;
+    LandingDistanceTraveled.setInitialCondition(0.0);
     MaximumStrutForce = MaximumStrutTravel = 0.0;
   }
 }
@@ -512,8 +521,8 @@ void FGLGear::InitializeReporting(void)
       (in.BrakePos[bgRight] == 0) &&
       (in.TakeoffThrottle && !StartedGroundRun))
   {
-    TakeoffDistanceTraveled = 0;
-    TakeoffDistanceTraveled50ft = 0;
+    TakeoffDistanceTraveled.setInitialCondition(0.0);
+    TakeoffDistanceTraveled50ft.setInitialCondition(0.0);
     StartedGroundRun = true;
   }
 }
@@ -524,11 +533,11 @@ void FGLGear::InitializeReporting(void)
 void FGLGear::ReportTakeoffOrLanding(void)
 {
   if (FirstContact)
-    LandingDistanceTraveled += in.Vground * in.TotalDeltaT;
+    LandingDistanceTraveled.integrate(in.Vground);
 
   if (StartedGroundRun) {
-    TakeoffDistanceTraveled50ft += in.Vground * in.TotalDeltaT;
-    if (WOW) TakeoffDistanceTraveled += in.Vground * in.TotalDeltaT;
+    TakeoffDistanceTraveled50ft.integrate(in.Vground);
+    if (WOW) TakeoffDistanceTraveled.integrate(in.Vground);
   }
 
   if ( ReportEnable
@@ -616,13 +625,11 @@ void FGLGear::ComputeSideForceCoefficient(void)
 
 void FGLGear::ComputeVerticalStrutForce()
 {
-  double springForce = 0;
-  double dampForce = 0;
-
   if (fStrutForce)
     StrutForce = min(fStrutForce->GetValue(), (double)0.0);
   else {
-    springForce = -compressLength * kSpring;
+    double springForce = -compressLength * kSpring;
+    double dampForce = 0;
 
     if (compressSpeed >= 0.0) {
 
@@ -834,7 +841,7 @@ void FGLGear::bind(void)
 
 void FGLGear::Report(ReportType repType)
 {
-  if (fabs(TakeoffDistanceTraveled) < 0.001) return; // Don't print superfluous reports
+  if (fabs(TakeoffDistanceTraveled.getCurrentValue()) < 0.001) return; // Don't print superfluous reports
 
   switch(repType) {
   case erLand:
@@ -848,17 +855,17 @@ void FGLGear::Report(ReportType repType)
                                 << MaximumStrutForce*4.448  << " Newtons" << endl;
     cout << "  Maximum strut travel:  " << MaximumStrutTravel*12.0 << " inches, "
                                 << MaximumStrutTravel*30.48 << " cm"      << endl;
-    cout << "  Distance traveled:     " << LandingDistanceTraveled        << " ft,     "
-                                << LandingDistanceTraveled*0.3048  << " meters"  << endl;
+    cout << "  Distance traveled:     " << LandingDistanceTraveled.getCurrentValue() << " ft,     "
+         << LandingDistanceTraveled.getCurrentValue()*0.3048  << " meters"  << endl;
     LandingReported = true;
     break;
   case erTakeoff:
     cout << endl << "Takeoff report for " << name << " (Liftoff at time: "
         << fdmex->GetSimTime() << " seconds)" << endl;
-    cout << "  Distance traveled:                " << TakeoffDistanceTraveled
-         << " ft,     " << TakeoffDistanceTraveled*0.3048  << " meters"  << endl;
-    cout << "  Distance traveled (over 50'):     " << TakeoffDistanceTraveled50ft
-         << " ft,     " << TakeoffDistanceTraveled50ft*0.3048 << " meters" << endl;
+    cout << "  Distance traveled:                " << TakeoffDistanceTraveled.getCurrentValue()
+         << " ft,     " << TakeoffDistanceTraveled.getCurrentValue()*0.3048  << " meters"  << endl;
+    cout << "  Distance traveled (over 50'):     " << TakeoffDistanceTraveled50ft.getCurrentValue()
+         << " ft,     " << TakeoffDistanceTraveled50ft.getCurrentValue()*0.3048 << " meters" << endl;
     cout << "  [Altitude (ASL): " << in.DistanceASL << " ft. / "
          << in.DistanceASL*FGJSBBase::fttom << " m  | Temperature: "
          << in.Temperature - 459.67 << " F / "

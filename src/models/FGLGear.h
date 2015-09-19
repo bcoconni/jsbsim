@@ -342,9 +342,9 @@ private:
   double maxCompLen;
   double SinkRate;
   double GroundSpeed;
-  double TakeoffDistanceTraveled;
-  double TakeoffDistanceTraveled50ft;
-  double LandingDistanceTraveled;
+  FGMultiStepMethod<double> TakeoffDistanceTraveled;
+  FGMultiStepMethod<double> TakeoffDistanceTraveled50ft;
+  FGMultiStepMethod<double> LandingDistanceTraveled;
   double MaximumStrutForce, StrutForce;
   double MaximumStrutTravel;
   double FCoeff;

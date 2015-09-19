@@ -66,17 +66,19 @@ enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
 template<class T> class FGMultiStepMethod : public FGTimeMarchingScheme
 {
 public:
-  explicit FGMultiStepMethod() : step(0), method(eRectEuler) {}
+  FGMultiStepMethod() : step(0), method(eRectEuler) {}
 
   void Propagate(void) { v0 += dv; }
   void setMethod(int t) { method = (eIntegrateType)t; }
 
   int getMethod(void) const { return (int)method; }
-  void setInitialCondition(const T& v) { v0 = v; }
+  void setInitialCondition(const T& v) { v0 = v; dv *= 0.0; }
   virtual void setInitialDerivative(const T& ICdot) {
     valDot.assign(5, ICdot);
     step = 0;
   }
+
+  T getCurrentValue(void) const { return v0 + dv; }
 
   virtual T integrate(const T& dot) {
     if (dt > 0.) {

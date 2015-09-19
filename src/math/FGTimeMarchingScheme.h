@@ -60,7 +60,7 @@ CLASS DECLARATION
 class FGTimeMarchingScheme
 {
 public:
-  explicit FGTimeMarchingScheme() : subject(0), dt(0.0) {}
+  FGTimeMarchingScheme() : subject(0), dt(0.0) {}
   virtual ~FGTimeMarchingScheme() {}
   void setTimeStep(double _dt) { dt = _dt; }
   virtual void Propagate(void) = 0;

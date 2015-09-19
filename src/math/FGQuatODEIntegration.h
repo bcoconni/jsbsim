@@ -61,7 +61,7 @@ CLASS DECLARATION
 class FGQuatODEIntegration : public FGMultiStepMethod<FGQuaternion>
 {
 public:
-  explicit FGQuatODEIntegration() {}
+  FGQuatODEIntegration() {}
 
   void Propagate(void);
 

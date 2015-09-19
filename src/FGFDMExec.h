@@ -581,6 +581,9 @@ public:
 
   const FGEarthPosition& GetEarthPosition(void) const { return EarthPosition; }
 
+  void AttachTimeMarchingScheme(FGTimeMarchingScheme* algo)
+  { Propagate->AttachTimeMarchingScheme(algo); }
+
 private:
   int Error;
   unsigned int Frame;
