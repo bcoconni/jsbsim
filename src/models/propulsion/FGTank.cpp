@@ -58,7 +58,7 @@ CLASS IMPLEMENTATION
 FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
                   : TankNumber(tank_number)
 {
-  string token, strFuelName;
+  string strFuelName;
   Element* element;
   Element* element_Grain;
   FGPropertyManager *PropertyManager = exec->GetPropertyManager();
@@ -68,7 +68,7 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
   Ixx = Iyy = Izz = 0.0;
   InertiaFactor = 1.0;
   Radius = Contents = Standpipe = Length = InnerRadius = 0.0;
-  ExternalFlow = 0.0;
+  FuelFlow = ExternalFlow = 0.0;
   InitialStandpipe = 0.0;
   Capacity = 0.00001;
   Priority = InitialPriority = 1;
@@ -99,8 +99,10 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
     InertiaFactor = el->FindElementValueAsNumber("inertia_factor");
   if (el->FindElement("capacity"))
     Capacity = el->FindElementValueAsNumberConvertTo("capacity", "LBS");
-  if (el->FindElement("contents"))
-    InitialContents = Contents = el->FindElementValueAsNumberConvertTo("contents", "LBS");
+  if (el->FindElement("contents")) {
+    InitialContents = el->FindElementValueAsNumberConvertTo("contents", "LBS");
+    SetContents(InitialContents);
+  }
   if (el->FindElement("temperature"))
     InitialTemperature = Temperature = el->FindElementValueAsNumber("temperature");
   if (el->FindElement("standpipe"))
@@ -200,6 +202,8 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
   }
 
   CalculateInertias();
+  exec->AttachTimeMarchingScheme(&FuelContent);
+  exec->AttachTimeMarchingScheme(&FuelTemp);
 
   if (Temperature != -9999.0)  InitialTemperature = Temperature = FahrenheitToCelsius(Temperature);
   Area = 40.0 * pow(Capacity/1975, 0.666666667);
@@ -228,7 +232,7 @@ void FGTank::ResetToIC(void)
   SetContents ( InitialContents );
   PctFull = 100.0*Contents/Capacity;
   SetPriority( InitialPriority );
-  CalculateInertias();
+  FuelFlow = 0.0;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -247,87 +251,87 @@ double FGTank::GetXYZ(int idx) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTank::Drain(double used)
+double FGTank::DrainRate(double flow)
 {
-  double remaining = Contents - used;
+  double remaining = FuelContent.integrate(FuelFlow - flow);
 
-  if (remaining >= 0) { // Reduce contents by amount used.
+  if (remaining >= Standpipe) {
+    FuelFlow -= flow;
+    return 0.0;
+  }
+  else {
+    double current = FuelContent.integrate(FuelFlow);
+    double ratio = (current - Standpipe) / (current - remaining);
+    FuelFlow -= flow * ratio;
+    return flow * (1.0 - ratio); // shortage
+  }
+}
 
-    Contents -= used;
-    PctFull = 100.0*Contents/Capacity;
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  } else { // This tank must be empty.
+double FGTank::FillRate(double flow)
+{
+  double amount = FuelContent.integrate(FuelFlow + flow);
 
-    Contents = 0.0;
+  if (amount <= Capacity) {
+    FuelFlow += flow;
+    return 0.0;
+  }
+  else {
+    double current = FuelContent.integrate(FuelFlow);
+    double ratio = (Capacity - current) / (amount - current);
+    FuelFlow += flow * ratio;
+    return flow * (1.0 - ratio); // overage
+  }
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+double FGTank::UpdateContents(double amount)
+{
+  double FuelAmount;
+
+  if (amount > Capacity) {
+    FuelAmount = Capacity;
+    PctFull = 100.0;
+  } else if (amount < 0.0) {
+    FuelAmount = 0.0;
     PctFull = 0.0;
-  }
-
-  CalculateInertias();
-
-  return remaining;
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-double FGTank::Fill(double amount)
-{
-  double overage = 0.0;
-
-  Contents += amount;
-
-  if (Contents > Capacity) {
-    overage = Contents - Capacity;
-    Contents = Capacity;
-    PctFull = 100.0;
   } else {
-    PctFull = Contents/Capacity*100.0;
+    FuelAmount = amount;
+    PctFull = amount/Capacity*100.0;
   }
 
-  CalculateInertias();
-
-  return overage;
+  return FuelAmount;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGTank::SetContents(double amount)
+void FGTank::Calculate(double dt, double TAT_C)
 {
-  Contents = amount;
-  if (Contents > Capacity) {
-    Contents = Capacity;
-    PctFull = 100.0;
-  } else {
-    PctFull = Contents/Capacity*100.0;
-  }
+  FuelContent.setTimeStep(dt);
+  FuelTemp.setTimeStep(dt);
 
-  CalculateInertias();
-}
+  if(ExternalFlow < 0.) DrainRate(-ExternalFlow);
+  else FillRate(ExternalFlow);
 
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-void FGTank::SetContentsGallons(double gallons)
-{
-  SetContents(gallons * Density);
-}
-
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-double FGTank::Calculate(double dt, double TAT_C)
-{
-  if(ExternalFlow < 0.) Drain( -ExternalFlow *dt);
-  else Fill(ExternalFlow * dt);
-
-  if (Temperature == -9999.0) return 0.0;
-  double HeatCapacity = 900.0;        // Joules/lbm/C
-  double TempFlowFactor = 1.115;      // Watts/sqft/C
+  const double HeatCapacity = 900.0;        // Joules/lbm/C
   double Tdiff = TAT_C - Temperature;
   double dTemp = 0.0;                 // Temp change due to one surface
   if (fabs(Tdiff) > 0.1) {
-    dTemp = (TempFlowFactor * Area * Tdiff * dt) / (Contents * HeatCapacity);
+    const double TempFlowFactor = 1.115;      // Watts/sqft/C
+    dTemp = (TempFlowFactor * Area * Tdiff) / (Contents * HeatCapacity);
   }
 
-  return Temperature += (dTemp + dTemp);    // For now, assume upper/lower the same
+  Temperature = FuelTemp.integrate(2.0 * dTemp); // For now, assume upper/lower the same
+  if (Temperature == -273.15) {
+    FuelTemp.setInitialCondition(-273.15);
+    Temperature = -273.15;
+  }
+
+  Contents = UpdateContents(FuelContent.integrate(FuelFlow));
+  CalculateInertias();
+  FuelFlow = 0.0;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -439,23 +443,23 @@ void FGTank::bind(FGPropertyManager* PropertyManager)
   string property_name, base_property_name;
   base_property_name = CreateIndexedPropertyName("propulsion/tank", TankNumber);
   property_name = base_property_name + "/contents-lbs";
-  PropertyManager->Tie( property_name.c_str(), (FGTank*)this, &FGTank::GetContents,
+  PropertyManager->Tie( property_name.c_str(), this, &FGTank::GetContents,
                                        &FGTank::SetContents );
   property_name = base_property_name + "/pct-full";
-  PropertyManager->Tie( property_name.c_str(), (FGTank*)this, &FGTank::GetPctFull);
+  PropertyManager->Tie( property_name.c_str(), this, &FGTank::GetPctFull);
 
   property_name = base_property_name + "/priority";
-  PropertyManager->Tie( property_name.c_str(), (FGTank*)this, &FGTank::GetPriority,
+  PropertyManager->Tie( property_name.c_str(), this, &FGTank::GetPriority,
                                        &FGTank::SetPriority );
   property_name = base_property_name + "/external-flow-rate-pps";
-  PropertyManager->Tie( property_name.c_str(), (FGTank*)this, &FGTank::GetExternalFlow,
+  PropertyManager->Tie( property_name.c_str(), this, &FGTank::GetExternalFlow,
                                        &FGTank::SetExternalFlow );
   property_name = base_property_name + "/local-ixx-slug_ft2";
-  PropertyManager->Tie( property_name.c_str(), (FGTank*)this, &FGTank::GetIxx);
+  PropertyManager->Tie( property_name.c_str(), this, &FGTank::GetIxx);
   property_name = base_property_name + "/local-iyy-slug_ft2";
-  PropertyManager->Tie( property_name.c_str(), (FGTank*)this, &FGTank::GetIyy);
+  PropertyManager->Tie( property_name.c_str(), this, &FGTank::GetIyy);
   property_name = base_property_name + "/local-izz-slug_ft2";
-  PropertyManager->Tie( property_name.c_str(), (FGTank*)this, &FGTank::GetIzz);
+  PropertyManager->Tie( property_name.c_str(), this, &FGTank::GetIzz);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

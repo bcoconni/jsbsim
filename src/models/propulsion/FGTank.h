@@ -44,10 +44,12 @@ SENTRY
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
+#include <string>
+
 #include "FGJSBBase.h"
 #include "math/FGColumnVector3.h"
 #include "math/FGFunction.h"
-#include <string>
+#include "math/FGMultiStepMethod.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -215,18 +217,17 @@ public:
   /** Removes fuel from the tank.
       This function removes fuel from a tank. If the tank empties, it is
       deselected.
-      @param used the amount of fuel used in lbs.
-      @return the remaining contents of the tank in lbs.
+      @param flow the fuel flow used in lbs/sec.
+      @return the unused fuel flow if the tank is emptied.
   */
-  double Drain(double used);
+  double DrainRate(double flow);
 
   /** Performs local, tanks-specific calculations, such as fuel temperature.
       This function calculates the temperature of the fuel in the tank.
       @param dt the time step for this model.
       @param TempC the Total Air Temperature in degrees Celsius.
-      @return the current temperature in degrees Celsius.
   */
-  double Calculate(double dt, double TempC);
+  void Calculate(double dt, double TempC);
 
   /** Retrieves the type of tank: Fuel or Oxidizer.
       @return the tank type, 0 for undefined, 1 for fuel, and 2 for oxidizer.
@@ -296,12 +297,19 @@ public:
   FGColumnVector3 GetXYZ(void) const;
   double GetXYZ(int idx) const;
 
-  const GrainType GetGrainType(void) const {return grainType;}
+  GrainType GetGrainType(void) const {return grainType;}
 
-  double Fill(double amount);
-  void SetContents(double amount);
-  void SetContentsGallons(double gallons);
-  void SetTemperature(double temp) { Temperature = temp; }
+  double FillRate(double flow);
+  void SetContents(double amount) {
+    Contents = UpdateContents(amount);
+    FuelContent.setInitialCondition(Contents);
+    CalculateInertias();
+  }
+  void SetContentsGallons(double gallons) { SetContents(gallons * Density); }
+  void SetTemperature(double temp) {
+    Temperature = temp;
+    FuelTemp.setInitialCondition(temp);
+  }
   void SetStandpipe(double amount) { Standpipe = amount; }
   void SetSelected(bool sel) { sel==true ? SetPriority(1):SetPriority(0); }
 
@@ -337,7 +345,10 @@ private:
   double ExternalFlow;
   bool  Selected;
   int Priority, InitialPriority;
+  double FuelFlow;
+  FGMultiStepMethod<double> FuelContent, FuelTemp;
 
+  double UpdateContents(double amount);
   void CalculateInertias(void);
   void bind(FGPropertyManager* PropertyManager);
   void Debug(int from);

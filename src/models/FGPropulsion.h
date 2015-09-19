@@ -176,9 +176,9 @@ public:
   void SetRefuel(bool setting) {refuel = setting;}
   bool GetFuelDump(void) const {return dump;}
   void SetFuelDump(bool setting) {dump = setting;}
-  double Transfer(int source, int target, double amount);
-  void DoRefuel(double time_slice);
-  void DumpFuel(double time_slice);
+  double TransferRate(int source, int target, double flow);
+  void DoRefuel(void);
+  void DumpFuel(void);
 
   const FGColumnVector3& GetTanksMoment(void);
   double GetTanksWeight(void) const;

@@ -75,7 +75,8 @@ extern short debug_lvl;
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-FGPropulsion::FGPropulsion(FGFDMExec* exec) : FGModel(exec)
+  FGPropulsion::FGPropulsion(FGFDMExec* exec)
+    : FGModel(exec), ReadingEngine(false)
 {
   Name = "FGPropulsion";
 
@@ -86,7 +87,7 @@ FGPropulsion::FGPropulsion(FGFDMExec* exec) : FGModel(exec)
   tankJ.InitMatrix();
   refuel = dump = false;
   DumpRate = 0.0; 
-  RefuelRate = 6000.0;
+  RefuelRate = 100.0; // lbs/sec
   FuelFreeze = false;
   TotalFuelQuantity = 0.0;
   IsBound =
@@ -158,8 +159,8 @@ bool FGPropulsion::Run(bool Holding)
     }
   }
 
-  if (refuel) DoRefuel( in.TotalDeltaT );
-  if (dump) DumpFuel( in.TotalDeltaT );
+  if (refuel) DoRefuel();
+  if (dump) DumpFuel();
 
   RunPostFunctions();
 
@@ -182,7 +183,7 @@ void FGPropulsion::ConsumeFuel(FGEngine* engine)
   if (FDMExec->GetTrimStatus()) return;
 
   unsigned int TanksWithFuel=0, CurrentFuelTankPriority=1;
-  unsigned int TanksWithOxidizer=0, CurrentOxidizerTankPriority=1;
+  unsigned int TanksWithOxidizer=0;
   vector <int> FeedListFuel, FeedListOxi;
   bool Starved = true; // Initially set Starved to true. Set to false in code below.
   bool hasOxTanks = false;
@@ -223,6 +224,8 @@ void FGPropulsion::ConsumeFuel(FGEngine* engine)
 
   // Process Oxidizer tanks, if any
   if (engine->GetType() == FGEngine::etRocket) {
+    double CurrentOxidizerTankPriority=1;
+
     while ((TanksWithOxidizer == 0) && (CurrentOxidizerTankPriority <= numTanks)) {
       for (unsigned int i=0; i<engine->GetNumSourceTanks(); i++) {
         unsigned int TankId = engine->GetSourceTank(i);
@@ -259,15 +262,15 @@ void FGPropulsion::ConsumeFuel(FGEngine* engine)
   double FuelToBurn = engine->CalcFuelNeed();            // How much fuel does this engine need?
   double FuelNeededPerTank = FuelToBurn / TanksWithFuel; // Determine fuel needed per tank.  
   for (unsigned int i=0; i<FeedListFuel.size(); i++) {
-    Tanks[FeedListFuel[i]]->Drain(FuelNeededPerTank); 
+    Tanks[FeedListFuel[i]]->DrainRate(FuelNeededPerTank / in.TotalDeltaT);
   }
 
   if (engine->GetType() == FGEngine::etRocket) {
-    double OxidizerToBurn = engine->CalcOxidizerNeed();                // How much fuel does this engine need?
+    double OxidizerToBurn = engine->CalcOxidizerNeed(); // How much fuel does this engine need?
     double OxidizerNeededPerTank = 0;
     if (TanksWithOxidizer > 0) OxidizerNeededPerTank = OxidizerToBurn / TanksWithOxidizer; // Determine fuel needed per tank.  
     for (unsigned int i=0; i<FeedListOxi.size(); i++) {
-      Tanks[FeedListOxi[i]]->Drain(OxidizerNeededPerTank); 
+      Tanks[FeedListOxi[i]]->DrainRate(OxidizerNeededPerTank / in.TotalDeltaT);
     }
   }
 
@@ -277,9 +280,6 @@ void FGPropulsion::ConsumeFuel(FGEngine* engine)
 
 bool FGPropulsion::GetSteadyState(void)
 {
-  double currentThrust = 0, lastThrust = -1;
-  int steady_count = 0, j = 0;
-  bool steady = false;
   bool TrimMode = FDMExec->GetTrimStatus();
 
   vForces.InitMatrix();
@@ -289,9 +289,11 @@ bool FGPropulsion::GetSteadyState(void)
     FDMExec->SetTrimStatus(true);
 
     for (unsigned int i=0; i<numEngines; i++) {
-      steady=false;
-      steady_count=0;
-      j=0;
+      bool steady=false;
+      int steady_count=0;
+      int j=0;
+      double currentThrust = 0, lastThrust = -1;
+
       while (!steady && j < 6000) {
         Engines[i]->Calculate();
         lastThrust = currentThrust;
@@ -432,9 +434,9 @@ bool FGPropulsion::Load(Element* el)
   CalculateTankInertias();
 
   if (el->FindElement("dump-rate"))
-    DumpRate = el->FindElementValueAsNumberConvertTo("dump-rate", "LBS/MIN");
+    DumpRate = el->FindElementValueAsNumberConvertTo("dump-rate", "LBS/MIN") / 60.0;
   if (el->FindElement("refuel-rate"))
-    RefuelRate = el->FindElementValueAsNumberConvertTo("refuel-rate", "LBS/MIN");
+    RefuelRate = el->FindElementValueAsNumberConvertTo("refuel-rate", "LBS/MIN") / 60.0;
 
   unsigned int i;
   for (i=0; i<Engines.size(); i++) {
@@ -517,7 +519,6 @@ string FGPropulsion::GetPropulsionValues(const string& delimiter) const
 
 string FGPropulsion::GetPropulsionTankReport()
 {
-  string out="";
   stringstream outstream;
 
   /*const FGMatrix33& mTkI =*/ CalculateTankInertias();
@@ -668,48 +669,48 @@ void FGPropulsion::SetActiveEngine(int engine)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropulsion::Transfer(int source, int target, double amount)
+double FGPropulsion::TransferRate(int source, int target, double flow)
 {
- double shortage, overage;
+  double shortage, overage;
 
-  if (source == -1) {
-     shortage = 0.0;
-  } else {
-     shortage = Tanks[source]->Drain(amount);
-  }
-  if (target == -1) {
-     overage = 0.0;
-  } else {
-     overage = Tanks[target]->Fill(amount - shortage);
-  }
+  if (source == -1)
+    shortage = 0.0;
+  else
+    shortage = Tanks[source]->DrainRate(flow);
+
+  if (target == -1)
+    overage = 0.0;
+  else
+    overage = Tanks[target]->FillRate(flow - shortage);
+
   return overage;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropulsion::DoRefuel(double time_slice)
+void FGPropulsion::DoRefuel(void)
 {
   unsigned int i;
-
-  double fillrate = RefuelRate / 60.0 * time_slice;   
   int TanksNotFull = 0;
 
   for (i=0; i<numTanks; i++) {
     if (Tanks[i]->GetPctFull() < 99.99) ++TanksNotFull;
   }
 
+  if (TanksNotFull == 0) return;
+
+  double fillrate = RefuelRate / TanksNotFull;
+
   // adds fuel equally to all tanks that are not full
-  if (TanksNotFull) {
-    for (i=0; i<numTanks; i++) {
-      if (Tanks[i]->GetPctFull() < 99.99)
-          Transfer(-1, i, fillrate/TanksNotFull);
-    }
+  for (i=0; i<numTanks; i++) {
+    if (Tanks[i]->GetPctFull() < 99.99)
+      TransferRate(-1, i, fillrate/TanksNotFull);
   }
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropulsion::DumpFuel(double time_slice)
+void FGPropulsion::DumpFuel(void)
 {
   unsigned int i;
   int TanksDumping = 0;
@@ -720,12 +721,12 @@ void FGPropulsion::DumpFuel(double time_slice)
 
   if (TanksDumping == 0) return;
 
-  double dump_rate_per_tank = DumpRate / 60.0 * time_slice / TanksDumping;
+  double dump_rate_per_tank = DumpRate / TanksDumping;
 
+  // dumps fuel equally from all tanks that are not empty
   for (i=0; i<numTanks; i++) {
-    if (Tanks[i]->GetContents() > Tanks[i]->GetStandpipe()) {
-      Transfer(i, -1, dump_rate_per_tank);
-    }
+    if (Tanks[i]->GetContents() > Tanks[i]->GetStandpipe())
+      TransferRate(i, -1, dump_rate_per_tank);
   }
 }
 
