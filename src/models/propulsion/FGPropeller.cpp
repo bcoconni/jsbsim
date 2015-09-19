@@ -203,7 +203,7 @@ double FGPropeller::Calculate(double EnginePower)
   FGColumnVector3 localAeroVel = Transform().Transposed() * in.AeroUVW;
   double omega, PowerAvailable;
 
-  double Vel = localAeroVel(eU);
+  double Vel = localAeroVel(eU) + Vinduced;
   double rho = in.Density;
   double RPS = RPM/60.0;
 
@@ -303,7 +303,7 @@ double FGPropeller::GetPowerRequired(void)
 {
   double cPReq, J;
   double rho = in.Density;
-  double Vel = in.AeroUVW(eU);
+  double Vel = in.AeroUVW(eU) + Vinduced;
   double RPS = RPM / 60.0;
 
   if (RPS != 0.0) J = Vel / (Diameter * RPS);
