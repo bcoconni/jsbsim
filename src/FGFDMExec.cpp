@@ -310,6 +310,7 @@ bool FGFDMExec::Allocate(void)
   Output = (FGOutput*)Models[eOutput];
 
   Propagate->AttachTimeMarchingScheme(&EarthPosition);
+  instance->Tie("position/epa-rad", &EarthPosition, &FGEarthPosition::GetAngle);
 
   // Initialize planet (environment) constants
   LoadPlanetConstants();
@@ -585,7 +586,6 @@ void FGFDMExec::LoadPlanetConstants(void)
   Propagate->in.SemiMinor        = Inertial->GetSemiminor();
   Auxiliary->in.SLGravity        = Inertial->SLgravity();
   Auxiliary->in.ReferenceRadius  = Inertial->GetRefRadius();
-  instance->Tie("position/epa-rad", &EarthPosition, &FGEarthPosition::GetAngle);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
