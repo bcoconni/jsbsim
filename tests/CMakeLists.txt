@@ -31,8 +31,9 @@ set(PYTHON_TESTS ResetOutputFiles
                  CheckAircrafts
                  CheckOutputRate
                  TestAccelerometer
-                 TestCosineGust
                  CheckDebugLvl
+                 TestCosineGust
+                 TestScriptOutput
                  TestOrbit
                  TestGndReactions)
 
