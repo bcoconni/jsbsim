@@ -51,7 +51,7 @@ INCLUDES
 DEFINITIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#define ID_LOCATION "$Id: FGLocation.h,v 1.34 2014/11/30 12:35:32 bcoconni Exp $"
+#define ID_LOCATION "$Id: FGLocation.h,v 1.35 2015/09/20 20:53:13 bcoconni Exp $"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -142,7 +142,7 @@ CLASS DOCUMENTATION
     @see W. C. Durham "Aircraft Dynamics & Control", section 2.2
 
     @author Mathias Froehlich
-    @version $Id: FGLocation.h,v 1.34 2014/11/30 12:35:32 bcoconni Exp $
+    @version $Id: FGLocation.h,v 1.35 2015/09/20 20:53:13 bcoconni Exp $
   */
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,6 +383,23 @@ public:
       @return a const reference to the rotation matrix of the transform from
       the earth centered frame to the local horizontal frame. */
   const FGMatrix33& GetTec2l(void) const { ComputeDerived(); return mTec2l; }
+
+  /** Get the geodetic distance between the current location and a given
+      location. This corresponds to the shortest distance between the two
+      locations. Earth curvature is taken into account.
+      @param target_longitude the target longitude
+      @param target_latitude the target latitude
+      @return The geodetic distance between the two locations */
+  double GetDistanceTo(double target_longitude, double target_latitude) const;
+
+  /** Get the heading that should be followed from the current location to
+      a given location along the shortest path. Earth curvature is
+      taken into account.
+      @param target_longitude the target longitude
+      @param target_latitude the target latitude
+      @return The heading that should be followed to reach the targeted
+              location along the shortest path */
+  double GetHeadingTo(double target_longitude, double target_latitude) const;
 
   /** Conversion from Local frame coordinates to a location in the
       earth centered and fixed frame.
