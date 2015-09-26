@@ -100,7 +100,6 @@ public:
   virtual void SetRPM(double rpm) {};
   virtual void SetEngineRPM(double rpm) {};
   virtual double GetPowerRequired(void) {return 0.0;}
-  virtual void SetdeltaT(double dt) {deltaT = dt;}
   double GetThrust(void) const {return Thrust;}
   eType GetType(void) {return Type;}
   std::string GetName(void) {return Name;}
@@ -133,7 +132,6 @@ protected:
   std::string Name;
   double Thrust;
   double PowerRequired;
-  double deltaT;
   double GearRatio;
   double ThrustCoeff;
   double ReverserAngle;

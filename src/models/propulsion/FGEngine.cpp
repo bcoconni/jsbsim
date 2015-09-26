@@ -191,8 +191,6 @@ void FGEngine::LoadThruster(Element *thruster_element)
     throw("Failed to load the thruster");
   }
 
-  Thruster->SetdeltaT(in.TotalDeltaT);
-
   Debug(2);
 }
 
