@@ -150,7 +150,7 @@ public:
     double TotalDeltaT;
   };
 
-  FGEngine(FGFDMExec* exec, int engine_number, struct Inputs& input);
+  FGEngine(int engine_number, struct Inputs& input);
   virtual ~FGEngine();
 
   enum EngineType {etUnknown, etRocket, etPiston, etTurbine, etTurboprop, etElectric};
@@ -208,7 +208,7 @@ public:
   virtual const FGColumnVector3& GetBodyForces(void);
   virtual const FGColumnVector3& GetMoments(void);
 
-  void LoadThruster(Element *el);
+  void LoadThruster(FGFDMExec* exec, Element *el);
   FGThruster* GetThruster(void) const {return Thruster;}
 
   unsigned int GetSourceTank(unsigned int i) const;
@@ -253,7 +253,6 @@ protected:
   double FuelUsedLbs;
   double FuelDensity;
 
-  FGFDMExec*      FDMExec;
   FGThruster*     Thruster;
 
   std::vector <int> SourceTanks;

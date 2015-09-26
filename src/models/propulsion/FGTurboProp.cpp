@@ -62,8 +62,9 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGTurboProp::FGTurboProp(FGFDMExec* exec, Element *el, int engine_number, struct Inputs& input)
-  : FGEngine(exec, engine_number, input),
-    ITT_N1(NULL), EnginePowerRPM_N1(NULL), EnginePowerVC(NULL), CombustionEfficiency_N1(NULL)
+  : FGEngine(engine_number, input),
+    ITT_N1(NULL), EnginePowerRPM_N1(NULL), EnginePowerVC(NULL), CombustionEfficiency_N1(NULL),
+    FDMExec(exec)
 {
   FGEngine::Load(exec, el);
   SetDefaults();

@@ -57,7 +57,7 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGRocket::FGRocket(FGFDMExec* exec, Element *el, int engine_number, struct Inputs& input)
-  : FGEngine(exec, engine_number, input), isp_function(0L)
+  : FGEngine(engine_number, input), isp_function(0L), FDMExec(exec)
 {
   Load(exec, el);
 
@@ -84,19 +84,16 @@ FGRocket::FGRocket(FGFDMExec* exec, Element *el, int engine_number, struct Input
    MinThrottle = 0.0;
    MaxThrottle = 1.0;
 
-  string base_property_name = CreateIndexedPropertyName("propulsion/engine", EngineNumber);
-
   std::stringstream strEngineNumber;
   strEngineNumber << EngineNumber;
 
   Element* isp_el = el->FindElement("isp");
-  Element* isp_func_el=0;
 
   bindmodel(); // Bind model properties first, since they might be needed in functions.
 
   // Specific impulse may be specified as a constant value or as a function - perhaps as a function of mixture ratio.
   if (isp_el) {
-    isp_func_el = isp_el->FindElement("function");
+    Element* isp_func_el = isp_el->FindElement("function");
     if (isp_func_el) {
       isp_function = new FGFunction(exec->GetPropertyManager(),isp_func_el, strEngineNumber.str());
     } else {

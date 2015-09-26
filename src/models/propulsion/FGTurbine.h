@@ -295,6 +295,7 @@ private:
   FGFunction *MilThrustLookup;
   FGFunction *MaxThrustLookup;
   FGFunction *InjectionLookup;
+  FGFDMExec* FDMExec;
 
   bool Load(FGFDMExec *exec, Element *el);
   void bindmodel(void);

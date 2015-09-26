@@ -236,6 +236,7 @@ private:
   double BuildupTime;
   FGTable* ThrustTable;
   FGFunction* isp_function;
+  FGFDMExec* FDMExec;
 
   void Debug(int from);
 };

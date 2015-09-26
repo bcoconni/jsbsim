@@ -222,6 +222,7 @@ private:
   FGTable* EnginePowerRPM_N1;
   FGTable* EnginePowerVC;
   FGTable* CombustionEfficiency_N1;
+  FGFDMExec* FDMExec;
 };
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

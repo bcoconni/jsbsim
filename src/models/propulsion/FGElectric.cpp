@@ -58,7 +58,7 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGElectric::FGElectric(FGFDMExec* exec, Element *el, int engine_number, struct FGEngine::Inputs& input)
-  : FGEngine(exec, engine_number, input)
+  : FGEngine(engine_number, input)
 {
   string token;
 
