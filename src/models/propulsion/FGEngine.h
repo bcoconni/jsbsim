@@ -122,7 +122,6 @@ class FGEngine : public FGModelFunctions
 {
 public:
   struct Inputs {
-    double SLPressure;
     double Pressure;
     double PressureRatio;
     double Temperature;
@@ -130,7 +129,6 @@ public:
     double DensityRatio;
     double Soundspeed;
     double TotalPressure;
-    double TotalTempearture;
     double TAT_c;
     double Vt;
     double Vc;
