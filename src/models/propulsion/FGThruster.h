@@ -136,7 +136,6 @@ protected:
   double ThrustCoeff;
   double ReverserAngle;
   int EngineNum;
-  FGPropertyManager* PropertyManager;
   virtual void Debug(int from);
 };
 }

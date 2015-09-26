@@ -101,7 +101,6 @@ FGRotor::FGRotor(FGFDMExec *exec, Element* rotor_element, int num)
 
   // initialise/set remaining variables
   SetTransformType(FGForce::tCustom);
-  PropertyManager = exec->GetPropertyManager();
   Type = ttRotor;
   GearRatio = 1.0;
 
@@ -211,7 +210,7 @@ FGRotor::FGRotor(FGFDMExec *exec, Element* rotor_element, int num)
   damp_hagl = Filter(1.0, dt);
 
   // enable import-export
-  BindModel();
+  bindmodel(exec->GetPropertyManager());
 
   Debug(0);
 
@@ -693,7 +692,7 @@ double FGRotor::Calculate(double EnginePower)
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-bool FGRotor::BindModel(void)
+bool FGRotor::bindmodel(FGPropertyManager* PropertyManager)
 {
   string property_name, base_property_name;
   base_property_name = CreateIndexedPropertyName("propulsion/engine", EngineNum);

@@ -350,7 +350,7 @@ private:
   FGColumnVector3 body_moments(double a_ic = 0.0 , double b_ic = 0.0 );
 
   // interface
-  bool BindModel(void);
+  bool bindmodel(FGPropertyManager* pm);
   void Debug(int from);
 
   // environment
