@@ -221,14 +221,7 @@ public:
   void LoadThrusterInputs();
 
 protected:
-  /** Reduces the fuel in the active tanks by the amount required.
-      This function should be called from within the
-      derived class' Calculate() function before any other calculations are
-      done. This base class method removes fuel from the fuel tanks as
-      appropriate, and sets the starved flag if necessary. * /
-  virtual void ConsumeFuel(void); */
 
-  FGPropertyManager* PropertyManager;
   std::string Name;
   const int   EngineNumber;
   EngineType Type;
@@ -253,7 +246,7 @@ protected:
   double FuelUsedLbs;
   double FuelDensity;
 
-  FGThruster*     Thruster;
+  FGThruster* Thruster;
 
   std::vector <int> SourceTanks;
 

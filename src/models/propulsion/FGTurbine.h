@@ -298,7 +298,7 @@ private:
   FGFDMExec* FDMExec;
 
   bool Load(FGFDMExec *exec, Element *el);
-  void bindmodel(void);
+  void bindmodel(FGPropertyManager* pm);
   void Debug(int from);
 
 };

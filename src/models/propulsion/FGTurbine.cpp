@@ -489,7 +489,7 @@ bool FGTurbine::Load(FGFDMExec* exec, Element *el)
   OilTemp_degK = (in.TotalTempearture - 491.69) * 0.5555556 + 273.0;
   IdleFF = pow(MilThrust, 0.2) * 107.0;  // just an estimate
 
-  bindmodel();
+  bindmodel(exec->GetPropertyManager());
   return true;
 }
 
@@ -521,7 +521,7 @@ string FGTurbine::GetEngineValues(const string& delimiter)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGTurbine::bindmodel()
+void FGTurbine::bindmodel(FGPropertyManager* PropertyManager)
 {
   string property_name, base_property_name;
   base_property_name = CreateIndexedPropertyName("propulsion/engine", EngineNumber);

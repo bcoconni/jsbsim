@@ -214,7 +214,7 @@ private:
       @return The vacuum thrust in lbs. */
   double GetVacThrust(void) const {return VacThrust;}
 
-  void bindmodel(void);
+  void bindmodel(FGPropertyManager* pm);
 
   double Isp; // Vacuum Isp
   double It;    // Total actual Isp

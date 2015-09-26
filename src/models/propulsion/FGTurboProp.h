@@ -215,7 +215,7 @@ private:
 
   void SetDefaults(void);
   bool Load(FGFDMExec *exec, Element *el);
-  void bindmodel(void);
+  void bindmodel(FGPropertyManager* pm);
   void Debug(int from);
 
   FGTable* ITT_N1;             // ITT temperature depending on throttle command

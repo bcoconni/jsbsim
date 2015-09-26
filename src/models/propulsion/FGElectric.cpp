@@ -60,8 +60,6 @@ CLASS IMPLEMENTATION
 FGElectric::FGElectric(FGFDMExec* exec, Element *el, int engine_number, struct FGEngine::Inputs& input)
   : FGEngine(engine_number, input)
 {
-  string token;
-
   Load(exec,el);
 
   Type = etElectric;
@@ -71,10 +69,9 @@ FGElectric::FGElectric(FGFDMExec* exec, Element *el, int engine_number, struct F
   if (el->FindElement("power"))
     PowerWatts = el->FindElementValueAsNumberConvertTo("power","WATTS");
 
-  string property_name, base_property_name;
-  base_property_name = CreateIndexedPropertyName("propulsion/engine", EngineNumber);
-  property_name = base_property_name + "/power-hp";
-  PropertyManager->Tie(property_name, &HP);
+  string base_property_name = CreateIndexedPropertyName("propulsion/engine",
+                                                        EngineNumber);
+  exec->GetPropertyManager()->Tie(base_property_name + "/power-hp", &HP);
 
   Debug(0); // Call Debug() routine from constructor if needed
 }

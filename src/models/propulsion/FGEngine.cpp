@@ -201,7 +201,7 @@ bool FGEngine::Load(FGFDMExec *exec, Element *engine_element)
   Element* local_element;
   FGColumnVector3 location, orientation;
 
-  PropertyManager = exec->GetPropertyManager();
+  FGPropertyManager* PropertyManager = exec->GetPropertyManager();
 
   Name = engine_element->GetAttributeValue("name");
 

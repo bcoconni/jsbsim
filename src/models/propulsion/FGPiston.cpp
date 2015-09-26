@@ -69,6 +69,7 @@ FGPiston::FGPiston(FGFDMExec* exec, Element* el, int engine_number, struct Input
   Load(exec, el);
 
   Element *table_element;
+  FGPropertyManager* PropertyManager = exec->GetPropertyManager();
 
   // Defaults and initializations
 

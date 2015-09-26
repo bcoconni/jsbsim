@@ -71,7 +71,7 @@ FGTurboProp::FGTurboProp(FGFDMExec* exec, Element *el, int engine_number, struct
   thrusterType = Thruster->GetType();
 
   Load(exec, el);
-  bindmodel();
+  bindmodel(exec->GetPropertyManager());
   Debug(0);
 }
 
@@ -542,7 +542,7 @@ int FGTurboProp::InitRunning(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGTurboProp::bindmodel()
+void FGTurboProp::bindmodel(FGPropertyManager* PropertyManager)
 {
   string property_name, base_property_name;
   base_property_name = CreateIndexedPropertyName("propulsion/engine", EngineNumber);
