@@ -53,7 +53,7 @@ INCLUDES
 DEFINITIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#define ID_ENGINE "$Id: FGEngine.h,v 1.46 2015/09/27 09:54:21 bcoconni Exp $"
+#define ID_ENGINE "$Id: FGEngine.h,v 1.47 2015/09/27 10:16:57 bcoconni Exp $"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -111,7 +111,7 @@ CLASS DOCUMENTATION
   documentation for engine and thruster classes.
 </pre>     
     @author Jon S. Berndt
-    @version $Id: FGEngine.h,v 1.46 2015/09/27 09:54:21 bcoconni Exp $
+    @version $Id: FGEngine.h,v 1.47 2015/09/27 10:16:57 bcoconni Exp $
 */
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
