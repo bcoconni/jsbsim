@@ -54,7 +54,7 @@ using namespace std;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGTurboProp.cpp,v 1.31 2015/09/27 09:39:10 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGTurboProp.cpp,v 1.32 2015/09/27 09:54:21 bcoconni Exp $");
 IDENT(IdHdr,ID_TURBOPROP);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

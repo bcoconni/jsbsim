@@ -46,7 +46,7 @@ INCLUDES
 #include "FGEngine.h"
 #include "math/FGTable.h"
 
-#define ID_TURBOPROP "$Id: FGTurboProp.h,v 1.20 2015/09/27 09:39:10 bcoconni Exp $"
+#define ID_TURBOPROP "$Id: FGTurboProp.h,v 1.21 2015/09/27 09:54:21 bcoconni Exp $"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
