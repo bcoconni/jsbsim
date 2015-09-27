@@ -49,7 +49,7 @@ using namespace std;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGRocket.cpp,v 1.37 2014/06/08 12:00:35 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGRocket.cpp,v 1.38 2015/09/27 09:39:10 bcoconni Exp $");
 IDENT(IdHdr,ID_ROCKET);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
