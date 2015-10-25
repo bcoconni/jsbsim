@@ -73,7 +73,7 @@ using namespace std;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGFDMExec.cpp,v 1.180 2015/09/28 21:14:15 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGFDMExec.cpp,v 1.181 2015/10/25 21:18:29 dpculp Exp $");
 IDENT(IdHdr,ID_FDMEXEC);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -160,6 +160,7 @@ FGFDMExec::FGFDMExec(FGPropertyManager* root, unsigned int* fdmctr)
 
   trim_status = false;
   ta_mode     = 99;
+  trim_completed = 0;
 
   Constructing = true;
   typedef int (FGFDMExec::*iPMF)(void) const;
@@ -175,6 +176,7 @@ FGFDMExec::FGFDMExec(FGPropertyManager* root, unsigned int* fdmctr)
   instance->Tie("simulation/dt", this, &FGFDMExec::GetDeltaT);
   instance->Tie("simulation/jsbsim-debug", this, &FGFDMExec::GetDebugLevel, &FGFDMExec::SetDebugLevel);
   instance->Tie("simulation/frame", (int *)&Frame, false);
+  instance->Tie("simulation/trim-completed", (int *)&trim_completed, false);
 
   // simplex trim properties
   instanceRoot->SetDouble("trim/solver/rtol",0.0001);
@@ -1189,10 +1191,12 @@ void FGFDMExec::DoTrim(int mode)
     cerr << endl << "Illegal trimming mode!" << endl << endl;
     return;
   }
+ 
 
   FGTrim trim(this, (JSBSim::TrimMode)mode);
   if ( !trim.DoTrim() ) cerr << endl << "Trim Failed" << endl << endl;
   trim.Report();
+  trim_completed = 1;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1209,6 +1213,7 @@ void FGFDMExec::DoSimplexTrim(int mode)
   FGSimplexTrim trim(this, (JSBSim::TrimMode)mode);
   Setsim_time(saved_time);
   std::cout << "dT: " << dT << std::endl;
+  trim_completed = 1;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
