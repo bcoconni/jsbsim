@@ -48,7 +48,7 @@ using namespace std;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGTank.cpp,v 1.43 2015/02/02 20:49:11 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGTank.cpp,v 1.44 2015/12/02 04:23:26 dpculp Exp $");
 IDENT(IdHdr,ID_TANK);
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -318,7 +318,7 @@ void FGTank::Calculate(double dt, double TAT_C)
   const double HeatCapacity = 900.0;        // Joules/lbm/C
   double Tdiff = TAT_C - Temperature;
   double dTemp = 0.0;                 // Temp change due to one surface
-  if (fabs(Tdiff) > 0.1) {
+  if (fabs(Tdiff) > 0.1 && Contents > 0.01) {
     const double TempFlowFactor = 1.115;      // Watts/sqft/C
     dTemp = (TempFlowFactor * Area * Tdiff) / (Contents * HeatCapacity);
   }
