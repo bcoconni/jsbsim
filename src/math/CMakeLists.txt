@@ -9,8 +9,6 @@ set(SOURCES FGColumnVector3.cpp
             FGCondition.cpp
             FGRungeKutta.cpp
             FGModelFunctions.cpp
-            FGNelderMead.cpp
-            FGStateSpace.cpp
             FGTimeMarchingScheme.cpp
             FGQuatODEIntegration.cpp)
 
@@ -27,8 +25,6 @@ set(HEADERS FGColumnVector3.h
             FGRungeKutta.h
             FGModelFunctions.h
             LagrangeMultiplier.h
-            FGNelderMead.h
-            FGStateSpace.h
             FGMultiStepMethod.h
             FGTimeMarchingScheme.h
             FGQuatODEIntegration.h
