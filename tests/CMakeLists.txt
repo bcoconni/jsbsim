@@ -37,6 +37,7 @@ set(PYTHON_TESTS ResetOutputFiles
                  TestScriptOutput
                  CheckSimTimeReset
                  TestHoldDown
+                 TestPitotAngle
                  TestOrbit
                  TestGndReactions)
 
