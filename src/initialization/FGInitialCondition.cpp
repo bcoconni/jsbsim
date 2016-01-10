@@ -57,7 +57,7 @@ using namespace std;
 
 namespace JSBSim {
 
-IDENT(IdSrc,"$Id: FGInitialCondition.cpp,v 1.102 2015/12/13 08:16:00 bcoconni Exp $");
+IDENT(IdSrc,"$Id: FGInitialCondition.cpp,v 1.103 2016/01/10 15:56:30 bcoconni Exp $");
 IDENT(IdHdr,ID_INITIALCONDITION);
 
 //******************************************************************************
@@ -164,8 +164,7 @@ void FGInitialCondition::SetVequivalentKtsIC(double ve)
 void FGInitialCondition::SetMachIC(double mach)
 {
   double altitudeASL = position.GetAltitudeASL();
-  double temperature = Atmosphere->GetTemperature(altitudeASL);
-  double soundSpeed = sqrt(SHRatio*Reng*temperature);
+  double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   SetVtrueFpsIC(mach*soundSpeed);
   lastSpeedSet = setmach;
 }
@@ -179,8 +178,7 @@ void FGInitialCondition::SetVcalibratedKtsIC(double vcas)
   double pressureSL = Atmosphere->GetPressureSL();
   double rhoSL = Atmosphere->GetDensitySL();
   double mach = MachFromVcalibrated(fabs(vcas)*ktstofps, pressure, pressureSL, rhoSL);
-  double temperature = Atmosphere->GetTemperature(altitudeASL);
-  double soundSpeed = sqrt(SHRatio*Reng*temperature);
+  double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
 
   SetVtrueFpsIC(mach*soundSpeed);
   lastSpeedSet = setvc;
@@ -209,8 +207,8 @@ void FGInitialCondition::calcAeroAngles(const FGColumnVector3& _vt_NED)
     alpha = atan2( wa, ua );
 
   // alpha cannot be constrained without updating other informations like the
-  // true speed or the Euler angles. Otherwise we might end up with an inconsistent
-  // state of the aircraft.
+  // true speed or the Euler angles. Otherwise we might end up with an
+  // inconsistent state of the aircraft.
   /*alpha = Constrain(fdmex->GetAerodynamics()->GetAlphaCLMin(), alpha,
                     fdmex->GetAerodynamics()->GetAlphaCLMax());*/
 
@@ -689,10 +687,9 @@ void FGInitialCondition::SetAltitudeAGLFtIC(double agl)
 void FGInitialCondition::SetAltitudeASLFtIC(double alt)
 {
   double altitudeASL = position.GetAltitudeASL();
-  double temperature = Atmosphere->GetTemperature(altitudeASL);
   double pressure = Atmosphere->GetPressure(altitudeASL);
   double pressureSL = Atmosphere->GetPressureSL();
-  double soundSpeed = sqrt(SHRatio*Reng*temperature);
+  double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   double rho = Atmosphere->GetDensity(altitudeASL);
   double rhoSL = Atmosphere->GetDensitySL();
 
@@ -703,8 +700,7 @@ void FGInitialCondition::SetAltitudeASLFtIC(double alt)
   altitudeASL=alt;
   position.SetAltitudeASL(alt);
 
-  temperature = Atmosphere->GetTemperature(altitudeASL);
-  soundSpeed = sqrt(SHRatio*Reng*temperature);
+  soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   rho = Atmosphere->GetDensity(altitudeASL);
   pressure = Atmosphere->GetPressure(altitudeASL);
 
@@ -816,11 +812,10 @@ double FGInitialCondition::GetBodyWindFpsIC(int idx) const
 double FGInitialCondition::GetVcalibratedKtsIC(void) const
 {
   double altitudeASL = position.GetAltitudeASL();
-  double temperature = Atmosphere->GetTemperature(altitudeASL);
   double pressure = Atmosphere->GetPressure(altitudeASL);
   double pressureSL = Atmosphere->GetPressureSL();
   double rhoSL = Atmosphere->GetDensitySL();
-  double soundSpeed = sqrt(SHRatio*Reng*temperature);
+  double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   double mach = vt / soundSpeed;
   return fpstokts * VcalibratedFromMach(mach, pressure, pressureSL, rhoSL);
 }
@@ -840,8 +835,7 @@ double FGInitialCondition::GetVequivalentKtsIC(void) const
 double FGInitialCondition::GetMachIC(void) const
 {
   double altitudeASL = position.GetAltitudeASL();
-  double temperature = Atmosphere->GetTemperature(altitudeASL);
-  double soundSpeed = sqrt(SHRatio*Reng*temperature);
+  double soundSpeed = Atmosphere->GetSoundSpeed(altitudeASL);
   return vt / soundSpeed;
 }
 
