@@ -38,6 +38,7 @@ set(PYTHON_TESTS ResetOutputFiles
                  CheckSimTimeReset
                  TestHoldDown
                  TestPitotAngle
+                 CheckTrim
                  TestOrbit
                  TestGndReactions)
 
