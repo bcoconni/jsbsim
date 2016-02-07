@@ -624,12 +624,12 @@ void FGFDMExec::ResetToInitialConditions(int mode)
     Models[i]->InitModel();
   }
 
-  RunIC();
-
   if (Script)
     Script->ResetEvents();
   else
     Setsim_time(0.0);
+
+  RunIC();
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

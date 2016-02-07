@@ -78,6 +78,7 @@ FGAccelerations::FGAccelerations(FGFDMExec* fdmex)
 
   vPQRidot.InitMatrix();
   vUVWidot.InitMatrix();
+  vUVWdot.InitMatrix();
   vGravAccel.InitMatrix();
   vBodyAccel.InitMatrix();
 
@@ -100,6 +101,7 @@ bool FGAccelerations::InitModel(void)
 
   vPQRidot.InitMatrix();
   vUVWidot.InitMatrix();
+  vUVWdot.InitMatrix();
   vGravAccel.InitMatrix();
   vBodyAccel.InitMatrix();
 
