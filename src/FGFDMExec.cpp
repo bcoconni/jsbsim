@@ -312,6 +312,7 @@ bool FGFDMExec::DeAllocate(void)
 bool FGFDMExec::Run(void)
 {
   bool success=true;
+  bool inputRead = true;
 
   Debug(2);
 
@@ -327,12 +328,14 @@ bool FGFDMExec::Run(void)
 
   do {
     for (unsigned int i = 0; i < Models.size(); i++) {
-      // Skip the input and output steps if we are in the middle of a step
-      if (Propagate->IsTimeStepIncomplete()
-          && (i == eInput || i == eOutput)) continue;
+      // Read the input only once at the beginning of the time step.
+      if (i == eInput && inputRead) continue;
+      // Skip the output process while we are in the middle of a time step.
+      if (Propagate->IsTimeStepIncomplete() && i == eOutput) continue;
 
       LoadInputs(i);
       Models[i]->Run(holding);
+      if (i== eInput) inputRead = true; // The input has been read.
     }
   } while (Propagate->IsTimeStepIncomplete());
 
