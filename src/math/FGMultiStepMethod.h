@@ -66,32 +66,23 @@ enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
 template<class T> class FGMultiStepMethod : public FGTimeMarchingScheme
 {
 public:
-  FGMultiStepMethod() : step(0), method(eRectEuler), skip(false) {}
+  FGMultiStepMethod() : step(0), method(eRectEuler) {}
 
-  void Propagate(void) {
-    v0 += dv;
-    if (!skip) {
-      valDot.push_front(vdot);
-      valDot.pop_back();
-    }
-    skip = false;
-  }
+  void Propagate(void) { v0 += dv; }
   void setMethod(int t) { method = (eIntegrateType)t; }
 
   int getMethod(void) const { return (int)method; }
   void setInitialCondition(const T& v) { v0 = v; dv *= 0.0; }
   virtual void setInitialDerivative(const T& ICdot) {
     valDot.assign(4, ICdot);
-    vdot = ICdot;
     step = 0;
   }
 
   T getCurrentValue(void) const { return v0 + dv; }
 
-  virtual T integrate(const T& dot) {
-    vdot = dot;
-
+  virtual T integrate(const T& vdot) {
     if (dt > 0.) {
+      bool skip = false;
 
       switch(method) {
       case eRectEuler:
@@ -129,20 +120,23 @@ public:
       default:
         throw("Unrecognized integration method.");
       }
+
+      if (!skip) {
+        valDot.push_front(vdot);
+        valDot.pop_back();
+      }
       return v0 + dv;
     }
 
-    dv *= dt;
-    skip = true;
+    dv *= 0.0;
     return v0;
   }
 
 protected:
   unsigned int step;
-  T v0, dv, vdot;
+  T v0, dv;
   eIntegrateType method;
   std::deque<T> valDot;
-  bool skip;
 };
 } // namespace
 
