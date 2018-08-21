@@ -49,7 +49,8 @@ CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 struct LagrangeMultiplier {
-  FGColumnVector3 ForceJacobian;
+  FGColumnVector3 SpringDirection;
+  FGColumnVector3 TangentDirection;
   FGColumnVector3 LeverArm;
   double Min;
   double Max;

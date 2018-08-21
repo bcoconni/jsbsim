@@ -263,7 +263,8 @@ void FGLGear::ResetToIC(void)
 
   // Initialize Lagrange multipliers
   for (int i=0; i < 3; i++) {
-    LMultiplier[i].ForceJacobian.InitMatrix();
+    LMultiplier[i].TangentDirection.InitMatrix();
+    LMultiplier[i].SpringDirection.InitMatrix();
     LMultiplier[i].LeverArm.InitMatrix();
     LMultiplier[i].Min = 0.0;
     LMultiplier[i].Max = 0.0;
@@ -674,7 +675,7 @@ void FGLGear::ComputeJacobian(const FGColumnVector3& vWhlContactVec)
     velocityDirection(eZ) = 0.;
     velocityDirection.Normalize();
 
-    LMultiplier[ftDynamic].ForceJacobian = mT * velocityDirection;
+    LMultiplier[ftDynamic].TangentDirection = mT * velocityDirection;
     LMultiplier[ftDynamic].Max = 0.;
     LMultiplier[ftDynamic].Min = -fabs(staticFFactor * dynamicFCoeff * vFn(eZ));
     LMultiplier[ftDynamic].LeverArm = vWhlContactVec;
@@ -696,10 +697,17 @@ void FGLGear::ComputeJacobian(const FGColumnVector3& vWhlContactVec)
     // "dynamic friction".
     StaticFriction = true;
 
-    LMultiplier[ftRoll].ForceJacobian = mT * FGColumnVector3(1.,0.,0.);
-    LMultiplier[ftSide].ForceJacobian = mT * FGColumnVector3(0.,1.,0.);
+    LMultiplier[ftRoll].TangentDirection = mT * FGColumnVector3(1.,0.,0.);
+    LMultiplier[ftSide].TangentDirection = mT * FGColumnVector3(0.,1.,0.);
     LMultiplier[ftRoll].LeverArm = vWhlContactVec;
     LMultiplier[ftSide].LeverArm = vWhlContactVec;
+
+    if (eContactType == ctBOGEY)
+      LMultiplier[ftRoll].SpringDirection = mTGear * FGColumnVector3(0.,0.,1.);
+    else
+      LMultiplier[ftRoll].SpringDirection = mT * FGColumnVector3(0.,0.,1.);
+
+    LMultiplier[ftSide].SpringDirection = LMultiplier[ftRoll].SpringDirection;
 
     switch(eContactType) {
     case ctBOGEY:
@@ -739,7 +747,7 @@ void FGLGear::UpdateForces(void)
     vFn(eY) = LMultiplier[ftSide].value;
   }
   else {
-    FGColumnVector3 forceDir = mT.Transposed() * LMultiplier[ftDynamic].ForceJacobian;
+    FGColumnVector3 forceDir = mT.Transposed() * LMultiplier[ftDynamic].TangentDirection;
     vFn(eX) = LMultiplier[ftDynamic].value * forceDir(eX);
     vFn(eY) = LMultiplier[ftDynamic].value * forceDir(eY);
   }

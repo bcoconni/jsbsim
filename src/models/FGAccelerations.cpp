@@ -69,8 +69,6 @@ FGAccelerations::FGAccelerations(FGFDMExec* fdmex)
 {
   Debug(0);
   Name = "FGAccelerations";
-  gravType = gtWGS84;
-  gravTorque = false;
 
   vPQRidot.InitMatrix();
   vUVWidot.InitMatrix();
@@ -101,6 +99,10 @@ bool FGAccelerations::InitModel(void)
   vGravAccel.InitMatrix();
   vBodyAccel.InitMatrix();
 
+  tolerance = 1E-5;
+  gravType = gtWGS84;
+  gravTorque = false;
+
   return true;
 }
 
@@ -118,7 +120,7 @@ bool FGAccelerations::Run(bool Holding)
   CalculateUVWdot();   // Translational rate derivative
 
   if (!FDMExec->GetHoldDown())
-    CalculateFrictionForces(in.DeltaT * rate);  // Update rate derivatives with friction forces
+    CalculateFrictionForces();  // Update rate derivatives with friction forces
 
   Debug(2);
   return false;
@@ -245,7 +247,7 @@ void FGAccelerations::SetHoldDown(bool hd)
 // The friction forces are resolved in the body frame relative to the origin
 // (Earth center).
 
-void FGAccelerations::CalculateFrictionForces(double dt)
+void FGAccelerations::CalculateFrictionForces(void)
 {
   vector<LagrangeMultiplier*>& multipliers = *in.MultipliersList;
   size_t n = multipliers.size();
@@ -261,32 +263,22 @@ void FGAccelerations::CalculateFrictionForces(double dt)
 
   // Assemble the linear system of equations
   for (unsigned int i=0; i < n; i++) {
-    FGColumnVector3 U = multipliers[i]->ForceJacobian;
+    FGColumnVector3 T = multipliers[i]->TangentDirection;
     FGColumnVector3 r = multipliers[i]->LeverArm;
-    FGColumnVector3 v1 = U / in.Mass;
-    FGColumnVector3 v2 = in.Jinv * (r*U); // Should be J^-T but J is symmetric and so is J^-1
 
     for (unsigned int j=0; j < i; j++)
       a[i*n+j] = a[j*n+i]; // Takes advantage of the symmetry of Jac^T*M^-1*Jac
 
     for (unsigned int j=i; j < n; j++) {
-      U = multipliers[j]->ForceJacobian;
-      r = multipliers[j]->LeverArm;
-      a[i*n+j] = DotProduct(U, v1 + v2*r);
+      FGColumnVector3 F = multipliers[j]->TangentDirection;
+      FGColumnVector3 l = multipliers[j]->LeverArm;
+      FGColumnVector3 acc = F / in.Mass;
+      FGColumnVector3 w = in.Jinv * (l*F); // Should be J^-T but J is symmetric and so is J^-1
+      a[i*n+j] = DotProduct(T, acc + w*r);
     }
   }
 
   // Assemble the RHS member
-
-  // Translation
-  FGColumnVector3 vdot = vUVWdot;
-  if (dt > 0.) // Zeroes out the relative movement between the aircraft and the ground
-    vdot += (in.vUVW - in.Tec2b * in.TerrainVelocity) / dt;
-
-  // Rotation
-  FGColumnVector3 wdot = vPQRdot;
-  if (dt > 0.) // Zeroes out the relative movement between the aircraft and the ground
-    wdot += (in.vPQR - in.Tec2b * in.TerrainAngularVel) / dt;
 
   // Prepare the linear system for the Gauss-Seidel algorithm :
   // 1. Compute the right hand side member 'rhs'
@@ -294,10 +286,16 @@ void FGAccelerations::CalculateFrictionForces(double dt)
   //    a division computation at each iteration of Gauss-Seidel.
   for (unsigned int i=0; i < n; i++) {
     double d = a[i*n+i];
-    FGColumnVector3 U = multipliers[i]->ForceJacobian;
+    FGColumnVector3 U = multipliers[i]->SpringDirection;
+    FGColumnVector3 T = multipliers[i]->TangentDirection;
     FGColumnVector3 r = multipliers[i]->LeverArm;
 
-    rhs[i] = -DotProduct(U, vdot + wdot*r)/d;
+    FGColumnVector3 V = in.vUVW + in.vPQR*r;
+    FGColumnVector3 Vn = -DotProduct(V,U)*U;
+    FGColumnVector3 acc = vUVWdot + vPQRdot*r + in.vPQR*Vn;
+
+    rhs[i] = -(DotProduct(T, acc - DotProduct(acc,U)*U)
+               -DotProduct(in.vPQR*T, V + Vn))/d;
 
     for (unsigned int j=0; j < n; j++)
       a[i*n+j] /= d;
@@ -320,17 +318,17 @@ void FGAccelerations::CalculateFrictionForces(double dt)
       norm += fabs(dlambda);
     }
 
-    if (norm < 1E-5) break;
+    if (norm < tolerance) break;
   }
 
   // Calculate the total friction forces and moments
 
   for (unsigned int i=0; i< n; i++) {
     double lambda = multipliers[i]->value;
-    FGColumnVector3 U = multipliers[i]->ForceJacobian;
+    FGColumnVector3 T = multipliers[i]->TangentDirection;
     FGColumnVector3 r = multipliers[i]->LeverArm;
 
-    FGColumnVector3 F = lambda * U;
+    FGColumnVector3 F = lambda * T;
     vFrictionForces += F;
     vFrictionMoments += r * F;
   }
@@ -352,7 +350,7 @@ void FGAccelerations::InitializeDerivatives(void)
   // Make an initial run and set past values
   CalculatePQRdot();           // Angular rate derivative
   CalculateUVWdot();           // Translational rate derivative
-  CalculateFrictionForces(0.);   // Update rate derivatives with friction forces
+  CalculateFrictionForces();   // Update rate derivatives with friction forces
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -370,8 +368,6 @@ void FGAccelerations::bind(void)
   PropertyManager->Tie("accelerations/wdot-ft_sec2", this, eW, (PMF)&FGAccelerations::GetUVWdot);
 
   PropertyManager->Tie("accelerations/gravity-ft_sec2", this, &FGAccelerations::GetGravAccelMagnitude);
-  PropertyManager->Tie("simulation/gravity-model", &gravType);
-  PropertyManager->Tie("simulation/gravitational-torque", &gravTorque);
   PropertyManager->Tie("forces/fbx-weight-lbs", this, eX, (PMF)&FGAccelerations::GetWeight);
   PropertyManager->Tie("forces/fby-weight-lbs", this, eY, (PMF)&FGAccelerations::GetWeight);
   PropertyManager->Tie("forces/fbz-weight-lbs", this, eZ, (PMF)&FGAccelerations::GetWeight);
@@ -389,6 +385,10 @@ void FGAccelerations::bind(void)
   PropertyManager->Tie("forces/fbx-gear-lbs", this, eX, (PMF)&FGAccelerations::GetGroundForces);
   PropertyManager->Tie("forces/fby-gear-lbs", this, eY, (PMF)&FGAccelerations::GetGroundForces);
   PropertyManager->Tie("forces/fbz-gear-lbs", this, eZ, (PMF)&FGAccelerations::GetGroundForces);
+
+  tolerance = PropertyManager->CreatePropertyObject<double>("simulation/contact/tolerance");
+  gravType = PropertyManager->CreatePropertyObject<int>("simulation/gravity-model");
+  gravTorque = PropertyManager->CreatePropertyObject<bool>("simulation/gravitational-torque");
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

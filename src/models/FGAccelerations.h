@@ -44,6 +44,7 @@ INCLUDES
 #include "math/FGColumnVector3.h"
 #include "math/LagrangeMultiplier.h"
 #include "math/FGMatrix33.h"
+#include "simgear/props/propertyObject.hxx"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -383,13 +384,14 @@ private:
   FGColumnVector3 vFrictionForces;
   FGColumnVector3 vFrictionMoments;
 
-  int gravType;
-  bool gravTorque;
+  simgear::PropertyObject<int>    gravType;
+  simgear::PropertyObject<bool>   gravTorque;
+  simgear::PropertyObject<double> tolerance;
 
   void CalculatePQRdot(void);
   void CalculateUVWdot(void);
 
-  void CalculateFrictionForces(double dt);
+  void CalculateFrictionForces(void);
 
   void bind(void);
   void Debug(int from);
