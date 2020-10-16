@@ -30,7 +30,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'ref/tags/')) && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         run: |
           sudo apt-get install doxygen
           # We don't want Doxygen to generate the HTML docs in this job (saves time)
@@ -92,7 +92,7 @@ jobs:
 
       - name: Upload Files for Release
         uses: actions/upload-artifact@v2
-        if: github.event_name == 'push' && startsWith(github.ref, 'ref/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'ref/tags/')) && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         with:
           name: Linux-${{ matrix.os }}.binaries
           path: |
@@ -153,7 +153,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
         run: |
           cinst doxygen.install
           # We don't want Doxygen to generate the HTML docs in this job (saves time)
@@ -247,7 +247,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
         run: |
           brew install doxygen
           # We don't want Doxygen to generate the HTML docs in this job (saves time)
