@@ -111,6 +111,17 @@ jobs:
             build/*.deb
             build/python/dist/*-manylinux*.whl
 
+    # Deploy wheels packages to PyPI when a tag is pushed
+      - name: PyPI deployment
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        env:
+          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
+        run: |
+          pip install -U twine
+          python python/setup.py sdist
+          twine upload build/python/dist/*
+
   Windows-MinGW32:
     runs-on: windows-latest
     steps:
@@ -259,6 +270,17 @@ jobs:
             build\utils\aeromatic++\RelWithDebInfo\aeromatic.exe
             build\python\dist\*.whl
 
+    # Deploy wheels packages to PyPI when a tag is pushed
+      - name: PyPI deployment
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        env:
+          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
+        run: |
+          pip install -U twine
+          python python/setup.py sdist
+          twine upload build/python/dist/*
+
   MacOSX:
     runs-on: macos-latest
     steps:
@@ -362,6 +384,17 @@ jobs:
             (branch ${{ github.ref }} commit ${{ github.sha}})
           files: |
             build/python/dist/*.whl
+
+    # Deploy wheels packages to PyPI when a tag is pushed
+      - name: PyPI deployment
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        env:
+          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
+        run: |
+          pip install -U twine
+          python python/setup.py sdist
+          twine upload build/python/dist/*
 
   Documentation:
     needs: Linux
