@@ -121,7 +121,7 @@ jobs:
         run: |
           pip install -U twine
           python python/setup.py sdist
-          twine upload python/dist/*
+          twine upload --repository testpypi python/dist/*
 
   Windows-MinGW32:
     runs-on: windows-latest
@@ -279,7 +279,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
           pip install -U twine
-          twine upload build/python/dist/*
+          twine upload --repository testpypi build/python/dist/*
 
   MacOSX:
     runs-on: macos-latest
@@ -393,7 +393,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
           pip install -U twine
-          twine upload build/python/dist/*
+          twine upload --repository testpypi build/python/dist/*
 
   Documentation:
     needs: Linux
