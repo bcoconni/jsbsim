@@ -30,7 +30,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'ref/tags/')) && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         run: |
           sudo apt-get install doxygen
           # We don't want Doxygen to generate the HTML docs in this job (saves time)
@@ -92,7 +92,7 @@ jobs:
 
       - name: Upload Files for Release
         uses: actions/upload-artifact@v2
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'ref/tags/')) && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         with:
           name: Linux-${{ matrix.os }}.binaries
           path: |
@@ -362,6 +362,12 @@ jobs:
     steps:
       - name: Download files
         uses: actions/download-artifact@v2
+      - name: Prepare files for deployment
+        run: |
+          mkdir dist
+          find . -type f -name *.exe -exec cp {} dist/. \;
+          find . -type f -name *.whl -exec cp {} dist/. \;
+          find . -type f -name *.deb -exec cp {} dist/. \;
 
       # PyPI deployment
       - name: PyPI deployment
@@ -370,16 +376,9 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
           pip install -U twine
-          find . -type f -name *.whl -exec twine upload --repository testpypi {} \;
-          find . -type f -name *.tar.gz -exec twine upload --repository testpypi {} \;
+          twine upload --repository testpypi dist/*.whl
 
     # Deploy official release to GitHub
-      - name: Prepare files for deployment
-        run: |
-          mkdir dist
-          find . -type f -name *.exe -exec cp {} dist/. \;
-          find . -type f -name *.whl -exec cp {} dist/. \;
-          find . -type f -name *.deb -exec cp {} dist/. \;
       - name: GitHub release
         uses: softprops/action-gh-release@v1
         env:
