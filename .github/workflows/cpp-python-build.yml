@@ -119,7 +119,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
           pip install -U twine
-          twine upload --repository testpypi build/python/dist/*
+          twine upload --repository testpypi build/python/dist/*-manylinux*
 
   Windows-MinGW32:
     runs-on: windows-latest
