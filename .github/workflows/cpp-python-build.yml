@@ -113,7 +113,7 @@ jobs:
 
     # Deploy wheels packages to PyPI when a tag is pushed
       - name: PyPI deployment
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        if: matrix.os == 'ubuntu-20.04' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         env:
           TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
