@@ -94,8 +94,8 @@ jobs:
         if: failure()
         run: valgrind-ci valgrind_Short_S23_3.xml --number-of-errors --summary --source=.
 
-    # Release files
-      - name: Release binaries
+    # Rolling release
+      - name: Rolling release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         env:
@@ -120,6 +120,20 @@ jobs:
         run: |
           pip install -U twine
           twine upload --repository testpypi build/python/dist/*-manylinux*
+
+    # Deploy official release
+      - name: Official release
+        uses: softprops/action-gh-release@v1
+        if: matrix.os == 'ubuntu-20.04' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: Release ${{ github.ref }}
+          prerelease: false
+          draft: false
+          files: |
+            build/*.deb
+            build/python/dist/*-manylinux*.whl
 
   Windows-MinGW32:
     runs-on: windows-latest
@@ -251,8 +265,8 @@ jobs:
           name: Windows_MSVC.logs
           path: logs
 
-    # Release files
-      - name: Release binaries
+    # Rolling release
+      - name: Rolling release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
@@ -278,6 +292,21 @@ jobs:
         run: |
           pip install -U twine
           twine upload --repository testpypi build/python/dist/*
+
+    # Deploy official release
+      - name: Official release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: Release ${{ github.ref }}
+          prerelease: false
+          draft: false
+          files: |
+            build\src\RelWithDebInfo\JSBSim.exe
+            build\utils\aeromatic++\RelWithDebInfo\aeromatic.exe
+            build\python\dist\*.whl
 
   MacOSX:
     runs-on: macos-latest
@@ -367,8 +396,8 @@ jobs:
           name: MacOSX.logs
           path: logs
 
-    # Release files
-      - name: Release binaries
+    # Rolling release
+      - name: Rolling release
         uses: softprops/action-gh-release@v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
@@ -380,8 +409,7 @@ jobs:
           body: |
             Contains the ${{ github.job}} packages built from the bleeding edge code
             (branch ${{ github.ref }} commit ${{ github.sha}})
-          files: |
-            build/python/dist/*.whl
+          files: build/python/dist/*.whl
 
     # Deploy wheels packages to PyPI when a tag is pushed
       - name: PyPI deployment
@@ -394,6 +422,18 @@ jobs:
           pip install -U twine
           python python/setup.py sdist
           twine upload --repository testpypi python/dist/*
+
+    # Deploy official release
+      - name: Official release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: Release ${{ github.ref }}
+          prerelease: false
+          draft: false
+          files: build\python\dist\*.whl
 
   Documentation:
     needs: Linux
