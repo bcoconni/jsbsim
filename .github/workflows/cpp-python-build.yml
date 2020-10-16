@@ -76,62 +76,26 @@ jobs:
           python -c "import jsbsim;fdm=jsbsim.FGFDMExec('.', None);print(jsbsim.FGAircraft.__doc__)"
           pip uninstall jsbsim -y
 
-    # Upload files
-      - name: On failure - Prepare logs for upload
-        if: failure()
-        run: |
-          mkdir logs
-          cp build/Testing/Temporary/*.log logs/.
-          cp build/tests/*-build.log logs/.
-          cp valgrind_Short_S23_3.xml logs/.
+    # On failure, upload logs
       - name: On failure - Upload logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: Linux-${{ matrix.os }}-system_expat_${{ matrix.expat }}-shared_libs_${{ matrix.shared_libs }}.logs
-          path: logs
+          path: |
+            build/Testing/Temporary/*.log
+            build/tests/*-build.log
+            valgrind_Short_S23_3.xml
       - name: On failure - Display a summary of valgrind errors.
         if: failure()
         run: valgrind-ci valgrind_Short_S23_3.xml --number-of-errors --summary --source=.
 
-    # Rolling release
-      - name: Rolling release
-        uses: softprops/action-gh-release@v1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Files for Release
+        uses: actions/upload-artifact@v2
+        if: github.event_name == 'push' && startsWith(github.ref, 'ref/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         with:
-          name: ${{ github.job}} rolling release
-          tag_name: ${{ github.job }}
-          prerelease: true
-          body: |
-            Contains the ${{ github.job}} packages built from the bleeding edge code
-            (branch ${{ github.ref }} commit ${{ github.sha}})
-          files: |
-            build/*.deb
-            build/python/dist/*-manylinux*.whl
-
-    # Deploy wheels packages to PyPI when a tag is pushed
-      - name: PyPI deployment
-        if: matrix.os == 'ubuntu-20.04' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
-        env:
-          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
-        run: |
-          pip install -U twine
-          twine upload --repository testpypi build/python/dist/*-manylinux*
-
-    # Deploy official release
-      - name: Official release
-        uses: softprops/action-gh-release@v1
-        if: matrix.os == 'ubuntu-20.04' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          name: Release ${{ github.ref }}
-          prerelease: false
-          draft: false
-          files: |
+          name: Linux-${{ matrix.os }}.binaries
+          path: |
             build/*.deb
             build/python/dist/*-manylinux*.whl
 
@@ -251,59 +215,22 @@ jobs:
           pip install jsbsim --no-index -f build/python/dist
           python -c "import jsbsim;fdm=jsbsim.FGFDMExec('.', None);print(jsbsim.FGAircraft.__doc__)"
 
-    # Upload files
-      - name: On failure - Prepare logs for upload
-        if: failure()
-        run: |
-          mkdir logs
-          cp build/Testing/Temporary/*.log logs/.
-          cp build/tests/*-build.log logs/.
+    # On failure, upload logs
       - name: On failure - Upload logs
         uses: actions/upload-artifact@v1
         if: failure()
         with:
           name: Windows_MSVC.logs
-          path: logs
+          path: |
+            build/Testing/Temporary/*.log
+            build/tests/*-build.log
 
-    # Rolling release
-      - name: Rolling release
-        uses: softprops/action-gh-release@v1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Files for Release
+        uses: actions/upload-artifact@v2
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
         with:
-          name: ${{ github.job}} rolling release
-          tag_name: ${{ github.job }}
-          prerelease: true
-          body: |
-            Contains the ${{ github.job}} packages built from the bleeding edge code
-            (branch ${{ github.ref }} commit ${{ github.sha}})
-          files: |
-            build\src\RelWithDebInfo\JSBSim.exe
-            build\utils\aeromatic++\RelWithDebInfo\aeromatic.exe
-            build\python\dist\*.whl
-
-    # Deploy wheels packages to PyPI when a tag is pushed
-      - name: PyPI deployment
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        env:
-          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
-        run: |
-          pip install -U twine
-          twine upload --repository testpypi build/python/dist/*
-
-    # Deploy official release
-      - name: Official release
-        uses: softprops/action-gh-release@v1
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          name: Release ${{ github.ref }}
-          prerelease: false
-          draft: false
-          files: |
+          name: Windows_MSVC.binaries
+          path: |
             build\src\RelWithDebInfo\JSBSim.exe
             build\utils\aeromatic++\RelWithDebInfo\aeromatic.exe
             build\python\dist\*.whl
@@ -382,58 +309,89 @@ jobs:
           pip install jsbsim --no-index -f build/python/dist
           python -c "import jsbsim;fdm=jsbsim.FGFDMExec('.', None);print(jsbsim.FGAircraft.__doc__)"
 
-    # Upload files
-      - name: On failure - Prepare logs for upload
-        if: failure()
-        run: |
-          mkdir logs
-          cp build/Testing/Temporary/*.log logs/.
-          cp build/tests/*-build.log logs/.
+    # On failure, upload logs
       - name: On failure - Upload logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: MacOSX.logs
-          path: logs
+          path: |
+            build/Testing/Temporary/*.log
+            build/tests/*-build.log
 
-    # Rolling release
+      - name: Upload Files for Release
+        uses: actions/upload-artifact@v2
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+        with:
+          name: MacOSX.binaries
+          path: build/python/dist/*
+
+  Rolling-Release:
+    needs: [Linux, MacOSX, Windows-MSVC]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Download files
+        uses: actions/download-artifact@v2
+      - name: Prepare files
+        run: |
+          mkdir dist
+          find . -type f -name *.exe -exec cp {} dist/. \;
+          find . -type f -name *.whl -exec cp {} dist/. \;
+          find . -type f -name *.deb -exec cp {} dist/. \;
       - name: Rolling release
         uses: softprops/action-gh-release@v1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: ${{ github.job}} rolling release
+          name: Rolling release
           tag_name: ${{ github.job }}
           prerelease: true
           body: |
             Contains the ${{ github.job}} packages built from the bleeding edge code
             (branch ${{ github.ref }} commit ${{ github.sha}})
-          files: build/python/dist/*.whl
+          files: |
+            dist/*.exe
+            dist/*.whl
+            dist/*.deb
 
-    # Deploy wheels packages to PyPI when a tag is pushed
+  Official-Release:
+    needs: [Linux, MacOSX, Windows-MSVC]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download files
+        uses: actions/download-artifact@v2
+
+      # PyPI deployment
       - name: PyPI deployment
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         env:
           TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
-        working-directory: build
         run: |
           pip install -U twine
-          python python/setup.py sdist
-          twine upload --repository testpypi python/dist/*
+          find . -type f -name *.whl -exec twine upload --repository testpypi {} \;
+          find . -type f -name *.tar.gz -exec twine upload --repository testpypi {} \;
 
-    # Deploy official release
-      - name: Official release
+    # Deploy official release to GitHub
+      - name: Prepare files for deployment
+        run: |
+          mkdir dist
+          find . -type f -name *.exe -exec cp {} dist/. \;
+          find . -type f -name *.whl -exec cp {} dist/. \;
+          find . -type f -name *.deb -exec cp {} dist/. \;
+      - name: GitHub release
         uses: softprops/action-gh-release@v1
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: Release ${{ github.ref }}
           prerelease: false
           draft: false
-          files: build\python\dist\*.whl
+          files: |
+            dist/*.exe
+            dist/*.whl
+            dist/*.deb
 
   Documentation:
     needs: Linux
