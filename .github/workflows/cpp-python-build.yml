@@ -370,6 +370,10 @@ jobs:
           find . -type f -name *.deb -exec cp {} dist/. \;
 
       # PyPI deployment
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.6'
       - name: PyPI deployment
         env:
           TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
