@@ -33,7 +33,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
-        if: env.release && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        if: env.release == 'true' && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         run: |
           sudo apt-get install doxygen
           # We don't want Doxygen to generate the HTML docs in this job (saves time)
@@ -42,6 +42,7 @@ jobs:
           perl -i -pe 's/^(HAVE_DOT\s*=\s*)YES/\1NO/g' doc/JSBSim.dox.in
       - name: Configure JSBSim
         run: |
+          echo "env.release = ${{ env.release }}"
           mkdir build
           cd build
           cmake -DCPACK_GENERATOR=DEB -DINSTALL_PYTHON_MODULE=ON -DCMAKE_C_FLAGS_DEBUG="-g -O2" -DCMAKE_CXX_FLAGS_DEBUG="-g -O2" -DCMAKE_BUILD_TYPE=Debug -DSYSTEM_EXPAT=${{matrix.expat}} -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} ..
@@ -95,7 +96,7 @@ jobs:
 
       - name: Upload Files for Release
         uses: actions/upload-artifact@v2
-        if: env.release && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
+        if: env.release == 'true' && matrix.expat == 'OFF' && matrix.shared_libs == 'OFF'
         with:
           name: Linux-${{ matrix.os }}.binaries
           path: |
@@ -156,7 +157,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
-        if: env.release
+        if: env.release == 'true'
         run: |
           cinst doxygen.install
           # We don't want Doxygen to generate the HTML docs in this job (saves time)
@@ -230,7 +231,7 @@ jobs:
 
       - name: Upload Files for Release
         uses: actions/upload-artifact@v2
-        if: env.release
+        if: env.release == 'true'
         with:
           name: Windows_MSVC.binaries
           path: |
@@ -250,7 +251,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
-        if: env.release
+        if: env.release == 'true'
         run: |
           brew install doxygen
           # We don't want Doxygen to generate the HTML docs in this job (saves time)
@@ -281,7 +282,7 @@ jobs:
         working-directory: build
         run: python python/setup.py bdist_wheel --build-number=$GITHUB_RUN_NUMBER
       - name: Build source package for Python
-        if: env.release
+        if: env.release == 'true'
         working-directory: build
         run: python python/setup.py sdist
       - name: Test wheel package for Python 3.6
@@ -328,7 +329,7 @@ jobs:
 
       - name: Upload Files for Release
         uses: actions/upload-artifact@v2
-        if: env.release
+        if: env.release == 'true'
         with:
           name: MacOSX.binaries
           path: build/python/dist/*
@@ -388,7 +389,8 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
           pip install -U twine
-          twine upload --repository testpypi dist/*
+          twine upload --repository testpypi dist/*.whl
+          twine upload --repository testpypi dist/*.tar.gz
 
     # Deploy official release to GitHub
       - name: GitHub release
