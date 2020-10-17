@@ -42,7 +42,6 @@ jobs:
           perl -i -pe 's/^(HAVE_DOT\s*=\s*)YES/\1NO/g' doc/JSBSim.dox.in
       - name: Configure JSBSim
         run: |
-          echo "env.release = ${{ env.release }}"
           mkdir build
           cd build
           cmake -DCPACK_GENERATOR=DEB -DINSTALL_PYTHON_MODULE=ON -DCMAKE_C_FLAGS_DEBUG="-g -O2" -DCMAKE_CXX_FLAGS_DEBUG="-g -O2" -DCMAKE_BUILD_TYPE=Debug -DSYSTEM_EXPAT=${{matrix.expat}} -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} ..
@@ -393,12 +392,17 @@ jobs:
           twine upload --repository testpypi dist/*.tar.gz
 
     # Deploy official release to GitHub
+      - name: Get JSBSim version
+        run: |
+          pip install jsbsim --no-index -f dist
+          export VERSION=`JSBSim --version | awk '${ print $2 }'`
+          echo $VERSION
       - name: GitHub release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Release ${{ github.ref }}
+          name: Release v${{ env.VERSION }}
           prerelease: false
           draft: false
           files: |
