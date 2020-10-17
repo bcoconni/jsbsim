@@ -397,7 +397,7 @@ jobs:
           pip install -U numpy
           pip install jsbsim --no-index -f dist
           export VERSION=`pip show jsbsim | grep -i version | awk '{ print $2 }'`
-          echo "::set-env name=VERSION::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: GitHub release
         uses: softprops/action-gh-release@v1
         env:
