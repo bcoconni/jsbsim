@@ -394,6 +394,7 @@ jobs:
     # Deploy official release to GitHub
       - name: Get JSBSim version
         run: |
+          pip install -U numpy
           pip install jsbsim --no-index -f dist
           export VERSION=`JSBSim --version | awk '${ print $2 }'`
           echo $VERSION
