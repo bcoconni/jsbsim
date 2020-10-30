@@ -94,7 +94,7 @@ FGfdmSocket::FGfdmSocket(const string& address, int port, int protocol)
     hints.ai_socktype = SOCK_STREAM;
   hints.ai_protocol = 0;
   if (!is_number(address))
-    hints.ai_flags = AI_V4MAPPED | AI_ADDRCONFIG;
+    hints.ai_flags = AI_ADDRCONFIG;
   else
     hints.ai_flags = AI_NUMERICHOST;
 
@@ -190,7 +190,7 @@ FGfdmSocket::FGfdmSocket(int port, int protocol)
       if (Protocol == ptTCP) {
         if (listen(sckt, 5) >= 0) { // successful listen()
 #if defined(_MSC_VER) || defined(__MINGW32__)
-          unsigned long NoBlock = true;
+          u_long NoBlock = 1;
           ioctlsocket(sckt, FIONBIO, &NoBlock);
           sckt_in = accept(sckt, (struct sockaddr*)&scktName, &len);
 #else
@@ -240,7 +240,7 @@ string FGfdmSocket::Receive(void)
     #endif
     if (sckt_in > 0) {
       #if defined(_MSC_VER) || defined(__MINGW32__)
-        unsigned long NoBlock = true;
+        u_long NoBlock = 1;
         ioctlsocket(sckt_in, FIONBIO, &NoBlock);
       #else
         int flags = fcntl(sckt_in, F_GETFL, 0);
