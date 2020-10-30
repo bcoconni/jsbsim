@@ -160,7 +160,9 @@ jobs:
         with:
           python-version: '3.9'
       - name: Install Python packages
-        run: pip install -U setuptools cython numpy pandas scipy wheel pywin32
+        run: |
+          pip install -U setuptools cython numpy pandas wheel pywin32
+          pip install scipy
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
