@@ -113,10 +113,10 @@ jobs:
   Windows-MinGW32:
     runs-on: windows-latest
     steps:
-      - name: Set up Python 3.9
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: '3.9'
+          python-version: '3.8'
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Checkout CxxTest
@@ -155,14 +155,12 @@ jobs:
   Windows-MSVC:
     runs-on: windows-latest
     steps:
-      - name: Set up Python 3.9
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: '3.9'
+          python-version: '3.8'
       - name: Install Python packages
-        run: |
-          pip install -U setuptools cython numpy pandas wheel pywin32
-          pip install scipy
+        run: pip install -U setuptools cython numpy pandas wheel pywin32 scipy
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
@@ -193,27 +191,14 @@ jobs:
       - name: Test JSBSim
         working-directory: build
         run: ctest -j2 -E TestInputSocket --build-config RelWithDebInfo --output-on-failure
-      - name: Build wheel package for Python 3.9
-        working-directory: build
-        run: python python/setup.py bdist_wheel --config RelWithDebInfo --build-number=$Env:GITHUB_RUN_NUMBER
-      - name: Test wheel package for Python 3.9
-        run: |
-          pip install jsbsim --no-index -f build/python/dist
-          python -c "import jsbsim;fdm=jsbsim.FGFDMExec('.', None);print(jsbsim.FGAircraft.__doc__)"
-          pip uninstall jsbsim -y
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.8'
       - name: Build wheel package for Python 3.8
         working-directory: build
-        run: |
-          pip install -U cython numpy wheel pywin32
-          python python/setup.py bdist_wheel --config RelWithDebInfo --build-number=$Env:GITHUB_RUN_NUMBER
+        run: python python/setup.py bdist_wheel --config RelWithDebInfo --build-number=$Env:GITHUB_RUN_NUMBER
       - name: Test wheel package for Python 3.8
         run: |
           pip install jsbsim --no-index -f build/python/dist
           python -c "import jsbsim;fdm=jsbsim.FGFDMExec('.', None);print(jsbsim.FGAircraft.__doc__)"
+          pip uninstall jsbsim -y
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
