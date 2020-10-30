@@ -43,7 +43,6 @@ INCLUDES
 #else
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
 #endif
 #include <iomanip>
 #include <cstring>
@@ -182,20 +181,21 @@ FGfdmSocket::FGfdmSocket(int port, int protocol)
     if (Protocol == ptUDP)
       scktName.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    int len = sizeof(struct sockaddr_in);
+    size_t len = sizeof(struct sockaddr_in);
     if (bind(sckt, (struct sockaddr*)&scktName, len) != -1) {
       if (debug_lvl > 0)
         cout << "Successfully bound to " << ProtocolName
              << " input socket on port " << port << endl << endl;
 
       if (Protocol == ptTCP) {
-        unsigned long NoBlock = true;
         if (listen(sckt, 5) >= 0) { // successful listen()
 #if defined(_MSC_VER) || defined(__MINGW32__)
+          unsigned long NoBlock = true;
           ioctlsocket(sckt, FIONBIO, &NoBlock);
           sckt_in = accept(sckt, (struct sockaddr*)&scktName, &len);
 #else
-          ioctl(sckt, FIONBIO, &NoBlock);
+          int flags = fcntl(sckt, F_GETFL, 0);
+          fcntl(sckt, F_SETFL, flags | O_NONBLOCK);
           sckt_in = accept(sckt, (struct sockaddr*)&scktName, (socklen_t*)&len);
 #endif
           connected = true;
@@ -227,9 +227,8 @@ FGfdmSocket::~FGfdmSocket()
 string FGfdmSocket::Receive(void)
 {
   char buf[1024];
-  int len = sizeof(struct sockaddr_in);
+  size_t len = sizeof(struct sockaddr_in);
   int num_chars=0;
-  unsigned long NoBlock = true;
   string data;      // todo: should allocate this with a standard size as a
                     // class attribute and pass as a reference?
 
@@ -241,9 +240,11 @@ string FGfdmSocket::Receive(void)
     #endif
     if (sckt_in > 0) {
       #if defined(_MSC_VER) || defined(__MINGW32__)
-         ioctlsocket(sckt_in, FIONBIO,&NoBlock);
+        unsigned long NoBlock = true;
+        ioctlsocket(sckt_in, FIONBIO, &NoBlock);
       #else
-         ioctl(sckt_in, FIONBIO, &NoBlock);
+        int flags = fcntl(sckt, F_GETFL, 0);
+        fcntl(sckt, F_SETFL, flags | O_NONBLOCK);
       #endif
       send(sckt_in, "Connected to JSBSim server\nJSBSim> ", 35, 0);
     }
