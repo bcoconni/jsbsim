@@ -243,8 +243,8 @@ string FGfdmSocket::Receive(void)
         unsigned long NoBlock = true;
         ioctlsocket(sckt_in, FIONBIO, &NoBlock);
       #else
-        int flags = fcntl(sckt, F_GETFL, 0);
-        fcntl(sckt, F_SETFL, flags | O_NONBLOCK);
+        int flags = fcntl(sckt_in, F_GETFL, 0);
+        fcntl(sckt_in, F_SETFL, flags | O_NONBLOCK);
       #endif
       send(sckt_in, "Connected to JSBSim server\nJSBSim> ", 35, 0);
     }
