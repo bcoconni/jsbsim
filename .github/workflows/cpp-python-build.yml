@@ -113,10 +113,10 @@ jobs:
   Windows-MinGW32:
     runs-on: windows-latest
     steps:
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: '3.8'
+          python-version: '3.9'
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Checkout CxxTest
@@ -155,10 +155,10 @@ jobs:
   Windows-MSVC:
     runs-on: windows-latest
     steps:
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: '3.8'
+          python-version: '3.9'
       - name: Install Python packages
         run: pip install -U cython numpy pandas scipy wheel pywin32
       - name: Checkout JSBSim
@@ -191,14 +191,27 @@ jobs:
       - name: Test JSBSim
         working-directory: build
         run: ctest -j2 -E TestInputSocket --build-config RelWithDebInfo --output-on-failure
-      - name: Build wheel package for Python 3.8
+      - name: Build wheel package for Python 3.9
         working-directory: build
         run: python python/setup.py bdist_wheel --config RelWithDebInfo --build-number=$Env:GITHUB_RUN_NUMBER
-      - name: Test wheel package for Python 3.8
+      - name: Test wheel package for Python 3.9
         run: |
           pip install jsbsim --no-index -f build/python/dist
           python -c "import jsbsim;fdm=jsbsim.FGFDMExec('.', None);print(jsbsim.FGAircraft.__doc__)"
           pip uninstall jsbsim -y
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.8'
+      - name: Build wheel package for Python 3.8
+        working-directory: build
+        run: |
+          pip install -U cython numpy wheel pywin32
+          python python/setup.py bdist_wheel --config RelWithDebInfo --build-number=$Env:GITHUB_RUN_NUMBER
+      - name: Test wheel package for Python 3.8
+        run: |
+          pip install jsbsim --no-index -f build/python/dist
+          python -c "import jsbsim;fdm=jsbsim.FGFDMExec('.', None);print(jsbsim.FGAircraft.__doc__)"
       - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
@@ -440,16 +453,13 @@ jobs:
           body: |
             JSBSim version ${{ env.VERSION }}
 
-            Release files
+            **Release files:**
             - Windows 64 bits
-              - `JSBSim*-setup.exe` (Windows installer)
-              - `*-win_amd64.whl` (Python wheel package)
-            - Mac OSX
-              - `*-macosx_10_14_x86_64.whl` (Python wheel package)
-            - Linux 64 bits
-              - `*-linux_x86_64.whl` (Python wheel package)
+              - `JSBSim-${{ env.VERSION}}-setup.exe` (Windows installer)
             - Ubuntu Xenial 16.04, Bionic 18.04 or Focal 20.04 - amd64
-              - `*.deb` (Debian packages)            
+              - `*.deb` (Debian packages)
+            - Python wheel packages can be installed from [PyPI](https://pypi.org/project/JSBSim/) with the command `pip install jsbsim` or `pip install --upgrade jsbsim` when JSBSim is already installed on your system.
+            **Changelog:**
           prerelease: false
           draft: false
           files: |
