@@ -181,7 +181,7 @@ FGfdmSocket::FGfdmSocket(int port, int protocol)
     if (Protocol == ptUDP)
       scktName.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    size_t len = sizeof(struct sockaddr_in);
+    int len = sizeof(struct sockaddr_in);
     if (bind(sckt, (struct sockaddr*)&scktName, len) != -1) {
       if (debug_lvl > 0)
         cout << "Successfully bound to " << ProtocolName
@@ -227,7 +227,7 @@ FGfdmSocket::~FGfdmSocket()
 string FGfdmSocket::Receive(void)
 {
   char buf[1024];
-  size_t len = sizeof(struct sockaddr_in);
+  int len = sizeof(struct sockaddr_in);
   int num_chars=0;
   string data;      // todo: should allocate this with a standard size as a
                     // class attribute and pass as a reference?
