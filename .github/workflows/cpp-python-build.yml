@@ -113,10 +113,10 @@ jobs:
   Windows-MinGW32:
     runs-on: windows-latest
     steps:
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: '3.8'
+          python-version: '3.9'
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Checkout CxxTest
@@ -155,12 +155,25 @@ jobs:
   Windows-MSVC:
     runs-on: windows-latest
     steps:
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.9'
+      - name: Checkout CxxTest
+        uses: actions/checkout@v2
+        with:
+          repository: CxxTest/cxxtest
+          ref: '4.4'
+          path: cxxtest
+      - name: Configure CxxTest
+        working-directory: cxxtest\python
+        run: python setup.py install
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
           python-version: '3.8'
       - name: Install Python packages
-        run: pip install -U setuptools cython numpy pandas wheel pywin32 scipy
+        run: pip install -U cython numpy pandas wheel pywin32 scipy
       - name: Checkout JSBSim
         uses: actions/checkout@v2
       - name: Install & Configure Doxygen
@@ -171,12 +184,6 @@ jobs:
           # Set GENERATE_HTML and HAVE_DOT to NO
           perl -i -pe "s/GENERATE_HTML\s*=\s*YES/GENERATE_HTML = NO/g" doc\JSBSim.dox.in
           perl -i -pe "s/HAVE_DOT\s*=\s*YES/HAVE_DOT = NO/g" doc\JSBSim.dox.in
-      - name: Checkout CxxTest
-        uses: actions/checkout@v2
-        with:
-          repository: CxxTest/cxxtest
-          ref: '4.4'
-          path: cxxtest
       - name: Configure CxxTest
         working-directory: cxxtest\python
         run: python setup.py install
