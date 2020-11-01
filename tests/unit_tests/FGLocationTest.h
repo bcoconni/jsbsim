@@ -474,8 +474,9 @@ public:
   }
 
   void testGeodetic() {
-    const double a = 20925646.32546; // WGS84 semimajor axis length in feet
-    const double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+    constexpr double a = 20925646.32546; // WGS84 semimajor axis length in feet
+    constexpr double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+    constexpr double ec = b / a;
     JSBSim::FGLocation l;
 
     l.SetEllipse(a, b);
@@ -485,12 +486,12 @@ public:
       for (unsigned int ilon=0; ilon < 12; ilon++) {
         double h = ilon + 1.0;
         double lon = NormalizedAngle(ilon*M_PI/6.0);
-        double ac = a * cos(glat);
-        double bs = b * sin(glat);
-        double N = a*a / sqrt(ac*ac + bs*bs);
-        l(1) = (N+h)*cos(glat)*cos(lon);
-        l(2) = (N+h)*cos(glat)*sin(lon);
-        l(3) = (b*b*N/(a*a)+h)*sin(glat);
+        double c = cos(glat);
+        double s = sin(glat);
+        double N = a / sqrt(c*c + ec*ec*s*s);
+        l(1) = (N+h)*c*cos(lon);
+        l(2) = (N+h)*c*sin(lon);
+        l(3) = (b/sqrt(c*c/(ec*ec) + s*s)+h)*s;
         TS_ASSERT_DELTA(lon, l.GetLongitude(), epsilon);
         TS_ASSERT_DELTA(sin(lon), l.GetSinLongitude(), epsilon);
         TS_ASSERT_DELTA(cos(lon), l.GetCosLongitude(), epsilon);
@@ -504,12 +505,12 @@ public:
       for (unsigned int ilon=0; ilon < 12; ilon++) {
         double h = ilon + 1.0;
         double lon = NormalizedAngle(ilon*M_PI/6.0);
-        double ac = a * cos(glat);
-        double bs = b * sin(glat);
-        double N = a*a / sqrt(ac*ac + bs*bs);
-        double x = (N+h)*cos(glat)*cos(lon);
-        double y = (N+h)*cos(glat)*sin(lon);
-        double z = (b*b*N/(a*a)+h)*sin(glat);
+        double c = cos(glat);
+        double s = sin(glat);
+        double N = a / sqrt(c*c + ec*ec*s*s);
+        double x = (N+h)*c*cos(lon);
+        double y = (N+h)*c*sin(lon);
+        double z = (b/sqrt(c*c/(ec*ec) + s*s)+h)*s;
         l.SetPositionGeodetic(lon, glat, h);
         TS_ASSERT_DELTA(x, l(1), epsilon*fabs(x));
         TS_ASSERT_DELTA(y, l(2), epsilon*fabs(y));
@@ -565,23 +566,24 @@ public:
     TS_ASSERT_DELTA(0.0, l.GetSinLongitude(), epsilon);
 
     // Geodetic calculations next to the North Pole
-    const double a = 20925646.32546; // WGS84 semimajor axis length in feet
-    const double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+    constexpr double a = 20925646.32546; // WGS84 semimajor axis length in feet
+    constexpr double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+    constexpr double ec = b / a;
     l.SetEllipse(a, b);
     l = b * v;
     TS_ASSERT_DELTA(90.0, l.GetGeodLatitudeDeg(), epsilon);
     TS_ASSERT_DELTA(M_PI*0.5, l.GetGeodLatitudeRad(), epsilon);
-    TS_ASSERT_DELTA(0.0, l.GetGeodAltitude(), 1E-8);
+    TS_ASSERT_DELTA(0.0, l.GetGeodAltitude(), epsilon);
 
     // Check locations next to the North Pole
     for (unsigned int i=1; i < 1000; i++) {
       double h = 10.0;
       double glat = 0.5*M_PI-i*1E-9;
-      double ac = a * cos(glat);
-      double bs = b * sin(glat);
-      double N = a*a / sqrt(ac*ac + bs*bs);
-      double x = (N+h)*cos(glat);
-      double z = (b*b*N/(a*a)+h)*sin(glat);
+      double c = cos(glat);
+      double s = sin(glat);
+      double N = a / sqrt(c*c + ec*ec*s*s);
+      double x = (N+h)*c;
+      double z = (b/sqrt(c*c/(ec*ec) + s*s)+h)*s;
       l.SetPositionGeodetic(0., glat, h);
       TS_ASSERT_DELTA(x, l(1), epsilon*fabs(x));
       TS_ASSERT_DELTA(0.0, l(2), epsilon);
@@ -603,11 +605,11 @@ public:
     for (unsigned int i=1; i < 1000; i++) {
       double h = 10.0;
       double glat = -0.5*M_PI+i*1E-9;
-      double ac = a * cos(glat);
-      double bs = b * sin(glat);
-      double N = a*a / sqrt(ac*ac + bs*bs);
-      double x = (N+h)*cos(glat);
-      double z = (b*b*N/(a*a)+h)*sin(glat);
+      double c = cos(glat);
+      double s = sin(glat);
+      double N = a / sqrt(c*c + ec*ec*s*s);
+      double x = (N+h)*c;
+      double z = (b/sqrt(c*c/(ec*ec) + s*s)+h)*s;
       l.SetPositionGeodetic(0., glat, h);
       TS_ASSERT_DELTA(x, l(1), epsilon*fabs(x));
       TS_ASSERT_DELTA(0.0, l(2), epsilon);

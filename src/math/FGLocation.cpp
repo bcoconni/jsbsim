@@ -44,6 +44,7 @@ INCLUDES
 #include <cmath>
 #include <GeographicLib/Math.hpp>
 #include <GeographicLib/Geodesic.hpp>
+#include <GeographicLib/Geocentric.hpp>
 
 #include "FGLocation.h"
 
@@ -315,36 +316,17 @@ void FGLocation::ComputeDerivedUnconditional(void) const
   else {
     mLat = atan2( mECLoc(eZ), rxy );
 
-    // Calculate the geodetic latitude based on "Transformation from Cartesian to
-    // geodetic coordinates accelerated by Halley's method", Fukushima T. (2006)
-    // Journal of Geodesy, Vol. 79, pp. 689-693
-    // Unlike I. Sofair's method which uses a closed form solution, Fukushima's
-    // method is an iterative method whose convergence is so fast that only one
-    // iteration suffices. In addition, Fukushima's method has a much better
-    // numerical stability over Sofair's method at the North and South poles and
-    // it also gives the correct result for a spherical Earth.
+    // Calculate the geodetic latitude and altitude.
     if (mEllipseSet) {
-      double s0 = fabs(mECLoc(eZ));
-      double zc = ec * s0;
-      double c0 = ec * rxy;
-      double c02 = c0 * c0;
-      double s02 = s0 * s0;
-      double a02 = c02 + s02;
-      double a0 = sqrt(a02);
-      double a03 = a02 * a0;
-      double s1 = zc*a03 + c*s02*s0;
-      double c1 = rxy*a03 - c*c02*c0;
-      double cs0c0 = c*c0*s0;
-      double b0 = 1.5*cs0c0*((rxy*s0-zc*c0)*a0-cs0c0);
-      s1 = s1*a03-b0*s0;
-      double cc = ec*(c1*a03-b0*c0);
-      mGeodLat = sign(mECLoc(eZ))*atan(s1 / cc);
-      double s12 = s1 * s1;
-      double cc2 = cc * cc;
-      double norm = sqrt(s12 + cc2);
-      cosLat = cc / norm;
-      sinLat = sign(mECLoc(eZ)) * s1 / norm;
-      GeodeticAltitude = (rxy*cc + s0*s1 - a*sqrt(ec2*s12 + cc2)) / norm;
+      // The semi major axis 'a' is expressed in feet so we do not need to
+      // convert the altitude back into feet.
+      GeographicLib::Geocentric geoCoords(a, 1.0 - ec);
+      double lon;
+      geoCoords.Reverse(mECLoc(eX), mECLoc(eY), mECLoc(eZ), mGeodLat, lon,
+                        GeodeticAltitude);
+      mGeodLat *= degtorad;
+      cosLat = cos(mGeodLat);
+      sinLat = sin(mGeodLat);
     }
     else {
       sinLat = mECLoc(eZ)/mRadius;
@@ -379,7 +361,9 @@ double FGLocation::GetDistanceTo(double target_longitude,
 {
   assert(mEllipseSet);
   ComputeDerived();
-  GeographicLib::Geodesic geod(a, 1 - ec);
+  // The semi major axis 'a' is expressed in feet so we do not need to
+  // convert the distance back into feet.
+  GeographicLib::Geodesic geod(a, 1.0 - ec);
   GeographicLib::Math::real distance;
   geod.Inverse(mGeodLat * radtodeg, mLon * radtodeg, target_latitude * radtodeg,
                target_longitude * radtodeg, distance);
@@ -394,7 +378,7 @@ double FGLocation::GetHeadingTo(double target_longitude,
 {
   assert(mEllipseSet);
   ComputeDerived();
-  GeographicLib::Geodesic geod(a, 1 - ec);
+  GeographicLib::Geodesic geod(a, 1.0 - ec);
   GeographicLib::Math::real heading, azimuth2;
   geod.Inverse(mGeodLat * radtodeg, mLon * radtodeg, target_latitude * radtodeg,
                target_longitude * radtodeg, heading, azimuth2);
