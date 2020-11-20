@@ -420,8 +420,12 @@ jobs:
           sed -ri 's/(set\(PROJECT_VERSION_PATCH\s\")([0-9]+)(.*)/echo "\1\\"$((\2+1))\\"\3"/ge' CMakeLists.txt
           git config user.name JSBSim-Team
           git config user.email "<>"
+          git branch -a --contains HEAD
+          export BRANCH_NAME=`git branch -a --contains HEAD | awk 'NR==2 { print $0}'`
+          echo $BRANCH_NAME
+          git checkout $BRANCH_NAME
           git commit -m "Bump version" CMakeLists.txt
-          git push
+          git push origin $BRANCH_NAME
 
   Documentation:
     needs: Linux
