@@ -415,6 +415,8 @@ jobs:
       # Bump version
       - name: Checkout JSBSim
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Bump patch version
         run: |
           sed -ri 's/(set\(PROJECT_VERSION_PATCH\s\")([0-9]+)(.*)/echo "\1\\"$((\2+1))\\"\3"/ge' CMakeLists.txt
