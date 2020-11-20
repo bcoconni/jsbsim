@@ -412,6 +412,17 @@ jobs:
             dist/*.whl
             dist/*.deb
 
+      # Bump version
+      - name: Checkout JSBSim
+        uses: actions/checkout@v2
+      - name: Bump patch version
+        run: |
+          cat CMakeLists.txt | sed -r 's/(set\(PROJECT_VERSION_PATCH\s\")([0-9]+)(.*)/echo "\1\\"$((\2+1))\\"\3"/ge'
+          git config user.name JSBSim-Team
+          git config user.email "<>"
+          git commit -m "Bump version" CMakeLists.txt
+          git push
+
   Documentation:
     needs: Linux
     runs-on: ubuntu-latest
