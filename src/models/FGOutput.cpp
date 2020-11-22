@@ -132,7 +132,7 @@ bool FGOutput::Toggle(int idx)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGOutput::SetRateHz(double rate)
+void FGOutput::SetRateHz(Real rate)
 {
   for (auto output: OutputTypes)
     output->SetRateHz(rate);
@@ -184,7 +184,7 @@ bool FGOutput::SetDirectivesFile(const SGPath& fname)
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 bool FGOutput::Load(int subSystems, std::string protocol, std::string type,
-                    std::string port, std::string name, double outRate,
+                    std::string port, std::string name, Real outRate,
                     std::vector<FGPropertyNode_ptr> & outputProperties)
 {
   size_t idx = OutputTypes.size();

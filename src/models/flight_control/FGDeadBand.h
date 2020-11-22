@@ -89,7 +89,7 @@ public:
   bool Run(void) override;
 
 private:
-  double gain;
+  Real gain;
   FGParameter_ptr Width;
 
   void Debug(int from) override;

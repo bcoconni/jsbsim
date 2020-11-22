@@ -240,9 +240,9 @@ void FGFCSComponent::Delay(void)
 void FGFCSComponent::Clip(void)
 {
   if (clip) {
-    double vmin = ClipMin->GetValue();
-    double vmax = ClipMax->GetValue();
-    double range = vmax - vmin;
+    Real vmin = ClipMin->GetValue();
+    Real vmax = ClipMax->GetValue();
+    Real range = vmax - vmin;
 
     if (range < 0.0) {
       cerr << "Trying to clip with a max value (" << vmax << ") from "
@@ -253,7 +253,7 @@ void FGFCSComponent::Clip(void)
     }
 
     if (cyclic_clip && range != 0.0) {
-      double value = Output - vmin;
+      Real value = Output - vmin;
       Output = fmod(value, range) + vmin;
       if (Output < vmin)
         Output += range;

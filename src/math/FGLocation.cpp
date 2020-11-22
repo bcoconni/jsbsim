@@ -68,7 +68,7 @@ FGLocation::FGLocation(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FGLocation::FGLocation(double lon, double lat, double radius)
+FGLocation::FGLocation(Real lon, Real lat, Real radius)
   : mCacheValid(false)
 {
   e2 = c = 0.0;
@@ -80,10 +80,10 @@ FGLocation::FGLocation(double lon, double lat, double radius)
   mTl2ec.InitMatrix();
   mTec2l.InitMatrix();
 
-  double sinLat = sin(lat);
-  double cosLat = cos(lat);
-  double sinLon = sin(lon);
-  double cosLon = cos(lon);
+  Real sinLat = sin(lat);
+  Real cosLat = cos(lat);
+  Real sinLon = sin(lon);
+  Real cosLon = cos(lon);
   mECLoc = { radius*cosLat*cosLon,
              radius*cosLat*sinLon,
              radius*sinLat };
@@ -167,9 +167,9 @@ FGLocation& FGLocation::operator=(const FGLocation& l)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLocation::SetLongitude(double longitude)
+void FGLocation::SetLongitude(Real longitude)
 {
-  double rtmp = mECLoc.Magnitude(eX, eY);
+  Real rtmp = mECLoc.Magnitude(eX, eY);
   // Check if we have zero radius.
   // If so set it to 1, so that we can set a position
   if (0.0 == mECLoc.Magnitude())
@@ -187,19 +187,19 @@ void FGLocation::SetLongitude(double longitude)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLocation::SetLatitude(double latitude)
+void FGLocation::SetLatitude(Real latitude)
 {
   mCacheValid = false;
 
-  double r = mECLoc.Magnitude();
+  Real r = mECLoc.Magnitude();
   if (r == 0.0) {
     mECLoc(eX) = 1.0;
     r = 1.0;
   }
 
-  double rtmp = mECLoc.Magnitude(eX, eY);
+  Real rtmp = mECLoc.Magnitude(eX, eY);
   if (rtmp != 0.0) {
-    double fac = r/rtmp*cos(latitude);
+    Real fac = r/rtmp*cos(latitude);
     mECLoc(eX) *= fac;
     mECLoc(eY) *= fac;
   } else {
@@ -211,11 +211,11 @@ void FGLocation::SetLatitude(double latitude)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLocation::SetRadius(double radius)
+void FGLocation::SetRadius(Real radius)
 {
   mCacheValid = false;
 
-  double rold = mECLoc.Magnitude();
+  Real rold = mECLoc.Magnitude();
   if (rold == 0.0)
     mECLoc(eX) = radius;
   else
@@ -224,14 +224,14 @@ void FGLocation::SetRadius(double radius)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLocation::SetPosition(double lon, double lat, double radius)
+void FGLocation::SetPosition(Real lon, Real lat, Real radius)
 {
   mCacheValid = false;
 
-  double sinLat = sin(lat);
-  double cosLat = cos(lat);
-  double sinLon = sin(lon);
-  double cosLon = cos(lon);
+  Real sinLat = sin(lat);
+  Real cosLat = cos(lat);
+  Real sinLon = sin(lon);
+  Real cosLon = cos(lon);
 
   mECLoc = { radius*cosLat*cosLon,
              radius*cosLat*sinLon,
@@ -240,14 +240,14 @@ void FGLocation::SetPosition(double lon, double lat, double radius)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLocation::SetPositionGeodetic(double lon, double lat, double height)
+void FGLocation::SetPositionGeodetic(Real lon, Real lat, Real height)
 {
   assert(mEllipseSet);
   mCacheValid = false;
 
-  double slat = sin(lat);
-  double clat = cos(lat);
-  double RN = a / sqrt(1.0 - e2*slat*slat);
+  Real slat = sin(lat);
+  Real clat = cos(lat);
+  Real RN = a / sqrt(1.0 - e2*slat*slat);
 
   mECLoc(eX) = (RN + height)*clat*cos(lon);
   mECLoc(eY) = (RN + height)*clat*sin(lon);
@@ -256,7 +256,7 @@ void FGLocation::SetPositionGeodetic(double lon, double lat, double height)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLocation::SetEllipse(double semimajor, double semiminor)
+void FGLocation::SetEllipse(Real semimajor, Real semiminor)
 {
   mCacheValid = false;
   mEllipseSet = true;
@@ -270,11 +270,11 @@ void FGLocation::SetEllipse(double semimajor, double semiminor)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGLocation::GetSeaLevelRadius(void) const
+Real FGLocation::GetSeaLevelRadius(void) const
 {
   assert(mEllipseSet);
   ComputeDerived();
-  double cosLat = cos(mLat);
+  Real cosLat = cos(mLat);
   return a*ec/sqrt(1.0-e2*cosLat*cosLat);
 }
 
@@ -287,10 +287,10 @@ void FGLocation::ComputeDerivedUnconditional(void) const
 
   // The distance of the location to the Z-axis, which is the axis
   // through the poles.
-  double rxy = mECLoc.Magnitude(eX, eY);
+  Real rxy = mECLoc.Magnitude(eX, eY);
 
   // Compute the longitude and its sin/cos values.
-  double sinLon, cosLon;
+  Real sinLon, cosLon;
   if (rxy == 0.0) {
     sinLon = 0.0;
     cosLon = 1.0;
@@ -302,7 +302,7 @@ void FGLocation::ComputeDerivedUnconditional(void) const
   }
 
   // Compute the geocentric & geodetic latitudes.
-  double sinLat, cosLat;
+  Real sinLat, cosLat;
   if (mRadius == 0.0)  {
     mLat = 0.0;
     sinLat = 0.0;
@@ -324,24 +324,24 @@ void FGLocation::ComputeDerivedUnconditional(void) const
     // numerical stability over Sofair's method at the North and South poles and
     // it also gives the correct result for a spherical Earth.
     if (mEllipseSet) {
-      double s0 = fabs(mECLoc(eZ));
-      double zc = ec * s0;
-      double c0 = ec * rxy;
-      double c02 = c0 * c0;
-      double s02 = s0 * s0;
-      double a02 = c02 + s02;
-      double a0 = sqrt(a02);
-      double a03 = a02 * a0;
-      double s1 = zc*a03 + c*s02*s0;
-      double c1 = rxy*a03 - c*c02*c0;
-      double cs0c0 = c*c0*s0;
-      double b0 = 1.5*cs0c0*((rxy*s0-zc*c0)*a0-cs0c0);
+      Real s0 = fabs(mECLoc(eZ));
+      Real zc = ec * s0;
+      Real c0 = ec * rxy;
+      Real c02 = c0 * c0;
+      Real s02 = s0 * s0;
+      Real a02 = c02 + s02;
+      Real a0 = sqrt(a02);
+      Real a03 = a02 * a0;
+      Real s1 = zc*a03 + c*s02*s0;
+      Real c1 = rxy*a03 - c*c02*c0;
+      Real cs0c0 = c*c0*s0;
+      Real b0 = 1.5*cs0c0*((rxy*s0-zc*c0)*a0-cs0c0);
       s1 = s1*a03-b0*s0;
-      double cc = ec*(c1*a03-b0*c0);
+      Real cc = ec*(c1*a03-b0*c0);
       mGeodLat = sign(mECLoc(eZ))*atan(s1 / cc);
-      double s12 = s1 * s1;
-      double cc2 = cc * cc;
-      double norm = sqrt(s12 + cc2);
+      Real s12 = s1 * s1;
+      Real cc2 = cc * cc;
+      Real norm = sqrt(s12 + cc2);
       cosLat = cc / norm;
       sinLat = sign(mECLoc(eZ)) * s1 / norm;
       GeodeticAltitude = (rxy*cc + s0*s1 - a*sqrt(ec2*s12 + cc2)) / norm;
@@ -374,8 +374,8 @@ void FGLocation::ComputeDerivedUnconditional(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGLocation::GetDistanceTo(double target_longitude,
-                                 double target_latitude) const
+Real FGLocation::GetDistanceTo(Real target_longitude,
+                                 Real target_latitude) const
 {
   assert(mEllipseSet);
   ComputeDerived();
@@ -389,8 +389,8 @@ double FGLocation::GetDistanceTo(double target_longitude,
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGLocation::GetHeadingTo(double target_longitude,
-                                double target_latitude) const
+Real FGLocation::GetHeadingTo(Real target_longitude,
+                                Real target_latitude) const
 {
   assert(mEllipseSet);
   ComputeDerived();

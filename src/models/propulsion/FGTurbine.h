@@ -184,15 +184,15 @@ public:
   enum phaseType { tpOff, tpRun, tpSpinUp, tpStart, tpStall, tpSeize, tpTrim };
 
   void Calculate(void);
-  double CalcFuelNeed(void);
-  double GetPowerAvailable(void);
+  Real CalcFuelNeed(void);
+  Real GetPowerAvailable(void);
   /** A lag filter.
       Used to control the rate at which values are allowed to change.
-      @param var a pointer to a variable of type double
+      @param var a pointer to a variable of type Real
       @param target the desired (target) value
       @param accel the rate, per second, the value may increase
       @param decel the rate, per second, the value may decrease    */
-  double Seek(double* var, double target, double accel, double decel);
+  Real Seek(Real* var, Real target, Real accel, Real decel);
 
   phaseType GetPhase(void) { return phase; }
 
@@ -204,37 +204,37 @@ public:
   bool GetCutoff(void) const { return Cutoff; }
   int GetIgnition(void) const {return Ignition;}
 
-  double GetInlet(void) const { return InletPosition; }
-  double GetNozzle(void) const { return NozzlePosition; }
-  double GetBleedDemand(void) const {return BleedDemand;}
-  double GetN1(void) const {return N1;}
-  double GetN2(void) const {return N2;}
-  double GetEPR(void) const {return EPR;}
-  double GetEGT(void) const {return EGT_degC;}
+  Real GetInlet(void) const { return InletPosition; }
+  Real GetNozzle(void) const { return NozzlePosition; }
+  Real GetBleedDemand(void) const {return BleedDemand;}
+  Real GetN1(void) const {return N1;}
+  Real GetN2(void) const {return N2;}
+  Real GetEPR(void) const {return EPR;}
+  Real GetEGT(void) const {return EGT_degC;}
 
-  double GetMaxN1(void) const {return MaxN1;}
-  double GetMaxN2(void) const {return MaxN2;}
-  double getOilPressure_psi () const {return OilPressure_psi;}
-  double getOilTemp_degF (void) {return KelvinToFahrenheit(OilTemp_degK);}
-  double GetInjectionTimer(void) const {return InjectionTimer;}
-  double GetInjWaterNorm(void) const {return InjWaterNorm;}
-  double GetInjN1increment(void) const {return InjN1increment;}
-  double GetInjN2increment(void) const {return InjN2increment;}
+  Real GetMaxN1(void) const {return MaxN1;}
+  Real GetMaxN2(void) const {return MaxN2;}
+  Real getOilPressure_psi () const {return OilPressure_psi;}
+  Real getOilTemp_degF (void) {return KelvinToFahrenheit(OilTemp_degK);}
+  Real GetInjectionTimer(void) const {return InjectionTimer;}
+  Real GetInjWaterNorm(void) const {return InjWaterNorm;}
+  Real GetInjN1increment(void) const {return InjN1increment;}
+  Real GetInjN2increment(void) const {return InjN2increment;}
 
   void SetInjection(bool injection) {Injection = injection;}
   void SetIgnition(int ignition) {Ignition = ignition;}
   void SetAugmentation(bool augmentation) {Augmentation = augmentation;}
   void SetPhase( phaseType p ) { phase = p; }
-  void SetEPR(double epr) {EPR = epr;}
-  void SetBleedDemand(double bleedDemand) {BleedDemand = bleedDemand;}
+  void SetEPR(Real epr) {EPR = epr;}
+  void SetBleedDemand(Real bleedDemand) {BleedDemand = bleedDemand;}
   void SetReverse(bool reversed) { Reversed = reversed; }
   void SetCutoff(bool cutoff) { Cutoff = cutoff; }
-  void SetMaxN1(double maxn1) {MaxN1 = maxn1;}
-  void SetMaxN2(double maxn2) {MaxN2 = maxn2;}
-  void SetInjectionTimer(double injtimer) {InjectionTimer = injtimer;}
-  void SetInjWaterNorm(double injwater) {InjWaterNorm = injwater;}
-  void SetInjN1increment(double injN1inc) {InjN1increment = injN1inc;}
-  void SetInjN2increment(double injN2inc) {InjN2increment = injN2inc;}
+  void SetMaxN1(Real maxn1) {MaxN1 = maxn1;}
+  void SetMaxN2(Real maxn2) {MaxN2 = maxn2;}
+  void SetInjectionTimer(Real injtimer) {InjectionTimer = injtimer;}
+  void SetInjWaterNorm(Real injwater) {InjWaterNorm = injwater;}
+  void SetInjN1increment(Real injN1inc) {InjN1increment = injN1inc;}
+  void SetInjN2increment(Real injN2inc) {InjN2increment = injN2inc;}
   
   int InitRunning(void);
   void ResetToIC(void);
@@ -245,31 +245,31 @@ public:
 private:
 
   phaseType phase;         ///< Operating mode, or "phase"
-  double MilThrust;        ///< Maximum Unaugmented Thrust, static @ S.L. (lbf)
-  double MaxThrust;        ///< Maximum Augmented Thrust, static @ S.L. (lbf)
-  double BypassRatio;      ///< Bypass Ratio
-  double TSFC;             ///< Thrust Specific Fuel Consumption (lbm/hr/lbf)
-  double ATSFC;            ///< Augmented TSFC (lbm/hr/lbf)
-  double IdleN1;           ///< Idle N1
-  double IdleN2;           ///< Idle N2
-  double IgnitionN1;       ///< Ignition N1
-  double IgnitionN2;       ///< Ignition N2
-  double N1;               ///< N1
-  double N2;               ///< N2
-  double N2norm;           ///< N2 normalized (0=idle, 1=max)
-  double MaxN1;            ///< N1 at 100% throttle
-  double MaxN2;            ///< N2 at 100% throttle
-  double IdleFF;           ///< Idle Fuel Flow (lbm/hr)
-  double N1_factor;        ///< factor to tie N1 and throttle
-  double N2_factor;        ///< factor to tie N2 and throttle
-  double ThrottlePos;      ///< FCS-supplied throttle position - modified for local use!
-  double AugmentCmd;       ///< modulated afterburner command (0.0 to 1.0)
-  double N1_spinup;        ///< N1 spin up rate from pneumatic starter (per second)
-  double N2_spinup;        ///< N2 spin up rate from pneumatic starter (per second)
-  double N1_start_rate;    ///< N1 spin up rate from ignition (per second)
-  double N2_start_rate;    ///< N2 spin up rate from ignition (per second)
-  double N1_spindown;      ///< N1 spin down factor
-  double N2_spindown;      ///< N2 spin down factor
+  Real MilThrust;        ///< Maximum Unaugmented Thrust, static @ S.L. (lbf)
+  Real MaxThrust;        ///< Maximum Augmented Thrust, static @ S.L. (lbf)
+  Real BypassRatio;      ///< Bypass Ratio
+  Real TSFC;             ///< Thrust Specific Fuel Consumption (lbm/hr/lbf)
+  Real ATSFC;            ///< Augmented TSFC (lbm/hr/lbf)
+  Real IdleN1;           ///< Idle N1
+  Real IdleN2;           ///< Idle N2
+  Real IgnitionN1;       ///< Ignition N1
+  Real IgnitionN2;       ///< Ignition N2
+  Real N1;               ///< N1
+  Real N2;               ///< N2
+  Real N2norm;           ///< N2 normalized (0=idle, 1=max)
+  Real MaxN1;            ///< N1 at 100% throttle
+  Real MaxN2;            ///< N2 at 100% throttle
+  Real IdleFF;           ///< Idle Fuel Flow (lbm/hr)
+  Real N1_factor;        ///< factor to tie N1 and throttle
+  Real N2_factor;        ///< factor to tie N2 and throttle
+  Real ThrottlePos;      ///< FCS-supplied throttle position - modified for local use!
+  Real AugmentCmd;       ///< modulated afterburner command (0.0 to 1.0)
+  Real N1_spinup;        ///< N1 spin up rate from pneumatic starter (per second)
+  Real N2_spinup;        ///< N2 spin up rate from pneumatic starter (per second)
+  Real N1_start_rate;    ///< N1 spin up rate from ignition (per second)
+  Real N2_start_rate;    ///< N2 spin up rate from ignition (per second)
+  Real N1_spindown;      ///< N1 spin down factor
+  Real N2_spindown;      ///< N2 spin down factor
   bool Stalled;            ///< true if engine is compressor-stalled
   bool Seized;             ///< true if inner spool is seized
   bool Overtemp;           ///< true if EGT exceeds limits
@@ -285,27 +285,27 @@ private:
   int AugMethod;           ///< = 0 if using property /engine[n]/augmentation
                            ///< = 1 if using last 1% of throttle movement
                            ///< = 2 if using FCS-defined throttle
-  double EGT_degC;
-  double EPR;
-  double OilPressure_psi;
-  double OilTemp_degK;
-  double BleedDemand;
-  double InletPosition;
-  double NozzlePosition;
-  double correctedTSFC;
-  double InjectionTimer;
-  double InjectionTime;
-  double InjWaterNorm;
-  double InjN1increment;
-  double InjN2increment;
+  Real EGT_degC;
+  Real EPR;
+  Real OilPressure_psi;
+  Real OilTemp_degK;
+  Real BleedDemand;
+  Real InletPosition;
+  Real NozzlePosition;
+  Real correctedTSFC;
+  Real InjectionTimer;
+  Real InjectionTime;
+  Real InjWaterNorm;
+  Real InjN1increment;
+  Real InjN2increment;
 
-  double Off(void);
-  double Run();
-  double SpinUp(void);
-  double Start(void);
-  double Stall(void);
-  double Seize(void);
-  double Trim();
+  Real Off(void);
+  Real Run();
+  Real SpinUp(void);
+  Real Start(void);
+  Real Stall(void);
+  Real Seize(void);
+  Real Trim();
 
   FGFunction *IdleThrustLookup;
   FGFunction *MilThrustLookup;
@@ -327,17 +327,17 @@ private:
 class FGSpoolUp : public FGParameter
 {
 public:
-  FGSpoolUp(FGTurbine* _turb, double BPR, double factor)
+  FGSpoolUp(FGTurbine* _turb, Real BPR, Real factor)
     : turb(_turb), delay(factor * 90.0 / (BPR + 3.0)) {}
   string GetName(void) const { return string(); };
-  double GetValue(void) const {
+  Real GetValue(void) const {
     // adjust acceleration for N2 and atmospheric density
-    double n = std::min(1.0, turb->N2norm + 0.1);
+    Real n = min(1.0, turb->N2norm + 0.1);
     return delay / (1 + 3 * (1-n)*(1-n)*(1-n) + (1 - turb->in.DensityRatio));
   }
 private:
   FGTurbine* turb;
-  double delay; ///< Inverse spool-up time from idle to 100% (seconds)
+  Real delay; ///< Inverse spool-up time from idle to 100% (seconds)
 };
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

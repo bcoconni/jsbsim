@@ -162,10 +162,10 @@ class Element;
    @endcode
 
    The gyrocompass from a rotation with a value from 0 to 259 degrees. When it
-   returns to zero, if it is made more realistic by means of an actuator, there
+   returns to zero, if it is made more Realistic by means of an actuator, there
    is a jump of the disk which performs a complete rotation of 360 °. By
    activating a linear actuator followed by an actuator it is possible to obtain
-   a very realistic result.
+   a very Realistic result.
 
    @code
 
@@ -239,20 +239,20 @@ private:
   int countSpin = 0;
   int versus = 0;
   FGParameter_ptr ptrVersus;
-  double bias = 0.0;
+  Real bias = 0.0;
   FGParameter_ptr ptrBias;
-  double inputLast = 0.0;
-  double inputMem = 0.0;
-  double module = 1.0;
-  double hysteresis = 0.1;
-  double input = 1.0;
-  double rate = 0.3;
-  double gain = 1.0;
-  double lag = 0.0;
-  double previousLagInput;
-  double previousLagOutput;
-  double ca; // lag filter coefficient "a"
-  double cb; // lag filter coefficient "b"
+  Real inputLast = 0.0;
+  Real inputMem = 0.0;
+  Real module = 1.0;
+  Real hysteresis = 0.1;
+  Real input = 1.0;
+  Real rate = 0.3;
+  Real gain = 1.0;
+  Real lag = 0.0;
+  Real previousLagInput;
+  Real previousLagOutput;
+  Real ca; // lag filter coefficient "a"
+  Real cb; // lag filter coefficient "b"
 
   void Debug(int from) override;
 };

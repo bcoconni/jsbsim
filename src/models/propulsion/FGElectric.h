@@ -73,23 +73,23 @@ public:
   ~FGElectric();
 
   void Calculate(void);
-  double GetPowerAvailable(void) {return (HP * hptoftlbssec);}
-  double getRPM(void) {return RPM;}
+  Real GetPowerAvailable(void) {return (HP * hptoftlbssec);}
+  Real getRPM(void) {return RPM;}
   std::string GetEngineLabels(const std::string& delimiter);
   std::string GetEngineValues(const std::string& delimiter);
 
 private:
 
-  double CalcFuelNeed(void);
+  Real CalcFuelNeed(void);
 
-  //double BrakeHorsePower;
+  //Real BrakeHorsePower;
 
   // constants
-  double hptowatts;
+  Real hptowatts;
 
-  double PowerWatts;         // maximum engine power
-  double RPM;                // revolutions per minute
-  double HP;                 // engine output, in horsepower
+  Real PowerWatts;         // maximum engine power
+  Real RPM;                // revolutions per minute
+  Real HP;                 // engine output, in horsepower
 
   void Debug(int from);
 };

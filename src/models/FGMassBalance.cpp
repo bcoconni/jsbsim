@@ -99,7 +99,7 @@ bool FGMassBalance::InitModel(void)
 
 static FGMatrix33 ReadInertiaMatrix(Element* document)
 {
-  double bixx, biyy, bizz, bixy, bixz, biyz;
+  Real bixx, biyy, bizz, bixy, bixz, biyz;
 
   bixx = biyy = bizz = bixy = bixz = biyz = 0.0;
   if (document->FindElement("ixx"))
@@ -155,7 +155,7 @@ bool FGMassBalance::Load(Element* document)
     element = document->FindNextElement("pointmass");
   }
 
-  double ChildFDMWeight = 0.0;
+  Real ChildFDMWeight = 0.0;
   for (size_t fdm=0; fdm<FDMExec->GetFDMCount(); fdm++) {
     if (FDMExec->GetChildFDM(fdm)->mated) ChildFDMWeight += FDMExec->GetChildFDM(fdm)->exec->GetMassBalance()->GetWeight();
   }
@@ -175,15 +175,15 @@ bool FGMassBalance::Load(Element* document)
 
 bool FGMassBalance::Run(bool Holding)
 {
-  double denom, k1, k2, k3, k4, k5, k6;
-  double Ixx, Iyy, Izz, Ixy, Ixz, Iyz;
+  Real denom, k1, k2, k3, k4, k5, k6;
+  Real Ixx, Iyy, Izz, Ixy, Ixz, Iyz;
 
   if (FGModel::Run(Holding)) return true;
   if (Holding) return false;
 
   RunPreFunctions();
 
-  double ChildFDMWeight = 0.0;
+  Real ChildFDMWeight = 0.0;
   for (size_t fdm=0; fdm<FDMExec->GetFDMCount(); fdm++) {
     if (FDMExec->GetChildFDM(fdm)->mated) ChildFDMWeight += FDMExec->GetChildFDM(fdm)->exec->GetMassBalance()->GetWeight();
   }
@@ -268,7 +268,7 @@ void FGMassBalance::AddPointMass(Element* el)
     exit(-1);
   }
 
-  double w = el->FindElementValueAsNumberConvertTo("weight", "LBS");
+  Real w = el->FindElementValueAsNumberConvertTo("weight", "LBS");
   FGColumnVector3 vXYZ = loc_element->FindElementTripletConvertTo("IN");
 
   PointMass *pm = new PointMass(w, vXYZ);
@@ -276,7 +276,7 @@ void FGMassBalance::AddPointMass(Element* el)
 
   Element* form_element = el->FindElement("form");
   if (form_element) {
-    double radius=0, length=0;
+    Real radius=0, length=0;
     string shape = form_element->GetAttributeValue("shape");
     Element* radius_element = form_element->FindElement("radius");
     Element* length_element = form_element->FindElement("length");
@@ -314,9 +314,9 @@ void FGMassBalance::AddPointMass(Element* el)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGMassBalance::GetTotalPointMassWeight(void) const
+Real FGMassBalance::GetTotalPointMassWeight(void) const
 {
-  double PM_total_weight = 0.0;
+  Real PM_total_weight = 0.0;
 
   for(auto pm: PointMasses)
     PM_total_weight += pm->Weight;
@@ -389,7 +389,7 @@ FGColumnVector3 FGMassBalance::StructuralToBody(const FGColumnVector3& r) const
 
 void FGMassBalance::bind(void)
 {
-  typedef double (FGMassBalance::*PMF)(int) const;
+  typedef Real (FGMassBalance::*PMF)(int) const;
   PropertyManager->Tie("inertia/mass-slugs", this,
                        &FGMassBalance::GetMass);
   PropertyManager->Tie("inertia/weight-lbs", this,
@@ -459,7 +459,7 @@ void FGMassBalance::GetMassPropertiesReport(int i)
 
   for (unsigned int i=0;i<PointMasses.size();i++) {
     PointMass* pm = PointMasses[i];
-    double pmweight = pm->GetPointMassWeight();
+    Real pmweight = pm->GetPointMassWeight();
     cout << highint << left << setw(4) << i << setw(30) << pm->GetName() << normint
          << right << setw(10) << pmweight << setw(8) << pm->GetLocation()(eX)
          << setw(8) << pm->GetLocation()(eY) << setw(8) << pm->GetLocation()(eZ)

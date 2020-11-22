@@ -172,7 +172,7 @@ bool FGAircraft::Load(Element* el)
 
 void FGAircraft::bind(void)
 {
-  typedef double (FGAircraft::*PMF)(int) const;
+  typedef Real (FGAircraft::*PMF)(int) const;
   PropertyManager->Tie("metrics/Sw-sqft", this, &FGAircraft::GetWingArea, &FGAircraft::SetWingArea);
   PropertyManager->Tie("metrics/bw-ft", this, &FGAircraft::GetWingSpan);
   PropertyManager->Tie("metrics/cbarw-ft", this, &FGAircraft::Getcbar);

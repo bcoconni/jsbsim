@@ -219,7 +219,7 @@ void FGRocket::Calculate(void)
 // thrust, but the thrust determines fuel flow rate, so it must be adjusted
 // for Total Isp Variation.
 
-double FGRocket::CalcFuelNeed(void)
+Real FGRocket::CalcFuelNeed(void)
 {
   if (ThrustTable != 0L) {          // Thrust table given - infers solid fuel
     FuelFlowRate = VacThrust/Isp;   // This calculates wdot (weight flow rate in lbs/sec)
@@ -235,7 +235,7 @@ double FGRocket::CalcFuelNeed(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGRocket::CalcOxidizerNeed(void)
+Real FGRocket::CalcOxidizerNeed(void)
 {
   SLOxiFlowMax = PropFlowMax * MxR / (1 + MxR);
   OxidizerFlowRate = SLOxiFlowMax * PctPower;

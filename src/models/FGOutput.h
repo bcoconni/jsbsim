@@ -189,7 +189,7 @@ public:
   bool Toggle(int idx);
   /** Modifies the output rate for all output instances.
       @param rate new output rate in Hz */
-  void SetRateHz(double rate);
+  void SetRateHz(Real rate);
   /** Load the output directives and adds a new output instance to the Output
       Manager list.
       @param el XMLElement that is pointing to the output directives
@@ -209,7 +209,7 @@ public:
       @param outputProperties list of properties that should be output
       @result true if the execution succeeded. */
   bool Load(int subSystems, std::string protocol, std::string type,
-            std::string port, std::string name, double outRate,
+            std::string port, std::string name, Real outRate,
             std::vector<FGPropertyNode_ptr> & outputProperties);
   /** Get the name identifier to which the output will be directed.
       @param idx ID of the output instance from which the name identifier must

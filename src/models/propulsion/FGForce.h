@@ -139,7 +139,7 @@ vector vFs and need to be passed to FGForce:</p>
 
 <p>Note that storing the native forces and moments outside of this class is not
 strictly necessary, overloaded SetNativeForces() and SetNativeMoments() methods
-which each accept three doubles (rather than a vector) are provided and can be
+which each accept three Reals (rather than a vector) are provided and can be
 repeatedly called without incurring undue overhead. The body axes force vector
 can now be retrieved by calling:</p>
 
@@ -232,14 +232,14 @@ public:
 
   virtual const FGColumnVector3& GetBodyForces(void);
 
-  inline double GetBodyXForce(void) const { return vFb(eX); }
-  inline double GetBodyYForce(void) const { return vFb(eY); }
-  inline double GetBodyZForce(void) const { return vFb(eZ); }
+  inline Real GetBodyXForce(void) const { return vFb(eX); }
+  inline Real GetBodyYForce(void) const { return vFb(eY); }
+  inline Real GetBodyZForce(void) const { return vFb(eZ); }
   inline const FGColumnVector3& GetMoments(void) const { return vM; }
 
   // Normal point of application, JSBsim structural coords
   // (inches, x +back, y +right, z +up)
-  inline void SetLocation(double x, double y, double z) {
+  inline void SetLocation(Real x, Real y, Real z) {
     vXYZn(eX) = x;
     vXYZn(eY) = y;
     vXYZn(eZ) = z;
@@ -254,26 +254,26 @@ public:
       @param x acting location of force
       @param y acting location of force
       @param z acting location of force    */
-  inline void SetActingLocation(double x, double y, double z) {
+  inline void SetActingLocation(Real x, Real y, Real z) {
     vActingXYZn(eX) = x;
     vActingXYZn(eY) = y;
     vActingXYZn(eZ) = z;
   }
-  inline void SetLocationX(double x) {vXYZn(eX) = x; vActingXYZn(eX) = x;}
-  inline void SetLocationY(double y) {vXYZn(eY) = y; vActingXYZn(eY) = y;}
-  inline void SetLocationZ(double z) {vXYZn(eZ) = z; vActingXYZn(eZ) = z;}
-  inline double SetActingLocationX(double x) {vActingXYZn(eX) = x; return x;}
-  inline double SetActingLocationY(double y) {vActingXYZn(eY) = y; return y;}
-  inline double SetActingLocationZ(double z) {vActingXYZn(eZ) = z; return z;}
+  inline void SetLocationX(Real x) {vXYZn(eX) = x; vActingXYZn(eX) = x;}
+  inline void SetLocationY(Real y) {vXYZn(eY) = y; vActingXYZn(eY) = y;}
+  inline void SetLocationZ(Real z) {vXYZn(eZ) = z; vActingXYZn(eZ) = z;}
+  inline Real SetActingLocationX(Real x) {vActingXYZn(eX) = x; return x;}
+  inline Real SetActingLocationY(Real y) {vActingXYZn(eY) = y; return y;}
+  inline Real SetActingLocationZ(Real z) {vActingXYZn(eZ) = z; return z;}
   inline void SetLocation(const FGColumnVector3& vv) { vXYZn = vv; SetActingLocation(vv);}
   inline void SetActingLocation(const FGColumnVector3& vv) { vActingXYZn = vv; }
 
-  inline double GetLocationX( void ) const { return vXYZn(eX);}
-  inline double GetLocationY( void ) const { return vXYZn(eY);}
-  inline double GetLocationZ( void ) const { return vXYZn(eZ);}
-  inline double GetActingLocationX( void ) const { return vActingXYZn(eX);}
-  inline double GetActingLocationY( void ) const { return vActingXYZn(eY);}
-  inline double GetActingLocationZ( void ) const { return vActingXYZn(eZ);}
+  inline Real GetLocationX( void ) const { return vXYZn(eX);}
+  inline Real GetLocationY( void ) const { return vXYZn(eY);}
+  inline Real GetLocationZ( void ) const { return vXYZn(eZ);}
+  inline Real GetActingLocationX( void ) const { return vActingXYZn(eX);}
+  inline Real GetActingLocationY( void ) const { return vActingXYZn(eY);}
+  inline Real GetActingLocationZ( void ) const { return vActingXYZn(eZ);}
   const FGColumnVector3& GetLocation(void) const { return vXYZn; }
   const FGColumnVector3& GetActingLocation(void) const { return vActingXYZn; }
 
@@ -284,20 +284,20 @@ public:
   //are going to get confused.
   //They are in radians.
 
-  void SetAnglesToBody(double broll, double bpitch, double byaw);
+  void SetAnglesToBody(Real broll, Real bpitch, Real byaw);
   inline void  SetAnglesToBody(const FGColumnVector3& vv) {
     SetAnglesToBody(vv(eRoll), vv(ePitch), vv(eYaw));
   }
 
   void UpdateCustomTransformMatrix(void);
-  void SetPitch(double pitch) {vOrient(ePitch) = pitch; UpdateCustomTransformMatrix();}
-  void SetYaw(double yaw) {vOrient(eYaw) = yaw; UpdateCustomTransformMatrix();}
+  void SetPitch(Real pitch) {vOrient(ePitch) = pitch; UpdateCustomTransformMatrix();}
+  void SetYaw(Real yaw) {vOrient(eYaw) = yaw; UpdateCustomTransformMatrix();}
 
-  double GetPitch(void) const {return vOrient(ePitch);}
-  double GetYaw(void) const {return vOrient(eYaw);}
+  Real GetPitch(void) const {return vOrient(ePitch);}
+  Real GetYaw(void) const {return vOrient(eYaw);}
 
   inline const FGColumnVector3& GetAnglesToBody(void) const {return vOrient;}
-  inline double GetAnglesToBody(int axis) const {return vOrient(axis);}
+  inline Real GetAnglesToBody(int axis) const {return vOrient(axis);}
 
   inline void SetTransformType(TransformType ii) { ttype=ii; }
   inline TransformType GetTransformType(void) const { return ttype; }

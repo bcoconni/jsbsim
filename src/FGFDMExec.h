@@ -288,7 +288,7 @@ public:
                       the file specified in the script will be used. If an initialization file 
                       is not given in either place, an error will result.
       @return true if successfully loads; false otherwise. */
-  bool LoadScript(const SGPath& Script, double deltaT=0.0,
+  bool LoadScript(const SGPath& Script, Real deltaT=0.0,
                   const SGPath& initfile=SGPath());
 
   /** Sets the path to the engine config file directories.
@@ -370,13 +370,13 @@ public:
   /** Retrieves the value of a property.
       @param property the name of the property
       @result the value of the specified property */
-  double GetPropertyValue(const std::string& property)
+  Real GetPropertyValue(const std::string& property)
   { return instance->GetNode()->GetDouble(property); }
 
   /** Sets a property value.
       @param property the property to be set
       @param value the value to set the property to */
-  void SetPropertyValue(const std::string& property, double value)
+  void SetPropertyValue(const std::string& property, Real value)
   { instance->GetNode()->SetDouble(property, value); }
 
   /// Returns the model name.
@@ -415,7 +415,7 @@ public:
   void ForceOutput(int idx=0) { Output->ForceOutput(idx); }
 
   /** Sets the logging rate in Hz for all output objects (if any). */
-  void SetLoggingRate(double rate) { Output->SetRateHz(rate); }
+  void SetLoggingRate(Real rate) { Output->SetRateHz(rate); }
 
   /** Sets (or overrides) the output filename
       @param n index of file
@@ -500,10 +500,10 @@ public:
   std::string GetPropulsionTankReport() const;
 
   /// Returns the cumulative simulation time in seconds.
-  double GetSimTime(void) const { return sim_time; }
+  Real GetSimTime(void) const { return sim_time; }
 
   /// Returns the simulation delta T.
-  double GetDeltaT(void) const {return dT;}
+  Real GetDeltaT(void) const {return dT;}
 
   /// Suspends the simulation and sets the delta T to zero.
   void SuspendIntegration(void) {saved_dT = dT; dT = 0.0;}
@@ -518,11 +518,11 @@ public:
   /** Sets the current sim time.
       @param cur_time the current time
       @return the current simulation time.      */
-  double Setsim_time(double cur_time);
+  Real Setsim_time(Real cur_time);
 
   /** Sets the integration time step for the simulation executive.
       @param delta_t the time step in seconds.     */
-  void Setdt(double delta_t) { dT = delta_t; }
+  void Setdt(Real delta_t) { dT = delta_t; }
 
   /** Sets the root directory where JSBSim starts looking for its system
       directories.
@@ -536,7 +536,7 @@ public:
   /** Increments the simulation time if not in Holding mode. The Frame counter
       is also incremented.
       @return the new simulation time.     */
-  double IncrTime(void);
+  Real IncrTime(void);
 
   /** Retrieves the current frame count. */
   unsigned int GetFrame(void) const {return Frame;}
@@ -574,9 +574,9 @@ private:
   unsigned int IdFDM;
   int disperse;
   unsigned short Terminate;
-  double dT;
-  double saved_dT;
-  double sim_time;
+  Real dT;
+  Real saved_dT;
+  Real sim_time;
   bool holding;
   bool IncrementThenHolding;
   int TimeStepsUntilHold;

@@ -248,67 +248,67 @@ public:
   ~FGRotor();
 
   /// Returns the power required by the rotor.
-  double GetPowerRequired(void)const { return PowerRequired; }
+  Real GetPowerRequired(void)const { return PowerRequired; }
 
   /// Returns the scalar thrust of the rotor, and adjusts the RPM value.
-  double Calculate(double EnginePower);
+  Real Calculate(Real EnginePower);
 
 
   /// Retrieves the RPMs of the rotor.
-  double GetRPM(void) const { return RPM; }
-  void   SetRPM(double rpm) { RPM = rpm; }
+  Real GetRPM(void) const { return RPM; }
+  void   SetRPM(Real rpm) { RPM = rpm; }
   
   /// Retrieves the RPMs of the Engine, as seen from this rotor.
-  double GetEngineRPM(void) const {return EngineRPM;} //{ return GearRatio*RPM; }
-  void SetEngineRPM(double rpm) {EngineRPM = rpm;} //{ RPM = rpm/GearRatio; }
+  Real GetEngineRPM(void) const {return EngineRPM;} //{ return GearRatio*RPM; }
+  void SetEngineRPM(Real rpm) {EngineRPM = rpm;} //{ RPM = rpm/GearRatio; }
   /// Tells the rotor's gear ratio, usually the engine asks for this.
-  double GetGearRatio(void) { return GearRatio; }
+  Real GetGearRatio(void) { return GearRatio; }
   /// Retrieves the thrust of the rotor.
-  double GetThrust(void) const { return Thrust; }
+  Real GetThrust(void) const { return Thrust; }
 
   /// Retrieves the rotor's coning angle 
-  double GetA0(void) const { return a0; }
+  Real GetA0(void) const { return a0; }
   /// Retrieves the longitudinal flapping angle with respect to the rotor shaft
-  double GetA1(void) const { return a1s; }
+  Real GetA1(void) const { return a1s; }
   /// Retrieves the lateral flapping angle with respect to the rotor shaft
-  double GetB1(void) const { return b1s; }
+  Real GetB1(void) const { return b1s; }
 
   /// Retrieves the inflow ratio
-  double GetLambda(void) const { return lambda; }
+  Real GetLambda(void) const { return lambda; }
   /// Retrieves the tip-speed (aka advance) ratio
-  double GetMu(void) const { return mu; }
+  Real GetMu(void) const { return mu; }
   /// Retrieves the induced inflow ratio
-  double GetNu(void) const { return nu; }
+  Real GetNu(void) const { return nu; }
   /// Retrieves the induced velocity
-  double GetVi(void) const { return v_induced; }
+  Real GetVi(void) const { return v_induced; }
   /// Retrieves the thrust coefficient
-  double GetCT(void) const { return C_T; }
+  Real GetCT(void) const { return C_T; }
   /// Retrieves the torque
-  double GetTorque(void) const { return Torque; }
+  Real GetTorque(void) const { return Torque; }
   
   /// Downwash angle - positive values point forward (given a horizontal spinning rotor)
-  double GetThetaDW(void) const { return theta_downwash; }
+  Real GetThetaDW(void) const { return theta_downwash; }
   /// Downwash angle - positive values point leftward (given a horizontal spinning rotor)
-  double GetPhiDW(void) const { return phi_downwash; }
+  Real GetPhiDW(void) const { return phi_downwash; }
 
   /// Retrieves the ground effect scaling factor.
-  double GetGroundEffectScaleNorm(void) const { return GroundEffectScaleNorm; }
+  Real GetGroundEffectScaleNorm(void) const { return GroundEffectScaleNorm; }
   /// Sets the ground effect scaling factor.
-  void   SetGroundEffectScaleNorm(double g) { GroundEffectScaleNorm = g; }
+  void   SetGroundEffectScaleNorm(Real g) { GroundEffectScaleNorm = g; }
 
   /// Retrieves the collective control input in radians.
-  double GetCollectiveCtrl(void) const { return CollectiveCtrl; }
+  Real GetCollectiveCtrl(void) const { return CollectiveCtrl; }
   /// Retrieves the lateral control input in radians.
-  double GetLateralCtrl(void) const { return LateralCtrl; }
+  Real GetLateralCtrl(void) const { return LateralCtrl; }
   /// Retrieves the longitudinal control input in radians.
-  double GetLongitudinalCtrl(void) const { return LongitudinalCtrl; }
+  Real GetLongitudinalCtrl(void) const { return LongitudinalCtrl; }
 
   /// Sets the collective control input in radians.
-  void SetCollectiveCtrl(double c) { CollectiveCtrl = c; }
+  void SetCollectiveCtrl(Real c) { CollectiveCtrl = c; }
   /// Sets the lateral control input in radians.
-  void SetLateralCtrl(double c) { LateralCtrl = c; }
+  void SetLateralCtrl(Real c) { LateralCtrl = c; }
   /// Sets the longitudinal control input in radians.
-  void SetLongitudinalCtrl(double c) { LongitudinalCtrl = c; }
+  void SetLongitudinalCtrl(Real c) { LongitudinalCtrl = c; }
 
   // Stubs. Only main rotor RPM is returned
   std::string GetThrusterLabels(int id, const std::string& delimeter);
@@ -317,75 +317,75 @@ public:
 private:
 
   // assist in parameter retrieval
-  double ConfigValueConv( Element* e, const std::string& ename, double default_val=0.0, 
+  Real ConfigValueConv( Element* e, const std::string& ename, Real default_val=0.0, 
                                       const std::string& unit = "", bool tell=false);
 
-  double ConfigValue( Element* e, const std::string& ename, double default_val=0.0,
+  Real ConfigValue( Element* e, const std::string& ename, Real default_val=0.0,
                                   bool tell=false);
 
-  double Configure(Element* rotor_element);
+  Real Configure(Element* rotor_element);
 
   void CalcRotorState(void);
 
   // rotor dynamics
-  void calc_flow_and_thrust(double theta_0, double Uw, double Ww, double flow_scale = 1.0);
-  void calc_coning_angle(double theta_0);
-  void calc_flapping_angles(double theta_0, const FGColumnVector3 &pqr_fus_w);
-  void calc_drag_and_side_forces(double theta_0);
-  void calc_torque(double theta_0);
+  void calc_flow_and_thrust(Real theta_0, Real Uw, Real Ww, Real flow_scale = 1.0);
+  void calc_coning_angle(Real theta_0);
+  void calc_flapping_angles(Real theta_0, const FGColumnVector3 &pqr_fus_w);
+  void calc_drag_and_side_forces(Real theta_0);
+  void calc_torque(Real theta_0);
   void calc_downwash_angles();
 
   // transformations
   FGColumnVector3 hub_vel_body2ca( const FGColumnVector3 &uvw, const FGColumnVector3 &pqr, 
-                                   double a_ic = 0.0 , double b_ic = 0.0 );
+                                   Real a_ic = 0.0 , Real b_ic = 0.0 );
   FGColumnVector3 fus_angvel_body2ca( const FGColumnVector3 &pqr);
-  FGColumnVector3 body_forces(double a_ic = 0.0 , double b_ic = 0.0 );
-  FGColumnVector3 body_moments(double a_ic = 0.0 , double b_ic = 0.0 );
+  FGColumnVector3 body_forces(Real a_ic = 0.0 , Real b_ic = 0.0 );
+  FGColumnVector3 body_moments(Real a_ic = 0.0 , Real b_ic = 0.0 );
 
   // interface
   bool bindmodel(FGPropertyManager* pm);
   void Debug(int from);
 
   // environment
-  double dt;
-  double rho;
+  Real dt;
+  Real rho;
   Filter damp_hagl;
 
   // configuration parameters
-  double Radius;
+  Real Radius;
   int    BladeNum;
 
   // rpm control
-  double Sense;
-  double NominalRPM;
-  double MinimalRPM;
-  double MaximalRPM;
+  Real Sense;
+  Real NominalRPM;
+  Real MinimalRPM;
+  Real MaximalRPM;
   int    ExternalRPM;
   int    RPMdefinition;
   FGPropertyNode_ptr ExtRPMsource;
-  double SourceGearRatio;
+  Real SourceGearRatio;
 
-  // 'real' rotor parameters
-  double BladeChord;
-  double LiftCurveSlope;
-  double BladeTwist;
-  double HingeOffset;
-  double BladeFlappingMoment;
-  double BladeMassMoment;
-  double PolarMoment;
-  double InflowLag;
-  double TipLossB;
+  // 'Real' rotor parameters
+  Real BladeChord;
+  Real LiftCurveSlope;
+  Real BladeTwist;
+  Real HingeOffset;
+  Real BladeFlappingMoment;
+  Real BladeMassMoment;
+  Real PolarMoment;
+  Real InflowLag;
+  Real TipLossB;
 
   // groundeffect
-  double GroundEffectExp;
-  double GroundEffectShift;
-  double GroundEffectScaleNorm;
+  Real GroundEffectExp;
+  Real GroundEffectShift;
+  Real GroundEffectScaleNorm;
 
   // derived parameters
-  double LockNumberByRho;
-  double Solidity; // aka sigma
-  double R[5]; // Radius powers
-  double B[5]; // TipLossB powers
+  Real LockNumberByRho;
+  Real Solidity; // aka sigma
+  Real R[5]; // Radius powers
+  Real B[5]; // TipLossB powers
 
   // Some of the calculations require shaft axes. So the
   // thruster orientation (Tbo, with b for body) needs to be
@@ -395,36 +395,36 @@ private:
   FGMatrix33 HsrToTbo;
 
   // dynamic values
-  double RPM;
-  double Omega;          // must be > 0 
-  double beta_orient;    // rotor orientation angle (rad)
-  double a0;             // coning angle (rad)
-  double a_1, b_1, a_dw; // flapping angles
-  double a1s, b1s;       // cyclic flapping relative to shaft axes, /SH79/ eqn(43)
-  double H_drag, J_side; // Forces
+  Real RPM;
+  Real Omega;          // must be > 0 
+  Real beta_orient;    // rotor orientation angle (rad)
+  Real a0;             // coning angle (rad)
+  Real a_1, b_1, a_dw; // flapping angles
+  Real a1s, b1s;       // cyclic flapping relative to shaft axes, /SH79/ eqn(43)
+  Real H_drag, J_side; // Forces
 
-  double Torque;
-  double C_T;        // rotor thrust coefficient
-  double lambda;     // inflow ratio
-  double mu;         // tip-speed ratio 
-  double nu;         // induced inflow ratio
-  double v_induced;  // induced velocity, usually positive [ft/s]
+  Real Torque;
+  Real C_T;        // rotor thrust coefficient
+  Real lambda;     // inflow ratio
+  Real mu;         // tip-speed ratio 
+  Real nu;         // induced inflow ratio
+  Real v_induced;  // induced velocity, usually positive [ft/s]
 
-  double theta_downwash;
-  double phi_downwash;
+  Real theta_downwash;
+  Real phi_downwash;
 
   // control
   eCtrlMapping ControlMap;
-  double CollectiveCtrl;
-  double LateralCtrl;
-  double LongitudinalCtrl;
+  Real CollectiveCtrl;
+  Real LateralCtrl;
+  Real LongitudinalCtrl;
 
   // interaction with engine
   FGTransmission *Transmission;
-  double EngineRPM;
-  double MaxBrakePower;
-  double GearLoss;
-  double GearMoment;
+  Real EngineRPM;
+  Real MaxBrakePower;
+  Real GearLoss;
+  Real GearMoment;
 
 };
 

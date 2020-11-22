@@ -46,7 +46,7 @@ namespace JSBSim {
 CLASS DOCUMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-  /** Represents a real value
+  /** Represents a Real value
       @author Jon Berndt
   */
 
@@ -58,14 +58,14 @@ class FGRealValue : public FGParameter
 {
 public:
 
-  explicit FGRealValue(double val) : Value(val) {}
+  explicit FGRealValue(Real val) : Value(val) {}
 
-  double GetValue(void) const override { return Value; };
+  Real GetValue(void) const override { return Value; };
   std::string GetName(void) const override;
   bool IsConstant(void) const override { return true; }
 
 private:
-  const double Value;
+  const Real Value;
 };
 
 } // namespace JSBSim

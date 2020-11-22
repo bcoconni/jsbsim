@@ -76,9 +76,9 @@ FGNozzle::~FGNozzle()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGNozzle::Calculate(double vacThrust)
+Real FGNozzle::Calculate(Real vacThrust)
 {
-  Thrust = max((double)0.0, vacThrust - in.Pressure*Area);
+  Thrust = max(0.0, vacThrust - in.Pressure*Area);
 
   vFn(1) = Thrust * cos(ReverserAngle);
 

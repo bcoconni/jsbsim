@@ -186,7 +186,7 @@ public:
       @param idx the index of the acceleration component desired (1-based).
       @return The body frame acceleration component.
   */
-  double GetUVWdot(int idx) const { return vUVWdot(idx); }
+  Real GetUVWdot(int idx) const { return vUVWdot(idx); }
 
   /** Retrieves the acceleration resulting from the applied forces.
       Retrieves the ratio of the sum of all forces applied on the craft to its
@@ -202,7 +202,7 @@ public:
   */
   const FGColumnVector3& GetBodyAccel(void) const { return vBodyAccel; }
 
-  double GetGravAccelMagnitude(void) const { return in.vGravAccel.Magnitude(); }
+  Real GetGravAccelMagnitude(void) const { return in.vGravAccel.Magnitude(); }
 
   /** Retrieves a component of the acceleration resulting from the applied forces.
       Retrieves a component of the ratio between the sum of all forces applied
@@ -216,7 +216,7 @@ public:
       @param idx the index of the acceleration component desired (1-based).
       @return The component of the acceleration resulting from the applied forces.
   */
-  double GetBodyAccel(int idx) const { return vBodyAccel(idx); }
+  Real GetBodyAccel(int idx) const { return vBodyAccel(idx); }
 
   /** Retrieves a body frame angular acceleration component.
       Retrieves a body frame angular acceleration component. The angular
@@ -230,7 +230,7 @@ public:
       @param axis the index of the angular acceleration component desired (1-based).
       @return The body frame angular acceleration component.
   */
-  double GetPQRdot(int axis) const {return vPQRdot(axis);}
+  Real GetPQRdot(int axis) const {return vPQRdot(axis);}
 
   /** Retrieves a component of the total moments applied on the body.
       Retrieves a component of the total moments applied on the body. This does
@@ -244,7 +244,7 @@ public:
       @param idx the index of the moments component desired (1-based).
       @return The total moments applied on the body.
    */
-  double GetMoments(int idx) const { return in.Moment(idx) + vFrictionMoments(idx); }
+  Real GetMoments(int idx) const { return in.Moment(idx) + vFrictionMoments(idx); }
   FGColumnVector3 GetMoments(void) const { return in.Moment + vFrictionMoments; }
 
   /** Retrieves the total forces applied on the body.
@@ -258,7 +258,7 @@ public:
       @param idx the index of the forces component desired (1-based).
       @return The total forces applied on the body.
    */
-  double GetForces(int idx) const { return in.Force(idx) + vFrictionForces(idx); }
+  Real GetForces(int idx) const { return in.Force(idx) + vFrictionForces(idx); }
   FGColumnVector3 GetForces(void) const { return in.Force + vFrictionForces; }
 
   /** Retrieves the ground moments applied on the body.
@@ -272,7 +272,7 @@ public:
       @param idx the index of the moments component desired (1-based).
       @return The ground moments applied on the body.
    */
-  double GetGroundMoments(int idx) const { return in.GroundMoment(idx) + vFrictionMoments(idx); }
+  Real GetGroundMoments(int idx) const { return in.GroundMoment(idx) + vFrictionMoments(idx); }
   FGColumnVector3 GetGroundMoments(void) const { return in.GroundMoment + vFrictionMoments; }
 
   /** Retrieves the ground forces applied on the body.
@@ -286,7 +286,7 @@ public:
       @param idx the index of the forces component desired (1-based).
       @return The ground forces applied on the body.
    */
-  double GetGroundForces(int idx) const { return in.GroundForce(idx) + vFrictionForces(idx); }
+  Real GetGroundForces(int idx) const { return in.GroundForce(idx) + vFrictionForces(idx); }
   FGColumnVector3 GetGroundForces(void) const { return in.GroundForce + vFrictionForces; }
 
   /** Retrieves the weight applied on the body.
@@ -300,7 +300,7 @@ public:
       @param idx the index of the forces component desired (1-based).
       @return The ground forces applied on the body.
   */
-  double GetWeight(int idx) const { return in.Mass * (in.Tec2b * in.vGravAccel)(idx); }
+  Real GetWeight(int idx) const { return in.Mass * (in.Tec2b * in.vGravAccel)(idx); }
   FGColumnVector3 GetWeight(void) const { return in.Mass * in.Tec2b * in.vGravAccel; }
 
   /** Initializes the FGAccelerations class prior to a new execution.
@@ -353,9 +353,9 @@ public:
     /// Terrain angular velocities with respect to the local frame (expressed in the ECEF frame).
     FGColumnVector3 TerrainAngularVel;
     /// Time step
-    double DeltaT;
+    Real DeltaT;
     /// Body mass
-    double Mass;
+    Real Mass;
     /// List of Lagrange multipliers set by FGLGear for friction forces calculations.
     std::vector<LagrangeMultiplier*> *MultipliersList;
   } in;
@@ -373,7 +373,7 @@ private:
   void CalculatePQRdot(void);
   void CalculateUVWdot(void);
 
-  void CalculateFrictionForces(double dt);
+  void CalculateFrictionForces(Real dt);
 
   void bind(void);
   void Debug(int from) override;

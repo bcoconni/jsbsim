@@ -143,7 +143,7 @@ bool FGGain::Run(void )
 
   } else if (Type == "SCHEDULED_GAIN") {           // SCHEDULED_GAIN
 
-    double SchedGain = Table->GetValue();
+    Real SchedGain = Table->GetValue();
     Output = Gain * SchedGain * Input;
 
   } else if (Type == "AEROSURFACE_SCALE") {        // AEROSURFACE_SCALE

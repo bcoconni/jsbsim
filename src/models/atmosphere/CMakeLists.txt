@@ -1,12 +1,7 @@
-set(SOURCES FGMSIS.cpp
-            FGMSISData.cpp
-            FGMars.cpp
-            FGStandardAtmosphere.cpp
+set(SOURCES FGStandardAtmosphere.cpp
             FGWinds.cpp)
 
-set(HEADERS FGMSIS.h
-            FGMars.h
-            FGStandardAtmosphere.h
+set(HEADERS FGStandardAtmosphere.h
             FGWinds.h)
 
 add_library(Atmosphere OBJECT ${HEADERS} ${SOURCES})

@@ -114,8 +114,8 @@ const FGMatrix33& FGForce::Transform(void) const
 
 void FGForce::UpdateCustomTransformMatrix(void)
 {
-  double cp,sp,cr,sr,cy,sy;
-  double srsp, crcy, crsy;
+  Real cp,sp,cr,sr,cy,sy;
+  Real srsp, crcy, crsy;
 
   cp=cos(vOrient(ePitch)); sp=sin(vOrient(ePitch));
   cr=cos(vOrient(eRoll));  sr=sin(vOrient(eRoll));
@@ -140,7 +140,7 @@ void FGForce::UpdateCustomTransformMatrix(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGForce::SetAnglesToBody(double broll, double bpitch, double byaw)
+void FGForce::SetAnglesToBody(Real broll, Real bpitch, Real byaw)
 {
   if (ttype == tCustom) {
     vOrient(ePitch) = bpitch;

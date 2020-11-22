@@ -188,7 +188,7 @@ class FGPropertyNode : public SGPropertyNode
 
 
     /**
-     * Get a double value for a property.
+     * Get a Real value for a property.
      *
      * This method is convenient but inefficient.  It should be used
      * infrequently (i.e. for initializing, loading, saving, etc.),
@@ -199,9 +199,9 @@ class FGPropertyNode : public SGPropertyNode
      * @param name The property name.
      * @param defaultValue The default value to return if the property
      *        does not exist.
-     * @return The property's value as a double, or the default value provided.
+     * @return The property's value as a Real, or the default value provided.
      */
-    double GetDouble (const std::string &name, double defaultValue = 0.0) const;
+    Real GetDouble (const std::string &name, Real defaultValue = 0.0) const;
 
 
     /**
@@ -286,19 +286,19 @@ class FGPropertyNode : public SGPropertyNode
 
 
     /**
-     * Set a double value for a property.
+     * Set a Real value for a property.
      *
-     * Assign a double value to a property.  If the property does not
+     * Assign a Real value to a property.  If the property does not
      * yet exist, it will be created and its type will be set to
      * DOUBLE; if it has a type of UNKNOWN, the type will also be set to
-     * DOUBLE; otherwise, the double value will be converted to the property's
+     * DOUBLE; otherwise, the Real value will be converted to the property's
      * type.
      *
      * @param name The property name.
      * @param val The new value for the property.
      * @return true if the assignment succeeded, false otherwise.
      */
-    bool SetDouble (const std::string &name, double val);
+    bool SetDouble (const std::string &name, Real val);
 
 
     /**
@@ -490,7 +490,7 @@ class FGPropertyManager
     Tie (const std::string &name, float *pointer, bool useDefault = true);
 
     /**
-     * Tie a property to an external double variable.
+     * Tie a property to an external Real variable.
      *
      * The property's value will automatically mirror the variable's
      * value, and vice-versa, until the property is untied.
@@ -502,7 +502,7 @@ class FGPropertyManager
      *        be modified; defaults to true.
      */
     void
-    Tie (const std::string &name, double *pointer, bool useDefault = true);
+    Tie (const std::string &name, Real *pointer, bool useDefault = true);
 
 //============================================================================
 //

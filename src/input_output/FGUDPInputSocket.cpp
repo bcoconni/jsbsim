@@ -104,7 +104,7 @@ void FGUDPInputSocket::Read(bool Holding)
        tokens.push_back(temp);
     }
     
-    vector<double> values;
+    vector<Real> values;
   
     for (unsigned int i=0; i<tokens.size(); i++) {
       values.push_back( atof(tokens[i].c_str()) );

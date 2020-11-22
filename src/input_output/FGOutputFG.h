@@ -80,7 +80,7 @@ private:
 
   struct {
     bool useSimTime;
-    double timeFactor;
+    Real timeFactor;
   } outputOptions;
 
   static constexpr size_t s = sizeof(FGNetFDM1) + sizeof(FGNetFDM2) + sizeof(FGNetFDM3);

@@ -157,7 +157,7 @@ public:
 
     // Second, make sure that q0 and q1 are distinct copies
     // i.e. that q0 and q1 does not point to the same memory location
-    double z = q0.Entry(2);
+    Real z = q0.Entry(2);
     q1.Entry(2) = 5.0;
     TS_ASSERT_DELTA(z, q0.Entry(2), epsilon); // q0[2] must remain unchanged
     TS_ASSERT_DELTA(5.0, q1.Entry(2), epsilon); // q1[2] must now contain 5.0
@@ -220,7 +220,7 @@ public:
 
     // Second, make sure that q0 and q1 are distinct copies
     // i.e. that q0 and q1 does not point to the same memory location
-    double z = q0.Entry(2);
+    Real z = q0.Entry(2);
     q1.Entry(2) = 5.0;
     TS_ASSERT_DELTA(z, q0.Entry(2), epsilon); // q0[2] must remain unchanged
     TS_ASSERT_DELTA(5.0, q1.Entry(2), epsilon); // q1[2] must now contain 5.0
@@ -249,9 +249,9 @@ public:
     JSBSim::FGQuaternion q0(0.5, 1.0, -0.75);
 
     // Euler angles in radians
-    double x = q0.GetEuler(1);
-    double y = q0.GetEuler(2);
-    double z = q0.GetEuler(3);
+    Real x = q0.GetEuler(1);
+    Real y = q0.GetEuler(2);
+    Real z = q0.GetEuler(3);
     x = x > M_PI ? x - 2.*M_PI : x;
     x = x < -M_PI ? x + 2.*M_PI : x;
     y = y > M_PI ? y - 2.*M_PI : y;
@@ -408,7 +408,7 @@ public:
 
     q1 = q0 * JSBSim::FGQuaternion(1, angle);
     euler = q1.GetEuler();
-    double z = euler(3);
+    Real z = euler(3);
     z = z > M_PI ? z - 2.0 * M_PI : z;
     z = z < -M_PI ? z + 2.0 * M_PI : z;
     TS_ASSERT_DELTA(0.5 + angle, euler(1), epsilon);

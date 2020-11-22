@@ -82,13 +82,13 @@ public:
   /// Destructor
   ~FGNozzle();
 
-  double Calculate(double vacThrust);
+  Real Calculate(Real vacThrust);
   std::string GetThrusterLabels(int id, const std::string& delimeter);
   std::string GetThrusterValues(int id, const std::string& delimeter);
 
 private:
-//  double PE;
-  double Area;
+//  Real PE;
+  Real Area;
   void Debug(int from);
 };
 }

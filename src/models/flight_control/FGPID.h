@@ -135,14 +135,14 @@ public:
   enum eIntegrateType {eNone = 0, eRectEuler, eTrapezoidal, eAdamsBashforth2,
                        eAdamsBashforth3};
 
-  void SetInitialOutput(double val) {
+  void SetInitialOutput(Real val) {
     I_out_total = val;
     Output = val;
   }
 
 private:
-  double I_out_total;
-  double Input_prev, Input_prev2;
+  Real I_out_total;
+  Real Input_prev, Input_prev2;
 
   bool IsStandard;
 

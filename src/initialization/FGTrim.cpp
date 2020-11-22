@@ -99,7 +99,7 @@ void FGTrim::TrimStats() {
       run_sum += TrimAxes[current_axis].GetRunCount();
       cout << "   " << setw(5) << TrimAxes[current_axis].GetStateName().c_str()
            << ": " << setprecision(3) << sub_iterations[current_axis]
-           << " average: " << setprecision(5) << sub_iterations[current_axis]/double(total_its)
+           << " average: " << setprecision(5) << sub_iterations[current_axis]/Real(total_its)
            << "  successful:  " << setprecision(3) << successful[current_axis]
            << "  stability: " << setprecision(5) << TrimAxes[current_axis].GetAvgStability()
            << endl;
@@ -189,11 +189,11 @@ bool FGTrim::DoTrim(void) {
   unsigned int axis_count = 0;
   auto FCS = fdmex->GetFCS();
   auto GroundReactions = fdmex->GetGroundReactions();
-  vector<double> throttle0 = FCS->GetThrottleCmd();
-  double elevator0 = FCS->GetDeCmd();
-  double aileron0 = FCS->GetDaCmd();
-  double rudder0 = FCS->GetDrCmd();
-  double PitchTrim0 = FCS->GetPitchTrimCmd();
+  vector<Real> throttle0 = FCS->GetThrottleCmd();
+  Real elevator0 = FCS->GetDeCmd();
+  Real aileron0 = FCS->GetDaCmd();
+  Real rudder0 = FCS->GetDrCmd();
+  Real PitchTrim0 = FCS->GetPitchTrimCmd();
 
   for(int i=0;i < GroundReactions->GetNumGearUnits();i++)
     GroundReactions->GetGearUnit(i)->SetReport(false);
@@ -209,8 +209,8 @@ bool FGTrim::DoTrim(void) {
     fdmex->Initialize(&fgic);
     fdmex->Run();
     trimOnGround();
-    double theta = fgic.GetThetaRadIC();
-    double phi = fgic.GetPhiRadIC();
+    Real theta = fgic.GetThetaRadIC();
+    Real phi = fgic.GetPhiRadIC();
     // Take opportunity of the first approx. found by trimOnGround() to
     // refine the control limits.
     TrimAxes[0].SetControlLimits(0., fgic.GetAltitudeAGLFtIC());
@@ -380,7 +380,7 @@ void FGTrim::trimOnGround(void)
   FGLocation CGLocation = Propagate->GetLocation();
   FGMatrix33 Tec2b = Propagate->GetTec2b();
   FGMatrix33 Tb2l = Propagate->GetTb2l();
-  double hmin = 1E+10;
+  Real hmin = 1E+10;
   int contactRef = -1;
 
   // Build the list of the aircraft contact points and take opportunity of the
@@ -398,7 +398,7 @@ void FGTrim::trimOnGround(void)
 
     FGColumnVector3 normal, vDummy;
     FGLocation lDummy;
-    double height = fdmex->GetInertial()->GetContactPoint(gearLoc, lDummy,
+    Real height = fdmex->GetInertial()->GetContactPoint(gearLoc, lDummy,
                                                           normal, vDummy,
                                                           vDummy);
 
@@ -499,32 +499,32 @@ FGTrim::RotationParameters FGTrim::calcRotation(vector<ContactPoints>& contacts,
     // Construct an orthonormal basis (u, v, t). The ground normal is obtained
     // from iter->normal.
     FGColumnVector3 t = u * iter->normal;
-    double length = t.Magnitude();
+    Real length = t.Magnitude();
     t /= length; // Normalize the tangent
     FGColumnVector3 v = t * u;
     FGColumnVector3 MM0 = GM0 - iter->location;
     // d0 is the distance from the circle center 'C' to the reference point 'M0'
-    double d0 = DotProduct(MM0, u);
+    Real d0 = DotProduct(MM0, u);
     // Compute the square of the circle radius i.e. the square of the distance
     // between 'C' and 'M'.
-    double sqrRadius = DotProduct(MM0, MM0) - d0 * d0;
+    Real sqrRadius = DotProduct(MM0, MM0) - d0 * d0;
     // Compute the distance from the circle center 'C' to the line made by the
     // intersection between the ground and the plane that contains the circle.
-    double DistPlane = d0 * DotProduct(u, iter->normal) / length;
+    Real DistPlane = d0 * DotProduct(u, iter->normal) / length;
     // The coordinate of the point of intersection 'P' between the circle and
     // the ground is (0, DistPlane, alpha) in the basis (u, v, t)
-    double mag = sqrRadius - DistPlane * DistPlane;
+    Real mag = sqrRadius - DistPlane * DistPlane;
     if (mag < 0) {
       cout << "FGTrim::calcRotation DistPlane^2 larger than sqrRadius" << endl;
     }
-    double alpha = sqrt(max(mag, 0.0));
+    Real alpha = sqrt(max(mag, 0.0));
     FGColumnVector3 CP = alpha * t + DistPlane * v;
     // The transformation is now constructed: we can extract the angle using the
     // classical formulas (cosine is obtained from the dot product and sine from
     // the cross product).
-    double cosine = -DotProduct(MM0, CP) / sqrRadius;
-    double sine = DotProduct(MM0 * u, CP) / sqrRadius;
-    double angle = atan2(sine, cosine);
+    Real cosine = -DotProduct(MM0, CP) / sqrRadius;
+    Real sine = DotProduct(MM0 * u, CP) / sqrRadius;
+    Real angle = atan2(sine, cosine);
     if (angle < 0.0) angle += 2.0 * M_PI;
     if (angle < rParam.angleMin) {
       rParam.angleMin = angle;
@@ -539,9 +539,9 @@ FGTrim::RotationParameters FGTrim::calcRotation(vector<ContactPoints>& contacts,
 
 bool FGTrim::solve(FGTrimAxis& axis) {
 
-  double x1,x2,x3,f1,f2,f3,d,d0;
-  const double relax =0.9;
-  double eps=axis.GetSolverEps();
+  Real x1,x2,x3,f1,f2,f3,d,d0;
+  const Real relax =0.9;
+  Real eps=axis.GetSolverEps();
 
   x1=x2=x3=0;
   d=1;
@@ -620,12 +620,12 @@ bool FGTrim::solve(FGTrimAxis& axis) {
 */
 bool FGTrim::findInterval(FGTrimAxis& axis) {
   bool found=false;
-  double step;
-  double current_control=axis.GetControl();
-  double current_accel=axis.GetState();;
-  double xmin=axis.GetControlMin();
-  double xmax=axis.GetControlMax();
-  double lastxlo,lastxhi,lastalo,lastahi;
+  Real step;
+  Real current_control=axis.GetControl();
+  Real current_accel=axis.GetState();;
+  Real xmin=axis.GetControlMin();
+  Real xmax=axis.GetControlMax();
+  Real lastxlo,lastxhi,lastalo,lastahi;
 
   step=0.025*fabs(xmax);
   xlo=xhi=current_control;
@@ -691,8 +691,8 @@ bool FGTrim::findInterval(FGTrimAxis& axis) {
 bool FGTrim::checkLimits(FGTrimAxis& axis)
 {
   bool solutionExists;
-  double current_control=axis.GetControl();
-  double current_accel=axis.GetState();
+  Real current_control=axis.GetControl();
+  Real current_accel=axis.GetState();
   xlo=axis.GetControlMin();
   xhi=axis.GetControlMax();
 
@@ -728,7 +728,7 @@ bool FGTrim::checkLimits(FGTrimAxis& axis)
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 void FGTrim::setupPullup() {
-  double g,q,cgamma;
+  Real g,q,cgamma;
   g=fdmex->GetInertial()->GetGravity().Magnitude();
   cgamma=cos(fgic.GetFlightPathAngleRadIC());
   cout << "setPitchRateInPullup():  " << g << ", " << cgamma << ", "
@@ -743,7 +743,7 @@ void FGTrim::setupPullup() {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 void FGTrim::setupTurn(void){
-  double g,phi;
+  Real g,phi;
   phi = fgic.GetPhiRadIC();
   if( fabs(phi) > 0.001 && fabs(phi) < 1.56 ) {
     targetNlf = 1 / cos(phi);
@@ -758,9 +758,9 @@ void FGTrim::setupTurn(void){
 
 void FGTrim::updateRates(void){
   if( mode == tTurn ) {
-    double phi = fgic.GetPhiRadIC();
-    double g = fdmex->GetInertial()->GetGravity().Magnitude();
-    double p,q,r,theta;
+    Real phi = fgic.GetPhiRadIC();
+    Real g = fdmex->GetInertial()->GetGravity().Magnitude();
+    Real p,q,r,theta;
     if(fabs(phi) > 0.001 && fabs(phi) < 1.56 ) {
       theta=fgic.GetThetaRadIC();
       phi=fgic.GetPhiRadIC();
@@ -775,7 +775,7 @@ void FGTrim::updateRates(void){
     fgic.SetQRadpsIC(q);
     fgic.SetRRadpsIC(r);
   } else if( mode == tPullup && fabs(targetNlf-1) > 0.01) {
-      double g,q,cgamma;
+      Real g,q,cgamma;
       g=fdmex->GetInertial()->GetGravity().Magnitude();
       cgamma=cos(fgic.GetFlightPathAngleRadIC());
       q=g*(targetNlf-cgamma)/fgic.GetVtrueFpsIC();

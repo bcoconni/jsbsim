@@ -4,7 +4,7 @@
 void assertVectorEqual(const char* _file, int _line,
                        const JSBSim::FGColumnVector3& x,
                        const JSBSim::FGColumnVector3& y,
-                       double delta) {
+                       Real delta) {
   _TS_ASSERT_DELTA(_file, _line, x(1), y(1), delta);
   _TS_ASSERT_DELTA(_file, _line, x(2), y(2), delta);
   _TS_ASSERT_DELTA(_file, _line, x(3), y(3), delta);
@@ -13,7 +13,7 @@ void assertVectorEqual(const char* _file, int _line,
 void assertMatrixEqual(const char* _file, int _line,
                        const JSBSim::FGMatrix33& x,
                        const JSBSim::FGMatrix33& y,
-                       double delta) {
+                       Real delta) {
   _TS_ASSERT_DELTA(_file, _line, x(1,1), y(1,1), delta);
   _TS_ASSERT_DELTA(_file, _line, x(1,2), y(1,2), delta);
   _TS_ASSERT_DELTA(_file, _line, x(1,3), y(1,3), delta);
@@ -27,7 +27,7 @@ void assertMatrixEqual(const char* _file, int _line,
 
 void assertMatrixIsIdentity(const char* _file, int _line,
                             const JSBSim::FGMatrix33& x,
-                            double delta) {
+                            Real delta) {
   _TS_ASSERT_DELTA(_file, _line, x(1,1), 1.0, delta);
   _TS_ASSERT_DELTA(_file, _line, x(1,2), 0.0, delta);
   _TS_ASSERT_DELTA(_file, _line, x(1,3), 0.0, delta);

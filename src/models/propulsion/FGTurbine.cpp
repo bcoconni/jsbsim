@@ -121,7 +121,7 @@ void FGTurbine::ResetToIC(void)
 
 void FGTurbine::Calculate(void)
 {
-  double thrust;
+  Real thrust;
 
   RunPreFunctions();
 
@@ -184,7 +184,7 @@ void FGTurbine::Calculate(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::Off(void)
+Real FGTurbine::Off(void)
 {
   Running = false;
   FuelFlow_pph = Seek(&FuelFlow_pph, 0, 1000.0, 10000.0);
@@ -207,10 +207,10 @@ double FGTurbine::Off(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::Run()
+Real FGTurbine::Run()
 {
-  double idlethrust, milthrust, thrust;
-  double T = in.Temperature;
+  Real idlethrust, milthrust, thrust;
+  Real T = in.Temperature;
 
   idlethrust = MilThrust * IdleThrustLookup->GetValue();
   milthrust = (MilThrust - idlethrust) * MilThrustLookup->GetValue();
@@ -257,7 +257,7 @@ double FGTurbine::Run()
   if (AugMethod == 2) {
     if (AugmentCmd > 0.0) {
       Augmentation = true;
-      double tdiff = (MaxThrust * MaxThrustLookup->GetValue()) - thrust;
+      Real tdiff = (MaxThrust * MaxThrustLookup->GetValue()) - thrust;
       thrust += (tdiff * AugmentCmd);
       FuelFlow_pph = Seek(&FuelFlow_pph, thrust * ATSFC, 5000.0, 10000.0);
       NozzlePosition = Seek(&NozzlePosition, 1.0, 0.8, 0.8);
@@ -285,7 +285,7 @@ double FGTurbine::Run()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::SpinUp(void)
+Real FGTurbine::SpinUp(void)
 {
   Running = false;
   FuelFlow_pph = 0.0;
@@ -302,7 +302,7 @@ double FGTurbine::SpinUp(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::Start(void)
+Real FGTurbine::Start(void)
 {
   if ((N2 > 15.0) && !Starved) {       // minimum 15% N2 needed for start
     Cranking = true;                   // provided for sound effects signal
@@ -331,7 +331,7 @@ double FGTurbine::Start(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::Stall(void)
+Real FGTurbine::Stall(void)
 {
   EGT_degC = in.TAT_c + 903.14;
   FuelFlow_pph = IdleFF;
@@ -346,11 +346,11 @@ double FGTurbine::Stall(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::Seize(void)
+Real FGTurbine::Seize(void)
 {
     N2 = 0.0;
     N1 = Seek(&N1, in.qbar/20.0, 0, N1/15.0);
-    FuelFlow_pph = Cutoff ? 0.0 : IdleFF;
+    FuelFlow_pph = Cutoff ? Real(0.0) : IdleFF;
     OilPressure_psi = 0.0;
     OilTemp_degK = Seek(&OilTemp_degK, in.TAT_c + 273.0, 0, 0.2);
     Running = false;
@@ -359,13 +359,13 @@ double FGTurbine::Seize(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::Trim()
+Real FGTurbine::Trim()
 {
-    double idlethrust = MilThrust * IdleThrustLookup->GetValue();
-    double milthrust = (MilThrust - idlethrust) * MilThrustLookup->GetValue();
-    double N2 = IdleN2 + ThrottlePos * N2_factor;
-    double N2norm = (N2 - IdleN2) / N2_factor;
-    double thrust = (idlethrust + (milthrust * N2norm * N2norm))
+    Real idlethrust = MilThrust * IdleThrustLookup->GetValue();
+    Real milthrust = (MilThrust - idlethrust) * MilThrustLookup->GetValue();
+    Real N2 = IdleN2 + ThrottlePos * N2_factor;
+    Real N2norm = (N2 - IdleN2) / N2_factor;
+    Real thrust = (idlethrust + (milthrust * N2norm * N2norm))
           * (1.0 - BleedDemand);
 
     if (AugMethod == 1) {
@@ -379,7 +379,7 @@ double FGTurbine::Trim()
 
     if (AugMethod == 2) {
       if (AugmentCmd > 0.0) {
-        double tdiff = (MaxThrust * MaxThrustLookup->GetValue()) - thrust;
+        Real tdiff = (MaxThrust * MaxThrustLookup->GetValue()) - thrust;
         thrust += (tdiff * AugmentCmd);
       }
     }
@@ -393,7 +393,7 @@ double FGTurbine::Trim()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::CalcFuelNeed(void)
+Real FGTurbine::CalcFuelNeed(void)
 {
   FuelFlowRate = FuelFlow_pph / 3600.0; // Calculates flow in lbs/sec from lbs/hr
   FuelExpended = FuelFlowRate * in.TotalDeltaT;     // Calculates fuel expended in this time step
@@ -403,7 +403,7 @@ double FGTurbine::CalcFuelNeed(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::GetPowerAvailable(void) {
+Real FGTurbine::GetPowerAvailable(void) {
   if( ThrottlePos <= 0.77 )
     return 64.94*ThrottlePos;
   else
@@ -412,8 +412,8 @@ double FGTurbine::GetPowerAvailable(void) {
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurbine::Seek(double *var, double target, double accel, double decel) {
-  double v = *var;
+Real FGTurbine::Seek(Real *var, Real target, Real accel, Real decel) {
+  Real v = *var;
   if (v > target) {
     v -= in.TotalDeltaT * decel;
     if (v < target) v = target;

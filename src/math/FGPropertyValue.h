@@ -68,13 +68,13 @@ public:
   FGPropertyValue(const std::string& propName,
                   std::shared_ptr<FGPropertyManager> propertyManager, Element* el);
 
-  double GetValue(void) const override;
+  Real GetValue(void) const override;
   bool IsConstant(void) const override {
     return PropertyNode && (!PropertyNode->isTied()
                          && !PropertyNode->getAttribute(SGPropertyNode::WRITE));
   }
   void SetNode(FGPropertyNode* node) {PropertyNode = node;}
-  void SetValue(double value);
+  void SetValue(Real value);
   bool IsLateBound(void) const { return PropertyNode == nullptr; }
 
   std::string GetName(void) const override;
@@ -90,7 +90,7 @@ private:
   mutable FGPropertyNode_ptr PropertyNode;
   mutable Element_ptr XML_def;
   std::string PropertyName;
-  double Sign;
+  Real Sign;
 };
 
 typedef SGSharedPtr<FGPropertyValue> FGPropertyValue_ptr;

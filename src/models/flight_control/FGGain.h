@@ -225,7 +225,7 @@ public:
 private:
   FGTable* Table;
   FGParameter_ptr Gain;
-  double InMin, InMax, OutMin, OutMax;
+  Real InMin, InMax, OutMin, OutMax;
   bool ZeroCentered;
 
   void Debug(int from) override;

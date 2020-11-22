@@ -121,7 +121,7 @@ FGPropeller::FGPropeller(FGFDMExec* exec, Element* prop_element, int num)
 
   local_element = prop_element->GetParent()->FindElement("sense");
   if (local_element) {
-    double Sense = local_element->GetDataAsNumber();
+    Real Sense = local_element->GetDataAsNumber();
     SetSense(Sense >= 0.0 ? 1.0 : -1.0);
   }
   local_element = prop_element->GetParent()->FindElement("p_factor");
@@ -198,7 +198,7 @@ void FGPropeller::ResetToIC(void)
 //
 // Because RPM could be zero, we need to be creative about what RPM is stated as.
 
-double FGPropeller::Calculate(double EnginePower)
+Real FGPropeller::Calculate(Real EnginePower)
 {
   FGColumnVector3 vDXYZ = MassBalance->StructuralToBody(vActingXYZn);
   const FGMatrix33& mT = Transform();
@@ -207,15 +207,15 @@ double FGPropeller::Calculate(double EnginePower)
   // Variables in.AeroUVW and in.AeroPQR include the wind and turbulence effects
   // as computed by FGAuxiliary.
   FGColumnVector3 localAeroVel = mT.Transposed() * (in.AeroUVW + in.AeroPQR*vDXYZ);
-  double omega, PowerAvailable;
+  Real omega, PowerAvailable;
 
-  double Vel = localAeroVel(eU);
-  double rho = in.Density;
-  double RPS = RPM/60.0;
+  Real Vel = localAeroVel(eU);
+  Real rho = in.Density;
+  Real RPS = RPM/60.0;
 
   // Calculate helical tip Mach
-  double Area = 0.25*Diameter*Diameter*M_PI;
-  double Vtip = RPS * Diameter * M_PI;
+  Real Area = 0.25*Diameter*Diameter*M_PI;
+  Real Vtip = RPS * Diameter * M_PI;
   HelicalTipMach = sqrt(Vtip*Vtip + Vel*Vel) / in.Soundspeed;
 
   if (RPS > 0.0) J = Vel / (Diameter * RPS); // Calculate J normally
@@ -242,7 +242,7 @@ double FGPropeller::Calculate(double EnginePower)
   // and Flight Mechanics" 1st edition, eqn. 6.15 (propeller analysis chapter).
   // Since Thrust and Vel can both be negative we need to adjust this formula
   // To handle sign (direction) separately from magnitude.
-  double Vel2sum = Vel*abs(Vel) + 2.0*Thrust/(rho*Area);
+  Real Vel2sum = Vel*abs(Vel) + 2.0*Thrust/(rho*Area);
   
   if( Vel2sum > 0.0)
     Vinduced = 0.5 * (-Vel + sqrt(Vel2sum));
@@ -253,14 +253,14 @@ double FGPropeller::Calculate(double EnginePower)
   // The shift is a multiple of the angle between the propeller shaft axis
   // and the relative wind that goes through the propeller disk.
   if (P_Factor > 0.0001) {
-    double tangentialVel = localAeroVel.Magnitude(eV, eW);
+    Real tangentialVel = localAeroVel.Magnitude(eV, eW);
 
     if (tangentialVel > 0.0001) {
       // The angle made locally by the air flow with respect to the propeller
       // axis is influenced by the induced velocity. This attenuates the
-      // influence of a string cross wind and gives a more realistic behavior.
-      double angle = atan2(tangentialVel, Vel+Vinduced);
-      double factor = Sense * P_Factor * angle / tangentialVel;
+      // influence of a string cross wind and gives a more Realistic behavior.
+      Real angle = atan2(tangentialVel, Vel+Vinduced);
+      Real factor = Sense * P_Factor * angle / tangentialVel;
       SetActingLocationY( GetLocationY() + factor * localAeroVel(eW));
       SetActingLocationZ( GetLocationZ() + factor * localAeroVel(eV));
     }
@@ -293,9 +293,9 @@ double FGPropeller::Calculate(double EnginePower)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropeller::GetPowerRequired(void)
+Real FGPropeller::GetPowerRequired(void)
 {
-  double cPReq;
+  Real cPReq;
 
   if (MaxPitch == MinPitch) {   // Fixed pitch prop
     cPReq = cPower->GetValue(J);
@@ -311,8 +311,8 @@ double FGPropeller::GetPowerRequired(void)
       if (!Feathered) {
         if (!Reversed) {
 
-          double rpmReq = MinRPM + (MaxRPM - MinRPM) * Advance;
-          double dRPM = rpmReq - RPM;
+          Real rpmReq = MinRPM + (MaxRPM - MinRPM) * Advance;
+          Real dRPM = rpmReq - RPM;
           // The pitch of a variable propeller cannot be changed when the RPMs are
           // too low - the oil pump does not work.
           if (RPM > 200) Pitch -= dRPM * in.TotalDeltaT;
@@ -323,7 +323,7 @@ double FGPropeller::GetPowerRequired(void)
 
           // when reversed calculate propeller pitch depending on throttle lever position
           // (beta range for taxing full reverse for braking)
-          double PitchReq = MinPitch - ( MinPitch - ReversePitch ) * Reverse_coef;
+          Real PitchReq = MinPitch - ( MinPitch - ReversePitch ) * Reverse_coef;
           // The pitch of a variable propeller cannot be changed when the RPMs are
           // too low - the oil pump does not work.
           if (RPM > 200) Pitch += (PitchReq - Pitch) / 200;
@@ -352,8 +352,8 @@ double FGPropeller::GetPowerRequired(void)
   // Apply optional Mach effects from CP_MACH table
   if (CpMach) cPReq *= CpMach->GetValue(HelicalTipMach);
 
-  double RPS = RPM / 60.0;
-  double local_RPS = RPS < 0.01 ? 0.01 : RPS; 
+  Real RPS = RPM / 60.0;
+  Real local_RPS = RPS < 0.01 ? Real(0.01) : RPS;
 
   PowerRequired = cPReq*local_RPS*local_RPS*local_RPS*D5*in.Density;
 
@@ -366,9 +366,9 @@ FGColumnVector3 FGPropeller::GetPFactor() const
 {
   // These are moments in lbf per ft : the lever arm along Z generates a moment
   // along the pitch direction.
-  double p_pitch = Thrust * Sense * (GetActingLocationZ() - GetLocationZ()) / 12.0;
+  Real p_pitch = Thrust * Sense * (GetActingLocationZ() - GetLocationZ()) / 12.0;
   // The lever arm along Y generates a moment along the yaw direction.
-  double p_yaw = Thrust * Sense * (GetActingLocationY() - GetLocationY()) / 12.0;
+  Real p_yaw = Thrust * Sense * (GetActingLocationY() - GetLocationY()) / 12.0;
 
   return FGColumnVector3(0.0, p_pitch, p_yaw);
 }

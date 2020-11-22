@@ -122,7 +122,7 @@ bool FGGroundReactions::GetWOW(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGGroundReactions::SetDsCmd(double cmd)
+void FGGroundReactions::SetDsCmd(Real cmd)
 {
   DsCmd = cmd;
   for (auto& gear:lGear)

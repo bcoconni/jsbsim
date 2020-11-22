@@ -52,10 +52,10 @@ namespace JSBSim {
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 /* Constants. */
-const double FGGasCell::R = 3.4071;              // [lbf ft/(mol Rankine)]
-const double FGGasCell::M_air = 0.0019186;       // [slug/mol]
-const double FGGasCell::M_hydrogen = 0.00013841; // [slug/mol]
-const double FGGasCell::M_helium = 0.00027409;   // [slug/mol]
+const Real FGGasCell::R = 3.4071;              // [lbf ft/(mol Rankine)]
+const Real FGGasCell::M_air = 0.0019186;       // [slug/mol]
+const Real FGGasCell::M_hydrogen = 0.00013841; // [slug/mol]
+const Real FGGasCell::M_helium = 0.00027409;   // [slug/mol]
 
 FGGasCell::FGGasCell(FGFDMExec* exec, Element* el, unsigned int num,
                      const struct Inputs& input)
@@ -145,7 +145,7 @@ FGGasCell::FGGasCell(FGFDMExec* exec, Element* el, unsigned int num,
                                                             "LBS/FT2");
   }
   if (el->FindElement("fullness")) {
-    const double Fullness = el->FindElementValueAsNumber("fullness");
+    const Real Fullness = el->FindElementValueAsNumber("fullness");
     if (0 <= Fullness) { 
       Volume = Fullness * MaxVolume; 
     } else {
@@ -173,12 +173,12 @@ FGGasCell::FGGasCell(FGFDMExec* exec, Element* el, unsigned int num,
     Contents = Pressure * Volume / (R * Temperature);
     
     // Clip to max allowed value.
-    const double IdealPressure = Contents * R * Temperature / MaxVolume;
+    const Real IdealPressure = Contents * R * Temperature / MaxVolume;
     if (IdealPressure > Pressure + MaxOverpressure) {
       Contents = (Pressure + MaxOverpressure) * MaxVolume / (R * Temperature);
       Pressure = Pressure + MaxOverpressure;
     } else {
-      Pressure = max(IdealPressure, Pressure);
+      Pressure = std::max<Real>(IdealPressure, Pressure);
     }
   } else {
     // Calculate initial gas content.
@@ -250,22 +250,22 @@ FGGasCell::~FGGasCell()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGGasCell::Calculate(double dt)
+void FGGasCell::Calculate(Real dt)
 {
-  const double AirTemperature = in.Temperature;  // [Rankine]
-  const double AirPressure    = in.Pressure;     // [lbs/ft^2]
-  const double AirDensity     = in.Density;      // [slug/ft^3]
-  const double g = in.gravity;                   // [lbs/slug]
+  const Real AirTemperature = in.Temperature;  // [Rankine]
+  const Real AirPressure    = in.Pressure;     // [lbs/ft^2]
+  const Real AirDensity     = in.Density;      // [slug/ft^3]
+  const Real g = in.gravity;                   // [lbs/slug]
 
-  const double OldTemperature = Temperature;
-  const double OldPressure    = Pressure;
+  const Real OldTemperature = Temperature;
+  const Real OldPressure    = Pressure;
   unsigned int i;
   const size_t no_ballonets = Ballonet.size();
 
   //-- Read ballonet state --
   // NOTE: This model might need a more proper integration technique. 
-  double BallonetsVolume = 0.0;
-  double BallonetsHeatFlow = 0.0;
+  Real BallonetsVolume = 0.0;
+  Real BallonetsHeatFlow = 0.0;
   for (i = 0; i < no_ballonets; i++) {
     BallonetsVolume   += Ballonet[i]->GetVolume();
     BallonetsHeatFlow += Ballonet[i]->GetHeatFlow();
@@ -277,7 +277,7 @@ void FGGasCell::Calculate(double dt)
     // The model is based on the ideal gas law.
     // However, it does look a bit fishy. Please verify.
     //   dT/dt = dU / (Cv n R)
-    double dU = 0.0;
+    Real dU = 0.0;
     for (i = 0; i < HeatTransferCoeff.size(); i++) {
       dU += HeatTransferCoeff[i]->GetValue();
     }
@@ -298,30 +298,30 @@ void FGGasCell::Calculate(double dt)
   }
 
   //-- Pressure --
-  const double IdealPressure =
+  const Real IdealPressure =
     Contents * R * Temperature / (MaxVolume - BallonetsVolume);
   if (IdealPressure > AirPressure + MaxOverpressure) {
     Pressure = AirPressure + MaxOverpressure;
   } else {
-    Pressure = max(IdealPressure, AirPressure);
+    Pressure = std::max<Real>(IdealPressure, AirPressure);
   }
 
   //-- Manual valving --
 
   // FIXME: Presently the effect of manual valving is computed using
   //        an ad hoc formula which might not be a good representation
-  //        of reality.
+  //        of Reality.
   if ((ValveCoefficient > 0.0) && (ValveOpen > 0.0)) {
     // First compute the difference in pressure between the gas in the
     // cell and the air above it.
     // FixMe: CellHeight should depend on current volume.
-    const double CellHeight = 2 * Zradius + Zwidth;                   // [ft]
-    const double GasMass    = Contents * M_gas();                     // [slug]
-    const double GasVolume  = Contents * R * Temperature / Pressure;  // [ft^3]
-    const double GasDensity = GasMass / GasVolume;
-    const double DeltaPressure =
+    const Real CellHeight = 2 * Zradius + Zwidth;                   // [ft]
+    const Real GasMass    = Contents * M_gas();                     // [slug]
+    const Real GasVolume  = Contents * R * Temperature / Pressure;  // [ft^3]
+    const Real GasDensity = GasMass / GasVolume;
+    const Real DeltaPressure =
       Pressure + CellHeight * g * (AirDensity - GasDensity) - AirPressure;
-    const double VolumeValved =
+    const Real VolumeValved =
       ValveOpen * ValveCoefficient * DeltaPressure * dt;
     Contents =
       max(0.0, Contents - Pressure * VolumeValved / (R * Temperature));
@@ -365,8 +365,8 @@ void FGGasCell::Calculate(double dt)
   // FIXME: If the cell isn't ellipsoid or cylindrical the inertia will
   //        be wrong.
   gasCellJ.InitMatrix();
-  const double mass = Contents * M_gas();
-  double Ixx, Iyy, Izz;
+  const Real mass = Contents * M_gas();
+  Real Ixx, Iyy, Izz;
   if ((Xradius != 0.0) && (Yradius != 0.0) && (Zradius != 0.0) &&
       (Xwidth  == 0.0) && (Ywidth  == 0.0) && (Zwidth  == 0.0)) {
     // Ellipsoid volume.
@@ -490,9 +490,9 @@ void FGGasCell::Debug(int from)
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-const double FGBallonet::R = 3.4071;              // [lbs ft/(mol Rankine)]
-const double FGBallonet::M_air = 0.0019186;       // [slug/mol]
-const double FGBallonet::Cv_air = 5.0/2.0;        // [??]
+const Real FGBallonet::R = 3.4071;              // [lbs ft/(mol Rankine)]
+const Real FGBallonet::M_air = 0.0019186;       // [slug/mol]
+const Real FGBallonet::Cv_air = 5.0/2.0;        // [??]
 
 FGBallonet::FGBallonet(FGFDMExec* exec, Element* el, unsigned int num,
                        FGGasCell* parent, const struct FGGasCell::Inputs& input)
@@ -576,7 +576,7 @@ FGBallonet::FGBallonet(FGFDMExec* exec, Element* el, unsigned int num,
                                                             "LBS/FT2");
   }
   if (el->FindElement("fullness")) {
-    const double Fullness = el->FindElementValueAsNumber("fullness");
+    const Real Fullness = el->FindElementValueAsNumber("fullness");
     if (0 <= Fullness) { 
       Volume = Fullness * MaxVolume; 
     } else {
@@ -602,12 +602,12 @@ FGBallonet::FGBallonet(FGFDMExec* exec, Element* el, unsigned int num,
     Contents = Pressure * Volume / (R * Temperature);
     
     // Clip to max allowed value.
-    const double IdealPressure = Contents * R * Temperature / MaxVolume;
+    const Real IdealPressure = Contents * R * Temperature / MaxVolume;
     if (IdealPressure > Pressure + MaxOverpressure) {
       Contents = (Pressure + MaxOverpressure) * MaxVolume / (R * Temperature);
       Pressure = Pressure + MaxOverpressure;
     } else {
-      Pressure = max(IdealPressure, Pressure);
+      Pressure = std::max<Real>(IdealPressure, Pressure);
     }
   } else {
     // Calculate initial air content.
@@ -674,13 +674,13 @@ FGBallonet::~FGBallonet()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGBallonet::Calculate(double dt)
+void FGBallonet::Calculate(Real dt)
 {
-  const double ParentPressure = Parent->GetPressure(); // [lbs/ft^2]
-  const double AirPressure    = in.Pressure;           // [lbs/ft^2]
+  const Real ParentPressure = Parent->GetPressure(); // [lbs/ft^2]
+  const Real AirPressure    = in.Pressure;           // [lbs/ft^2]
 
-  const double OldTemperature = Temperature;
-  const double OldPressure    = Pressure;
+  const Real OldTemperature = Temperature;
+  const Real OldPressure    = Pressure;
   unsigned int i;
 
   //-- Gas temperature --
@@ -701,13 +701,13 @@ void FGBallonet::Calculate(double dt)
   }
 
   //-- Pressure --
-  const double IdealPressure = Contents * R * Temperature / MaxVolume;
+  const Real IdealPressure = Contents * R * Temperature / MaxVolume;
   // The pressure is at least that of the parent gas cell.
-  Pressure = max(IdealPressure, ParentPressure);
+  Pressure = std::max<Real>(IdealPressure, ParentPressure);
 
   //-- Blower input --
   if (BlowerInput) {
-    const double AddedVolume = BlowerInput->GetValue() * dt;
+    const Real AddedVolume = BlowerInput->GetValue() * dt;
     if (AddedVolume > 0.0) {
       Contents += Pressure * AddedVolume / (R * Temperature);
     }
@@ -716,12 +716,12 @@ void FGBallonet::Calculate(double dt)
   //-- Pressure relief and manual valving --
   // FIXME: Presently the effect of valving is computed using
   //        an ad hoc formula which might not be a good representation
-  //        of reality.
+  //        of Reality.
   if ((ValveCoefficient > 0.0) &&
       ((ValveOpen > 0.0) || (Pressure > AirPressure + MaxOverpressure))) {
-    const double DeltaPressure = Pressure - AirPressure;
-    const double VolumeValved =
-      ((Pressure > AirPressure + MaxOverpressure) ? 1.0 : ValveOpen) *
+    const Real DeltaPressure = Pressure - AirPressure;
+    const Real VolumeValved =
+      ((Pressure > AirPressure + MaxOverpressure) ? Real(1.0) : ValveOpen) *
       ValveCoefficient * DeltaPressure * dt;
     // FIXME: Too small values of Contents sometimes leads to NaN.
     //        Currently the minimum is restricted to a safe value.
@@ -739,8 +739,8 @@ void FGBallonet::Calculate(double dt)
   // FIXME: If the ballonet isn't ellipsoid or cylindrical the inertia will
   //        be wrong.
   ballonetJ.InitMatrix();
-  const double mass = Contents * M_air;
-  double Ixx, Iyy, Izz;
+  const Real mass = Contents * M_air;
+  Real Ixx, Iyy, Izz;
   if ((Xradius != 0.0) && (Yradius != 0.0) && (Zradius != 0.0) &&
       (Xwidth  == 0.0) && (Ywidth  == 0.0) && (Zwidth  == 0.0)) {
     // Ellipsoid volume.

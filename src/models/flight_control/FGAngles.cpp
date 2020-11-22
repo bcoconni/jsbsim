@@ -140,15 +140,15 @@ bool FGAngles::Run(void )
   source_angle = source_angle_pNode->getDoubleValue() * source_angle_unit;
   target_angle = target_angle_pNode->getDoubleValue() * target_angle_unit;
 
-  double x1 = cos(source_angle);
-  double y1 = sin(source_angle);
-  double x2 = cos(target_angle);
-  double y2 = sin(target_angle);
+  Real x1 = cos(source_angle);
+  Real y1 = sin(source_angle);
+  Real x2 = cos(target_angle);
+  Real y2 = sin(target_angle);
 
-  double x1x2_y1y2 = max(-1.0, min(x1*x2 + y1*y2, 1.0));
-  double angle_to_heading_rad = acos(x1x2_y1y2);
-  double x1y2 = x1*y2;
-  double x2y1 = x2*y1;
+  Real x1x2_y1y2 = max(-1.0, min(x1*x2 + y1*y2, 1.0));
+  Real angle_to_heading_rad = acos(x1x2_y1y2);
+  Real x1y2 = x1*y2;
+  Real x2y1 = x2*y1;
 
   if (x1y2 >= x2y1) Output =  angle_to_heading_rad * output_unit;
   else              Output = -angle_to_heading_rad * output_unit;
