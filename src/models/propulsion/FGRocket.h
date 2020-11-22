@@ -141,21 +141,21 @@ public:
       power level. It is also turned from a rate into an actual amount (pounds)
       by multiplying it by the delta T and the rate.
       @return Total fuel requirement for this engine in pounds. */
-  double CalcFuelNeed(void);
+  Real CalcFuelNeed(void);
 
   /** The oxidizer need is calculated based on power levels and flow rate for that
       power level. It is also turned from a rate into an actual amount (pounds)
       by multiplying it by the delta T and the rate.
       @return Total oxidizer requirement for this engine in pounds. */
-  double CalcOxidizerNeed(void);
+  Real CalcOxidizerNeed(void);
 
   /** Gets the total impulse of the rocket.
       @return The cumulative actual total impulse of the rocket up to this time.*/
-  double GetTotalImpulse(void) const {return It;}
+  Real GetTotalImpulse(void) const {return It;}
 
   /** Gets the total impulse of the rocket.
       @return The cumulative vacuum total impulse of the rocket up to this time.*/
-  double GetVacTotalImpulse(void) const {return ItVac;}
+  Real GetVacTotalImpulse(void) const {return ItVac;}
 
   /** Gets the flame-out status.
       The engine will "flame out" if the throttle is set below the minimum
@@ -163,15 +163,15 @@ public:
       @return true if engine has flamed out. */
   bool GetFlameout(void) {return Flameout;}
 
-  double GetOxiFlowRate(void) const {return OxidizerFlowRate;}
+  Real GetOxiFlowRate(void) const {return OxidizerFlowRate;}
 
-  double GetMixtureRatio(void) const {return MxR;}
+  Real GetMixtureRatio(void) const {return MxR;}
 
-  double GetIsp(void) const {return Isp;}
+  Real GetIsp(void) const {return Isp;}
 
-  void SetMixtureRatio(double mix) {MxR = mix;}
+  void SetMixtureRatio(Real mix) {MxR = mix;}
 
-  void SetIsp(double isp) {Isp = isp;}
+  void SetIsp(Real isp) {Isp = isp;}
 
   std::string GetEngineLabels(const std::string& delimiter);
   std::string GetEngineValues(const std::string& delimiter);
@@ -185,7 +185,7 @@ public:
       @param var the variation in percent. That is, a 2 percent
       variation would be specified as 0.02. A positive 2% variation
       in thrust would increase the thrust by 2%, and shorten the burn time. */
-  void SetThrustVariation(double var) {ThrustVariation = var;}
+  void SetThrustVariation(Real var) {ThrustVariation = var;}
 
   /** Sets the variation in total motor energy.
       The total energy present in a solid rocket motor can be modified
@@ -194,39 +194,39 @@ public:
       @param var the variation in percent. That is, a 2 percent
       variation would be specified as 0.02. This variation will 
       affect the total thrust, but not the burn time.*/
-  void SetTotalIspVariation(double var) {TotalIspVariation = var;}
+  void SetTotalIspVariation(Real var) {TotalIspVariation = var;}
 
   /** Returns the thrust variation, if any. */
-  double GetThrustVariation(void) const {return ThrustVariation;}
+  Real GetThrustVariation(void) const {return ThrustVariation;}
 
   /** Returns the Total Isp variation, if any. */
-  double GetTotalIspVariation(void) const {return TotalIspVariation;}
+  Real GetTotalIspVariation(void) const {return TotalIspVariation;}
 
 private:
   /** Returns the vacuum thrust.
       @return The vacuum thrust in lbs. */
-  double GetVacThrust(void) const {return VacThrust;}
+  Real GetVacThrust(void) const {return VacThrust;}
 
   void bindmodel(FGPropertyManager* pm);
 
-  double Isp; // Vacuum Isp
-  double It;    // Total actual Isp
-  double ItVac; // Total Vacuum Isp
-  double MxR; // Mixture Ratio
-  double BurnTime;
-  double ThrustVariation;
-  double TotalIspVariation;
-  double VacThrust;
-  double previousFuelNeedPerTank;
-  double previousOxiNeedPerTank;
-  double OxidizerExpended;
-  double TotalPropellantExpended;
-  double SLOxiFlowMax;
-  double PropFlowMax;
-  double OxidizerFlowRate;
-  double PropellantFlowRate;
+  Real Isp; // Vacuum Isp
+  Real It;    // Total actual Isp
+  Real ItVac; // Total Vacuum Isp
+  Real MxR; // Mixture Ratio
+  Real BurnTime;
+  Real ThrustVariation;
+  Real TotalIspVariation;
+  Real VacThrust;
+  Real previousFuelNeedPerTank;
+  Real previousOxiNeedPerTank;
+  Real OxidizerExpended;
+  Real TotalPropellantExpended;
+  Real SLOxiFlowMax;
+  Real PropFlowMax;
+  Real OxidizerFlowRate;
+  Real PropellantFlowRate;
   bool Flameout;
-  double BuildupTime;
+  Real BuildupTime;
   FGTable* ThrustTable;
   FGFunction* isp_function;
   FGFDMExec* FDMExec;

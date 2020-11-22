@@ -45,7 +45,7 @@ using std::endl;
 
 namespace JSBSim {
 
-const double FGRungeKutta::RealLimit = 1e30;
+const Real FGRungeKutta::RealLimit = 1e30;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS IMPLEMENTATION
@@ -53,7 +53,7 @@ CLASS IMPLEMENTATION
 
 FGRungeKutta::~FGRungeKutta() { };
 
-int FGRungeKutta::init(double x_start, double x_end, int intervals)
+int FGRungeKutta::init(Real x_start, Real x_end, int intervals)
 {
   x0 = x_start;
   x1 = x_end;
@@ -77,7 +77,7 @@ int FGRungeKutta::init(double x_start, double x_end, int intervals)
    where this will fail.)
 */
 
-bool FGRungeKutta::sane_val(double x)
+bool FGRungeKutta::sane_val(Real x)
 {
   // assuming +/- inf behave as expected and 'nan' comparisons yield to false
   if ( x < RealLimit && x > -RealLimit ) return true;
@@ -86,10 +86,10 @@ bool FGRungeKutta::sane_val(double x)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGRungeKutta::evolve(double y_0, FGRungeKuttaProblem *pf)
+Real FGRungeKutta::evolve(Real y_0, FGRungeKuttaProblem *pf)
 {
-  double x = x0;
-  double y = y_0;
+  Real x = x0;
+  Real y = y_0;
   pfo = pf;
 
   iterations = 0;
@@ -126,9 +126,9 @@ FGRK4::~FGRK4() { };
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGRK4::approximate(double x, double y)
+Real FGRK4::approximate(Real x, Real y)
 {
-  double k1,k2,k3,k4;
+  Real k1,k2,k3,k4;
 
   k1   =  pfo->pFunc(x      , y         ); 
   k2   =  pfo->pFunc(x + h05, y + h05*k1);
@@ -146,31 +146,31 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 // Butcher tableau
-const double FGRKFehlberg::A2[] = { 0.0,     1.0/4.0 };
-const double FGRKFehlberg::A3[] = { 0.0,     3.0/32.0,       9.0/32.0 };
-const double FGRKFehlberg::A4[] = { 0.0,  1932.0/2197.0, -7200.0/2197.0,   7296.0/2197.0 };
-const double FGRKFehlberg::A5[] = { 0.0,   439.0/216.0,     -8.0,          3680.0/513.0,    -845.0/4104.0  };
-const double FGRKFehlberg::A6[] = { 0.0,    -8.0/27.0,       2.0,         -3544.0/2565.0,   1859.0/4104.0,  -11.0/40.0 };
+const Real FGRKFehlberg::A2[] = { 0.0,     1.0/4.0 };
+const Real FGRKFehlberg::A3[] = { 0.0,     3.0/32.0,       9.0/32.0 };
+const Real FGRKFehlberg::A4[] = { 0.0,  1932.0/2197.0, -7200.0/2197.0,   7296.0/2197.0 };
+const Real FGRKFehlberg::A5[] = { 0.0,   439.0/216.0,     -8.0,          3680.0/513.0,    -845.0/4104.0  };
+const Real FGRKFehlberg::A6[] = { 0.0,    -8.0/27.0,       2.0,         -3544.0/2565.0,   1859.0/4104.0,  -11.0/40.0 };
 
-const double FGRKFehlberg::C[]  = { 0.0, 0.0, 1.0/4.0, 3.0/8.0, 12.0/13.0, 1.0, 1.0/2.0 };
+const Real FGRKFehlberg::C[]  = { 0.0, 0.0, 1.0/4.0, 3.0/8.0, 12.0/13.0, 1.0, 1.0/2.0 };
 
-const double FGRKFehlberg::B[]  = { 0.0,     16.0/135.0,   0.0,   6656.0/12825.0,  28561.0/56430.0,   -9.0/50.0,  2.0/55.0 };
-const double FGRKFehlberg::Bs[] = { 0.0,     25.0/216.0,   0.0,   1408.0/2565.0,    2197.0/4104.0,    -1.0/5.0,   0.0 };
+const Real FGRKFehlberg::B[]  = { 0.0,     16.0/135.0,   0.0,   6656.0/12825.0,  28561.0/56430.0,   -9.0/50.0,  2.0/55.0 };
+const Real FGRKFehlberg::Bs[] = { 0.0,     25.0/216.0,   0.0,   1408.0/2565.0,    2197.0/4104.0,    -1.0/5.0,   0.0 };
 
 // use this if truncation is an issue
-// const double Ee[] = { 0.0, 1.0/360.0, 0.0, -128.0/4275.0, -2197.0/75240.0, 1.0/50.0, 2.0/55.0 };
+// const Real Ee[] = { 0.0, 1.0/360.0, 0.0, -128.0/4275.0, -2197.0/75240.0, 1.0/50.0, 2.0/55.0 };
 
 FGRKFehlberg::~FGRKFehlberg() { };
 
-double FGRKFehlberg::approximate(double x, double y)
+Real FGRKFehlberg::approximate(Real x, Real y)
 {
 
-  double k1,k2,k3,k4,k5,k6, as;
+  Real k1,k2,k3,k4,k5,k6, as;
 
-  double y4_val;
-  double y5_val;
-  double abs_err;
-  double est_step;
+  Real y4_val;
+  Real y5_val;
+  Real abs_err;
+  Real est_step;
   int done = 0;
 
 

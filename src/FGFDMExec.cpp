@@ -186,7 +186,7 @@ FGFDMExec::~FGFDMExec()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGFDMExec::Setsim_time(double cur_time) {
+Real FGFDMExec::Setsim_time(Real cur_time) {
   sim_time = cur_time;
   Inertial->SetTime(sim_time);
   return sim_time;
@@ -194,7 +194,7 @@ double FGFDMExec::Setsim_time(double cur_time) {
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGFDMExec::IncrTime(void) {
+Real FGFDMExec::IncrTime(void) {
   if (!holding && !IntegrationSuspended()) {
     sim_time += dT;
     Inertial->SetTime(sim_time);
@@ -730,7 +730,7 @@ vector <string> FGFDMExec::EnumerateFDMs(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGFDMExec::LoadScript(const SGPath& script, double deltaT,
+bool FGFDMExec::LoadScript(const SGPath& script, Real deltaT,
                            const SGPath& initfile)
 {
   Script = std::make_shared<FGScript>(this);

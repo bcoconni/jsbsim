@@ -146,7 +146,7 @@ public:
       @param n Axis index. This could be 0, 1, or 2, or one of the
                axis enums: eX, eY, eZ.
       @return the force acting on an axis */
-  double GetForces(int n) const {return vForces(n);}
+  Real GetForces(int n) const {return vForces(n);}
 
   /** Gets the total aerodynamic moment vector about the CG.
       @return a moment vector reference. */
@@ -155,7 +155,7 @@ public:
   /** Gets the aerodynamic moment about the CG for an axis.
       @return the moment about a single axis (as described also in the
               similar call to GetForces(int n).*/
-  double GetMoments(int n) const {return vMoments(n);}
+  Real GetMoments(int n) const {return vMoments(n);}
 
   /** Gets the total aerodynamic moment vector about the Moment Reference Center.
       @return a moment vector reference. */
@@ -164,7 +164,7 @@ public:
   /** Gets the aerodynamic moment about the Moment Reference Center for an axis.
       @return the moment about a single axis (as described also in the
               similar call to GetForces(int n).*/
-  double GetMomentsMRC(int n) const {return vMomentsMRC(n);}
+  Real GetMomentsMRC(int n) const {return vMomentsMRC(n);}
 
   /** Retrieves the aerodynamic forces in the wind axes.
       @return a reference to a column vector containing the wind axis forces. */
@@ -174,7 +174,7 @@ public:
       @param axis the axis to return the force for (eX, eY, eZ).
       @return a reference to a column vector containing the requested wind
       axis force. */
-  double GetvFw(int axis) const { return vFw(axis); }
+  Real GetvFw(int axis) const { return vFw(axis); }
 
   /** Retrieves the aerodynamic forces in the stability axes.
   @return a reference to a column vector containing the stability axis forces. */
@@ -184,7 +184,7 @@ public:
   @param axis the axis to return the force for (eX, eY, eZ).
   @return a reference to a column vector containing the requested stability
   axis force. */
-  double GetForcesInStabilityAxes(int n) const { return GetForcesInStabilityAxes()(n); }
+  Real GetForcesInStabilityAxes(int n) const { return GetForcesInStabilityAxes()(n); }
 
   /** Gets the total aerodynamic moment vector about the CG in the stability axes.
   @return a moment vector reference. */
@@ -193,7 +193,7 @@ public:
   /** Gets the aerodynamic moment about the CG for an axis.
   @return the moment about a single axis (as described also in the
   similar call to GetForces(int n).*/
-  double GetMomentsInStabilityAxes(int n) const { return GetMomentsInStabilityAxes()(n); }
+  Real GetMomentsInStabilityAxes(int n) const { return GetMomentsInStabilityAxes()(n); }
 
   /** Gets the total aerodynamic moment vector about the CG in the wind axes.
   @return a moment vector reference. */
@@ -202,25 +202,25 @@ public:
   /** Gets the aerodynamic moment about the CG for an axis.
   @return the moment about a single axis (as described also in the
   similar call to GetForces(int n).*/
-  double GetMomentsInWindAxes(int n) const { return GetMomentsInWindAxes()(n); }
+  Real GetMomentsInWindAxes(int n) const { return GetMomentsInWindAxes()(n); }
 
   /** Retrieves the lift over drag ratio */
-  double GetLoD(void) const { return lod; }
+  Real GetLoD(void) const { return lod; }
 
   /** Retrieves the square of the lift coefficient. */
-  double GetClSquared(void) const { return clsq; }
-  double GetAlphaCLMax(void) const { return alphaclmax; }
-  double GetAlphaCLMin(void) const { return alphaclmin; }
+  Real GetClSquared(void) const { return clsq; }
+  Real GetAlphaCLMax(void) const { return alphaclmax; }
+  Real GetAlphaCLMin(void) const { return alphaclmin; }
 
-  double GetHysteresisParm(void) const { return stall_hyst; }
-  double GetStallWarn(void) const { return impending_stall; }
-  double GetAlphaW(void) const { return alphaw; }
+  Real GetHysteresisParm(void) const { return stall_hyst; }
+  Real GetStallWarn(void) const { return impending_stall; }
+  Real GetAlphaW(void) const { return alphaw; }
 
-  double GetBI2Vel(void) const { return bi2vel; }
-  double GetCI2Vel(void) const { return ci2vel; }
+  Real GetBI2Vel(void) const { return bi2vel; }
+  Real GetCI2Vel(void) const { return ci2vel; }
 
-  void SetAlphaCLMax(double tt) { alphaclmax=tt; }
-  void SetAlphaCLMin(double tt) { alphaclmin=tt; }
+  void SetAlphaCLMax(Real tt) { alphaclmax=tt; }
+  void SetAlphaCLMin(Real tt) { alphaclmin=tt; }
 
   /** Gets the strings for the current set of aero functions.
       @param delimeter either a tab or comma string depending on output type
@@ -236,14 +236,14 @@ public:
   std::vector <FGFunction*> * GetAeroFunctions(void) const { return AeroFunctions; }
 
   struct Inputs {
-    double Alpha;
-    double Beta;
-    double Vt;
-    double Qbar;
-    double Wingarea;
-    double Wingspan;
-    double Wingchord;
-    double Wingincidence;
+    Real Alpha;
+    Real Beta;
+    Real Vt;
+    Real Qbar;
+    Real Wingarea;
+    Real Wingspan;
+    Real Wingchord;
+    Real Wingincidence;
     FGColumnVector3 RPBody;
     FGMatrix33 Tb2w;
     FGMatrix33 Tw2b;
@@ -268,14 +268,14 @@ private:
   FGColumnVector3 vMomentsMRCBodyXYZ;
   FGColumnVector3 vDXYZcg;
   FGColumnVector3 vDeltaRP;
-  double alphaclmax, alphaclmin;
-  double alphaclmax0, alphaclmin0;
-  double alphahystmax, alphahystmin;
-  double impending_stall, stall_hyst;
-  double bi2vel, ci2vel,alphaw;
-  double clsq, lod, qbar_area;
+  Real alphaclmax, alphaclmin;
+  Real alphaclmax0, alphaclmin0;
+  Real alphahystmax, alphahystmin;
+  Real impending_stall, stall_hyst;
+  Real bi2vel, ci2vel,alphaw;
+  Real clsq, lod, qbar_area;
 
-  typedef double (FGAerodynamics::*PMF)(int) const;
+  typedef Real (FGAerodynamics::*PMF)(int) const;
   void DetermineAxisSystem(Element* document);
   void ProcessAxesNameAndFrame(FGAerodynamics::eAxisType& axisType,
                                const string& name, const string& frame,

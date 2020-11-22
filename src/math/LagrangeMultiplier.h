@@ -51,9 +51,9 @@ CLASS DECLARATION
 struct LagrangeMultiplier {
   FGColumnVector3 ForceJacobian;
   FGColumnVector3 LeverArm;
-  double Min;
-  double Max;
-  double value;
+  Real Min;
+  Real Max;
+  Real value;
 };
 
 } // namespace

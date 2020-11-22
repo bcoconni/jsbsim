@@ -91,10 +91,10 @@ public:
 
   virtual bool Run(void) { return true; }
   virtual void SetOutput(void);
-  double GetOutput (void) const {return Output;}
+  Real GetOutput (void) const {return Output;}
   std::string GetName(void) const {return Name;}
   std::string GetType(void) const { return Type; }
-  virtual double GetOutputPct(void) const { return 0; }
+  virtual Real GetOutputPct(void) const { return 0; }
   virtual void ResetPastStates(void);
 
 protected:
@@ -103,15 +103,15 @@ protected:
   FGParameter_ptr ClipMin, ClipMax;
   std::vector <FGPropertyValue_ptr> InitNodes;
   std::vector <FGPropertyValue_ptr> InputNodes;
-  std::vector <double> output_array;
+  std::vector <Real> output_array;
   std::string Type;
   std::string Name;
-  double Input;
-  double Output;
-  double delay_time;
+  Real Input;
+  Real Output;
+  Real delay_time;
   unsigned int delay;
   int index;
-  double dt;
+  Real dt;
   bool clip, cyclic_clip;
 
   void Delay(void);

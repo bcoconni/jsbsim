@@ -208,7 +208,7 @@ float FGPropertyNode::GetFloat (const string &name, float defaultValue ) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropertyNode::GetDouble (const string &name, double defaultValue ) const
+Real FGPropertyNode::GetDouble (const string &name, Real defaultValue ) const
 {
   return getDoubleValue(name.c_str(), defaultValue);
 }
@@ -250,7 +250,7 @@ bool FGPropertyNode::SetFloat (const string &name, float val)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGPropertyNode::SetDouble (const string &name, double val)
+bool FGPropertyNode::SetDouble (const string &name, Real val)
 {
   return setDoubleValue(name.c_str(), val);
 }
@@ -402,7 +402,7 @@ void FGPropertyManager::Tie (const string &name, float *pointer,
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropertyManager::Tie (const string &name, double *pointer, bool useDefault)
+void FGPropertyManager::Tie (const string &name, Real *pointer, bool useDefault)
 {
   SGPropertyNode* property = root->getNode(name.c_str(), true);
   if (!property) {
@@ -410,7 +410,7 @@ void FGPropertyManager::Tie (const string &name, double *pointer, bool useDefaul
     return;
   }
 
-  if (!property->tie(SGRawValuePointer<double>(pointer), useDefault))
+  if (!property->tie(SGRawValuePointer<Real>(pointer), useDefault))
     cerr << "Failed to tie property " << name << " to a pointer" << endl;
   else {
     tied_properties.push_back(property);

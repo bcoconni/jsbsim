@@ -255,15 +255,15 @@ void FGPropulsion::ConsumeFuel(FGEngine* engine)
 //  if (Starved) return;
   if (FuelStarved || (hasOxTanks && OxiStarved)) return;
 
-  double FuelToBurn = engine->CalcFuelNeed();            // How much fuel does this engine need?
-  double FuelNeededPerTank = FuelToBurn / TanksWithFuel; // Determine fuel needed per tank.  
+  Real FuelToBurn = engine->CalcFuelNeed();            // How much fuel does this engine need?
+  Real FuelNeededPerTank = FuelToBurn / TanksWithFuel; // Determine fuel needed per tank.  
   for (unsigned int i=0; i<FeedListFuel.size(); i++) {
     Tanks[FeedListFuel[i]]->Drain(FuelNeededPerTank); 
   }
 
   if (engine->GetType() == FGEngine::etRocket) {
-    double OxidizerToBurn = engine->CalcOxidizerNeed();                // How much fuel does this engine need?
-    double OxidizerNeededPerTank = 0;
+    Real OxidizerToBurn = engine->CalcOxidizerNeed();                // How much fuel does this engine need?
+    Real OxidizerNeededPerTank = 0;
     if (TanksWithOxidizer > 0) OxidizerNeededPerTank = OxidizerToBurn / TanksWithOxidizer; // Determine fuel needed per tank.  
     for (unsigned int i=0; i<FeedListOxi.size(); i++) {
       Tanks[FeedListOxi[i]]->Drain(OxidizerNeededPerTank); 
@@ -276,11 +276,11 @@ void FGPropulsion::ConsumeFuel(FGEngine* engine)
 
 bool FGPropulsion::GetSteadyState(void)
 {
-  double currentThrust = 0, lastThrust = -1;
+  Real currentThrust = 0, lastThrust = -1;
   int steady_count = 0, j = 0;
   bool steady = false;
   bool TrimMode = FDMExec->GetTrimStatus();
-  double TimeStep = FDMExec->GetDeltaT();
+  Real TimeStep = FDMExec->GetDeltaT();
 
   vForces.InitMatrix();
   vMoments.InitMatrix();
@@ -358,7 +358,7 @@ bool FGPropulsion::Load(Element* el)
 
   Debug(2);
   ReadingEngine = false;
-  double FuelDensity = 6.0;
+  Real FuelDensity = 6.0;
 
   Name = "Propulsion Model: " + el->GetAttributeValue("name");
 
@@ -562,9 +562,9 @@ const FGColumnVector3& FGPropulsion::GetTanksMoment(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropulsion::GetTanksWeight(void) const
+Real FGPropulsion::GetTanksWeight(void) const
 {
-  double Tw = 0.0;
+  Real Tw = 0.0;
 
   for (unsigned int i=0; i<Tanks.size(); i++) Tw += Tanks[i]->GetContents();
 
@@ -598,7 +598,7 @@ void FGPropulsion::SetMagnetos(int setting)
 {
   if (ActiveEngine < 0) {
     for (auto& engine: Engines) {
-      // ToDo: first need to make sure the engine Type is really appropriate:
+      // ToDo: first need to make sure the engine Type is Really appropriate:
       //   do a check to see if it is of type Piston. This should be done for
       //   all of this kind of possibly across-the-board settings.
       if (engine->GetType() == FGEngine::etPiston)
@@ -727,9 +727,9 @@ void FGPropulsion::SetActiveEngine(int engine)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropulsion::Transfer(int source, int target, double amount)
+Real FGPropulsion::Transfer(int source, int target, Real amount)
 {
- double shortage, overage;
+ Real shortage, overage;
 
   if (source == -1) {
      shortage = 0.0;
@@ -746,11 +746,11 @@ double FGPropulsion::Transfer(int source, int target, double amount)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropulsion::DoRefuel(double time_slice)
+void FGPropulsion::DoRefuel(Real time_slice)
 {
   unsigned int i;
 
-  double fillrate = RefuelRate / 60.0 * time_slice;   
+  Real fillrate = RefuelRate / 60.0 * time_slice;   
   int TanksNotFull = 0;
 
   for (i=0; i<numTanks; i++) {
@@ -768,7 +768,7 @@ void FGPropulsion::DoRefuel(double time_slice)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropulsion::DumpFuel(double time_slice)
+void FGPropulsion::DumpFuel(Real time_slice)
 {
   unsigned int i;
   int TanksDumping = 0;
@@ -779,7 +779,7 @@ void FGPropulsion::DumpFuel(double time_slice)
 
   if (TanksDumping == 0) return;
 
-  double dump_rate_per_tank = DumpRate / 60.0 * time_slice / TanksDumping;
+  Real dump_rate_per_tank = DumpRate / 60.0 * time_slice / TanksDumping;
 
   for (i=0; i<numTanks; i++) {
     if (Tanks[i]->GetContents() > Tanks[i]->GetStandpipe()) {
@@ -802,7 +802,7 @@ void FGPropulsion::SetFuelFreeze(bool f)
 
 void FGPropulsion::bind(void)
 {
-  typedef double (FGPropulsion::*PMF)(int) const;
+  typedef Real (FGPropulsion::*PMF)(int) const;
   typedef int (FGPropulsion::*iPMF)(void) const;
 
   IsBound = true;

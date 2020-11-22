@@ -77,59 +77,59 @@ public:
   void resetValues(void);
 
   /// Sets the static friction factor of the surface area
-  void SetStaticFFactor(double friction) { staticFFactor = friction; }
+  void SetStaticFFactor(Real friction) { staticFFactor = friction; }
 
   /// Sets the rolling friction factor of the surface area
-  void SetRollingFFactor(double friction) { rollingFFactor = friction; }
+  void SetRollingFFactor(Real friction) { rollingFFactor = friction; }
 
   /// Sets the maximum force for the surface area
-  void SetMaximumForce(double force) { maximumForce = force; }
+  void SetMaximumForce(Real force) { maximumForce = force; }
 
   /// Sets the normalized bumpiness factor associated with the surface
-  void SetBumpiness(double bump) { bumpiness = bump; }
+  void SetBumpiness(Real bump) { bumpiness = bump; }
 
   /// Sets the surface is a solid flag value
   void SetSolid(bool solid) { isSolid = solid; }
 
   /// Set the currect position for bumpiness calulcation
-  void SetPosition(const double pt[3]) {
+  void SetPosition(const Real pt[3]) {
       pos[0] = pt[0]; pos[1] = pt[1]; pos[2] = pt[2];
   }
 
 
   /// Gets the static friction factor of the surface area
-  double GetStaticFFactor(void) { return staticFFactor; }
+  Real GetStaticFFactor(void) { return staticFFactor; }
 
   /// Gets the rolling friction factor of the surface area
-  double GetRollingFFactor(void) { return rollingFFactor; }
+  Real GetRollingFFactor(void) { return rollingFFactor; }
 
   /// Gets the maximum force of the surface area
-  double GetMaximumForce(void) { return maximumForce; }
+  Real GetMaximumForce(void) { return maximumForce; }
 
   /// Gets the normalized bumpiness factor associated with the surface
-  double GetBumpiness(void) { return bumpiness; }
+  Real GetBumpiness(void) { return bumpiness; }
 
   /// Gets the surface is a solid flag value
   bool GetSolid(void) { return isSolid; }
 
   /// Returns the height of the bump at the provided offset
-  double  GetBumpHeight();
+  Real  GetBumpHeight();
 
   std::string GetSurfaceStrings(std::string delimeter) const;
   std::string GetSurfaceValues(std::string delimeter) const;
 
 protected:
   ContactType eSurfaceType;
-  double staticFFactor, rollingFFactor;
-  double maximumForce;
-  double bumpiness;
+  Real staticFFactor, rollingFFactor;
+  Real maximumForce;
+  Real bumpiness;
   bool isSolid;
 
-  double staticFCoeff, dynamicFCoeff;
+  Real staticFCoeff, dynamicFCoeff;
 
 private:
   int contactNumber;
-  double pos[3];
+  Real pos[3];
 
   static std::string _CreateIndexedPropertyName(const std::string& Property, int index);
 };

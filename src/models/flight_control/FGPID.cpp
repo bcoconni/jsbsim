@@ -119,7 +119,7 @@ void FGPID::bind(Element *el, FGPropertyManager* PropertyManager)
   } else {
     tmp = Name;
   }
-  typedef double (FGPID::*PMF)(void) const;
+  typedef Real (FGPID::*PMF)(void) const;
   PropertyManager->Tie(tmp+"/initial-integrator-value", this, (PMF)nullptr,
                        &FGPID::SetInitialOutput);
 
@@ -151,8 +151,8 @@ void FGPID::ResetPastStates(void)
 
 bool FGPID::Run(void )
 {
-  double I_out_delta = 0.0;
-  double Dval = 0;
+  Real I_out_delta = 0.0;
+  Real Dval = 0;
 
   Input = InputNodes[0]->getDoubleValue();
 
@@ -167,7 +167,7 @@ bool FGPID::Run(void )
   // element is non-zero. Reset the integrator to 0.0 if the Trigger value
   // is negative.
 
-  double test = 0.0;
+  Real test = 0.0;
   if (Trigger) test = Trigger->getDoubleValue();
 
   if (fabs(test) < 0.000001) {
@@ -200,7 +200,7 @@ bool FGPID::Run(void )
   else
     Output = Kp->GetValue()*Input + I_out_total + Kd->GetValue()*Dval;
 
-  Input_prev2 = test < 0.0 ? 0.0:Input_prev;
+  Input_prev2 = test < 0.0 ? Real(0.0):Input_prev;
   Input_prev = Input;
 
   Clip();

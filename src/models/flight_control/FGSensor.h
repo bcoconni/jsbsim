@@ -130,13 +130,13 @@ public:
   FGSensor(FGFCS* fcs, Element* element);
   virtual ~FGSensor();
 
-  void SetFailLow(double val) {if (val > 0.0) fail_low = true; else fail_low = false;}
-  void SetFailHigh(double val) {if (val > 0.0) fail_high = true; else fail_high = false;}
-  void SetFailStuck(double val) {if (val > 0.0) fail_stuck = true; else fail_stuck = false;}
+  void SetFailLow(Real val) {if (val > 0.0) fail_low = true; else fail_low = false;}
+  void SetFailHigh(Real val) {if (val > 0.0) fail_high = true; else fail_high = false;}
+  void SetFailStuck(Real val) {if (val > 0.0) fail_stuck = true; else fail_stuck = false;}
 
-  double GetFailLow(void) const {if (fail_low) return 1.0; else return 0.0;}
-  double GetFailHigh(void) const {if (fail_high) return 1.0; else return 0.0;}
-  double GetFailStuck(void) const {if (fail_stuck) return 1.0; else return 0.0;}
+  Real GetFailLow(void) const {if (fail_low) return 1.0; else return 0.0;}
+  Real GetFailHigh(void) const {if (fail_high) return 1.0; else return 0.0;}
+  Real GetFailStuck(void) const {if (fail_stuck) return 1.0; else return 0.0;}
   int    GetQuantized(void) const {return quantized;}
 
   bool Run (void) override;
@@ -145,19 +145,19 @@ public:
 protected:
   enum eNoiseType {ePercent=0, eAbsolute} NoiseType;
   enum eDistributionType {eUniform=0, eGaussian} DistributionType;
-  double min, max;
-  double span;
-  double bias;
-  double gain;
-  double drift_rate;
-  double drift;
-  double noise_variance;
-  double lag;
-  double granularity;
-  double ca; /// lag filter coefficient "a"
-  double cb; /// lag filter coefficient "b"
-  double PreviousOutput;
-  double PreviousInput;
+  Real min, max;
+  Real span;
+  Real bias;
+  Real gain;
+  Real drift_rate;
+  Real drift;
+  Real noise_variance;
+  Real lag;
+  Real granularity;
+  Real ca; /// lag filter coefficient "a"
+  Real cb; /// lag filter coefficient "b"
+  Real PreviousOutput;
+  Real PreviousInput;
   int noise_type;
   int bits;
   int quantized;

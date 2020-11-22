@@ -52,7 +52,7 @@ class FGPropertyManager;
   CLASS DOCUMENTATION
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-/** Represents a either a real value or a property value
+/** Represents a either a Real value or a property value
     @author Bertrand Coconnier
 */
 
@@ -81,7 +81,7 @@ public:
     Construct(value, pm);
   }
 
-  double GetValue(void) const override { return param->GetValue(); }
+  Real GetValue(void) const override { return param->GetValue(); }
   bool IsConstant(void) const override { return param->IsConstant(); }
 
   std::string GetName(void) const override {

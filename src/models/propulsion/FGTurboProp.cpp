@@ -258,7 +258,7 @@ void FGTurboProp::Calculate(void)
 
   // limiter intervention wanted?
   if (Ielu_max_torque > 0.0) {
-    double torque = 0.0;
+    Real torque = 0.0;
     
     if (thrusterType == FGThruster::ttPropeller) {
       torque = ((FGPropeller*)(Thruster))->GetTorque();
@@ -298,7 +298,7 @@ void FGTurboProp::Calculate(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurboProp::Off(void)
+Real FGTurboProp::Off(void)
 {
   Running = false; EngStarting = false;
 
@@ -310,7 +310,7 @@ double FGTurboProp::Off(void)
   OilTemp_degK = ExpSeek(&OilTemp_degK,273.15 + in.TAT_c, 400 , 400);
 
   Eng_Temperature = ExpSeek(&Eng_Temperature,in.TAT_c,300,400);
-  double ITT_goal = ITT_N1->GetValue(N1,0.1) + ((N1>20) ? 0.0 : (20-N1)/20.0 * Eng_Temperature);
+  Real ITT_goal = ITT_N1->GetValue(N1,0.1) + (N1>20 ? Real(0.0) : (20-N1)/20.0 * Eng_Temperature);
   Eng_ITT_degC  = ExpSeek(&Eng_ITT_degC,ITT_goal,ITT_Delay,ITT_Delay*1.2);
 
   OilPressure_psi = (N1/100.0*0.25+(0.1-(OilTemp_degK-273.15)*0.1/80.0)*N1/100.0) / 7692.0e-6; //from MPa to psi
@@ -321,14 +321,14 @@ double FGTurboProp::Off(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurboProp::Run(void)
+Real FGTurboProp::Run(void)
 {
-  double EngPower_HP;
+  Real EngPower_HP;
 
   Running = true; Starter = false; EngStarting = false;
 
 //---
-  double old_N1 = N1;
+  Real old_N1 = N1;
   N1 = ExpSeek(&N1, IdleN1 + ThrottlePos * N1_factor, Idle_Max_Delay, Idle_Max_Delay * 2.4);
 
   EngPower_HP = EnginePowerRPM_N1->GetValue(RPM,N1);
@@ -339,7 +339,7 @@ double FGTurboProp::Run(void)
   FuelFlow_pph = PSFC / CombustionEfficiency * EngPower_HP;
 
   Eng_Temperature = ExpSeek(&Eng_Temperature,Eng_ITT_degC,300,400);
-  double ITT_goal = ITT_N1->GetValue((N1-old_N1)*300+N1,1);
+  Real ITT_goal = ITT_N1->GetValue((N1-old_N1)*300+N1,1);
   Eng_ITT_degC  = ExpSeek(&Eng_ITT_degC,ITT_goal,ITT_Delay,ITT_Delay*1.2);
 
   OilPressure_psi = (N1/100.0*0.25+(0.1-(OilTemp_degK-273.15)*0.1/80.0)*N1/100.0) / 7692.0e-6; //from MPa to psi
@@ -355,9 +355,9 @@ double FGTurboProp::Run(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurboProp::SpinUp(void)
+Real FGTurboProp::SpinUp(void)
 {
-  double EngPower_HP;
+  Real EngPower_HP;
   Running = false; EngStarting = true;
   FuelFlow_pph = 0.0;
 
@@ -371,7 +371,7 @@ double FGTurboProp::SpinUp(void)
   N1 = ExpSeek(&N1, StarterN1, Idle_Max_Delay * 6, Idle_Max_Delay * 2.4);
 
   Eng_Temperature = ExpSeek(&Eng_Temperature,in.TAT_c,300,400);
-  double ITT_goal = ITT_N1->GetValue(N1,0.1) + ((N1>20) ? 0.0 : (20-N1)/20.0 * Eng_Temperature);
+  Real ITT_goal = ITT_N1->GetValue(N1,0.1) + (N1>20 ? Real(0.0) : (20-N1)/20.0 * Eng_Temperature);
   Eng_ITT_degC  = ExpSeek(&Eng_ITT_degC,ITT_goal,ITT_Delay,ITT_Delay*1.2);
 
   OilTemp_degK = ExpSeek(&OilTemp_degK,273.15 + in.TAT_c, 400 , 400);
@@ -393,13 +393,13 @@ double FGTurboProp::SpinUp(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurboProp::Start(void)
+Real FGTurboProp::Start(void)
 {
-  double EngPower_HP = 0.0;
+  Real EngPower_HP = 0.0;
 
   EngStarting = false;
   if ((N1 > 15.0) && !Starved) {       // minimum 15% N1 needed for start
-    double old_N1 = N1;
+    Real old_N1 = N1;
     Cranking = true;                   // provided for sound effects signal
     if (N1 < IdleN1) {
       EngPower_HP = EnginePowerRPM_N1->GetValue(RPM,N1);
@@ -409,7 +409,7 @@ double FGTurboProp::Start(void)
       CombustionEfficiency = CombustionEfficiency_N1->GetValue(N1);
       FuelFlow_pph = PSFC / CombustionEfficiency * EngPower_HP;
       Eng_Temperature = ExpSeek(&Eng_Temperature,Eng_ITT_degC,300,400);
-      double ITT_goal = ITT_N1->GetValue((N1-old_N1)*300+N1,1);
+      Real ITT_goal = ITT_N1->GetValue((N1-old_N1)*300+N1,1);
       Eng_ITT_degC  = ExpSeek(&Eng_ITT_degC,ITT_goal,ITT_Delay,ITT_Delay*1.2);
 
       OilPressure_psi = (N1/100.0*0.25+(0.1-(OilTemp_degK-273.15)*0.1/80.0)*N1/100.0) / 7692.0e-6; //from MPa to psi
@@ -433,7 +433,7 @@ double FGTurboProp::Start(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurboProp::CalcFuelNeed(void)
+Real FGTurboProp::CalcFuelNeed(void)
 {
   FuelFlowRate = FuelFlow_pph / 3600.0;
   FuelExpended = FuelFlowRate * in.TotalDeltaT;
@@ -443,9 +443,9 @@ double FGTurboProp::CalcFuelNeed(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurboProp::Seek(double *var, double target, double accel, double decel)
+Real FGTurboProp::Seek(Real *var, Real target, Real accel, Real decel)
 {
-  double v = *var;
+  Real v = *var;
   if (v > target) {
     v -= in.TotalDeltaT * decel;
     if (v < target) v = target;
@@ -458,10 +458,10 @@ double FGTurboProp::Seek(double *var, double target, double accel, double decel)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTurboProp::ExpSeek(double *var, double target, double accel_tau, double decel_tau)
+Real FGTurboProp::ExpSeek(Real *var, Real target, Real accel_tau, Real decel_tau)
 {
 // exponential delay instead of the linear delay used in Seek
-  double v = *var;
+  Real v = *var;
   if (v > target) {
     v = (v - target) * exp ( -in.TotalDeltaT / decel_tau) + target;
   } else if (v < target) {
@@ -529,7 +529,7 @@ string FGTurboProp::GetEngineValues(const string& delimiter)
 
 int FGTurboProp::InitRunning(void)
 {
-  double dt = in.TotalDeltaT;
+  Real dt = in.TotalDeltaT;
   in.TotalDeltaT = 0.0;
   Cutoff=false;
   Running=true;  

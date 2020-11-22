@@ -65,7 +65,7 @@ DECLARATION: FGRungeKuttaProblem
 */
 class FGRungeKuttaProblem {
   public:
-    virtual double pFunc(double x, double y) = 0;
+    virtual Real pFunc(Real x, Real y) = 0;
 };
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -81,12 +81,12 @@ class FGRungeKutta {
 
     enum eStates { eNoError=0, eMathError=1, eFaultyInit=2, eEvolve=4, eUnknown=8} ;
 
-    int init(double x_start, double x_end, int intervals = 4);
+    int init(Real x_start, Real x_end, int intervals = 4);
 
-    double evolve(double y_0, FGRungeKuttaProblem *pf);
+    Real evolve(Real y_0, FGRungeKuttaProblem *pf);
 
-    double getXEnd()      { return x_end; }
-    double getError()     { return err; }
+    Real getXEnd()      { return x_end; }
+    Real getError()     { return err; }
 
     int  getStatus()      { return status; }
     int  getIterations()  { return iterations; }
@@ -100,21 +100,21 @@ class FGRungeKutta {
 
     FGRungeKuttaProblem *pfo;
 
-    double h;
-    double h05;  // h*0.5, halfwidth
-    double err;
+    Real h;
+    Real h05;  // h*0.5, halfwidth
+    Real err;
 
   private:
 
-    virtual double approximate(double x, double y) = 0;
+    virtual Real approximate(Real x, Real y) = 0;
 
-    bool sane_val(double x);
+    bool sane_val(Real x);
 
-    static const double RealLimit;
+    static const Real RealLimit;
 
-    double x0, x1;
-    double safer_x1;
-    double x_end;
+    Real x0, x1;
+    Real safer_x1;
+    Real x_end;
 
     int status;
     bool trace_values;
@@ -133,7 +133,7 @@ DECLARATION: FGRK4
 class FGRK4 : public FGRungeKutta {
     virtual ~FGRK4();
   private:
-    double approximate(double x, double y);
+    Real approximate(Real x, Real y);
 };
 
 
@@ -158,20 +158,20 @@ class FGRKFehlberg : public FGRungeKutta {
   public:
     FGRKFehlberg() : shrink_avail(4), epsilon(1e-12) { };
     virtual ~FGRKFehlberg();
-    double getEpsilon()          { return epsilon; }
+    Real getEpsilon()          { return epsilon; }
     int    getShrinkAvail()      { return shrink_avail; }
-    void   setEpsilon(double e)  { epsilon = e; }
+    void   setEpsilon(Real e)  { epsilon = e; }
     void   setShrinkAvail(int s) { shrink_avail = s; }
 
   private:
 
-    double approximate(double x, double y);
+    Real approximate(Real x, Real y);
 
     int    shrink_avail;
-    double epsilon;
+    Real epsilon;
 
-    static const double A2[], A3[], A4[], A5[], A6[];
-    static const double B[],  Bs[], C[];
+    static const Real A2[], A3[], A4[], A5[], A6[];
+    static const Real B[],  Bs[], C[];
 
 };
 

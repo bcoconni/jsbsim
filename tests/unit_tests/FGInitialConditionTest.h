@@ -7,7 +7,7 @@
 
 using namespace JSBSim;
 
-const double epsilon = 100. * std::numeric_limits<double>::epsilon();
+constexpr double epsilon = 100. * std::numeric_limits<double>::epsilon();
 const FGColumnVector3 zero {0.0, 0.0, 0.0};
 
 class FGInitialConditionTest : public CxxTest::TestSuite

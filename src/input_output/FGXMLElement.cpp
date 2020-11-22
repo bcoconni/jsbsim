@@ -42,7 +42,7 @@ FORWARD DECLARATIONS
 namespace JSBSim {
 
 bool Element::converterIsInitialized = false;
-map <string, map <string, double> > Element::convert;
+map <string, map <string, Real> > Element::convert;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS IMPLEMENTATION
@@ -275,7 +275,7 @@ bool Element::SetAttributeValue(const std::string& key, const std::string& value
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double Element::GetAttributeValueAsNumber(const string& attr)
+Real Element::GetAttributeValueAsNumber(const string& attr)
 {
   string attribute = GetAttributeValue(attr);
 
@@ -286,7 +286,7 @@ double Element::GetAttributeValueAsNumber(const string& attr)
     throw length_error(s.str());
   }
   else {
-    double number=0;
+    Real number=0;
     if (is_number(trim(attribute)))
       number = atof(attribute.c_str());
     else {
@@ -337,10 +337,10 @@ string Element::GetDataLine(unsigned int i)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double Element::GetDataAsNumber(void)
+Real Element::GetDataAsNumber(void)
 {
   if (data_lines.size() == 1) {
-    double number=0;
+    Real number=0;
     if (is_number(trim(data_lines[0])))
       number = atof(data_lines[0].c_str());
     else {
@@ -425,11 +425,11 @@ Element* Element::FindNextElement(const string& el)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double Element::FindElementValueAsNumber(const string& el)
+Real Element::FindElementValueAsNumber(const string& el)
 {
   Element* element = FindElement(el);
   if (element) {
-    double value = element->GetDataAsNumber();
+    Real value = element->GetDataAsNumber();
     value = DisperseValue(element, value);
     return value;
   } else {
@@ -447,7 +447,7 @@ bool Element::FindElementValueAsBoolean(const string& el)
   Element* element = FindElement(el);
   if (element) {
     // check value as an ordinary number
-    double value = element->GetDataAsNumber();
+    Real value = element->GetDataAsNumber();
 
     // now check how it should return data
     if (value == 0) {
@@ -476,7 +476,7 @@ string Element::FindElementValue(const string& el)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double Element::FindElementValueAsNumberConvertTo(const string& el, const string& target_units)
+Real Element::FindElementValueAsNumberConvertTo(const string& el, const string& target_units)
 {
   Element* element = FindElement(el);
 
@@ -506,7 +506,7 @@ double Element::FindElementValueAsNumberConvertTo(const string& el, const string
     }
   }
 
-  double value = element->GetDataAsNumber();
+  Real value = element->GetDataAsNumber();
 
   // Sanity check for angular values
   if ((supplied_units == "RAD") && (fabs(value) > 2 * M_PI)) {
@@ -543,7 +543,7 @@ double Element::FindElementValueAsNumberConvertTo(const string& el, const string
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double Element::FindElementValueAsNumberConvertFromTo( const string& el,
+Real Element::FindElementValueAsNumberConvertFromTo( const string& el,
                                                        const string& supplied_units,
                                                        const string& target_units)
 {
@@ -573,7 +573,7 @@ double Element::FindElementValueAsNumberConvertFromTo( const string& el,
     }
   }
 
-  double value = element->GetDataAsNumber();
+  Real value = element->GetDataAsNumber();
   if (!supplied_units.empty()) {
     value *= convert[supplied_units][target_units];
   }
@@ -589,7 +589,7 @@ FGColumnVector3 Element::FindElementTripletConvertTo( const string& target_units
 {
   FGColumnVector3 triplet;
   Element* item;
-  double value=0.0;
+  Real value=0.0;
   string supplied_units = GetAttributeValue("unit");
 
   if (!supplied_units.empty()) {
@@ -645,10 +645,10 @@ FGColumnVector3 Element::FindElementTripletConvertTo( const string& target_units
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double Element::DisperseValue(Element *e, double val, const std::string& supplied_units,
+Real Element::DisperseValue(Element *e, Real val, const std::string& supplied_units,
                               const std::string& target_units)
 {
-  double value=val;
+  Real value=val;
 
   bool disperse = false;
   try {
@@ -662,18 +662,18 @@ double Element::DisperseValue(Element *e, double val, const std::string& supplie
   }
 
   if (e->HasAttribute("dispersion") && disperse) {
-    double disp = e->GetAttributeValueAsNumber("dispersion");
+    Real disp = e->GetAttributeValueAsNumber("dispersion");
     if (!supplied_units.empty()) disp *= convert[supplied_units][target_units];
     string attType = e->GetAttributeValue("type");
     if (attType == "gaussian" || attType == "gaussiansigned") {
-      double grn = FGJSBBase::GaussianRandomNumber();
+      Real grn = FGJSBBase::GaussianRandomNumber();
     if (attType == "gaussian") {
       value = val + disp*grn;
       } else { // Assume gaussiansigned
         value = (val + disp*grn)*(fabs(grn)/grn);
       }
     } else if (attType == "uniform" || attType == "uniformsigned") {
-      double urn = ((((double)rand()/RAND_MAX)-0.5)*2.0);
+      Real urn = ((((Real)rand()/RAND_MAX)-0.5)*2.0);
       if (attType == "uniform") {
       value = val + disp * urn;
       } else { // Assume uniformsigned

@@ -102,10 +102,10 @@ public:
       function until the desired trimming condition falls inside a tolerance.*/
   void Run(void);
  
-  double GetState(void) { getState(); return state_value; }
+  Real GetState(void) { getState(); return state_value; }
   //Accels are not settable
-  inline void SetControl(double value ) { control_value=value; }
-  inline double GetControl(void) { return control_value; }
+  inline void SetControl(Real value ) { control_value=value; }
+  inline Real GetControl(void) { return control_value; }
 
   inline State GetStateType(void) { return state; }
   inline Control GetControlType(void) { return control; }
@@ -113,32 +113,32 @@ public:
   inline std::string GetStateName(void) { return StateNames[state]; }
   inline std::string GetControlName(void) { return ControlNames[control]; }
 
-  inline double GetControlMin(void) { return control_min; }
-  inline double GetControlMax(void) { return control_max; }
+  inline Real GetControlMin(void) { return control_min; }
+  inline Real GetControlMax(void) { return control_max; }
 
   inline void SetControlToMin(void) { control_value=control_min; }
   inline void SetControlToMax(void) { control_value=control_max; }
   
-  inline void SetControlLimits(double min, double max) { 
+  inline void SetControlLimits(Real min, Real max) { 
       control_min=min;
       control_max=max;
   }    
 
-  inline void  SetTolerance(double ff) { tolerance=ff;}
-  inline double GetTolerance(void) { return tolerance; }
+  inline void  SetTolerance(Real ff) { tolerance=ff;}
+  inline Real GetTolerance(void) { return tolerance; }
 
-  inline double GetSolverEps(void) { return solver_eps; }
-  inline void SetSolverEps(double ff) { solver_eps=ff; }
+  inline Real GetSolverEps(void) { return solver_eps; }
+  inline void SetSolverEps(Real ff) { solver_eps=ff; }
 
   inline int  GetIterationLimit(void) { return max_iterations; }
   inline void SetIterationLimit(int ii) { max_iterations=ii; }
 
   inline int GetStability(void) { return its_to_stable_value; }
   inline int GetRunCount(void) { return total_stability_iterations; }
-  double GetAvgStability( void );
+  Real GetAvgStability( void );
   
-  inline void SetStateTarget(double target) { state_target=target; }
-  inline double GetStateTarget(void) { return state_target; }
+  inline void SetStateTarget(Real target) { state_target=target; }
+  inline Real GetStateTarget(void) { return state_target; }
   
   void AxisReport(void);
   
@@ -151,20 +151,20 @@ private:
   State   state;
   Control control;
   
-  double state_target;
+  Real state_target;
   
-  double state_value;
-  double control_value;
+  Real state_value;
+  Real control_value;
 
-  double control_min;
-  double control_max;
+  Real control_min;
+  Real control_max;
 
-  double tolerance;
+  Real tolerance;
 
-  double solver_eps;
+  Real solver_eps;
 
-  double state_convert;
-  double control_convert;
+  Real state_convert;
+  Real control_convert;
 
   int max_iterations;
 
@@ -178,7 +178,7 @@ private:
   void getControl(void);
   void setControl(void);
   
-  double computeHmgt(void);
+  Real computeHmgt(void);
   
   void Debug(int from);
 };

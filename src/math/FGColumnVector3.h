@@ -42,6 +42,8 @@ INCLUDES
 #include <iosfwd>
 #include <string>
 
+#include "AutomaticDifferentiation.h"
+
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -71,8 +73,8 @@ public:
       @param X value of the x-conponent.
       @param Y value of the y-conponent.
       @param Z value of the z-conponent.
-      Create a vector from the doubles given in the arguments.   */
-  FGColumnVector3(const double X, const double Y, const double Z) {
+      Create a vector from the Reals given in the arguments.   */
+  FGColumnVector3(const Real X, const Real Y, const Real Z) {
     data[0] = X;
     data[1] = Y;
     data[2] = Z;
@@ -95,34 +97,34 @@ public:
       Return the value of the matrix entry at the given index.
       Indices are counted starting with 1.
       Note that the index given in the argument is unchecked.   */
-  double operator()(const unsigned int idx) const { return data[idx-1]; }
+  Real operator()(const unsigned int idx) const { return data[idx-1]; }
 
   /** Write access the entries of the vector.
       @param idx the component index.
       Return a reference to the vector entry at the given index.
       Indices are counted starting with 1.
       Note that the index given in the argument is unchecked.   */
-  double& operator()(const unsigned int idx) { return data[idx-1]; }
+  Real& operator()(const unsigned int idx) { return data[idx-1]; }
 
   /** Read access the entries of the vector.
       @param idx the component index.
       Return the value of the matrix entry at the given index.
       Indices are counted starting with 1.
-      This function is just a shortcut for the <tt>double
+      This function is just a shortcut for the <tt>Real
       operator()(unsigned int idx) const</tt> function. It is
       used internally to access the elements in a more convenient way.
       Note that the index given in the argument is unchecked.   */
-  double Entry(const unsigned int idx) const { return data[idx-1]; }
+  Real Entry(const unsigned int idx) const { return data[idx-1]; }
 
   /** Write access the entries of the vector.
       @param idx the component index.
       Return a reference to the vector entry at the given index.
       Indices are counted starting with 1.
-      This function is just a shortcut for the <tt>double&
+      This function is just a shortcut for the <tt>Real&
       operator()(unsigned int idx)</tt> function. It is
       used internally to access the elements in a more convenient way.
       Note that the index given in the argument is unchecked.   */
-  double& Entry(const unsigned int idx) { return data[idx-1]; }
+  Real& Entry(const unsigned int idx) { return data[idx-1]; }
 
   /** Prints the contents of the vector
       @param delimeter the item separator (tab or comma)
@@ -142,8 +144,8 @@ public:
   /** Assignment operator.
       @param lv initializer list of at most 3 values (i.e. {x, y, Z})
       Copy the content of the list into *this. */
-  FGColumnVector3& operator=(std::initializer_list<double> lv) {
-    double *v = data;
+  FGColumnVector3& operator=(std::initializer_list<Real> lv) {
+    Real *v = data;
     for(auto &x : lv)
       *(v++) = x;
 
@@ -166,7 +168,7 @@ public:
       @param scalar scalar value to multiply the vector with.
       @return The resulting vector from the multiplication with that scalar.
       Multiply the vector with the scalar given in the argument.   */
-  FGColumnVector3 operator*(const double scalar) const {
+  FGColumnVector3 operator*(const Real scalar) const {
     return FGColumnVector3(scalar*data[0], scalar*data[1], scalar*data[2]);
   }
 
@@ -174,7 +176,7 @@ public:
       @param scalar scalar value to devide the vector through.
       @return The resulting vector from the division through that scalar.
       Multiply the vector with the 1/scalar given in the argument.   */
-  FGColumnVector3 operator/(const double scalar) const;
+  FGColumnVector3 operator/(const Real scalar) const;
 
   /** Cross product multiplication.
       @param V vector to multiply with.
@@ -216,7 +218,7 @@ public:
   }
 
   /// Scale by a scalar.
-  FGColumnVector3& operator*=(const double scalar) {
+  FGColumnVector3& operator*=(const Real scalar) {
     data[0] *= scalar;
     data[1] *= scalar;
     data[2] *= scalar;
@@ -224,22 +226,22 @@ public:
   }
 
   /// Scale by a 1/scalar.
-  FGColumnVector3& operator/=(const double scalar);
+  FGColumnVector3& operator/=(const Real scalar);
 
   void InitMatrix(void) { data[0] = data[1] = data[2] = 0.0; }
-  void InitMatrix(const double a) { data[0] = data[1] = data[2] = a; }
-  void InitMatrix(const double a, const double b, const double c) {
+  void InitMatrix(const Real a) { data[0] = data[1] = data[2] = a; }
+  void InitMatrix(const Real a, const Real b, const Real c) {
     data[0]=a; data[1]=b; data[2]=c;
   }
 
   /** Length of the vector.
       Compute and return the euclidean norm of this vector.   */
-  double Magnitude(void) const;
+  Real Magnitude(void) const;
 
   /** Length of the vector in a coordinate axis plane.
       Compute and return the euclidean norm of this vector projected into
       the coordinate axis plane idx1-idx2.   */
-  double Magnitude(const int idx1, const int idx2) const;
+  Real Magnitude(const int idx1, const int idx2) const;
 
   /** Normalize.
       Normalize the vector to have the Magnitude() == 1.0. If the vector
@@ -247,13 +249,13 @@ public:
   FGColumnVector3& Normalize(void);
 
 private:
-  double data[3];
+  Real data[3];
 };
 
 /** Dot product of two vectors
     Compute and return the euclidean dot (or scalar) product of two vectors
     v1 and v2 */
-inline double DotProduct(const FGColumnVector3& v1, const FGColumnVector3& v2) {
+inline Real DotProduct(const FGColumnVector3& v1, const FGColumnVector3& v2) {
   return v1(1)*v2(1) + v1(2)*v2(2) + v1(3)*v2(3);
 }
 
@@ -262,7 +264,7 @@ inline double DotProduct(const FGColumnVector3& v1, const FGColumnVector3& v2) {
     @param A Vector to multiply.
     Multiply the Vector with a scalar value. Note: At this time, this
     operator MUST be inlined, or a multiple definition link error will occur.*/
-inline FGColumnVector3 operator*(double scalar, const FGColumnVector3& A) {
+inline FGColumnVector3 operator*(Real scalar, const FGColumnVector3& A) {
   // use already defined operation.
   return A*scalar;
 }

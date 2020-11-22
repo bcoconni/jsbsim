@@ -164,7 +164,7 @@ bool FGOutputType::Load(Element* element)
     property_element = element->FindNextElement("property");
   }
 
-  double outRate = 1.0;
+  Real outRate = 1.0;
   if (element->HasAttribute("rate"))
     outRate = element->GetAttributeValueAsNumber("rate");
 
@@ -201,9 +201,9 @@ bool FGOutputType::Run(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGOutputType::SetRateHz(double rtHz)
+void FGOutputType::SetRateHz(Real rtHz)
 {
-  rtHz = rtHz>1000?1000:(rtHz<0?0:rtHz);
+  rtHz = Constrain(0.0, rtHz, 1000.);
   if (rtHz > 0) {
     SetRate(0.5 + 1.0/(FDMExec->GetDeltaT()*rtHz));
     Enable();
@@ -215,7 +215,7 @@ void FGOutputType::SetRateHz(double rtHz)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGOutputType::GetRateHz(void) const
+Real FGOutputType::GetRateHz(void) const
 {
   return 1.0 / (rate * FDMExec->GetDeltaT());
 }

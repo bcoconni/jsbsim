@@ -10,10 +10,10 @@
 #include <input_output/FGGroundCallback.h>
 #include "TestAssertions.h"
 
-const double epsilon = 100. * std::numeric_limits<double>::epsilon();
-const double RadiusReference = 20925646.32546;
-const double a = 20925646.32546; // WGS84 semimajor axis length in feet
-const double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+constexpr double epsilon = 100. * std::numeric_limits<double>::epsilon();
+constexpr double RadiusReference = 20925646.32546;
+constexpr double a = 20925646.32546; // WGS84 semimajor axis length in feet
+constexpr double b = 20855486.5951;  // WGS84 semiminor axis length in feet
 
 using namespace JSBSim;
 
@@ -22,14 +22,14 @@ using namespace JSBSim;
 class DummyGroundCallback : public FGDefaultGroundCallback
 {
 public:
-  DummyGroundCallback(double a, double b) : FGDefaultGroundCallback(a, b) {}
-  double GetAGLevel(double t, const FGLocation& location,
+  DummyGroundCallback(Real a, Real b) : FGDefaultGroundCallback(a, b) {}
+  Real GetAGLevel(Real t, const FGLocation& location,
                     FGLocation& contact,
                     FGColumnVector3& normal, FGColumnVector3& v,
                     FGColumnVector3& w) const override
   {
     FGLocation c;
-    double h = FGDefaultGroundCallback::GetAGLevel(t, location, c, normal, v, w);
+    Real h = FGDefaultGroundCallback::GetAGLevel(t, location, c, normal, v, w);
     // The ellipse parameters are intentionally not copied from c to contact.
     contact(1) = c(1);
     contact(2) = c(2);
@@ -54,7 +54,7 @@ public:
         double lon_rad = lon*M_PI/180.;
         double lat_rad = lat*M_PI/180.;
         loc = FGLocation(lon_rad, lat_rad, RadiusReference);
-        double agl = cb->GetAGLevel(loc, contact, normal, v, w);
+        Real agl = cb->GetAGLevel(loc, contact, normal, v, w);
         TS_ASSERT_DELTA(0.0, agl, 1e-8);
         TS_ASSERT_VECTOR_EQUALS(v, zero);
         TS_ASSERT_VECTOR_EQUALS(w, zero);
@@ -79,7 +79,7 @@ public:
     FGLocation loc, contact;
     FGColumnVector3 normal, v, w;
     FGColumnVector3 zero {0., 0., 0.};
-    double h = 100000.;
+    constexpr double h = 100000.;
 
     // Check that, for a point located, on the sea level radius the AGL is 0.0
     for(double lat = -90.0; lat <= 90.; lat += 30.) {
@@ -87,7 +87,7 @@ public:
         double lon_rad = lon*M_PI/180.;
         double lat_rad = lat*M_PI/180.;
         loc = FGLocation(lon_rad, lat_rad, RadiusReference+h);
-        double agl = cb->GetAGLevel(loc, contact, normal, v, w);
+        Real agl = cb->GetAGLevel(loc, contact, normal, v, w);
         TS_ASSERT_DELTA(h/agl, 1.0, epsilon*100.);
         TS_ASSERT_VECTOR_EQUALS(v, zero);
         TS_ASSERT_VECTOR_EQUALS(w, zero);
@@ -113,8 +113,8 @@ public:
     FGLocation loc, contact;
     FGColumnVector3 normal, v, w;
     FGColumnVector3 zero {0., 0., 0.};
-    double h = 100000.;
-    double elevation = 2000.;
+    constexpr double h = 100000.;
+    constexpr double elevation = 2000.;
 
     cb->SetTerrainElevation(elevation);
 
@@ -124,7 +124,7 @@ public:
         double lon_rad = lon*M_PI/180.;
         double lat_rad = lat*M_PI/180.;
         loc = FGLocation(lon_rad, lat_rad, RadiusReference+h);
-        double agl = cb->GetAGLevel(loc, contact, normal, v, w);
+        Real agl = cb->GetAGLevel(loc, contact, normal, v, w);
         TS_ASSERT_DELTA((h-elevation)/agl, 1.0, epsilon*100.);
         TS_ASSERT_VECTOR_EQUALS(v, zero);
         TS_ASSERT_VECTOR_EQUALS(w, zero);
@@ -158,7 +158,7 @@ public:
         double lon_rad = lon*M_PI/180.;
         double lat_rad = lat*M_PI/180.;
         loc.SetPositionGeodetic(lon_rad, lat_rad, 0.0);
-        double agl = cb->GetAGLevel(loc, contact, normal, v, w);
+        Real agl = cb->GetAGLevel(loc, contact, normal, v, w);
         TS_ASSERT_DELTA(0.0, agl, 1e-8);
         TS_ASSERT_VECTOR_EQUALS(v, zero);
         TS_ASSERT_VECTOR_EQUALS(w, zero);
@@ -179,7 +179,7 @@ public:
     FGLocation loc, contact;
     FGColumnVector3 normal, v, w;
     FGColumnVector3 zero {0., 0., 0.};
-    double h = 100000.;
+    constexpr double h = 100000.;
 
     loc.SetEllipse(a, b);
     contact.SetEllipse(a, b);
@@ -190,7 +190,7 @@ public:
         double lon_rad = lon*M_PI/180.;
         double lat_rad = lat*M_PI/180.;
         loc.SetPositionGeodetic(lon_rad, lat_rad, h);
-        double agl = cb->GetAGLevel(loc, contact, normal, v, w);
+        Real agl = cb->GetAGLevel(loc, contact, normal, v, w);
         TS_ASSERT_DELTA(h, agl, 1e-8);
         TS_ASSERT_VECTOR_EQUALS(v, zero);
         TS_ASSERT_VECTOR_EQUALS(w, zero);
@@ -211,8 +211,8 @@ public:
     FGLocation loc, contact;
     FGColumnVector3 normal, v, w;
     FGColumnVector3 zero {0., 0., 0.};
-    double h = 100000.;
-    double elevation = 2000.;
+    constexpr double h = 100000.;
+    constexpr double elevation = 2000.;
 
     loc.SetEllipse(a, b);
     contact.SetEllipse(a, b);
@@ -224,7 +224,7 @@ public:
         double lon_rad = lon*M_PI/180.;
         double lat_rad = lat*M_PI/180.;
         loc.SetPositionGeodetic(lon_rad, lat_rad, h);
-        double agl = cb->GetAGLevel(loc, contact, normal, v, w);
+        Real agl = cb->GetAGLevel(loc, contact, normal, v, w);
         TS_ASSERT_DELTA(h-elevation, agl, 1e-8);
         TS_ASSERT_VECTOR_EQUALS(v, zero);
         TS_ASSERT_VECTOR_EQUALS(w, zero);

@@ -276,10 +276,10 @@ FGPiston::FGPiston(FGFDMExec* exec, Element* el, int engine_number, struct Input
 
   // Create IFSC to match the engine if not provided
   if (ISFC < 0) {
-      double pmep = 29.92 - MaxManifoldPressure_inHg;
+      Real pmep = 29.92 - MaxManifoldPressure_inHg;
       pmep *= inhgtopa  * volumetric_efficiency;
-      double fmep = (FMEPDynamic * RatedMeanPistonSpeed_fps * fttom + FMEPStatic);
-      double hp_loss = ((pmep + fmep) * displacement_SI * MaxRPM)/(Cycles*22371);
+      Real fmep = (FMEPDynamic * RatedMeanPistonSpeed_fps * fttom + FMEPStatic);
+      Real hp_loss = ((pmep + fmep) * displacement_SI * MaxRPM)/(Cycles*22371);
       ISFC = ( 1.1*Displacement * MaxRPM * volumetric_efficiency *(MaxManifoldPressure_inHg / 29.92) ) / (9411 * (MaxHP+hp_loss-StaticFriction_HP));
 // cout <<"FMEP: "<< fmep <<" PMEP: "<< pmep << " hp_loss: " <<hp_loss <<endl;
   }
@@ -305,7 +305,7 @@ FGPiston::FGPiston(FGFDMExec* exec, Element* el, int engine_number, struct Input
  *
  */
   if(Z_airbox < 0.0){
-    double Ze=PeakMeanPistonSpeed_fps/RatedMeanPistonSpeed_fps; // engine impedence
+    Real Ze=PeakMeanPistonSpeed_fps/RatedMeanPistonSpeed_fps; // engine impedence
     Z_airbox = (standard_pressure *Ze / maxMAP) - Ze; // impedence of airbox
   }
   // Constant for Throttle impedence
@@ -459,7 +459,7 @@ void FGPiston::ResetToIC(void)
   ManifoldPressure_inHg = in.Pressure * psftoinhg; // psf to in Hg
   MAP = in.Pressure * psftopa;
   TMAP = MAP;
-  double airTemperature_degK = RankineToKelvin(in.Temperature);
+  Real airTemperature_degK = RankineToKelvin(in.Temperature);
   OilTemp_degK = airTemperature_degK;
   CylinderHeadTemp_degK = airTemperature_degK;
   ExhaustGasTemp_degK = airTemperature_degK;
@@ -477,7 +477,7 @@ void FGPiston::Calculate(void)
   // Input values.
 
   p_amb = in.Pressure * psftopa;
-  double p = in.TotalPressure * psftopa;
+  Real p = in.TotalPressure * psftopa;
   p_ram = (p - p_amb) * Ram_Air_Factor + p_amb;
   T_amb = RankineToKelvin(in.Temperature);
 
@@ -525,7 +525,7 @@ void FGPiston::Calculate(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPiston::CalcFuelNeed(void)
+Real FGPiston::CalcFuelNeed(void)
 {
   FuelExpended = FuelFlowRate * in.TotalDeltaT;
   if (!Starved) FuelUsedLbs += FuelExpended; 
@@ -648,13 +648,13 @@ void FGPiston::doBoostControl(void)
 
 void FGPiston::doMAP(void)
 {
-  double Zt = (1 - in.ThrottlePos[EngineNumber])*(1 - in.ThrottlePos[EngineNumber])*Z_throttle; // throttle impedence
-  double Ze= MeanPistonSpeed_fps > 0 ? PeakMeanPistonSpeed_fps/MeanPistonSpeed_fps : 999999; // engine impedence
+  Real Zt = (1 - in.ThrottlePos[EngineNumber])*(1 - in.ThrottlePos[EngineNumber])*Z_throttle; // throttle impedence
+  Real Ze= MeanPistonSpeed_fps > 0 ? PeakMeanPistonSpeed_fps/MeanPistonSpeed_fps : Real(999999); // engine impedence
 
-  double map_coefficient = Ze/(Ze+Z_airbox+Zt);
+  Real map_coefficient = Ze/(Ze+Z_airbox+Zt);
 
   // Add a variable lag to manifold pressure changes
-  double dMAP=(TMAP - p_ram * map_coefficient);
+  Real dMAP=(TMAP - p_ram * map_coefficient);
   if (ManifoldPressureLag > in.TotalDeltaT) dMAP *= in.TotalDeltaT/ManifoldPressureLag;
 
   TMAP -=dMAP;
@@ -668,7 +668,7 @@ void FGPiston::doMAP(void)
     // If takeoff boost is fitted, we currently assume the following throttle map:
     // (In throttle % - actual input is 0 -> 1)
     // 99 / 100 - Takeoff boost
-    // In real life, most planes would be fitted with a mechanical 'gate' between
+    // In Real life, most planes would be fitted with a mechanical 'gate' between
     // the rated boost and takeoff boost positions.
 
     bool bTakeoffPos = false;
@@ -678,7 +678,7 @@ void FGPiston::doMAP(void)
       }
     }
     // Boost the manifold pressure.
-    double boost_factor = (( BoostMul[BoostSpeed] - 1 ) / RatedRPM[BoostSpeed] ) * RPM + 1;
+    Real boost_factor = (( BoostMul[BoostSpeed] - 1 ) / RatedRPM[BoostSpeed] ) * RPM + 1;
     MAP = TMAP * boost_factor;
     // Now clip the manifold pressure to BCV or Wastegate setting.
     if(!bBoostOverride) {
@@ -694,8 +694,8 @@ void FGPiston::doMAP(void)
 
   if( BoostLossFactor > 0.0 )
   {
-      double gamma = 1.414; // specific heat constants
-      double Nstage = 1; // Nstage is the number of boost stages.
+      Real gamma = 1.414; // specific heat constants
+      Real Nstage = 1; // Nstage is the number of boost stages.
       BoostLossHP = ((Nstage * TMAP * v_dot_air * gamma) / (gamma - 1)) * (pow((MAP/TMAP),((gamma-1)/(Nstage * gamma))) - 1) * BoostLossFactor / 745.7 ; // 745.7 convert watt to hp
   } else {
       BoostLossHP = 0;
@@ -721,19 +721,19 @@ void FGPiston::doMAP(void)
 
 void FGPiston::doAirFlow(void)
 {
-  double gamma = 1.3; // specific heat constants
+  Real gamma = 1.3; // specific heat constants
 // loss of volumentric efficiency due to difference between MAP and exhaust pressure
 // Eq 6-10 from The Internal Combustion Engine - Charles Taylor Vol 1
-  double mratio = MAP < 1. ? CompressionRatio : p_amb/MAP;
+  Real mratio = MAP < 1. ? CompressionRatio : p_amb/MAP;
   if (mratio > CompressionRatio) mratio = CompressionRatio;
-  double ve =((gamma-1)/gamma) +( CompressionRatio -(mratio))/(gamma*( CompressionRatio - 1));
+  Real ve =((gamma-1)/gamma) +( CompressionRatio -(mratio))/(gamma*( CompressionRatio - 1));
 
   rho_air = p_amb / (R_air * T_amb);
-  double swept_volume = (displacement_SI * (RPM/60)) / 2;
+  Real swept_volume = (displacement_SI * (RPM/60)) / 2;
   volumetric_efficiency_reduced = volumetric_efficiency *ve;
   v_dot_air = swept_volume * volumetric_efficiency_reduced;
 
-  double rho_air_manifold = MAP / (R_air * T_amb);
+  Real rho_air_manifold = MAP / (R_air * T_amb);
   m_dot_air = v_dot_air * rho_air_manifold;
 
 }
@@ -749,7 +749,7 @@ void FGPiston::doAirFlow(void)
 
 void FGPiston::doFuelFlow(void)
 {
-  double thi_sea_level = 1.3 * in.MixturePos[EngineNumber]; // Allows an AFR of infinity:1 to 11.3075:1
+  Real thi_sea_level = 1.3 * in.MixturePos[EngineNumber]; // Allows an AFR of infinity:1 to 11.3075:1
   equivalence_ratio = thi_sea_level * 101325.0 / p_amb;
   m_dot_fuel = (m_dot_air * equivalence_ratio) / 14.7;
   FuelFlowRate =  m_dot_fuel * 2.2046;  // kg to lb
@@ -779,7 +779,7 @@ void FGPiston::doEnginePower(void)
   IndicatedHorsePower = -StaticFriction_HP;
   FMEP = 0;
   if (Running) {
-    double ME, power;  // Convienience term for use in the calculations
+    Real ME, power;  // Convienience term for use in the calculations
     ME = Mixture_Efficiency_Correlation->GetValue(m_dot_fuel/m_dot_air);
 
 // Guestimate engine friction losses from Figure 4.4 of "Engines: An Introduction", John Lumley
@@ -794,9 +794,9 @@ void FGPiston::doEnginePower(void)
 
   } else {
     // Power output when the engine is not running
-    double torque, k_torque, rpm;  // Convienience term for use in the calculations
+    Real torque, k_torque, rpm;  // Convienience term for use in the calculations
     
-    rpm = RPM < 1.0 ? 1.0 : RPM;
+    rpm = RPM < 1.0 ? Real(1.0) : RPM;
     if (Cranking) {
       if(RPM<StarterRPM) k_torque = 1.0-RPM/(StarterRPM);
       else k_torque = 0;
@@ -807,7 +807,7 @@ void FGPiston::doEnginePower(void)
 
   // Constant is (1/2) * 60 * 745.7
   // (1/2) convert cycles, 60 minutes to seconds, 745.7 watts to hp.
-  double pumping_hp = ((PMEP + FMEP) * displacement_SI * RPM)/(Cycles*22371);
+  Real pumping_hp = ((PMEP + FMEP) * displacement_SI * RPM)/(Cycles*22371);
 
 HP = IndicatedHorsePower + pumping_hp - BoostLossHP;
 //  cout << "pumping_hp " <<pumping_hp << FMEP << PMEP <<endl;
@@ -827,10 +827,10 @@ HP = IndicatedHorsePower + pumping_hp - BoostLossHP;
 
 void FGPiston::doEGT(void)
 {
-  double delta_T_exhaust;
-  double enthalpy_exhaust;
-  double heat_capacity_exhaust;
-  double dEGTdt;
+  Real delta_T_exhaust;
+  Real enthalpy_exhaust;
+  Real heat_capacity_exhaust;
+  Real dEGTdt;
 
   if ((Running) && (m_dot_air > 0.0)) {  // do the energy balance
     combustion_efficiency = Lookup_Combustion_Efficiency->GetValue(equivalence_ratio);
@@ -860,26 +860,26 @@ void FGPiston::doEGT(void)
 
 void FGPiston::doCHT(void)
 {
-  double h1 = -95.0;
-  double h2 = -3.95;
-  double h3 = -140.0; // -0.05 * 2800 (default maxrpm)
+  Real h1 = -95.0;
+  Real h2 = -3.95;
+  Real h3 = -140.0; // -0.05 * 2800 (default maxrpm)
 
-  double arbitary_area = Displacement/360.0;
-  double CpCylinderHead = 800.0;
-  double MassCylinderHead = CylinderHeadMass * Cylinders;
+  Real arbitary_area = Displacement/360.0;
+  Real CpCylinderHead = 800.0;
+  Real MassCylinderHead = CylinderHeadMass * Cylinders;
 
-  double temperature_difference = CylinderHeadTemp_degK - T_amb;
-  double v_apparent = IAS * Cooling_Factor;
-  double v_dot_cooling_air = arbitary_area * v_apparent;
-  double m_dot_cooling_air = v_dot_cooling_air * rho_air;
-  double dqdt_from_combustion =
+  Real temperature_difference = CylinderHeadTemp_degK - T_amb;
+  Real v_apparent = IAS * Cooling_Factor;
+  Real v_dot_cooling_air = arbitary_area * v_apparent;
+  Real m_dot_cooling_air = v_dot_cooling_air * rho_air;
+  Real dqdt_from_combustion =
     m_dot_fuel * calorific_value_fuel * combustion_efficiency * 0.33;
-  double dqdt_forced = (h2 * m_dot_cooling_air * temperature_difference) +
+  Real dqdt_forced = (h2 * m_dot_cooling_air * temperature_difference) +
     (h3 * RPM * temperature_difference / MaxRPM);
-  double dqdt_free = h1 * temperature_difference * arbitary_area;
-  double dqdt_cylinder_head = dqdt_from_combustion + dqdt_forced + dqdt_free;
+  Real dqdt_free = h1 * temperature_difference * arbitary_area;
+  Real dqdt_cylinder_head = dqdt_from_combustion + dqdt_forced + dqdt_free;
 
-  double HeatCapacityCylinderHead = CpCylinderHead * MassCylinderHead;
+  Real HeatCapacityCylinderHead = CpCylinderHead * MassCylinderHead;
 
   CylinderHeadTemp_degK +=
     (dqdt_cylinder_head / HeatCapacityCylinderHead) * in.TotalDeltaT;
@@ -897,9 +897,9 @@ void FGPiston::doCHT(void)
 
 void FGPiston::doOilTemperature(void)
 {
-  double target_oil_temp;        // Steady state oil temp at the current engine conditions
-  double time_constant;          // The time constant for the differential equation
-  double efficiency = 0.667;     // The aproximate oil cooling system efficiency // FIXME: may vary by engine
+  Real target_oil_temp;        // Steady state oil temp at the current engine conditions
+  Real time_constant;          // The time constant for the differential equation
+  Real efficiency = 0.667;     // The aproximate oil cooling system efficiency // FIXME: may vary by engine
 
 //  Target oil temp is interpolated between ambient temperature and Cylinder Head Tempurature
 //  target_oil_temp = ( T_amb * efficiency ) + (CylinderHeadTemp_degK *(1-efficiency)) ;
@@ -915,7 +915,7 @@ void FGPiston::doOilTemperature(void)
                            // that oil is no longer getting circulated
   }
 
-  double dOilTempdt = (target_oil_temp - OilTemp_degK) / time_constant;
+  Real dOilTempdt = (target_oil_temp - OilTemp_degK) / time_constant;
 
   OilTemp_degK += (dOilTempdt * in.TotalDeltaT);
 }
@@ -944,13 +944,13 @@ void FGPiston::doOilPressure(void)
 //
 // This is a local copy of the same function in FGStandardAtmosphere.
 
-double FGPiston::GetStdPressure100K(double altitude) const
+Real FGPiston::GetStdPressure100K(Real altitude) const
 {
   // Limit this equation to input altitudes of 100000 ft.
   if (altitude > 100000.0) altitude = 100000.0;
 
-  double alt[5];
-  const double coef[5] = {  2116.217,
+  Real alt[5];
+  const Real coef[5] = {  2116.217,
                           -7.648932746E-2,
                            1.0925498604E-6,
                           -7.1135726027E-12,
@@ -959,7 +959,7 @@ double FGPiston::GetStdPressure100K(double altitude) const
   alt[0] = 1;
   for (int pwr=1; pwr<=4; pwr++) alt[pwr] = alt[pwr-1]*altitude;
 
-  double press = 0.0;
+  Real press = 0.0;
   for (int ctr=0; ctr<=4; ctr++) press += coef[ctr]*alt[ctr];
   return press;
 }

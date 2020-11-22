@@ -80,12 +80,12 @@ public:
   static constexpr double GetStandardGravity(void) { return gAccelReference; }
   const FGColumnVector3& GetGravity(void) const {return vGravAccel;}
   const FGColumnVector3& GetOmegaPlanet() const {return vOmegaPlanet;}
-  void SetOmegaPlanet(double rate) {
+  void SetOmegaPlanet(Real rate) {
     vOmegaPlanet = FGColumnVector3(0.0, 0.0, rate);
   }
-  double GetSemimajor(void) const {return a;}
-  double GetSemiminor(void) const {return b;}
-  double GetGM(void) {return GM;}
+  Real GetSemimajor(void) const {return a;}
+  Real GetSemiminor(void) const {return b;}
+  Real GetGM(void) {return GM;}
 
   /** @name Functions that rely on the ground callback
       The following functions allow to set and get the vehicle position above
@@ -101,7 +101,7 @@ public:
       @param ang_velocity Terrain angular velocity in contact point (ECEF frame)
       @return Location altitude above contact point (AGL) in feet.
       @see SetGroundCallback */
-  double GetContactPoint(const FGLocation& location, FGLocation& contact,
+  Real GetContactPoint(const FGLocation& location, FGLocation& contact,
                          FGColumnVector3& normal, FGColumnVector3& velocity,
                          FGColumnVector3& ang_velocity) const
   {
@@ -112,7 +112,7 @@ public:
       @return the altitude AGL in feet.
       @param location Location at which the AGL is evaluated.
       @see SetGroundCallback */
-  double GetAltitudeAGL(const FGLocation& location) const {
+  Real GetAltitudeAGL(const FGLocation& location) const {
     FGLocation lDummy;
     FGColumnVector3 vDummy;
     return GroundCallback->GetAGLevel(location, lDummy, vDummy, vDummy,
@@ -123,12 +123,12 @@ public:
       @param location    Location at which the AGL is set.
       @param altitudeAGL Altitude above Ground Level in feet.
       @see SetGroundCallback */
-  void SetAltitudeAGL(FGLocation& location, double altitudeAGL);
+  void SetAltitudeAGL(FGLocation& location, Real altitudeAGL);
 
   /** Set the terrain elevation above sea level.
       @param h Terrain elevation in ft.
       @see SetGroundcallback */
-  void SetTerrainElevation(double h) {
+  void SetTerrainElevation(Real h) {
     GroundCallback->SetTerrainElevation(h);
   }
 
@@ -137,7 +137,7 @@ public:
       rotation or the movement of objects.
       @param time elapsed time in seconds since the simulation started.
   */
-  void SetTime(double time) {
+  void SetTime(Real time) {
     GroundCallback->SetTime(time);
   }
   ///@}
@@ -209,14 +209,14 @@ private:
 
   FGColumnVector3 vOmegaPlanet;
   FGColumnVector3 vGravAccel;
-  double GM;   // Gravitation parameter
-  double J2;   // WGS84 value for J2
-  double a;    // WGS84 semimajor axis length in feet 
-  double b;    // WGS84 semiminor axis length in feet
+  Real GM;   // Gravitation parameter
+  Real J2;   // WGS84 value for J2
+  Real a;    // WGS84 semimajor axis length in feet 
+  Real b;    // WGS84 semiminor axis length in feet
   int gravType;
   std::unique_ptr<FGGroundCallback> GroundCallback;
 
-  double GetGAccel(double r) const;
+  Real GetGAccel(Real r) const;
   FGColumnVector3 GetGravityJ2(const FGLocation& position) const;
   void bind(void);
   void Debug(int from) override;

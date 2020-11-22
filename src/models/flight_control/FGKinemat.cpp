@@ -53,8 +53,8 @@ FGKinemat::FGKinemat(FGFCS* fcs, Element* element)
   : FGFCSComponent(fcs, element)
 {
   Element *traverse_element, *setting_element;
-  double tmpDetent;
-  double tmpTime;
+  Real tmpDetent;
+  Real tmpTime;
 
   Detents.clear();
   TransitionTimes.clear();
@@ -96,7 +96,7 @@ FGKinemat::~FGKinemat()
 
 bool FGKinemat::Run(void )
 {
-  double dt0 = dt;
+  Real dt0 = dt;
 
   Input = InputNodes[0]->getDoubleValue();
 
@@ -128,11 +128,11 @@ bool FGKinemat::Run(void )
         break;
       } else {
         // Compute the rate in this area
-        double Rate = (Detents[ind] - Detents[ind-1])/TransitionTimes[ind];
+        Real Rate = (Detents[ind] - Detents[ind-1])/TransitionTimes[ind];
         // Compute the maximum input value inside this area
-        double ThisInput = Constrain(Detents[ind-1], Input, Detents[ind]);
+        Real ThisInput = Constrain(Detents[ind-1], Input, Detents[ind]);
         // Compute the time to reach the value in ThisInput
-        double ThisDt = fabs((ThisInput-Output)/Rate);
+        Real ThisDt = fabs((ThisInput-Output)/Rate);
 
         // and clip to the timestep size
         if (dt0 < ThisDt) {

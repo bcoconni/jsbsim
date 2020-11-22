@@ -88,7 +88,7 @@ FGScript::~FGScript()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGScript::LoadScript(const SGPath& script, double default_dT,
+bool FGScript::LoadScript(const SGPath& script, Real default_dT,
                           const SGPath& initfile)
 {
   SGPath initialize;
@@ -97,7 +97,7 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
   Element *element=0, *run_element=0, *event_element=0;
   Element *set_element=0;
   Element *notify_element = 0L, *notify_property_element = 0L;
-  double dt = 0.0, value = 0.0;
+  Real dt = 0.0, value = 0.0;
   FGCondition *newCondition;
 
   FGXMLFileRead XMLFileRead;
@@ -381,8 +381,8 @@ bool FGScript::RunScript(void)
   unsigned i, j;
   unsigned event_ctr = 0;
 
-  double currentTime = FDMExec->GetSimTime();
-  double newSetValue = 0;
+  Real currentTime = FDMExec->GetSimTime();
+  Real newSetValue = 0;
 
   if (currentTime > EndTime) return false;
 

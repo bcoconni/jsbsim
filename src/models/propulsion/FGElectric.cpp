@@ -104,7 +104,7 @@ void FGElectric::Calculate(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGElectric::CalcFuelNeed(void)
+Real FGElectric::CalcFuelNeed(void)
 {
   return 0;
 }

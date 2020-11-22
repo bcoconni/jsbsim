@@ -167,10 +167,10 @@ class FGGasCell : public FGForce
 {
 public:
   struct Inputs {
-    double Pressure;
-    double Temperature;
-    double Density;
-    double gravity;
+    Real Pressure;
+    Real Temperature;
+    Real Density;
+    Real gravity;
   };
 
   /** Constructor
@@ -183,7 +183,7 @@ public:
 
   /** Runs the gas cell model; called by BuoyantForces
    */
-  void Calculate(double dt);
+  void Calculate(Real dt);
 
   /** Get the index of this gas cell
       @return gas cell index. */
@@ -197,11 +197,11 @@ public:
   /** Get the center of gravity location of the gas cell
       (including any ballonets)
       @return CoG location in the structural frame in inches. */
-  double GetXYZ(int idx) const {return vXYZ(idx);}
+  Real GetXYZ(int idx) const {return vXYZ(idx);}
 
   /** Get the current mass of the gas cell (including any ballonets)
       @return gas mass in slug. */
-  double GetMass(void) const {return Mass;}
+  Real GetMass(void) const {return Mass;}
 
   /** Get the moments of inertia of the gas cell (including any ballonets)
       @return moments of inertia matrix in the body frame
@@ -217,11 +217,11 @@ public:
 
   /** Get the current gas temperature inside the gas cell
       @return gas temperature in Rankine. */
-  double GetTemperature(void) const {return Temperature;}
+  Real GetTemperature(void) const {return Temperature;}
 
   /** Get the current gas pressure inside the gas cell
       @return gas pressure in lbs / ft<sup>2</sup>. */
-  double GetPressure(void) const {return Pressure;}
+  Real GetPressure(void) const {return Pressure;}
 
   const struct Inputs& in;
 
@@ -233,26 +233,26 @@ private:
   std::string type;
   unsigned int CellNum;
   // Structural constants
-  double MaxVolume;                 // [ft^3]
-  double MaxOverpressure;           // [lbs/ft^2]
+  Real MaxVolume;                 // [ft^3]
+  Real MaxOverpressure;           // [lbs/ft^2]
   FGColumnVector3 vXYZ;             // [in]
-  double Xradius, Yradius, Zradius; // [ft]
-  double Xwidth, Ywidth, Zwidth;    // [ft]
-  double ValveCoefficient;          // [ft^4 sec / slug]
+  Real Xradius, Yradius, Zradius; // [ft]
+  Real Xwidth, Ywidth, Zwidth;    // [ft]
+  Real ValveCoefficient;          // [ft^4 sec / slug]
   typedef std::vector <FGFunction*> CoeffArray;
   CoeffArray HeatTransferCoeff;
   typedef std::vector <FGBallonet*> BallonetArray;
   BallonetArray Ballonet;
   // Variables
-  double Pressure;          // [lbs/ft^2]
-  double Contents;          // [mol]
-  double Volume;            // [ft^3]
-  double dVolumeIdeal;      // [ft^3]
-  double Temperature;       // [Rankine]
-  double Buoyancy;          // [lbs] Note: Gross lift.
+  Real Pressure;          // [lbs/ft^2]
+  Real Contents;          // [mol]
+  Real Volume;            // [ft^3]
+  Real dVolumeIdeal;      // [ft^3]
+  Real Temperature;       // [Rankine]
+  Real Buoyancy;          // [lbs] Note: Gross lift.
                             // Does not include the weight of the gas itself.
-  double ValveOpen;         // 0 <= ValveOpen <= 1 (or higher).
-  double Mass;              // [slug]
+  Real ValveOpen;         // 0 <= ValveOpen <= 1 (or higher).
+  Real Mass;              // [slug]
   FGMatrix33 gasCellJ;      // [slug foot^2]
   FGColumnVector3 gasCellM; // [lbs in]
 
@@ -260,12 +260,12 @@ private:
   void Debug(int from);
 
   /* Constants. */
-  const static double R;          // [lbs ft/(mol Rankine)]
-  const static double M_air;      // [slug/mol]
-  const static double M_hydrogen; // [slug/mol]
-  const static double M_helium;   // [slug/mol]
+  const static Real R;          // [lbs ft/(mol Rankine)]
+  const static Real M_air;      // [slug/mol]
+  const static Real M_hydrogen; // [slug/mol]
+  const static Real M_helium;   // [slug/mol]
 
-  double M_gas() {                // [slug/mol]
+  Real M_gas() {                // [slug/mol]
     switch (Type) {
     case ttHYDROGEN:
       return M_hydrogen;
@@ -278,7 +278,7 @@ private:
     }
   }
 
-  double Cv_gas() {               // [??]
+  Real Cv_gas() {               // [??]
     switch (Type) {
     case ttHYDROGEN:
       return 5.0/2.0;
@@ -308,7 +308,7 @@ public:
 
   /** Runs the ballonet model; called by FGGasCell
    */
-  void Calculate(double dt);
+  void Calculate(Real dt);
 
 
   /** Get the center of gravity location of the ballonet
@@ -316,11 +316,11 @@ public:
   const FGColumnVector3& GetXYZ(void) const {return vXYZ;}
   /** Get the center of gravity location of the ballonet
       @return CoG location in the structural frame in inches. */
-  double GetXYZ(int idx) const {return vXYZ(idx);}
+  Real GetXYZ(int idx) const {return vXYZ(idx);}
 
   /** Get the current mass of the ballonets
       @return mass in slug. */
-  double GetMass(void) const {return Contents * M_air;}
+  Real GetMass(void) const {return Contents * M_air;}
 
   /** Get the moments of inertia of the ballonet
       @return moments of inertia matrix in the body frame in
@@ -329,43 +329,43 @@ public:
 
   /** Get the current volume of the ballonet
       @return volume in ft<sup>3</sup>. */
-  double GetVolume(void) const {return Volume;}
+  Real GetVolume(void) const {return Volume;}
   /** Get the current heat flow into the ballonet
       @return heat flow in lbs ft / sec. */
-  double GetHeatFlow(void) const {return dU;}       // [lbs ft / sec]
+  Real GetHeatFlow(void) const {return dU;}       // [lbs ft / sec]
 
   const struct FGGasCell::Inputs& in;
 
 private:
   unsigned int CellNum;
   // Structural constants
-  double MaxVolume;                 // [ft^3]
-  double MaxOverpressure;           // [lbs/ft^2]
+  Real MaxVolume;                 // [ft^3]
+  Real MaxOverpressure;           // [lbs/ft^2]
   FGColumnVector3 vXYZ;             // [in]
-  double Xradius, Yradius, Zradius; // [ft]
-  double Xwidth, Ywidth, Zwidth;    // [ft]
-  double ValveCoefficient;          // [ft^4 sec / slug]
+  Real Xradius, Yradius, Zradius; // [ft]
+  Real Xwidth, Ywidth, Zwidth;    // [ft]
+  Real ValveCoefficient;          // [ft^4 sec / slug]
   typedef std::vector <FGFunction*> CoeffArray;
   CoeffArray HeatTransferCoeff;     // [lbs ft / sec]
   FGFunction* BlowerInput;          // [ft^3 / sec]
   FGGasCell* Parent;
   // Variables
-  double Pressure;         // [lbs/ft^2]
-  double Contents;         // [mol]
-  double Volume;           // [ft^3]
-  double dVolumeIdeal;     // [ft^3]
-  double dU;               // [lbs ft / sec]
-  double Temperature;      // [Rankine]
-  double ValveOpen;        // 0 <= ValveOpen <= 1 (or higher).
+  Real Pressure;         // [lbs/ft^2]
+  Real Contents;         // [mol]
+  Real Volume;           // [ft^3]
+  Real dVolumeIdeal;     // [ft^3]
+  Real dU;               // [lbs ft / sec]
+  Real Temperature;      // [Rankine]
+  Real ValveOpen;        // 0 <= ValveOpen <= 1 (or higher).
   FGMatrix33 ballonetJ;     // [slug foot^2]
 
   std::shared_ptr<FGMassBalance> MassBalance;
   void Debug(int from);
 
   /* Constants. */
-  const static double R;          // [lbs ft/(mol Rankine)]
-  const static double M_air;      // [slug/mol]
-  const static double Cv_air;     // [??]
+  const static Real R;          // [lbs ft/(mol Rankine)]
+  const static Real M_air;      // [slug/mol]
+  const static Real Cv_air;     // [??]
 };
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

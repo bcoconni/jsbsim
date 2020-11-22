@@ -67,13 +67,13 @@ public:
   FGPropertyValue(const std::string& propName,
                   std::shared_ptr<FGPropertyManager> propertyManager);
 
-  double GetValue(void) const override;
+  Real GetValue(void) const override;
   bool IsConstant(void) const override {
     return PropertyNode && (!PropertyNode->isTied()
                          && !PropertyNode->getAttribute(SGPropertyNode::WRITE));
   }
   void SetNode(FGPropertyNode* node) {PropertyNode = node;}
-  void SetValue(double value);
+  void SetValue(Real value);
   bool IsLateBound(void) const { return PropertyNode == nullptr; }
 
   std::string GetName(void) const override;
@@ -88,7 +88,7 @@ private:
   std::shared_ptr<FGPropertyManager> PropertyManager; // Property root used to do late binding.
   mutable FGPropertyNode_ptr PropertyNode;
   std::string PropertyName;
-  double Sign;
+  Real Sign;
 };
 
 typedef SGSharedPtr<FGPropertyValue> FGPropertyValue_ptr;

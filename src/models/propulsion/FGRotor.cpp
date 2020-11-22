@@ -63,7 +63,7 @@ namespace JSBSim {
 MISC
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-static inline double sqr(double x) { return x*x; }
+static inline Real sqr(Real x) { return x*x; }
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS IMPLEMENTATION
@@ -96,7 +96,7 @@ FGRotor::FGRotor(FGFDMExec *exec, Element* rotor_element, int num)
 {
   FGColumnVector3 location(0.0, 0.0, 0.0), orientation(0.0, 0.0, 0.0);
   Element *thruster_element;
-  double engine_power_est = 0.0;
+  Real engine_power_est = 0.0;
 
   // initialise/set remaining variables
   SetTransformType(FGForce::tCustom);
@@ -110,7 +110,7 @@ FGRotor::FGRotor(FGFDMExec *exec, Element* rotor_element, int num)
   // get positions 
   thruster_element = rotor_element->GetParent()->FindElement("sense");
   if (thruster_element) {
-    double s = thruster_element->GetDataAsNumber();
+    Real s = thruster_element->GetDataAsNumber();
     if (s < -0.1) {
       Sense = -1.0; // 'CW' as seen from above
     } else if (s < 0.1) {
@@ -226,12 +226,12 @@ FGRotor::~FGRotor(){
 
 // 5in1: value-fetch-convert-default-return function
 
-double FGRotor::ConfigValueConv( Element* el, const string& ename, double default_val,
+Real FGRotor::ConfigValueConv( Element* el, const string& ename, Real default_val,
                                   const string& unit, bool tell)
 {
 
   Element *e = NULL;
-  double val = default_val;
+  Real val = default_val;
 
   string pname = "*No parent element*";
 
@@ -258,7 +258,7 @@ double FGRotor::ConfigValueConv( Element* el, const string& ename, double defaul
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGRotor::ConfigValue(Element* el, const string& ename, double default_val, bool tell)
+Real FGRotor::ConfigValue(Element* el, const string& ename, Real default_val, bool tell)
 {
   return ConfigValueConv(el, ename, default_val, "", tell);
 }
@@ -267,10 +267,10 @@ double FGRotor::ConfigValue(Element* el, const string& ename, double default_val
 
 // 1. read configuration and try to fill holes, ymmv
 // 2. calculate derived parameters
-double FGRotor::Configure(Element* rotor_element)
+Real FGRotor::Configure(Element* rotor_element)
 {
 
-  double estimate, engine_power_est=0.0;
+  Real estimate, engine_power_est=0.0;
   const bool yell   = true;
   const bool silent = false;
 
@@ -339,7 +339,7 @@ double FGRotor::Configure(Element* rotor_element)
   Solidity = BladeNum * BladeChord / (M_PI * Radius);
 
   // estimate inflow lag, see /GE49/ eqn(1)
-  double omega_tmp = (NominalRPM/60.0)*2.0*M_PI;
+  Real omega_tmp = (NominalRPM/60.0)*2.0*M_PI;
   estimate = 16.0/(LockNumberByRho*rho * omega_tmp ); // 16/(gamma*Omega)
   // printf("# Est. InflowLag: %f\n", estimate);
   InflowLag = ConfigValue(rotor_element, "inflowlag", estimate, yell);
@@ -355,7 +355,7 @@ double FGRotor::Configure(Element* rotor_element)
 
 FGColumnVector3 FGRotor::hub_vel_body2ca( const FGColumnVector3 &uvw, 
                                                  const FGColumnVector3 &pqr,
-                                                 double a_ic, double b_ic)
+                                                 Real a_ic, Real b_ic)
 {
   FGColumnVector3  v_r, v_shaft, v_w;
   FGColumnVector3 pos;
@@ -404,13 +404,13 @@ FGColumnVector3 FGRotor::fus_angvel_body2ca( const FGColumnVector3 &pqr)
 // reduction of inflow if the helicopter is close to the ground, yielding to
 // higher thrust, see /TA77/ eqn(10a).
 
-void FGRotor::calc_flow_and_thrust( double theta_0, double Uw, double Ww,
-                                    double flow_scale)
+void FGRotor::calc_flow_and_thrust( Real theta_0, Real Uw, Real Ww,
+                                    Real flow_scale)
 {
 
-  double ct_over_sigma = 0.0;
-  double c0, ct_l, ct_t0, ct_t1;
-  double mu2;
+  Real ct_over_sigma = 0.0;
+  Real c0, ct_l, ct_t0, ct_t1;
+  Real mu2;
 
   mu = Uw/(Omega*Radius); // /SH79/ eqn(24)
   if (mu > 0.7) mu = 0.7;
@@ -449,15 +449,15 @@ void FGRotor::calc_flow_and_thrust( double theta_0, double Uw, double Ww,
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 // Two blade teetering rotors are often 'preconed' to a fixed angle, but the 
-// calculated value is pretty close to the real one. /SH79/ eqn(29)
+// calculated value is pretty close to the Real one. /SH79/ eqn(29)
 
-void FGRotor::calc_coning_angle(double theta_0)
+void FGRotor::calc_coning_angle(Real theta_0)
 {
-  double lock_gamma = LockNumberByRho * rho;
+  Real lock_gamma = LockNumberByRho * rho;
 
-  double a0_l  = (1.0/6.0  + 0.04 * mu*mu*mu) * lambda;
-  double a0_t0 = (1.0/8.0  + 1.0/8.0  * mu*mu) * theta_0;
-  double a0_t1 = (1.0/10.0 + 1.0/12.0 * mu*mu) * BladeTwist;
+  Real a0_l  = (1.0/6.0  + 0.04 * mu*mu*mu) * lambda;
+  Real a0_t0 = (1.0/8.0  + 1.0/8.0  * mu*mu) * theta_0;
+  Real a0_t1 = (1.0/10.0 + 1.0/12.0 * mu*mu) * BladeTwist;
   a0 = lock_gamma * ( a0_l + a0_t0 + a0_t1);
   return;
 }
@@ -466,13 +466,13 @@ void FGRotor::calc_coning_angle(double theta_0)
 
 // Flapping angles relative to control axes /SH79/ eqn(32)
 
-void FGRotor::calc_flapping_angles(double theta_0, const FGColumnVector3 &pqr_fus_w)
+void FGRotor::calc_flapping_angles(Real theta_0, const FGColumnVector3 &pqr_fus_w)
 {
-  double lock_gamma = LockNumberByRho * rho;
+  Real lock_gamma = LockNumberByRho * rho;
 
 
-  double mu2_2 = sqr(mu)/2.0;
-  double t075 = theta_0 + 0.75 * BladeTwist;  // common approximation for rectangular blades
+  Real mu2_2 = sqr(mu)/2.0;
+  Real t075 = theta_0 + 0.75 * BladeTwist;  // common approximation for rectangular blades
   
   a_1 = 1.0/(1.0 - mu2_2) * (
                                  (2.0*lambda + (8.0/3.0)*t075)*mu
@@ -500,10 +500,10 @@ void FGRotor::calc_flapping_angles(double theta_0, const FGColumnVector3 &pqr_fu
 
 // /SH79/ eqn(38,39)
 
-void FGRotor::calc_drag_and_side_forces(double theta_0)
+void FGRotor::calc_drag_and_side_forces(Real theta_0)
 {
-  double cy_over_sigma;
-  double t075 = theta_0 + 0.75 * BladeTwist;
+  Real cy_over_sigma;
+  Real t075 = theta_0 + 0.75 * BladeTwist;
 
   H_drag = Thrust * a_dw;
 
@@ -525,10 +525,10 @@ void FGRotor::calc_drag_and_side_forces(double theta_0)
 // (a new config parameter to come...).
 // From "Bramwell's Helicopter Dynamics", second edition, eqn(3.43) and (3.44)
 
-void FGRotor::calc_torque(double theta_0)
+void FGRotor::calc_torque(Real theta_0)
 {
   // estimate blade drag
-  double delta_dr = 0.009 + 0.3*sqr(6.0*C_T/(LiftCurveSlope*Solidity));
+  Real delta_dr = 0.009 + 0.3*sqr(6.0*C_T/(LiftCurveSlope*Solidity));
 
   Torque = rho * BladeNum * BladeChord * delta_dr * sqr(Omega*Radius) * R[2] *
            (1.0+4.5*sqr(mu))/8.0
@@ -561,7 +561,7 @@ void FGRotor::calc_downwash_angles()
 // transform rotor forces from control axes to shaft axes, and express
 // in body axes /SH79/ eqn(40,41)
 
-FGColumnVector3 FGRotor::body_forces(double a_ic, double b_ic)
+FGColumnVector3 FGRotor::body_forces(Real a_ic, Real b_ic)
 {
   FGColumnVector3 F_s(
         - H_drag*cos(beta_orient) - J_side*sin(beta_orient) + Thrust*b_ic,
@@ -576,10 +576,10 @@ FGColumnVector3 FGRotor::body_forces(double a_ic, double b_ic)
 // calculates the additional moments due to hinge offset and handles 
 // torque and sense
 
-FGColumnVector3 FGRotor::body_moments(double a_ic, double b_ic)
+FGColumnVector3 FGRotor::body_moments(Real a_ic, Real b_ic)
 {
   FGColumnVector3 M_s, M_hub, M_h;
-  double mf;
+  Real mf;
 
   // cyclic flapping relative to shaft axes /SH79/ eqn(43)
   a1s = a_1*cos(beta_orient) + b_1*sin(beta_orient) - b_ic;
@@ -598,18 +598,18 @@ FGColumnVector3 FGRotor::body_moments(double a_ic, double b_ic)
 
 void FGRotor::CalcRotorState(void)
 {
-  double A_IC;       // lateral (roll) control in radians
-  double B_IC;       // longitudinal (pitch) control in radians
-  double theta_col;  // rotor collective pitch in radians
+  Real A_IC;       // lateral (roll) control in radians
+  Real B_IC;       // longitudinal (pitch) control in radians
+  Real theta_col;  // rotor collective pitch in radians
 
   FGColumnVector3 vHub_ca, avFus_ca;
 
-  double filtered_hagl = 0.0;
-  double ge_factor = 1.0;
+  Real filtered_hagl = 0.0;
+  Real ge_factor = 1.0;
 
   // fetch needed values from environment
   rho = in.Density; // slugs/ft^3.
-  double h_agl_ft = in.H_agl;
+  Real h_agl_ft = in.H_agl;
 
   // update InvTransform, the rotor orientation could have been altered
   InvTransform = Transform().Transposed();
@@ -667,7 +667,7 @@ void FGRotor::CalcRotorState(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGRotor::Calculate(double EnginePower)
+Real FGRotor::Calculate(Real EnginePower)
 {
 
   CalcRotorState();

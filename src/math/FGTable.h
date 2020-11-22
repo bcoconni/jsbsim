@@ -74,7 +74,7 @@ For a single "vector" lookup table, the format is as follows:
 The lookup="row" attribute in the independentVar element is option in this case;
 it is assumed that the independentVar is a row variable.
 
-A "real life" example is as shown here:
+A "Real life" example is as shown here:
 
 @code
 <table>
@@ -112,7 +112,7 @@ The definition for a 2D table, is as follows:
 
 The data is in a gridded format.
 
-A "real life" example is as shown below. Alpha in radians is the row lookup (alpha
+A "Real life" example is as shown below. Alpha in radians is the row lookup (alpha
 breakpoints are arranged in the first column) and flap position in degrees is
 
 @code
@@ -245,10 +245,10 @@ public:
            const std::string& prefix="");
   FGTable (int );
   FGTable (int, int);
-  double GetValue(void) const;
-  double GetValue(double key) const;
-  double GetValue(double rowKey, double colKey) const;
-  double GetValue(double rowKey, double colKey, double TableKey) const;
+  Real GetValue(void) const;
+  Real GetValue(Real key) const;
+  Real GetValue(Real rowKey, Real colKey) const;
+  Real GetValue(Real rowKey, Real colKey, Real TableKey) const;
   /** Read the table in.
       Data in the config file should be in matrix format with the row
       independents as the first column and the column independents in
@@ -275,9 +275,9 @@ public:
   FGTable& operator<<(const double n);
   FGTable& operator<<(const int n);
 
-  inline double GetElement(int r, int c) const {return Data[r][c];}
+  inline Real GetElement(int r, int c) const {return Data[r][c];}
 
-  double operator()(unsigned int r, unsigned int c) const
+  Real operator()(unsigned int r, unsigned int c) const
   { return GetElement(r, c); }
 
   void SetRowIndexProperty(FGPropertyNode *node)
@@ -296,12 +296,12 @@ private:
   enum axis {eRow=0, eColumn, eTable};
   bool internal;
   FGPropertyValue_ptr lookupProperty[3];
-  double** Data;
+  Real** Data;
   std::vector <FGTable*> Tables;
   unsigned int nRows, nCols, nTables, dimension;
   int colCounter, rowCounter, tableCounter;
   mutable int lastRowIndex, lastColumnIndex, lastTableIndex;
-  double** Allocate(void);
+  Real** Allocate(void);
   std::string Prefix;
   std::string Name;
   void bind(Element*, FGPropertyManager*);

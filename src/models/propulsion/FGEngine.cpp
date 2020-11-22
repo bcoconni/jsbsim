@@ -92,7 +92,7 @@ void FGEngine::ResetToIC(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGEngine::CalcFuelNeed(void)
+Real FGEngine::CalcFuelNeed(void)
 {
   FuelFlowRate = SLFuelFlowMax*PctPower;
   FuelExpended = FuelFlowRate*in.TotalDeltaT;
@@ -125,7 +125,7 @@ void FGEngine::SetPlacement(const FGColumnVector3& location,
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGEngine::GetThrust(void) const 
+Real FGEngine::GetThrust(void) const 
 {
   return Thruster->GetThrust();
 }

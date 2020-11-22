@@ -112,57 +112,57 @@ public:
       @param exec a pointer to the main executive object
       @param num the number of the thruster that uses this object
       @param dt simulation delta T */
-  FGTransmission(FGFDMExec *exec, int num, double dt);
+  FGTransmission(FGFDMExec *exec, int num, Real dt);
 
   /// Destructor for FGTransmission
   ~FGTransmission();
 
-  void Calculate(double EnginePower, double ThrusterTorque, double dt);
+  void Calculate(Real EnginePower, Real ThrusterTorque, Real dt);
 
-  void   SetMaxBrakePower(double x) {MaxBrakePower=x;}
-  double GetMaxBrakePower() const {return MaxBrakePower;}
-  void   SetEngineFriction(double x) {EngineFriction=x;}
-  double GetEngineFriction() const {return EngineFriction;}
-  void   SetEngineMoment(double x) {EngineMoment=x;}
-  double GetEngineMoment() const {return EngineMoment;}
-  void   SetThrusterMoment(double x) {ThrusterMoment=x;}
-  double GetThrusterMoment() const {return ThrusterMoment;}
+  void   SetMaxBrakePower(Real x) {MaxBrakePower=x;}
+  Real GetMaxBrakePower() const {return MaxBrakePower;}
+  void   SetEngineFriction(Real x) {EngineFriction=x;}
+  Real GetEngineFriction() const {return EngineFriction;}
+  void   SetEngineMoment(Real x) {EngineMoment=x;}
+  Real GetEngineMoment() const {return EngineMoment;}
+  void   SetThrusterMoment(Real x) {ThrusterMoment=x;}
+  Real GetThrusterMoment() const {return ThrusterMoment;}
 
-  double GetFreeWheelTransmission() const {return FreeWheelTransmission;}
-  void   SetEngineRPM(double x) {EngineRPM=x;}
-  double GetEngineRPM() {return EngineRPM;}
-  void   SetThrusterRPM(double x) {ThrusterRPM=x;}
-  double GetThrusterRPM() {return ThrusterRPM;}
+  Real GetFreeWheelTransmission() const {return FreeWheelTransmission;}
+  void   SetEngineRPM(Real x) {EngineRPM=x;}
+  Real GetEngineRPM() {return EngineRPM;}
+  void   SetThrusterRPM(Real x) {ThrusterRPM=x;}
+  Real GetThrusterRPM() {return ThrusterRPM;}
 
-  double GetBrakeCtrlNorm() const {return BrakeCtrlNorm;}
-  void   SetBrakeCtrlNorm(double x) {BrakeCtrlNorm=x;}
-  double GetClutchCtrlNorm() const {return ClutchCtrlNorm;}
-  void   SetClutchCtrlNorm(double x) {ClutchCtrlNorm=x;}
+  Real GetBrakeCtrlNorm() const {return BrakeCtrlNorm;}
+  void   SetBrakeCtrlNorm(Real x) {BrakeCtrlNorm=x;}
+  Real GetClutchCtrlNorm() const {return ClutchCtrlNorm;}
+  void   SetClutchCtrlNorm(Real x) {ClutchCtrlNorm=x;}
 
 private:
   bool BindModel(int num, FGPropertyManager* pm);
   void Debug(int from);
 
-  inline double omega_to_rpm(double w) {
+  inline Real omega_to_rpm(Real w) {
     return w * 9.54929658551372014613302580235; // omega/(2.0*PI) * 60.0
   }
-  inline double rpm_to_omega(double r) {
+  inline Real rpm_to_omega(Real r) {
     return r * 0.104719755119659774615421446109; // (rpm/60.0)*2.0*PI
   }
 
   Filter FreeWheelLag;
-  double FreeWheelTransmission; // state, 0: free, 1:locked
+  Real FreeWheelTransmission; // state, 0: free, 1:locked
 
-  double ThrusterMoment;
-  double EngineMoment;   // estimated MOI of gear and engine, influences acceleration
-  double EngineFriction; // estimated friction in gear and possibly engine
+  Real ThrusterMoment;
+  Real EngineMoment;   // estimated MOI of gear and engine, influences acceleration
+  Real EngineFriction; // estimated friction in gear and possibly engine
 
-  double ClutchCtrlNorm;
-  double BrakeCtrlNorm;
-  double MaxBrakePower;
+  Real ClutchCtrlNorm;
+  Real BrakeCtrlNorm;
+  Real MaxBrakePower;
 
-  double EngineRPM;
-  double ThrusterRPM;
+  Real EngineRPM;
+  Real ThrusterRPM;
 };
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

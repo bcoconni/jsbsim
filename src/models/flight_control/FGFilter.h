@@ -227,10 +227,10 @@ private:
   /** When true, causes previous values to be set to current values. This
       is particularly useful for first pass. */
   bool Initialize;
-  double ca, cb, cc, cd, ce;
+  Real ca, cb, cc, cd, ce;
   FGParameter_ptr C[7]; // There are 6 coefficients, indexing is "1" based.
-  double PreviousInput1, PreviousInput2;
-  double PreviousOutput1, PreviousOutput2;
+  Real PreviousInput1, PreviousInput2;
+  Real PreviousOutput1, PreviousOutput2;
 
   enum {eLag, eLeadLag, eOrder2, eWashout, eUnknown} FilterType;
 

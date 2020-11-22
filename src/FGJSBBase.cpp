@@ -214,17 +214,17 @@ string FGJSBBase::CreateIndexedPropertyName(const string& Property, int index)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGJSBBase::GaussianRandomNumber(void)
+Real FGJSBBase::GaussianRandomNumber(void)
 {
-  static double V1, V2, S;
-  double X;
+  static Real V1, V2, S;
+  Real X;
 
   if (gaussian_random_number_phase == 0) {
     V1 = V2 = S = X = 0.0;
 
     do {
-      double U1 = (double)rand() / RAND_MAX;
-      double U2 = (double)rand() / RAND_MAX;
+      Real U1 = (Real)rand() / RAND_MAX;
+      Real U2 = (Real)rand() / RAND_MAX;
 
       V1 = 2 * U1 - 1;
       V2 = 2 * U2 - 1;
@@ -242,7 +242,7 @@ double FGJSBBase::GaussianRandomNumber(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGJSBBase::PitotTotalPressure(double mach, double p)
+Real FGJSBBase::PitotTotalPressure(Real mach, Real p)
 {
   if (mach < 0) return p;
   if (mach < 1)    //calculate total pressure assuming isentropic flow
@@ -253,7 +253,7 @@ double FGJSBBase::PitotTotalPressure(double mach, double p)
     // pressure behind the shock to the static pressure in front of
     // the normal shock assumption should not be a bad one -- most supersonic
     // aircraft place the pitot probe out front so that it is the forward
-    // most point on the aircraft.  The real shock would, of course, take
+    // most point on the aircraft.  The Real shock would, of course, take
     // on something like the shape of a rounded-off cone but, here again,
     // the assumption should be good since the opening of the pitot probe
     // is very small and, therefore, the effects of the shock curvature
@@ -272,10 +272,10 @@ double FGJSBBase::PitotTotalPressure(double mach, double p)
 // Based on the formulas in the US Air Force Aircraft Performance Flight Testing 
 // Manual (AFFTC-TIH-99-01). In particular sections 4.6 to 4.8.
 
-double FGJSBBase::MachFromImpactPressure(double qc, double p)
+Real FGJSBBase::MachFromImpactPressure(Real qc, Real p)
 {
-  double A = qc / p + 1;
-  double M = sqrt(5.0*(pow(A, 1. / 3.5) - 1));  // Equation (4.12)
+  Real A = qc / p + 1;
+  Real M = sqrt(5.0*(pow(A, 1. / 3.5) - 1));  // Equation (4.12)
 
   if (M > 1.0)
     for (unsigned int i = 0; i<10; i++)
@@ -286,22 +286,22 @@ double FGJSBBase::MachFromImpactPressure(double qc, double p)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGJSBBase::VcalibratedFromMach(double mach, double p)
+Real FGJSBBase::VcalibratedFromMach(Real mach, Real p)
 {
-  double asl = FGAtmosphere::StdDaySLsoundspeed;
-  double psl = FGAtmosphere::StdDaySLpressure;
-  double qc = PitotTotalPressure(mach, p) - p;
+  Real asl = FGAtmosphere::StdDaySLsoundspeed;
+  Real psl = FGAtmosphere::StdDaySLpressure;
+  Real qc = PitotTotalPressure(mach, p) - p;
 
   return asl * MachFromImpactPressure(qc, psl);  
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGJSBBase::MachFromVcalibrated(double vcas, double p)
+Real FGJSBBase::MachFromVcalibrated(Real vcas, Real p)
 {
-  double asl = FGAtmosphere::StdDaySLsoundspeed;
-  double psl = FGAtmosphere::StdDaySLpressure;
-  double qc = PitotTotalPressure(vcas / asl, psl) - psl;
+  Real asl = FGAtmosphere::StdDaySLsoundspeed;
+  Real psl = FGAtmosphere::StdDaySLpressure;
+  Real qc = PitotTotalPressure(vcas / asl, psl) - psl;
 
   return MachFromImpactPressure(qc, p);
 }

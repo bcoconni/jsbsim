@@ -162,16 +162,16 @@ public:
   std::string GetPropulsionTankReport();
 
   const FGColumnVector3& GetForces(void) const {return vForces; }
-  double GetForces(int n) const { return vForces(n);}
+  Real GetForces(int n) const { return vForces(n);}
   const FGColumnVector3& GetMoments(void) const {return vMoments;}
-  double GetMoments(int n) const {return vMoments(n);}
+  Real GetMoments(int n) const {return vMoments(n);}
 
-  double Transfer(int source, int target, double amount);
-  void DoRefuel(double time_slice);
-  void DumpFuel(double time_slice);
+  Real Transfer(int source, int target, Real amount);
+  void DoRefuel(Real time_slice);
+  void DumpFuel(Real time_slice);
 
   const FGColumnVector3& GetTanksMoment(void);
-  double GetTanksWeight(void) const;
+  Real GetTanksWeight(void) const;
 
   SGPath FindFullPathName(const SGPath& path) const override;
   inline int GetActiveEngine(void) const {return ActiveEngine;}
@@ -206,10 +206,10 @@ private:
   bool refuel;
   bool dump;
   bool FuelFreeze;
-  double TotalFuelQuantity;
-  double TotalOxidizerQuantity;
-  double DumpRate;
-  double RefuelRate;
+  Real TotalFuelQuantity;
+  Real TotalOxidizerQuantity;
+  Real DumpRate;
+  Real RefuelRate;
   bool IsBound;
   bool HavePistonEngine;
   bool HaveTurbineEngine;

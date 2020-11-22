@@ -202,8 +202,8 @@ void FGTrimAxis::getControl(void) {
 
 /*****************************************************************************/
 
-double FGTrimAxis::computeHmgt(void) {
-  double diff;
+Real FGTrimAxis::computeHmgt(void) {
+  Real diff;
 
   diff   = fdmex->GetPropagate()->GetEuler(ePsi) -
              fdmex->GetAuxiliary()->GetGroundTrack();
@@ -244,7 +244,7 @@ void FGTrimAxis::setControl(void) {
 
 void FGTrimAxis::Run(void) {
 
-  double last_state_value;
+  Real last_state_value;
   int i;
   setControl();
   //cout << "FGTrimAxis::Run: " << control_value << endl;
@@ -270,7 +270,7 @@ void FGTrimAxis::Run(void) {
 /*****************************************************************************/
 
 void FGTrimAxis::setThrottlesPct(void) {
-  double tMin,tMax;
+  Real tMin,tMax;
   for(unsigned i=0;i<fdmex->GetPropulsion()->GetNumEngines();i++) {
       tMin=fdmex->GetPropulsion()->GetEngine(i)->GetThrottleMin();
       tMax=fdmex->GetPropulsion()->GetEngine(i)->GetThrottleMax();
@@ -311,9 +311,9 @@ void FGTrimAxis::AxisReport(void) {
 
 /*****************************************************************************/
 
-double FGTrimAxis::GetAvgStability( void ) {
+Real FGTrimAxis::GetAvgStability( void ) {
   if(total_iterations > 0) {
-    return double(total_stability_iterations)/double(total_iterations);
+    return Real(total_stability_iterations)/Real(total_iterations);
   }
   return 0;
 }

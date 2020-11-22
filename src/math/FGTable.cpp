@@ -347,11 +347,11 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> PropertyManager,
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double** FGTable::Allocate(void)
+Real** FGTable::Allocate(void)
 {
-  Data = new double*[nRows+1];
+  Data = new Real*[nRows+1];
   for (unsigned int r=0; r<=nRows; r++) {
-    Data[r] = new double[nCols+1];
+    Data[r] = new Real[nCols+1];
     for (unsigned int c=0; c<=nCols; c++) {
       Data[r][c] = 0.0;
     }
@@ -389,10 +389,10 @@ unsigned int FGTable::FindNumColumns(const string& test_line)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(void) const
+Real FGTable::GetValue(void) const
 {
-  double temp = 0;
-  double temp2 = 0;
+  Real temp = 0;
+  Real temp2 = 0;
 
   switch (Type) {
   case tt1D:
@@ -414,9 +414,9 @@ double FGTable::GetValue(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(double key) const
+Real FGTable::GetValue(Real key) const
 {
-  double Factor, Value, Span;
+  Real Factor, Value, Span;
   unsigned int r = lastRowIndex;
 
   //if the key is off the end of the table, just return the
@@ -457,9 +457,9 @@ double FGTable::GetValue(double key) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(double rowKey, double colKey) const
+Real FGTable::GetValue(Real rowKey, Real colKey) const
 {
-  double rFactor, cFactor, col1temp, col2temp, Value;
+  Real rFactor, cFactor, col1temp, col2temp, Value;
   unsigned int r = lastRowIndex;
   unsigned int c = lastColumnIndex;
 
@@ -491,9 +491,9 @@ double FGTable::GetValue(double rowKey, double colKey) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(double rowKey, double colKey, double tableKey) const
+Real FGTable::GetValue(Real rowKey, Real colKey, Real tableKey) const
 {
-  double Factor, Value, Span;
+  Real Factor, Value, Span;
   unsigned int r = lastRowIndex;
 
   //if the key is off the end  (or before the beginning) of the table,
@@ -627,7 +627,7 @@ void FGTable::Print(void)
 
 void FGTable::bind(Element* el, FGPropertyManager* PropertyManager)
 {
-  typedef double (FGTable::*PMF)(void) const;
+  typedef Real (FGTable::*PMF)(void) const;
   if ( !Name.empty() && !internal) {
     string tmp;
     if (Prefix.empty())

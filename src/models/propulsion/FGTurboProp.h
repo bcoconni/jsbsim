@@ -103,27 +103,27 @@ public:
   enum phaseType { tpOff, tpRun, tpSpinUp, tpStart, tpTrim };
 
   void Calculate(void);
-  double CalcFuelNeed(void);
+  Real CalcFuelNeed(void);
 
-  double GetPowerAvailable(void) const { return (HP * hptoftlbssec); }
-  double GetRPM(void) const { return RPM; }
-  double GetIeluThrottle(void) const { return (ThrottlePos); }
+  Real GetPowerAvailable(void) const { return (HP * hptoftlbssec); }
+  Real GetRPM(void) const { return RPM; }
+  Real GetIeluThrottle(void) const { return (ThrottlePos); }
   bool GetIeluIntervent(void) const { return Ielu_intervent; }
 
-  double Seek(double* var, double target, double accel, double decel);
-  double ExpSeek(double* var, double target, double accel, double decel);
+  Real Seek(Real* var, Real target, Real accel, Real decel);
+  Real ExpSeek(Real* var, Real target, Real accel, Real decel);
 
   phaseType GetPhase(void) const { return phase; }
 
   bool GetReversed(void) const { return Reversed; }
   bool GetCutoff(void) const { return Cutoff; }
 
-  double GetN1(void) const {return N1;}
-  double GetITT(void) const {return Eng_ITT_degC;}
-  double GetEngStarting(void) const { return EngStarting; }
+  Real GetN1(void) const {return N1;}
+  Real GetITT(void) const {return Eng_ITT_degC;}
+  Real GetEngStarting(void) const { return EngStarting; }
 
-  double getOilPressure_psi () const {return OilPressure_psi;}
-  double getOilTemp_degF (void) {return KelvinToFahrenheit(OilTemp_degK);}
+  Real getOilPressure_psi () const {return OilPressure_psi;}
+  Real getOilTemp_degF (void) {return KelvinToFahrenheit(OilTemp_degK);}
 
   inline bool GetGeneratorPower(void) const { return GeneratorPower; }
   inline int GetCondition(void) const { return Condition; }
@@ -141,50 +141,50 @@ public:
 private:
 
   phaseType phase;         ///< Operating mode, or "phase"
-  double IdleN1;           ///< Idle N1
-  double N1;               ///< N1
-  double MaxN1;            ///< N1 at 100% throttle
-  double delay;            ///< Inverse spool-up time from idle to 100% (seconds)
-  double N1_factor;        ///< factor to tie N1 and throttle
-  double ThrottlePos;      ///< FCS-supplied throttle position, modified locally
+  Real IdleN1;           ///< Idle N1
+  Real N1;               ///< N1
+  Real MaxN1;            ///< N1 at 100% throttle
+  Real delay;            ///< Inverse spool-up time from idle to 100% (seconds)
+  Real N1_factor;        ///< factor to tie N1 and throttle
+  Real ThrottlePos;      ///< FCS-supplied throttle position, modified locally
   bool Reversed;
   bool Cutoff;
 
-  double OilPressure_psi;
-  double OilTemp_degK;
+  Real OilPressure_psi;
+  Real OilTemp_degK;
 
-  double Ielu_max_torque;      // max propeller torque (before ielu intervent)
+  Real Ielu_max_torque;      // max propeller torque (before ielu intervent)
   bool Ielu_intervent;
-  double OldThrottle;
+  Real OldThrottle;
 
-  double BetaRangeThrottleEnd; // coef (0-1) where is end of beta-range
-  double ReverseMaxPower;      // coef (0-1) multiplies max throttle on reverse
+  Real BetaRangeThrottleEnd; // coef (0-1) where is end of beta-range
+  Real ReverseMaxPower;      // coef (0-1) multiplies max throttle on reverse
 
-  double Idle_Max_Delay;       // time delay for exponential
-  double MaxPower;             // max engine power [HP]
-  double StarterN1;            // rotates of generator maked by starter [%]
-  double MaxStartingTime;      // maximal time for start [s] (-1 means not used)
-  double RPM;                  // shaft RPM
-  double PSFC;                 // Power specific fuel comsumption [lb/(HP*hr)] at best efficiency
-  double CombustionEfficiency;
+  Real Idle_Max_Delay;       // time delay for exponential
+  Real MaxPower;             // max engine power [HP]
+  Real StarterN1;            // rotates of generator maked by starter [%]
+  Real MaxStartingTime;      // maximal time for start [s] (-1 means not used)
+  Real RPM;                  // shaft RPM
+  Real PSFC;                 // Power specific fuel comsumption [lb/(HP*hr)] at best efficiency
+  Real CombustionEfficiency;
 
-  double HP;                   // engine power output
+  Real HP;                   // engine power output
 
-  double StartTime;            // engine starting time [s] (0 when start button pushed)
+  Real StartTime;            // engine starting time [s] (0 when start button pushed)
 
-  double  ITT_Delay;           // time delay for exponential growth of ITT
-  double  Eng_ITT_degC;
-  double  Eng_Temperature;     // temperature inside engine
+  Real  ITT_Delay;           // time delay for exponential growth of ITT
+  Real  Eng_ITT_degC;
+  Real  Eng_Temperature;     // temperature inside engine
 
   bool EngStarting;            // logicaly output - TRUE if engine is starting
   bool GeneratorPower;
   int Condition;
   int thrusterType;            // the attached thruster
 
-  double Off(void);
-  double Run(void);
-  double SpinUp(void);
-  double Start(void);
+  Real Off(void);
+  Real Run(void);
+  Real SpinUp(void);
+  Real Start(void);
 
   void SetDefaults(void);
   bool Load(FGFDMExec *exec, Element *el);

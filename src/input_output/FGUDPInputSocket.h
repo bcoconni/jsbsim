@@ -74,7 +74,7 @@ public:
 protected:
 
   int rate;
-  double oldTimeStamp;
+  Real oldTimeStamp;
   std::vector<FGPropertyNode_ptr> InputProperties;
 };
 }

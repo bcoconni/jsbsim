@@ -789,7 +789,7 @@ public:
 
 /** Retrieves the value of the function object.
     @return the total value of the function. */
-  double GetValue(void) const override;
+  Real GetValue(void) const override;
 
 /** The value that the function evaluates to, as a string.
   @return the value of the function as a string. */
@@ -816,7 +816,7 @@ public:
 
 protected:
   bool cached;
-  double cachedValue;
+  Real cachedValue;
   std::vector <FGParameter_ptr> Parameters;
   std::shared_ptr<FGPropertyManager> PropertyManager;
   FGPropertyNode_ptr pNode;

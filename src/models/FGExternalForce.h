@@ -86,7 +86,7 @@ private:
   FGPropertyNode_ptr data[3];
 };
 
-inline FGColumnVector3 operator*(double a, const FGPropertyVector3& v) {
+inline FGColumnVector3 operator*(Real a, const FGPropertyVector3& v) {
   return v*a;
 }
 

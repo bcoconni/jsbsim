@@ -53,7 +53,7 @@ CLASS IMPLEMENTATION
 
 // Atmosphere constants in British units converted from the SI values specified in the 
 // ISA document - https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770009539.pdf
-double FGAtmosphere::Reng = Rstar / Mair;
+Real FGAtmosphere::Reng = Rstar / Mair;
 
 const double FGAtmosphere::StdDaySLsoundspeed = sqrt(SHRatio*Reng*StdDaySLtemperature);
 
@@ -104,7 +104,7 @@ bool FGAtmosphere::Run(bool Holding)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGAtmosphere::Calculate(double altitude)
+void FGAtmosphere::Calculate(Real altitude)
 {
   FGPropertyNode* node = PropertyManager->GetNode();
   if (!PropertyManager->HasNode("atmosphere/override/temperature"))
@@ -132,9 +132,9 @@ void FGAtmosphere::Calculate(double altitude)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGAtmosphere::SetPressureSL(ePressure unit, double pressure)
+void FGAtmosphere::SetPressureSL(ePressure unit, Real pressure)
 {
-  double press = ConvertToPSF(pressure, unit);
+  Real press = ConvertToPSF(pressure, unit);
 
   SLpressure = press;
 }
@@ -142,14 +142,14 @@ void FGAtmosphere::SetPressureSL(ePressure unit, double pressure)
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Get the modeled density at a specified altitude
 
-double FGAtmosphere::GetDensity(double altitude) const
+Real FGAtmosphere::GetDensity(Real altitude) const
 {
   return GetPressure(altitude)/(Reng * GetTemperature(altitude));
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Get the sound speed at a specified altitude
 
-double FGAtmosphere::GetSoundSpeed(double altitude) const
+Real FGAtmosphere::GetSoundSpeed(Real altitude) const
 {
   return sqrt(SHRatio * Reng * GetTemperature(altitude));
 }
@@ -159,16 +159,16 @@ double FGAtmosphere::GetSoundSpeed(double altitude) const
 // Internally, the Rankine scale is used for calculations, so any temperature
 // supplied must be converted to that unit.
 
-void FGAtmosphere::SetTemperatureSL(double t, eTemperature unit)
+void FGAtmosphere::SetTemperatureSL(Real t, eTemperature unit)
 {
   SLtemperature = ConvertToRankine(t, unit);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAtmosphere::ConvertToRankine(double t, eTemperature unit) const
+Real FGAtmosphere::ConvertToRankine(Real t, eTemperature unit) const
 {
-  double targetTemp=0; // in degrees Rankine
+  Real targetTemp=0; // in degrees Rankine
 
   switch(unit) {
   case eFahrenheit:
@@ -192,9 +192,9 @@ double FGAtmosphere::ConvertToRankine(double t, eTemperature unit) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAtmosphere::ConvertFromRankine(double t, eTemperature unit) const
+Real FGAtmosphere::ConvertFromRankine(Real t, eTemperature unit) const
 {
-  double targetTemp=0;
+  Real targetTemp=0;
 
   switch(unit) {
   case eFahrenheit:
@@ -218,9 +218,9 @@ double FGAtmosphere::ConvertFromRankine(double t, eTemperature unit) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAtmosphere::ConvertToPSF(double p, ePressure unit) const
+Real FGAtmosphere::ConvertToPSF(Real p, ePressure unit) const
 {
-  double targetPressure=0; // Pressure in PSF
+  Real targetPressure=0; // Pressure in PSF
 
   switch(unit) {
   case ePSF:
@@ -242,9 +242,9 @@ double FGAtmosphere::ConvertToPSF(double p, ePressure unit) const
   return targetPressure;
 }
 
-double FGAtmosphere::ConvertFromPSF(double p, ePressure unit) const
+Real FGAtmosphere::ConvertFromPSF(Real p, ePressure unit) const
 {
-  double targetPressure=0; // Pressure
+  Real targetPressure=0; // Pressure
 
   switch(unit) {
   case ePSF:

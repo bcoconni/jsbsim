@@ -135,9 +135,9 @@ private:
   FGColumnVector3 vMag;
   void updateInertialMag(void);
   double field[6];
-  double usedLat;
-  double usedLon;
-  double usedAlt;
+  Real usedLat;
+  Real usedLon;
+  Real usedAlt;
   unsigned long int date;
   unsigned int counter;
   const unsigned int INERTIAL_UPDATE_RATE;

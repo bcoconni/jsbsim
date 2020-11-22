@@ -53,12 +53,12 @@ CLASS DOCUMENTATION
 
 /** Encapsulates an Actuator component for the flight control system.
     The actuator can be modeled as a "perfect actuator", with the Output
-    being set directly to the input. The actuator can be made more "real"
+    being set directly to the input. The actuator can be made more "Real"
     by specifying any/all of the following additional effects that can be
     applied to the actuator. In order of application to the input signal,
     these are:
     
-    - System lag (input lag, really)
+    - System lag (input lag, Really)
     - Rate limiting
     - Deadband
     - Hysteresis (mechanical hysteresis)
@@ -138,7 +138,7 @@ public:
   bool Run (void) override;
   void ResetPastStates(void) override;
 
-  // these may need to have the bool argument replaced with a double
+  // these may need to have the bool argument replaced with a Real
   /** This function fails the actuator to zero. The motion to zero
       will flow through the lag, hysteresis, and rate limiting
       functions if those are activated. */
@@ -152,21 +152,21 @@ public:
   bool IsSaturated(void) const {return saturated;}
   
 private:
-  //double span;
-  double bias;
+  //Real span;
+  Real bias;
   FGParameter* rate_limit_incr;
   FGParameter* rate_limit_decr;
-  double hysteresis_width;
-  double deadband_width;
+  Real hysteresis_width;
+  Real deadband_width;
   FGParameter* lag;
-  double lagVal;
-  double ca; // lag filter coefficient "a"
-  double cb; // lag filter coefficient "b"
-  double PreviousOutput;
-  double PreviousHystOutput;
-  double PreviousRateLimOutput;
-  double PreviousLagInput;
-  double PreviousLagOutput;
+  Real lagVal;
+  Real ca; // lag filter coefficient "a"
+  Real cb; // lag filter coefficient "b"
+  Real PreviousOutput;
+  Real PreviousHystOutput;
+  Real PreviousRateLimOutput;
+  Real PreviousLagInput;
+  Real PreviousLagOutput;
   bool fail_zero;
   bool fail_hardover;
   bool fail_stuck;
