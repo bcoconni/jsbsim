@@ -336,6 +336,7 @@ jobs:
           mkdir build/python
           mkdir build/python/fpectl
           mv python/ExceptionManagement.h build/python/.
+          mv python/TypeConversion.h build/python/.
           mv python/fpectl/fpectlmodule.h build/python/fpectl/.
           mv python/JSBSim.py build/python/JSBSim
           mv src build/python/.
