@@ -26,6 +26,12 @@ from libcpp.vector cimport vector
 cdef extern from "ExceptionManagement.h":
     cdef void convertJSBSimToPyExc()
 
+ctypedef double Real
+
+cdef extern from "TypeConversion.h" namespace "JSBSim":
+    cdef Real DoubleToReal(double x)
+    cdef double RealToDouble(const Real& x)
+
 cdef extern from "initialization/FGInitialCondition.h" namespace "JSBSim":
     cdef cppclass c_FGInitialCondition "JSBSim::FGInitialCondition":
         c_FGInitialCondition(c_FGInitialCondition* ic)
@@ -65,13 +71,13 @@ cdef extern from "math/FGColumnVector3.h" namespace "JSBSim":
     cdef cppclass c_FGColumnVector3 "JSBSim::FGColumnVector3":
         c_FGColumnVector3()
         c_FGColumnVector3(const c_FGColumnVector3& m)
-        double Entry(unsigned int idx) const
+        Real Entry(unsigned int idx) const
 
 cdef extern from "math/FGMatrix33.h" namespace "JSBSim":
     cdef cppclass c_FGMatrix33 "JSBSim::FGMatrix33":
         c_FGMatrix33()
         c_FGMatrix33(const c_FGMatrix33& m)
-        double Entry(unsigned int row, unsigned int col) const
+        Real Entry(unsigned int row, unsigned int col) const
 
 cdef extern from "models/FGAerodynamics.h" namespace "JSBSim":
     cdef cppclass c_FGAerodynamics "JSBSim::FGAerodynamics":
@@ -100,9 +106,9 @@ cdef extern from "models/FGAtmosphere.h" namespace "JSBSim":
         eInchesHg   = 4
 
     cdef cppclass c_FGAtmosphere "JSBSim::FGAtmosphere":
-        double GetTemperature(double h)
-        void SetTemperature(double t, double h, eTemperature unit)
-        void SetPressureSL(ePressure unit, double pressure)
+        Real GetTemperature(Real h)
+        void SetTemperature(Real t, Real h, eTemperature unit)
+        void SetPressureSL(ePressure unit, Real pressure)
 
 cdef extern from "models/FGAuxiliary.h" namespace "JSBSim":
     cdef cppclass c_FGAuxiliary "JSBSim::FGAuxiliary":
@@ -118,10 +124,10 @@ cdef extern from "models/FGGroundReactions.h" namespace "JSBSim":
 
 cdef extern from "models/FGLGear.h" namespace "JSBSim":
     cdef cppclass c_FGLGear "JSBSim::FGLGear":
-        double GetSteerNorm()
-        double GetBodyXForce()
-        double GetBodyYForce()
-        double GetBodyZForce()
+        Real GetSteerNorm()
+        Real GetBodyXForce()
+        Real GetBodyYForce()
+        Real GetBodyZForce()
         c_FGColumnVector3& GetLocation()
         c_FGColumnVector3& GetActingLocation()
 
@@ -177,7 +183,7 @@ cdef extern from "FGFDMExec.h" namespace "JSBSim":
                        const c_SGPath systems_path,
                        const string model,
                        bool add_model_to_path) except +convertJSBSimToPyExc
-        bool LoadScript(const c_SGPath& script, double delta_t,
+        bool LoadScript(const c_SGPath& script, Real delta_t,
                         const c_SGPath& initfile) except +convertJSBSimToPyExc
         bool SetEnginePath(const c_SGPath& path)
         bool SetAircraftPath(const c_SGPath& path)
@@ -188,12 +194,12 @@ cdef extern from "FGFDMExec.h" namespace "JSBSim":
         const c_SGPath& GetSystemsPath()
         const c_SGPath& GetRootDir()
         const c_SGPath& GetFullAircraftPath()
-        double GetPropertyValue(string property) except +convertJSBSimToPyExc
-        void SetPropertyValue(string property, double value) except +convertJSBSimToPyExc
+        Real GetPropertyValue(string property) except +convertJSBSimToPyExc
+        void SetPropertyValue(string property, Real value) except +convertJSBSimToPyExc
         string GetModelName()
         bool SetOutputDirectives(const c_SGPath& fname) except +
         #void ForceOutput(int idx=0)
-        void SetLoggingRate(double rate)
+        void SetLoggingRate(Real rate)
         bool SetOutputFileName(int n, string fname)
         string GetOutputFileName(int n)
         void DoTrim(int mode) except +
@@ -212,14 +218,14 @@ cdef extern from "FGFDMExec.h" namespace "JSBSim":
         void SetTrimStatus(bool status)
         bool GetTrimStatus()
         string GetPropulsionTankReport()
-        double GetSimTime()
-        double GetDeltaT()
+        Real GetSimTime()
+        Real GetDeltaT()
         void SuspendIntegration()
         void ResumeIntegration()
         bool IntegrationSuspended()
-        bool Setsim_time(double cur_time)
-        void Setdt(double delta_t)
-        double IncrTime()
+        bool Setsim_time(Real cur_time)
+        void Setdt(Real delta_t)
+        Real IncrTime()
         int GetDebugLevel()
         shared_ptr[c_FGPropulsion] GetPropulsion()
         shared_ptr[c_FGInitialCondition] GetIC()
