@@ -27,13 +27,13 @@ import os, platform, numpy
 __version__='${PROJECT_VERSION}'
 
 cdef convertToNumpyMat(const c_FGMatrix33& m):
-    return numpy.mat([[m.Entry(1, 1), m.Entry(1, 2), m.Entry(1, 3)],
-                      [m.Entry(2, 1), m.Entry(2, 2), m.Entry(2, 3)],
-                      [m.Entry(3, 1), m.Entry(3, 2), m.Entry(3, 3)]])
+    return numpy.mat([[RealToDouble(m.Entry(1, 1)), RealToDouble(m.Entry(1, 2)), RealToDouble(m.Entry(1, 3))],
+                      [RealToDouble(m.Entry(2, 1)), RealToDouble(m.Entry(2, 2)), RealToDouble(m.Entry(2, 3))],
+                      [RealToDouble(m.Entry(3, 1)), RealToDouble(m.Entry(3, 2)), RealToDouble(m.Entry(3, 3))]])
 
 
 cdef convertToNumpyVec(const c_FGColumnVector3& v):
-    return numpy.mat([v.Entry(1), v.Entry(2), v.Entry(3)]).T
+    return numpy.mat([RealToDouble(v.Entry(1)), RealToDouble(v.Entry(2)), RealToDouble(v.Entry(3))]).T
 
 
 cdef class FGPropagate:
@@ -143,22 +143,22 @@ cdef class FGLGear:
     def get_steer_norm(self):
         """@Dox(JSBSim::FGLGear::GetSteerNorm)"""
         self.__intercept_invalid_pointer()
-        return deref(self.thisptr).GetSteerNorm()
+        return RealToDouble(deref(self.thisptr).GetSteerNorm())
 
     def get_body_x_force(self):
         """@Dox(JSBSim::FGLGear::GetBodyXForce)"""
         self.__intercept_invalid_pointer()
-        return deref(self.thisptr).GetBodyXForce()
+        return RealToDouble(deref(self.thisptr).GetBodyXForce())
 
     def get_body_y_force(self):
         """@Dox(JSBSim::FGLGear::GetBodyYForce)"""
         self.__intercept_invalid_pointer()
-        return deref(self.thisptr).GetBodyYForce()
+        return RealToDouble(deref(self.thisptr).GetBodyYForce())
 
     def get_body_z_force(self):
         """@Dox(JSBSim::FGLGear::GetBodyZForce)"""
         self.__intercept_invalid_pointer()
-        return deref(self.thisptr).GetBodyZForce()
+        return RealToDouble(deref(self.thisptr).GetBodyZForce())
 
     def get_location(self):
         return convertToNumpyVec(deref(self.thisptr).GetLocation())
@@ -266,17 +266,21 @@ cdef class FGAtmosphere:
     def set_temperature(self, t, h, unit):
         """@Dox(JSBSim::FGAtmosphere::SetTemperature)"""
         self.__intercept_invalid_pointer()
-        return deref(self.thisptr).SetTemperature(t, h, unit)
+        cdef Real _t = DoubleToReal(t)
+        cdef Real _h = DoubleToReal(h)
+        deref(self.thisptr).SetTemperature(_t, _h, unit)
 
     def get_temperature(self, h):
         """@Dox(JSBSim::FGAtmosphere::GetTemperature(Real))"""
         self.__intercept_invalid_pointer()
-        return deref(self.thisptr).GetTemperature(h)
+        cdef Real _h = DoubleToReal(h)
+        return RealToDouble(deref(self.thisptr).GetTemperature(_h))
 
     def set_pressure_SL(self, unit, p):
         """@Dox(JSBSim::FGAtmosphere::SetPressureSL)"""
         self.__intercept_invalid_pointer()
-        return deref(self.thisptr).SetPressureSL(unit, p)
+        cdef Real _p = DoubleToReal(p)
+        deref(self.thisptr).SetPressureSL(unit, _p)
 
 cdef class FGMassBalance:
     """@Dox(JSBSim::FGMassBalance)"""
@@ -465,7 +469,8 @@ cdef class FGFDMExec(FGJSBBase):
 
     def load_script(self, script, delta_t=0.0, initfile=""):
         """@Dox(JSBSim::FGFDMExec::LoadScript) """
-        return self.thisptr.LoadScript(c_SGPath(script.encode(), NULL), delta_t,
+        cdef Real _dt = DoubleToReal(delta_t)
+        return self.thisptr.LoadScript(c_SGPath(script.encode(), NULL), _dt,
                                        c_SGPath(initfile.encode(),NULL))
 
     def set_engine_path(self, path):
@@ -511,11 +516,12 @@ cdef class FGFDMExec(FGJSBBase):
 
     def get_property_value(self, name):
         """@Dox(JSBSim::FGFDMExec::GetPropertyValue) """
-        return self.thisptr.GetPropertyValue(name.encode())
+        return RealToDouble(self.thisptr.GetPropertyValue(name.encode()))
 
     def set_property_value(self, name, value):
         """@Dox(JSBSim::FGFDMExec::SetPropertyValue)"""
-        self.thisptr.SetPropertyValue(name.encode(), value)
+        cdef Real _v = DoubleToReal(value)
+        self.thisptr.SetPropertyValue(name.encode(), _v)
 
     def get_model_name(self):
         """@Dox(JSBSim::FGFDMExec::GetModelName)"""
@@ -531,7 +537,8 @@ cdef class FGFDMExec(FGJSBBase):
 
     def set_logging_rate(self, rate):
         """@Dox(JSBSim::FGFDMExec::SetLoggingRate)"""
-        self.thisptr.SetLoggingRate(rate)
+        cdef Real _rate = DoubleToReal(rate)
+        self.thisptr.SetLoggingRate(_rate)
 
     def set_output_filename(self, n, fname):
         """@Dox(JSBSim::FGFDMExec::SetOutputFileName)"""
@@ -619,11 +626,11 @@ cdef class FGFDMExec(FGJSBBase):
 
     def get_sim_time(self):
         """@Dox(JSBSim::FGFDMExec::GetSimTime)"""
-        return self.thisptr.GetSimTime()
+        return RealToDouble(self.thisptr.GetSimTime())
 
     def get_delta_t(self):
         """@Dox(JSBSim::FGFDMExec::GetDeltaT)"""
-        return self.thisptr.GetDeltaT()
+        return RealToDouble(self.thisptr.GetDeltaT())
 
     def suspend_integration(self):
         """@Dox(JSBSim::FGFDMExec::SuspendIntegration)"""
@@ -639,15 +646,17 @@ cdef class FGFDMExec(FGJSBBase):
 
     def set_sim_time(self, time):
         """@Dox(JSBSim::FGFDMExec::Setsim_time)"""
-        return self.thisptr.Setsim_time(time)
+        cdef Real _t = DoubleToReal(time)
+        return self.thisptr.Setsim_time(_t)
 
     def set_dt(self, dt):
         """@Dox(JSBSim::FGFDMExec::Setdt)"""
-        self.thisptr.Setdt(dt)
+        cdef Real _dt = DoubleToReal(dt)
+        self.thisptr.Setdt(_dt)
 
     def incr_time(self):
         """@Dox(JSBSim::FGFDMExec::IncrTime)"""
-        return self.thisptr.IncrTime()
+        return RealToDouble(self.thisptr.IncrTime())
 
     def get_debug_level(self):
         """@Dox(JSBSim::FGFDMExec::GetDebugLevel) """
