@@ -10,7 +10,8 @@ set(SOURCES FGColumnVector3.cpp
             FGRungeKutta.cpp
             FGModelFunctions.cpp
             FGTemplateFunc.cpp
-            FGStateSpace.cpp)
+            FGStateSpace.cpp
+            DualNumber.cpp)
 
 set(HEADERS FGColumnVector3.h
             FGFunction.h
