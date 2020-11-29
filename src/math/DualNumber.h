@@ -222,7 +222,7 @@ public:
     return FGDualNumber(std::log(x.real), x.diff/x.real);
   }
   friend FGDualNumber log10(const FGDualNumber& x) {
-    return FGDualNumber(std::log10(x.real), x.diff/(x.real*log(10.)));
+    return FGDualNumber(std::log10(x.real), x.diff/(x.real*std::log(10.)));
   }
   friend FGDualNumber floor(FGDualNumber x);
   friend FGDualNumber ceil(FGDualNumber x);
