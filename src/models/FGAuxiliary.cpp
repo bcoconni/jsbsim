@@ -183,12 +183,22 @@ bool FGAuxiliary::Run(bool Holding)
   vMachUVW(eW) = vAeroUVW(eW) / in.SoundSpeed;
 
   // Position
+  double sqrVground = in.vVel(eNorth)*in.vVel(eNorth) + in.vVel(eEast)*in.vVel(eEast);
 
-  Vground = sqrt( in.vVel(eNorth)*in.vVel(eNorth) + in.vVel(eEast)*in.vVel(eEast) );
+  if (Vground > 0.0) {
+    Vground = sqrt(sqrVground);
+    psigt = atan2(in.vVel(eEast), in.vVel(eNorth));
+    if (psigt < 0.0) psigt += 2*M_PI;
+  }
+  else {
+    psigt = 0.0;
+    Vground = 0.0;
+  }
 
-  psigt = atan2(in.vVel(eEast), in.vVel(eNorth));
-  if (psigt < 0.0) psigt += 2*M_PI;
-  gamma = atan2(-in.vVel(eDown), Vground);
+  if (sqrVground + in.vVel(eDown)*in.vVel(eDown) > 0.0)
+    gamma = atan2(-in.vVel(eDown), Vground);
+  else
+    gamma = 0.0;
 
   tat = in.Temperature*(1 + 0.2*Mach*Mach); // Total Temperature, isentropic flow
   tatc = RankineToCelsius(tat);

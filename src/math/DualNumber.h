@@ -43,8 +43,6 @@ INCLUDES
 DEFINITIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#define ID_DUALNUMBER "$Id$"
-
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -209,30 +207,22 @@ public:
   friend constexpr FGDualNumber operator+(T a, const FGDualNumber& x) {
     return FGDualNumber(a + x.real, x.diff);
   }
-  friend FGDualNumber sqrt(const FGDualNumber& x) {
-    double sqr = std::sqrt(x.real);
-    return FGDualNumber(sqr, 0.5*x.diff/sqr);
-  }
+  friend FGDualNumber sqrt(const FGDualNumber& x);
   friend FGDualNumber asin(FGDualNumber x);
   friend FGDualNumber acos(FGDualNumber x);
-  friend FGDualNumber atan2(const FGDualNumber& y, const FGDualNumber& x) {
-    return FGDualNumber(std::atan2(y.real, x.real),
-                        (y.diff * x.real - y.real * x.diff) / (x.real * x.real + y.real * y.real));
-  }
+  friend FGDualNumber atan2(const FGDualNumber& y, const FGDualNumber& x);
   friend FGDualNumber cos(FGDualNumber x);
   friend FGDualNumber sin(FGDualNumber x);
   friend FGDualNumber tan(FGDualNumber x);
   friend FGDualNumber fabs(FGDualNumber x);
-  friend FGDualNumber pow(const FGDualNumber& x, double y) {
-    return FGDualNumber(std::pow(x.real, y), y * x.diff * std::pow(x.real, y-1.0));
-  }
+  friend FGDualNumber pow(const FGDualNumber& x, double y);
   friend FGDualNumber atan(FGDualNumber x);
   friend FGDualNumber exp(FGDualNumber x);
   friend FGDualNumber log(const FGDualNumber& x) {
     return FGDualNumber(std::log(x.real), x.diff/x.real);
   }
   friend FGDualNumber log10(const FGDualNumber& x) {
-    return FGDualNumber(std::log10(x.real), x.diff/(x.real*log(10.)));
+    return FGDualNumber(std::log10(x.real), x.diff/(x.real*std::log(10.)));
   }
   friend FGDualNumber floor(FGDualNumber x);
   friend FGDualNumber ceil(FGDualNumber x);
@@ -277,12 +267,13 @@ inline FGDualNumber exp(FGDualNumber x) {
     return FGDualNumber(value, x.diff * value);
 }
 
-inline FGDualNumber fabs(FGDualNumber x) {
-    if (x.real >= 0.0)
-        return FGDualNumber(x.real, x.diff);
-    else
-        return FGDualNumber(-x.real, -x.diff);
-}
+FGDualNumber fabs(FGDualNumber x);
+FGDualNumber asin(FGDualNumber x);
+FGDualNumber acos(FGDualNumber x);
+FGDualNumber pow(const FGDualNumber& x, double y);
+FGDualNumber sqrt(const FGDualNumber& x);
+FGDualNumber atan2(const FGDualNumber& x, const FGDualNumber& y);
+FGDualNumber modf(FGDualNumber x, FGDualNumber* y);
 
 inline FGDualNumber cos(FGDualNumber x) {
     return FGDualNumber(std::cos(x.real), -x.diff * std::sin(x.real));
@@ -295,14 +286,6 @@ inline FGDualNumber sin(FGDualNumber x) {
 inline FGDualNumber tan(FGDualNumber x) {
     double value = std::tan(x.real);
     return FGDualNumber(value, x.diff * (1.0 + value * value));
-}
-
-inline FGDualNumber asin(FGDualNumber x) {
-    return FGDualNumber(std::asin(x.real), x.diff / std::sqrt(1 - x.real * x.real));
-}
-
-inline FGDualNumber acos(FGDualNumber x) {
-    return FGDualNumber(std::asin(x.real), -x.diff / std::sqrt(1 - x.real * x.real));
 }
 
 inline FGDualNumber atan(FGDualNumber x) {
@@ -320,14 +303,6 @@ inline FGDualNumber ceil(FGDualNumber x) {
     // its derivative is infinite ?
     // Here, we are assuming that its derivative is zero everywhere.
     return FGDualNumber(std::ceil(x.real), 0.);
-}
-
-inline FGDualNumber modf(FGDualNumber x, FGDualNumber* y)
-{
-    double fraction, integer;
-    fraction = std::modf(x.real, &integer);
-    *y = {integer, 0.};
-    return FGDualNumber(fraction, 1.);
 }
 } // namespace JSBSim
 

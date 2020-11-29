@@ -9,7 +9,8 @@ set(SOURCES FGColumnVector3.cpp
             FGCondition.cpp
             FGRungeKutta.cpp
             FGModelFunctions.cpp
-            FGTemplateFunc.cpp)
+            FGTemplateFunc.cpp
+            DualNumber.cpp)
 
 set(HEADERS FGColumnVector3.h
             FGFunction.h
