@@ -306,12 +306,14 @@ inline FGDualNumber ceil(FGDualNumber x) {
 }
 } // namespace JSBSim
 
-namespace simgear::props {
-  template<> struct PropertyTraits<JSBSim::FGDualNumber>
-  {
-    static const Type type_tag = EXTENDED;
-    enum { Internal = 0};
-  };
-};
+namespace simgear {
+  namespace props {
+    template<> struct PropertyTraits<JSBSim::FGDualNumber>
+    {
+      static const Type type_tag = EXTENDED;
+      enum { Internal = 0 };
+    };
+  }
+}
 
 #endif
