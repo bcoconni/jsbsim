@@ -126,7 +126,7 @@ public:
 
   Real GetValue(void) const override {
     Real result = cached ? cachedValue : f();
-    if (pNode) pNode->setDoubleValue(result);
+    if (pNode) pNode->SetDouble(result);
     return result;
   }
 
@@ -142,7 +142,7 @@ protected:
   void bind(Element* el, const string& Prefix) override {
     CreateOutputNode(el, Prefix);
     // Initialize the node to a sensible value.
-    if (pNode) pNode->setDoubleValue(f());
+    if (pNode) pNode->SetDouble(f());
   }
 
 private:
@@ -869,7 +869,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                << constant << ")";
 
         if (node) {
-          node->setDoubleValue(constant);
+          node->SetDouble(constant);
           node->setAttribute(SGPropertyNode::WRITE, false);
           if (debug_lvl > 0)
             cout << " and the property " << pName
@@ -930,7 +930,7 @@ Real FGFunction::GetValue(void) const
 
   Real val = Parameters[0]->GetValue();
 
-  if (pCopyTo) pCopyTo->setDoubleValue(val);
+  if (pCopyTo) pCopyTo->SetDouble(val);
 
   return val;
 }
@@ -970,7 +970,8 @@ string FGFunction::CreateOutputNode(Element* el, const string& Prefix)
       }
     }
 
-    pNode = PropertyManager->GetNode(nName, true);
+    SGPropertyNode* root = PropertyManager->GetNode();
+    pNode = static_cast<FGPropertyNode*>(root->getNode(nName, true));
     if (pNode->isTied()) {
       cerr << el->ReadFrom()
            << "Property " << nName << " has already been successfully bound (late)." << endl;

@@ -306,76 +306,12 @@ inline FGDualNumber ceil(FGDualNumber x) {
 }
 } // namespace JSBSim
 
-template <class C>
-class SGRawValueMethods<C, JSBSim::FGDualNumber> : public SGRawValue<double>
-{
-public:
-  typedef JSBSim::FGDualNumber (C::*getter_t)() const;
-  typedef void (C::*setter_t)(JSBSim::FGDualNumber);
-  SGRawValueMethods (C &obj, getter_t getter = 0, setter_t setter = 0)
-    : _obj(obj), _getter(getter), _setter(setter) {}
-  virtual ~SGRawValueMethods () {}
-  virtual double getValue () const {
-    if (_getter) { return static_cast<double>((_obj.*_getter)()); }
-    else { return SGRawValue<double>::DefaultValue(); }
-  }
-  virtual bool setValue (double value) {
-    JSBSim::FGDualNumber v = value;
-    if (_setter) { (_obj.*_setter)(v); return true; }
-    else return false;
-  }
-  virtual SGRawValue<double> * clone () const {
-    return new SGRawValueMethods<C,JSBSim::FGDualNumber>(_obj, _getter, _setter);
-  }
-private:
-  C &_obj;
-  getter_t _getter;
-  setter_t _setter;
-};
-
-template <>
-class SGRawValuePointer<JSBSim::FGDualNumber> : public SGRawValue<double>
-{
-public:
-  SGRawValuePointer (JSBSim::FGDualNumber * ptr) : _ptr(ptr) {}
-  virtual ~SGRawValuePointer () {}
-  virtual double getValue () const { return static_cast<double>(*_ptr); }
-  virtual bool setValue (double value) { *_ptr = JSBSim::FGDualNumber(value); return true; }
-  virtual SGRawValue<double> * clone () const {
-    return new SGRawValuePointer<JSBSim::FGDualNumber>(_ptr);
-  }
-
-private:
-  JSBSim::FGDualNumber * _ptr;
-};
-
-template <class C>
-class SGRawValueMethodsIndexed<C, JSBSim::FGDualNumber> : public SGRawValue<double>
-{
-public:
-  typedef JSBSim::FGDualNumber (C::*getter_t)(int) const;
-  typedef void (C::*setter_t)(int, JSBSim::FGDualNumber);
-  SGRawValueMethodsIndexed (C &obj, int index,
-		     getter_t getter = 0, setter_t setter = 0)
-    : _obj(obj), _index(index), _getter(getter), _setter(setter) {}
-  virtual ~SGRawValueMethodsIndexed () {}
-  virtual double getValue () const {
-    if (_getter) { return static_cast<double>((_obj.*_getter)(_index)); }
-    else { return SGRawValue<double>::DefaultValue(); }
-  }
-  virtual bool setValue (double value) {
-    JSBSim::FGDualNumber v = value;
-    if (_setter) { (_obj.*_setter)(_index, v); return true; }
-    else return false;
-  }
-  virtual SGRawValue<double> * clone () const {
-    return new SGRawValueMethodsIndexed<C,JSBSim::FGDualNumber>(_obj, _index, _getter, _setter);
-  }
-private:
-  C &_obj;
-  int _index;
-  getter_t _getter;
-  setter_t _setter;
+namespace simgear::props {
+  template<> struct PropertyTraits<JSBSim::FGDualNumber>
+  {
+    static const Type type_tag = EXTENDED;
+    enum { Internal = 0};
+  };
 };
 
 #endif

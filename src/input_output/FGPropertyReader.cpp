@@ -53,10 +53,10 @@ CLASS IMPLEMENTATION
 
 bool FGPropertyReader::ResetToIC(void)
 {
-  for (auto v: interface_prop_initial_value) {
-    SGPropertyNode* node = v.first;
+  for (auto& v: interface_prop_initial_value) {
+    FGPropertyNode* node = static_cast<FGPropertyNode*>(v.first.ptr());
     if (!node->getAttribute(SGPropertyNode::PRESERVE))
-      node->setDoubleValue(v.second);
+      node->SetDouble(v.second);
   }
 
   return true;
@@ -77,7 +77,7 @@ void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override)
   }
 
   while (property_element) {
-    SGPropertyNode* node = nullptr;
+    FGPropertyNode* node = nullptr;
     Real value=0.0;
     if ( ! property_element->GetAttributeValue("value").empty())
       value = property_element->GetAttributeValueAsNumber("value");
@@ -95,11 +95,11 @@ void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override)
           }
 
           cout << "      " << "Overriding value for property " << interface_property_string << endl
-               << "       (old value: " << node->getDoubleValue() << "  new value: " << value << ")"
+               << "       (old value: " << node->GetDouble() << "  new value: " << value << ")"
                << endl << endl;
         }
 
-        node->setDoubleValue(value);
+        node->SetDouble(value);
       }
       else {
         cerr << property_element->ReadFrom()
@@ -111,7 +111,7 @@ void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override)
     } else {
       node = PM->GetNode(interface_property_string, true);
       if (node) {
-        node->setDoubleValue(value);
+        node->SetDouble(value);
 
         if (FGJSBBase::debug_lvl > 0)
           cout << "      " << interface_property_string << " (initial value: " 

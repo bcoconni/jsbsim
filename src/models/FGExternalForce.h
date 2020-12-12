@@ -64,22 +64,22 @@ public:
                     const std::string& zcmp);
 
   FGPropertyVector3& operator=(const FGColumnVector3& v) {
-    data[1]->setDoubleValue(v(2));
-    data[0]->setDoubleValue(v(1));
-    data[2]->setDoubleValue(v(3));
+    data[1]->SetDouble(v(2));
+    data[0]->SetDouble(v(1));
+    data[2]->SetDouble(v(3));
 
     return *this;
   }
 
   operator FGColumnVector3() const {
-    return FGColumnVector3(data[0]->getDoubleValue(), data[1]->getDoubleValue(),
-                           data[2]->getDoubleValue());
+    return FGColumnVector3(data[0]->GetDouble(), data[1]->GetDouble(),
+                           data[2]->GetDouble());
   }
 
   FGColumnVector3 operator*(double a) const {
-    return FGColumnVector3(a * data[0]->getDoubleValue(),
-                           a * data[1]->getDoubleValue(),
-                           a * data[2]->getDoubleValue());
+    return FGColumnVector3(a * data[0]->GetDouble(),
+                           a * data[1]->GetDouble(),
+                           a * data[2]->GetDouble());
   }
 
 private:
