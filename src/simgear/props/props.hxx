@@ -694,7 +694,7 @@ SGRawExtended* SGRawBase<T, 0>::makeContainer() const
 template<typename T>
 std::ostream& SGRawBase<T, 0>::printOn(std::ostream& stream) const
 {
-    return stream << static_cast<SGRawValue<T>*>(this)->getValue();
+    return stream << static_cast<const SGRawValue<T>*>(this)->getValue();
 }
 
 template<typename T>

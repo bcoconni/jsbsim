@@ -123,7 +123,7 @@ void FGUDPInputSocket::Read(bool Holding)
     }
     
     for (unsigned int i=1; i<values.size(); i++) {
-      InputProperties[i-1]->setDoubleValue(values[i]);
+      InputProperties[i-1]->SetDouble(values[i]);
     }
   }
 }

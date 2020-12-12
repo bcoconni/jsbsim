@@ -133,7 +133,8 @@ class FGPropertyNode : public SGPropertyNode
      *        does not exist.
      * @return The property's value as a bool, or the default value provided.
      */
-    bool GetBool (const std::string &name, bool defaultValue = false) const;
+    bool GetBool(const std::string &name, bool defaultValue = false) const;
+    bool GetBool(void) const;
 
 
     /**
@@ -201,7 +202,8 @@ class FGPropertyNode : public SGPropertyNode
      *        does not exist.
      * @return The property's value as a Real, or the default value provided.
      */
-    Real GetDouble (const std::string &name, Real defaultValue = 0.0) const;
+    Real GetDouble(const std::string &name, Real defaultValue = 0.0) const;
+    Real GetDouble(void) const;
 
 
     /**
@@ -298,7 +300,8 @@ class FGPropertyNode : public SGPropertyNode
      * @param val The new value for the property.
      * @return true if the assignment succeeded, false otherwise.
      */
-    bool SetDouble (const std::string &name, Real val);
+    bool SetDouble(const std::string &name, Real val);
+    bool SetDouble(Real val);
 
 
     /**

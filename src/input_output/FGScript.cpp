@@ -411,7 +411,7 @@ bool FGScript::RunScript(void)
               throw("No property, \""+thisEvent.SetParamName[i]+"\" is defined.");
             }
           }
-          thisEvent.OriginalValue[i] = thisEvent.SetParam[i]->getDoubleValue();
+          thisEvent.OriginalValue[i] = thisEvent.SetParam[i]->GetDouble();
           if (thisEvent.Functions[i] != 0) { // Parameter should be set to a function value
             try {
               thisEvent.SetValue[i] = thisEvent.Functions[i]->GetValue();
@@ -481,7 +481,7 @@ bool FGScript::RunScript(void)
             cerr << "Invalid Action specified" << endl;
             break;
           }
-          thisEvent.SetParam[i]->setDoubleValue(newSetValue);
+          thisEvent.SetParam[i]->SetDouble(newSetValue);
         }
       }
 
@@ -572,7 +572,7 @@ void FGScript::Debug(int from)
 
       for (auto node: LocalProperties) {
         cout << "Local property: " << node->GetName()
-             << " = " << node->getDoubleValue()
+             << " = " << node->GetDouble()
              << endl;
       }
       

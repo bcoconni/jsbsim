@@ -77,14 +77,14 @@ FGPropertyNode* FGPropertyValue::GetNode(void) const
 
 Real FGPropertyValue::GetValue(void) const
 {
-  return GetNode()->getDoubleValue()*Sign;
+  return GetNode()->GetDouble()*Sign;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 void FGPropertyValue::SetValue(Real value)
 {
-  GetNode()->setDoubleValue(value);
+  GetNode()->SetDouble(value);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
