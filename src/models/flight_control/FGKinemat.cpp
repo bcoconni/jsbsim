@@ -100,7 +100,7 @@ bool FGKinemat::Run(void )
   if (DoScale) Input *= Detents.back();
 
   if (!OutputNodes.empty())
-    Output = OutputNodes[0]->getDoubleValue();
+    Output = OutputNodes[0]->GetDouble();
 
   Input = Constrain(Detents.front(), Input, Detents.back());
 

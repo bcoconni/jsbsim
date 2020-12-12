@@ -493,7 +493,7 @@ bool FGFCS::Load(Element* document)
   
   while (channel_element) {
   
-    FGFCSChannel* newChannel = 0;
+    FGFCSChannel* newChannel = nullptr;
 
     string sOnOffProperty = channel_element->GetAttributeValue("execute");
     string sChannelName = channel_element->GetAttributeValue("name");
@@ -503,9 +503,10 @@ bool FGFCS::Load(Element* document)
     else
       ChannelRate = 1;
 
-    if (sOnOffProperty.length() > 0) {
-      FGPropertyNode* OnOffPropertyNode = PropertyManager->GetNode(sOnOffProperty);
-      if (OnOffPropertyNode == 0) {
+    if (!sOnOffProperty.empty()) {
+      SGPropertyNode* root = PropertyManager->GetNode();
+      FGPropertyNode* OnOffPropertyNode = static_cast<FGPropertyNode*>(root->getNode(sOnOffProperty));
+      if (!OnOffPropertyNode) {
         cerr << channel_element->ReadFrom() << highint << fgred
              << "The On/Off property, " << sOnOffProperty << " specified for channel "
              << channel_element->GetAttributeValue("name") << " is undefined or not "

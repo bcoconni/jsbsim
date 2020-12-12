@@ -141,7 +141,7 @@ FGFCSComponent::FGFCSComponent(FGFCS* _fcs, Element* element) : fcs(_fcs)
     // that.  If the node was already existing, its current value is kept
     // unchanged.
     if (!node_exists)
-      OutputNode->setDoubleValue(Output);
+      OutputNode->SetDouble(Output);
     out_elem = element->FindNextElement("output");
   }
 
@@ -240,8 +240,8 @@ void FGFCSComponent::CheckInputNodes(size_t MinNodes, size_t MaxNodes, Element* 
 
 void FGFCSComponent::SetOutput(void)
 {
-  for (auto node: OutputNodes)
-    node->setDoubleValue(Output);
+  for (auto &node: OutputNodes)
+    node->SetDouble(Output);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -316,7 +316,7 @@ void FGFCSComponent::bind(Element* el, FGPropertyManager* PropertyManager)
     // that.  If the node was already existing, its current value is kept
     // unchanged.
     if (!node_exists)
-      node->setDoubleValue(Output);
+      node->SetDouble(Output);
   }
   else {
     cerr << el->ReadFrom()
