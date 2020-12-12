@@ -137,8 +137,8 @@ FGAngles::~FGAngles()
 
 bool FGAngles::Run(void )
 {
-  source_angle = source_angle_pNode->getDoubleValue() * source_angle_unit;
-  target_angle = target_angle_pNode->getDoubleValue() * target_angle_unit;
+  source_angle = source_angle_pNode->GetDouble() * source_angle_unit;
+  target_angle = target_angle_pNode->GetDouble() * target_angle_unit;
 
   Real x1 = cos(source_angle);
   Real y1 = sin(source_angle);

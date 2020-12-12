@@ -78,26 +78,43 @@ string FGPropertyManager::mkPropertyName(string name, bool lowercase) {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGPropertyNode*
-FGPropertyNode::GetNode (const string &path, bool create)
+FGPropertyNode::GetNode(const string &path, bool create)
 {
-  SGPropertyNode* node = getNode(path.c_str(), create);
-  if (node == 0) {
+  SGPropertyNode* node = getNode(path.c_str(), false);
+  if (node) return static_cast<FGPropertyNode*>(node);
+
+  if (!create)
     cerr << "FGPropertyManager::GetNode() No node found for " << path << endl;
+  else {
+    node = getNode(path.c_str(), true);
+    if (!node)
+      cerr << "FGPropertyManager::GetNode() Cannot create a node for " << path << endl;
+    else
+      node->tie(SGRawValueContainer<Real>(0.0), false);
   }
-  return (FGPropertyNode*)node;
+  return static_cast<FGPropertyNode*>(node);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGPropertyNode*
-FGPropertyNode::GetNode (const string &relpath, int index, bool create)
+FGPropertyNode::GetNode(const string &relpath, int index, bool create)
 {
-  SGPropertyNode* node = getNode(relpath.c_str(), index, create);
-  if (node == 0) {
+  SGPropertyNode* node = getNode(relpath.c_str(), index, false);
+  if (node) return static_cast<FGPropertyNode*>(node);
+
+  if (!create)
     cerr << "FGPropertyManager::GetNode() No node found for " << relpath
          << "[" << index << "]" << endl;
+  else {
+    node = getNode(relpath.c_str(), index, true);
+    if (!node)
+      cerr << "FGPropertyManager::GetNode() Cannot create node for " << relpath
+           << "[" << index << "]" << endl;
+    else
+      node->tie(SGRawValueContainer<Real>(0.0), false);
   }
-  return (FGPropertyNode*)node;
+  return static_cast<FGPropertyNode*>(node);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,13 +191,19 @@ string FGPropertyNode::GetRelativeName( const string &path ) const
   return temp_string;
 }
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+bool FGPropertyNode::GetBool(void) const
+{
+  return getType() == simgear::props::EXTENDED ? (getValue<Real>() != 0.0) : getBoolValue();
+}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGPropertyNode::GetBool (const string &name, bool defaultValue) const
+bool FGPropertyNode::GetBool(const string &name, bool defaultValue) const
 {
-  return getBoolValue(name.c_str(), defaultValue);
+  const FGPropertyNode* node = static_cast<const FGPropertyNode*>(getNode(name));
+  return node ? node->GetBool() : defaultValue;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -206,9 +229,17 @@ float FGPropertyNode::GetFloat (const string &name, float defaultValue ) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Real FGPropertyNode::GetDouble (const string &name, Real defaultValue ) const
+Real FGPropertyNode::GetDouble(void) const
 {
-  return getDoubleValue(name.c_str(), defaultValue);
+  return getType() == simgear::props::EXTENDED ? getValue<Real>() : static_cast<Real>(getDoubleValue());
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Real FGPropertyNode::GetDouble(const string &name, Real defaultValue ) const
+{
+  const FGPropertyNode* node = static_cast<const FGPropertyNode*>(getNode(name));
+  return node ? node->GetDouble() : defaultValue;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -248,9 +279,18 @@ bool FGPropertyNode::SetFloat (const string &name, float val)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGPropertyNode::SetDouble (const string &name, Real val)
+bool FGPropertyNode::SetDouble(Real val)
 {
-  return setDoubleValue(name.c_str(), val);
+  return getType() == simgear::props::EXTENDED ? setValue<Real>(val) : setDoubleValue(val);
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+bool FGPropertyNode::SetDouble(const string &name, Real val)
+{
+  FGPropertyNode* node = GetNode(name.c_str(), true);
+  if (!node) return false;
+  return node->SetDouble(val);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -616,7 +616,7 @@ void FGRotor::CalcRotorState(void)
 
   // handle RPM requirements, calc omega.
   if (ExternalRPM && ExtRPMsource) {
-    RPM = ExtRPMsource->getDoubleValue() * ( SourceGearRatio / GearRatio );
+    RPM = ExtRPMsource->GetDouble() * ( SourceGearRatio / GearRatio );
   }
 
   // MinimalRPM is always >= 1. MaximalRPM is always >= NominalRPM

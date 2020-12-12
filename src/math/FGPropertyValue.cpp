@@ -78,7 +78,7 @@ FGPropertyNode* FGPropertyValue::GetNode(void) const
 
 Real FGPropertyValue::GetValue(void) const
 {
-  return GetNode()->getDoubleValue()*Sign;
+  return GetNode()->GetDouble()*Sign;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,7 +88,7 @@ void FGPropertyValue::SetValue(Real value)
   // SetValue() ignores the Sign flag. So make sure it is never called with a
   // negative sign.
   assert(Sign == 1);
-  GetNode()->setDoubleValue(value);
+  GetNode()->SetDouble(value);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

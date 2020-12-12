@@ -168,7 +168,7 @@ void FGInputSocket::Read(bool Holding)
           break;
         } else {
           value = atof(str_value.c_str());
-          node->setDoubleValue(value);
+          node->SetDouble(value);
         }
         socket->Reply("set successful\n");
 
@@ -197,7 +197,7 @@ void FGInputSocket::Read(bool Holding)
           }
         } else {
           ostringstream buf;
-          buf << argument << " = " << setw(12) << setprecision(6) << node->getDoubleValue() << endl;
+          buf << argument << " = " << setw(12) << setprecision(6) << node->GetDouble() << endl;
           socket->Reply(buf.str());
         }
 
