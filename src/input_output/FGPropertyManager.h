@@ -247,6 +247,23 @@ class FGPropertyNode : public SGPropertyNode
     std::string GetString (const std::string &name, std::string defaultValue = "") const;
 
 
+    template <typename T>
+    bool SetValue(T val)
+    {
+      return getType() == simgear::props::EXTENDED ? setValue<Real>(static_cast<Real>(val))
+                                                   : setValue<T>(val);
+    }
+
+
+    template <typename T>
+    bool SetValue(const std::string& name, T val)
+    {
+      FGPropertyNode* node = GetNode(name, true);
+      if (!node) return false;
+      return node->SetValue(val);
+    }
+
+
     /**
      * Set a bool value for a property.
      *
@@ -260,7 +277,9 @@ class FGPropertyNode : public SGPropertyNode
      * @param val The new value for the property.
      * @return true if the assignment succeeded, false otherwise.
      */
-    bool SetBool (const std::string &name, bool val);
+    bool SetBool(const std::string &name, bool val)
+    { return SetValue(name, val); }
+    bool SetBool(bool val) { return SetValue(val); }
 
 
     /**
@@ -276,7 +295,9 @@ class FGPropertyNode : public SGPropertyNode
      * @param val The new value for the property.
      * @return true if the assignment succeeded, false otherwise.
      */
-    bool SetInt (const std::string &name, int val);
+    bool SetInt(const std::string &name, int val)
+    { return SetValue(name, val); }
+    bool SetInt(int val) { return SetValue(val); }
 
 
     /**
@@ -292,7 +313,9 @@ class FGPropertyNode : public SGPropertyNode
      * @param val The new value for the property.
      * @return true if the assignment succeeded, false otherwise.
      */
-    bool SetLong (const std::string &name, long val);
+    bool SetLong(const std::string &name, long val)
+    { return SetValue(name, val); }
+    bool SetLong(long val) { return SetValue(val); }
 
 
     /**
@@ -308,7 +331,9 @@ class FGPropertyNode : public SGPropertyNode
      * @param val The new value for the property.
      * @return true if the assignment succeeded, false otherwise.
      */
-    bool SetFloat (const std::string &name, float val);
+    bool SetFloat(const std::string &name, float val)
+    { return SetValue(name, val); }
+    bool SetFloat(float val) { return SetValue(val); }
 
 
     /**
@@ -410,6 +435,20 @@ inline Real
 FGPropertyNode::GetDouble(const std::string &name, Real defaultValue) const
 {
   return GetValue(name, defaultValue);
+}
+
+template <> inline bool
+FGPropertyNode::SetValue(Real val)
+{
+  return getType() == simgear::props::EXTENDED ? setValue<Real>(val)
+                                               : setDoubleValue(val);
+}
+
+inline bool FGPropertyNode::SetDouble(Real val) { return SetValue(val); }
+
+inline bool FGPropertyNode::SetDouble(const std::string & name, Real val)
+{
+  return SetValue(name, val);
 }
 
 

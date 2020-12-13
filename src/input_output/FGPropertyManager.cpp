@@ -200,50 +200,6 @@ string FGPropertyNode::GetString (const string &name, string defaultValue ) cons
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGPropertyNode::SetBool (const string &name, bool val)
-{
-  return setBoolValue(name.c_str(), val);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-bool FGPropertyNode::SetInt (const string &name, int val)
-{
-  return setIntValue(name.c_str(), val);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-bool FGPropertyNode::SetLong (const string &name, long val)
-{
-  return setLongValue(name.c_str(), val);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-bool FGPropertyNode::SetFloat (const string &name, float val)
-{
-  return setFloatValue(name.c_str(), val);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-bool FGPropertyNode::SetDouble(Real val)
-{
-  return getType() == simgear::props::EXTENDED ? setValue<Real>(val) : setDoubleValue(val);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-bool FGPropertyNode::SetDouble(const string &name, Real val)
-{
-  FGPropertyNode* node = GetNode(name.c_str(), true);
-  if (!node) return false;
-  return node->SetDouble(val);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 bool FGPropertyNode::SetString (const string &name, const string &val)
 {
   return setStringValue(name.c_str(), val.c_str());
