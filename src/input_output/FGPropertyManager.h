@@ -119,6 +119,23 @@ class FGPropertyNode : public SGPropertyNode
      */
     std::string GetRelativeName( const std::string &path = "/fdm/jsbsim/" ) const;
 
+
+    template<typename T>
+    T GetValue(void) const
+    {
+      return getType() == simgear::props::EXTENDED ? static_cast<T>(getValue<Real>())
+                                                   : getValue<T>();
+    }
+
+
+    template<typename T>
+    T GetValue(const std::string &name, T defaultValue) const
+    {
+      const FGPropertyNode* node = static_cast<const FGPropertyNode*>(getNode(name));
+      return node ? node->GetValue<T>() : defaultValue;
+    }
+
+
     /**
      * Get a bool value for a property.
      *
@@ -126,15 +143,16 @@ class FGPropertyNode : public SGPropertyNode
      * infrequently (i.e. for initializing, loading, saving, etc.),
      * not in the main loop.  If you need to get a value frequently,
      * it is better to look up the node itself using GetNode and then
-     * use the node's getBoolValue() method, to avoid the lookup overhead.
+     * use the node's GetBool() method, to avoid the lookup overhead.
      *
      * @param name The property name.
      * @param defaultValue The default value to return if the property
      *        does not exist.
      * @return The property's value as a bool, or the default value provided.
      */
-    bool GetBool(const std::string &name, bool defaultValue = false) const;
-    bool GetBool(void) const;
+    bool GetBool(const std::string &name, bool defaultValue = false) const
+    { return GetValue(name, defaultValue); }
+    bool GetBool(void) const { return GetValue<bool>(); }
 
 
     /**
@@ -144,14 +162,16 @@ class FGPropertyNode : public SGPropertyNode
      * infrequently (i.e. for initializing, loading, saving, etc.),
      * not in the main loop.  If you need to get a value frequently,
      * it is better to look up the node itself using GetNode and then
-     * use the node's getIntValue() method, to avoid the lookup overhead.
+     * use the node's GetInt() method, to avoid the lookup overhead.
      *
      * @param name The property name.
      * @param defaultValue The default value to return if the property
      *        does not exist.
      * @return The property's value as an int, or the default value provided.
      */
-    int GetInt (const std::string &name, int defaultValue = 0) const;
+    int GetInt(const std::string &name, int defaultValue = 0) const
+    { return GetValue(name, defaultValue); }
+    int GetInt(void) const { return GetValue<int>(); }
 
 
     /**
@@ -161,14 +181,16 @@ class FGPropertyNode : public SGPropertyNode
      * infrequently (i.e. for initializing, loading, saving, etc.),
      * not in the main loop.  If you need to get a value frequently,
      * it is better to look up the node itself using GetNode and then
-     * use the node's getLongValue() method, to avoid the lookup overhead.
+     * use the node's GetLong() method, to avoid the lookup overhead.
      *
      * @param name The property name.
      * @param defaultValue The default value to return if the property
      *        does not exist.
      * @return The property's value as a long, or the default value provided.
      */
-    int GetLong (const std::string &name, long defaultValue = 0L) const;
+    long GetLong(const std::string &name, long defaultValue = 0L) const
+    { return GetValue(name, defaultValue); }
+    long GetLong(void) const { return GetValue<long>(); }
 
 
     /**
@@ -178,14 +200,16 @@ class FGPropertyNode : public SGPropertyNode
      * infrequently (i.e. for initializing, loading, saving, etc.),
      * not in the main loop.  If you need to get a value frequently,
      * it is better to look up the node itself using GetNode and then
-     * use the node's getFloatValue() method, to avoid the lookup overhead.
+     * use the node's GetFloat() method, to avoid the lookup overhead.
      *
      * @param name The property name.
      * @param defaultValue The default value to return if the property
      *        does not exist.
      * @return The property's value as a float, or the default value provided.
      */
-    float GetFloat (const std::string &name, float defaultValue = 0.0) const;
+    float GetFloat(const std::string &name, float defaultValue = 0.0f) const
+    { return GetValue(name, defaultValue); }
+    float GetFloat(void) const { return GetValue<float>(); }
 
 
     /**
@@ -195,7 +219,7 @@ class FGPropertyNode : public SGPropertyNode
      * infrequently (i.e. for initializing, loading, saving, etc.),
      * not in the main loop.  If you need to get a value frequently,
      * it is better to look up the node itself using GetNode and then
-     * use the node's getDoubleValue() method, to avoid the lookup overhead.
+     * use the node's GetDouble() method, to avoid the lookup overhead.
      *
      * @param name The property name.
      * @param defaultValue The default value to return if the property
@@ -369,6 +393,27 @@ class FGPropertyNode : public SGPropertyNode
      */
     void SetWritable (const std::string &name, bool state = true);
 };
+
+
+/// Real specializations
+
+template<> inline Real
+FGPropertyNode::GetValue(void) const
+{
+  return getType() == simgear::props::EXTENDED ? getValue<Real>()
+                                               : static_cast<Real>(getDoubleValue());
+}
+
+inline Real FGPropertyNode::GetDouble(void) const { return GetValue<Real>(); }
+
+inline Real
+FGPropertyNode::GetDouble(const std::string &name, Real defaultValue) const
+{
+  return GetValue(name, defaultValue);
+}
+
+
+/// Class FGPropertyManager
 
 typedef SGSharedPtr<FGPropertyNode> FGPropertyNode_ptr;
 typedef SGSharedPtr<const FGPropertyNode> FGConstPropertyNode_ptr;

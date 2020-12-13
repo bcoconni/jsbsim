@@ -52,10 +52,8 @@ namespace JSBSim {
 
 void FGPropertyManager::Unbind(void)
 {
-    vector<SGPropertyNode_ptr>::iterator it;
-
-    for (it = tied_properties.begin();it < tied_properties.end();it++)
-        (*it)->untie();
+    for (auto &prop: tied_properties)
+        prop->untie();
 
     tied_properties.clear();
 }
@@ -191,57 +189,6 @@ string FGPropertyNode::GetRelativeName( const string &path ) const
     temp_string = temp_string.erase(0,len);
   }
   return temp_string;
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-bool FGPropertyNode::GetBool(void) const
-{
-  return getType() == simgear::props::EXTENDED ? (getValue<Real>() != 0.0) : getBoolValue();
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-bool FGPropertyNode::GetBool(const string &name, bool defaultValue) const
-{
-  const FGPropertyNode* node = static_cast<const FGPropertyNode*>(getNode(name));
-  return node ? node->GetBool() : defaultValue;
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-int FGPropertyNode::GetInt (const string &name, int defaultValue ) const
-{
-  return getIntValue(name.c_str(), defaultValue);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-int FGPropertyNode::GetLong (const string &name, long defaultValue ) const
-{
-  return getLongValue(name.c_str(), defaultValue);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-float FGPropertyNode::GetFloat (const string &name, float defaultValue ) const
-{
-  return getFloatValue(name.c_str(), defaultValue);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Real FGPropertyNode::GetDouble(void) const
-{
-  return getType() == simgear::props::EXTENDED ? getValue<Real>() : static_cast<Real>(getDoubleValue());
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Real FGPropertyNode::GetDouble(const string &name, Real defaultValue ) const
-{
-  const FGPropertyNode* node = static_cast<const FGPropertyNode*>(getNode(name));
-  return node ? node->GetDouble() : defaultValue;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
