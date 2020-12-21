@@ -65,148 +65,149 @@ class FGDualNumber
 {
 public:
 
-  constexpr FGDualNumber(void) : real(0.0), diff(0.0) {}
-  constexpr FGDualNumber(double a) : real(a), diff(0.0) {}
-  constexpr FGDualNumber(double a, double b) : real(a), diff(b) {}
+  constexpr FGDualNumber(void) : value(0.0), gradient(0.0) {}
+  constexpr FGDualNumber(double a) : value(a), gradient(0.0) {}
+  constexpr FGDualNumber(double a, double b) : value(a), gradient(b) {}
 
-  constexpr double getValue(void) const { return real; }
-  constexpr operator double () const { return real; }
+  constexpr operator double () const { return value; }
+  constexpr double getValue(void) const { return value; }
+  constexpr double getGradient(void) const { return gradient; }
 
   constexpr FGDualNumber operator-() const {
-    return FGDualNumber(-real, -diff);
+    return FGDualNumber(-value, -gradient);
   }
   constexpr FGDualNumber operator+(const FGDualNumber& x) const {
-    return FGDualNumber(real + x.real, diff + x.diff);
+    return FGDualNumber(value + x.value, gradient + x.gradient);
   }
   FGDualNumber& operator+=(const FGDualNumber& x) {
-    real += x.real;
-    diff += x.diff;
+    value += x.value;
+    gradient += x.gradient;
     return *this;
   }
   constexpr FGDualNumber operator-(const FGDualNumber& x) const {
-    return FGDualNumber(real - x.real, diff - x.diff);
+    return FGDualNumber(value - x.value, gradient - x.gradient);
   }
   FGDualNumber& operator-=(const FGDualNumber& x) {
-    real -= x.real;
-    diff -= x.diff;
+    value -= x.value;
+    gradient -= x.gradient;
     return *this;
   }
   constexpr FGDualNumber operator*(const FGDualNumber& x) const {
-    return FGDualNumber(real * x.real, real * x.diff + diff * x.real);
+    return FGDualNumber(value * x.value, value * x.gradient + gradient * x.value);
   }
   constexpr FGDualNumber operator/(const FGDualNumber& x) const {
-    double x2 = x.real * x.real;
-    return FGDualNumber(real / x.real, (diff * x.real - real * x.diff) / x2);
+    double x2 = x.value * x.value;
+    return FGDualNumber(value / x.value, (gradient * x.value - value * x.gradient) / x2);
   }
   FGDualNumber& operator/=(const FGDualNumber& x) {
-    double x2 = x.real * x.real;
-    diff = (diff * x.real - real * x.diff) / x2;
-    real /= x.real;
+    double x2 = x.value * x.value;
+    gradient = (gradient * x.value - value * x.gradient) / x2;
+    value /= x.value;
     return *this;
   }
   constexpr bool operator==(const FGDualNumber& x) const {
-    return real == x.real;
+    return value == x.value;
   }
   constexpr bool operator!=(const FGDualNumber& x) const {
-    return real != x.real;
+    return value != x.value;
   }
   constexpr bool operator<=(const FGDualNumber& x) const {
-    return real <= x.real;
+    return value <= x.value;
   }
   constexpr bool operator>=(const FGDualNumber& x) const {
-    return real >= x.real;
+    return value >= x.value;
   }
   constexpr bool operator>(const FGDualNumber& x) const {
-    return real > x.real;
+    return value > x.value;
   }
   constexpr bool operator<(const FGDualNumber& x) const {
-    return real < x.real;
+    return value < x.value;
   }
   FGDualNumber& operator*=(const FGDualNumber& x) {
-    diff = real * x.diff + diff * x.real;
-    real *= x.real;
+    gradient = value * x.gradient + gradient * x.value;
+    value *= x.value;
     return *this;
   }
 
   /* operators with numeric types */
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr FGDualNumber operator+(T a) const {
-    return FGDualNumber(real + a, diff);
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+  operator+(T a) const {
+    return FGDualNumber(value + a, gradient);
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr FGDualNumber operator-(T a) const {
-    return FGDualNumber(real - a, diff);
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+  operator-(T a) const {
+    return FGDualNumber(value - a, gradient);
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr FGDualNumber operator*(T a) const {
-    return FGDualNumber(real * a, diff * a);
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+  operator*(T a) const {
+    return FGDualNumber(value * a, gradient * a);
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  FGDualNumber& operator*=(T a) {
-    real *= a;
-    diff *= a;
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>&
+  operator*=(T a) {
+    value *= a;
+    gradient *= a;
     return *this;
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr FGDualNumber operator/(T a) const {
-    return FGDualNumber(real / a, diff / a);
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+  operator/(T a) const {
+    return FGDualNumber(value / a, gradient / a);
   }
   FGDualNumber operator++(int) {
     FGDualNumber current = *this;
-    real++;
+    value++;
     return current;
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr bool operator==(T a) const {
-    return real == a;
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, bool>
+  operator==(T a) const {
+    return value == a;
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr bool operator!=(T a) const {
-    return real != a;
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, bool>
+  operator!=(T a) const {
+    return value != a;
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr bool operator<(T a) const {
-    return real < a;
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, bool>
+  operator<(T a) const {
+    return value < a;
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr bool operator<=(T a) const {
-    return real <= a;
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, bool>
+  operator<=(T a) const {
+    return value <= a;
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr bool operator>(T a) const {
-    return real > a;
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, bool>
+  operator>(T a) const {
+    return value > a;
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  constexpr bool operator>=(T a) const {
-    return real >= a;
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, bool>
+  operator>=(T a) const {
+    return value >= a;
   }
   /* friend functions */
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  friend constexpr FGDualNumber operator/(T a, const FGDualNumber& x) {
-    double x2 = x.real * x.real;
-    return FGDualNumber(a / x.real, -a * x.diff / x2);
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+  friend operator/(T a, const FGDualNumber& x) {
+    double x2 = x.value * x.value;
+    return FGDualNumber(a / x.value, -a * x.gradient / x2);
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  friend constexpr FGDualNumber operator-(T a, const FGDualNumber& x) {
-    return FGDualNumber(a - x.real, -x.diff);
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+  friend operator-(T a, const FGDualNumber& x) {
+    return FGDualNumber(a - x.value, -x.gradient);
   }
-  template<typename T,
-           typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-  friend constexpr FGDualNumber operator+(T a, const FGDualNumber& x) {
-    return FGDualNumber(a + x.real, x.diff);
+  template <typename T> constexpr
+  std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+  friend operator+(T a, const FGDualNumber& x) {
+    return FGDualNumber(a + x.value, x.gradient);
   }
   friend FGDualNumber sqrt(const FGDualNumber& x);
   friend FGDualNumber asin(FGDualNumber x);
@@ -220,52 +221,52 @@ public:
   friend FGDualNumber atan(FGDualNumber x);
   friend FGDualNumber exp(FGDualNumber x);
   friend FGDualNumber log(const FGDualNumber& x) {
-    return FGDualNumber(std::log(x.real), x.diff/x.real);
+    return FGDualNumber(std::log(x.value), x.gradient/x.value);
   }
   friend FGDualNumber log10(const FGDualNumber& x) {
-    return FGDualNumber(std::log10(x.real), x.diff/(x.real*std::log(10.)));
+    return FGDualNumber(std::log10(x.value), x.gradient/(x.value*std::log(10.)));
   }
   friend FGDualNumber floor(FGDualNumber x);
   friend FGDualNumber ceil(FGDualNumber x);
   friend FGDualNumber modf(FGDualNumber x, FGDualNumber* y);
   friend std::ostream& operator<<(std::ostream& os, const FGDualNumber& x) {
-    os << x.real;
+    os << x.value;
     return os;
   }
   friend std::istream& operator>>(std::istream& is, FGDualNumber& x) {
-    is >> x.real;
+    is >> x.value;
     return is;
   }
 
 private:
-  double real;
-  double diff;
+  double value;
+  double gradient;
 };
 
-template<typename T,
-          typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-inline FGDualNumber max(const FGDualNumber& x, T a) {
+template <typename T> inline
+std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+max(const FGDualNumber& x, T a) {
   return x >= a ? x : FGDualNumber(a);
 }
-template<typename T,
-          typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-inline FGDualNumber max(T a, const FGDualNumber& x) {
+template <typename T> inline
+std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+max(T a, const FGDualNumber& x) {
   return x >= a ? x : FGDualNumber(a);
 }
-template<typename T,
-          typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-inline FGDualNumber min(const FGDualNumber& x, T a) {
+template <typename T> inline
+std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+min(const FGDualNumber& x, T a) {
   return x <= a ? x : FGDualNumber(a);
 }
-template<typename T,
-          typename std::enable_if<std::is_arithmetic<T>::value>::type* =nullptr>
-inline FGDualNumber min(T a, const FGDualNumber& x) {
+template <typename T> inline
+std::enable_if_t<std::is_arithmetic<T>::value, FGDualNumber>
+min(T a, const FGDualNumber& x) {
   return x <= a ? x : FGDualNumber(a);
 }
 
 inline FGDualNumber exp(FGDualNumber x) {
-    double value = std::exp(x.real);
-    return FGDualNumber(value, x.diff * value);
+    double value = std::exp(x.value);
+    return FGDualNumber(value, x.gradient * value);
 }
 
 FGDualNumber fabs(FGDualNumber x);
@@ -277,33 +278,33 @@ FGDualNumber atan2(const FGDualNumber& x, const FGDualNumber& y);
 FGDualNumber modf(FGDualNumber x, FGDualNumber* y);
 
 inline FGDualNumber cos(FGDualNumber x) {
-    return FGDualNumber(std::cos(x.real), -x.diff * std::sin(x.real));
+    return FGDualNumber(std::cos(x.value), -x.gradient * std::sin(x.value));
 }
 
 inline FGDualNumber sin(FGDualNumber x) {
-    return FGDualNumber(std::sin(x.real), x.diff * std::cos(x.real));
+    return FGDualNumber(std::sin(x.value), x.gradient * std::cos(x.value));
 }
 
 inline FGDualNumber tan(FGDualNumber x) {
-    double value = std::tan(x.real);
-    return FGDualNumber(value, x.diff * (1.0 + value * value));
+    double value = std::tan(x.value);
+    return FGDualNumber(value, x.gradient * (1.0 + value * value));
 }
 
 inline FGDualNumber atan(FGDualNumber x) {
-    return FGDualNumber(std::atan(x.real), x.diff / (1.0 + x.real*x.real));
+    return FGDualNumber(std::atan(x.value), x.gradient / (1.0 + x.value*x.value));
 }
 
 inline FGDualNumber floor(FGDualNumber x) {
     // The function floor is constant everywhere but at integer values where
     // its derivative is infinite ?
     // Here, we are assuming that its derivative is zero everywhere.
-    return FGDualNumber(std::floor(x.real), 0.);
+    return FGDualNumber(std::floor(x.value), 0.);
 }
 inline FGDualNumber ceil(FGDualNumber x) {
     // The function floor is constant everywhere but at integer values where
     // its derivative is infinite ?
     // Here, we are assuming that its derivative is zero everywhere.
-    return FGDualNumber(std::ceil(x.real), 0.);
+    return FGDualNumber(std::ceil(x.value), 0.);
 }
 } // namespace JSBSim
 
