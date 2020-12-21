@@ -212,15 +212,15 @@ public:
     auto output0 = pm->GetNode("test0");
     // Check that modifying the "x" property results in the table issuing
     // consistent results; including setting its bound property "test".
-    x->setDoubleValue(-0.5);
+    x->SetDouble(-0.5);
     TS_ASSERT_EQUALS(t_1x1.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output0->getDoubleValue(), 1.0);
-    x->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0->GetDouble(), 1.0);
+    x->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_1x1.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output0->getDoubleValue(), 1.0);
-    x->setDoubleValue(0.3);
+    TS_ASSERT_EQUALS(output0->GetDouble(), 1.0);
+    x->SetDouble(0.3);
     TS_ASSERT_EQUALS(t_1x1.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output0->getDoubleValue(), 1.0);
+    TS_ASSERT_EQUALS(output0->GetDouble(), 1.0);
 
     // FGTable expects <table> to be the child of another XML element, hence the
     // <dummy> element.
@@ -248,21 +248,21 @@ public:
     auto output = pm->GetNode("test");
     // Check that modifying the "x" property results in the table issuing
     // consistent results; including setting its bound property "test".
-    x->setDoubleValue(0.3);
+    x->SetDouble(0.3);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.0);
-    x->setDoubleValue(1.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.0);
+    x->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.0);
-    x->setDoubleValue(1.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.0);
+    x->SetDouble(1.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 0.25);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.25);
-    x->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.25);
+    x->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(),  1.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 1.5);
-    x->setDoubleValue(2.47);
+    TS_ASSERT_EQUALS(output->GetDouble(), 1.5);
+    x->SetDouble(2.47);
     TS_ASSERT_EQUALS(t_2x1.GetValue(),  1.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 1.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), 1.5);
   }
 
   void testLoadWithNumericPrefix() {
@@ -292,9 +292,9 @@ public:
     TS_ASSERT(pm->HasNode("test2"));
 
     auto output = pm->GetNode("test2");
-    x->setDoubleValue(1.5);
+    x->SetDouble(1.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 0.25);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.25);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.25);
   }
 
   void testLoadWithStringPrefix() {
@@ -324,9 +324,9 @@ public:
     TS_ASSERT(pm->HasNode("tables/test"));
 
     auto output = pm->GetNode("tables/test");
-    x->setDoubleValue(1.5);
+    x->SetDouble(1.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 0.25);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.25);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.25);
   }
 
   void testMonoticallyIncreasingRows() {
@@ -774,56 +774,56 @@ public:
     // Check that modifying the "x" and "y" properties results in the table
     // issuing consistent results; including setting its bound property "test".
 
-    row->setDoubleValue(0.0);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(0.0);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 3.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 3.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 0.5);
-    column->setDoubleValue(1.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 0.5);
+    column->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), -2.0);
-    column->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), -2.0);
+    column->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), -2.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), -2.0);
 
-    row->setDoubleValue(2.0);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(2.0);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 3.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 3.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 0.5);
-    column->setDoubleValue(1.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 0.5);
+    column->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), -2.0);
-    column->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), -2.0);
+    column->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), -2.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), -2.0);
 
-    row->setDoubleValue(2.5);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(2.5);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 3.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 3.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), 0.5);
-    column->setDoubleValue(1.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), 0.5);
+    column->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), -2.0);
-    column->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), -2.0);
+    column->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_1x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output0h->getDoubleValue(), -2.0);
+    TS_ASSERT_EQUALS(output0h->GetDouble(), -2.0);
 
     // FGTable expects <table> to be the child of another XML element, hence the
     // <dummy> element.
@@ -855,60 +855,60 @@ public:
     // Check that modifying the "x" and "y" properties results in the table
     // issuing consistent results; including setting its bound property "test".
 
-    row->setDoubleValue(1.0);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(1.0);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 3.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 3.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 3.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 3.0);
 
-    row->setDoubleValue(2.0);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(2.0);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 3.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 3.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 3.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 3.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 3.0);
 
-    row->setDoubleValue(3.0);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(3.0);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 1.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 1.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 1.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 1.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), 1.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), 1.0);
 
-    row->setDoubleValue(4.0);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(4.0);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), -1.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), -1.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), -1.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), -1.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), -1.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), -1.0);
 
-    row->setDoubleValue(4.5);
-    column->setDoubleValue(-1.0);
+    row->SetDouble(4.5);
+    column->SetDouble(-1.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), -1.0);
-    column->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), -1.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), -1.0);
-    column->setDoubleValue(0.5);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), -1.0);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_2x1.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output0v->getDoubleValue(), -1.0);
+    TS_ASSERT_EQUALS(output0v->GetDouble(), -1.0);
 
     // FGTable expects <table> to be the child of another XML element, hence the
     // <dummy> element.
@@ -943,90 +943,90 @@ public:
     // Check that modifying the "x" and "y" properties results in the table
     // issuing consistent results; including setting its bound property "test".
 
-    column->setDoubleValue(-1.0);
-    row->setDoubleValue(1.0);
+    column->SetDouble(-1.0);
+    row->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 3.0);
-    row->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 3.0);
+    row->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 3.0);
-    row->setDoubleValue(3.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 3.0);
+    row->SetDouble(3.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 1.0);
-    row->setDoubleValue(4.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 1.0);
+    row->SetDouble(4.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.0);
-    row->setDoubleValue(5.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.0);
+    row->SetDouble(5.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.0);
 
-    column->setDoubleValue(0.0);
-    row->setDoubleValue(1.0);
+    column->SetDouble(0.0);
+    row->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 3.0);
-    row->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 3.0);
+    row->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 3.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 3.0);
-    row->setDoubleValue(3.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 3.0);
+    row->SetDouble(3.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 1.0);
-    row->setDoubleValue(4.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 1.0);
+    row->SetDouble(4.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.0);
-    row->setDoubleValue(5.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.0);
+    row->SetDouble(5.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -1.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.0);
 
-    column->setDoubleValue(0.5);
-    row->setDoubleValue(1.0);
+    column->SetDouble(0.5);
+    row->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
-    row->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
+    row->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
-    row->setDoubleValue(3.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
+    row->SetDouble(3.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.125);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.125);
-    row->setDoubleValue(4.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.125);
+    row->SetDouble(4.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -0.25);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.25);
-    row->setDoubleValue(5.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.25);
+    row->SetDouble(5.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -0.25);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.25);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.25);
 
-    column->setDoubleValue(1.0);
-    row->setDoubleValue(1.0);
+    column->SetDouble(1.0);
+    row->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -2.0);
-    row->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -2.0);
+    row->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -2.0);
-    row->setDoubleValue(3.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -2.0);
+    row->SetDouble(3.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -0.75);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.75);
-    row->setDoubleValue(4.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.75);
+    row->SetDouble(4.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
-    row->setDoubleValue(5.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
+    row->SetDouble(5.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
 
-    column->setDoubleValue(2.0);
-    row->setDoubleValue(1.0);
+    column->SetDouble(2.0);
+    row->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -2.0);
-    row->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -2.0);
+    row->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -2.0);
-    row->setDoubleValue(3.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -2.0);
+    row->SetDouble(3.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), -0.75);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.75);
-    row->setDoubleValue(4.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.75);
+    row->SetDouble(4.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
-    row->setDoubleValue(5.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
+    row->SetDouble(5.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
   }
 
   void testLoadWithNumericPrefix() {
@@ -1063,10 +1063,10 @@ public:
     TS_ASSERT(pm->HasNode("test2"));
 
     auto output = pm->GetNode("test2");
-    column->setDoubleValue(0.5);
-    row->setDoubleValue(3.0);
+    column->SetDouble(0.5);
+    row->SetDouble(3.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.125);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.125);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.125);
   }
 
   void testLoadWithStringPrefix() {
@@ -1103,10 +1103,10 @@ public:
     TS_ASSERT(pm->HasNode("tables/test"));
 
     auto output = pm->GetNode("tables/test");
-    column->setDoubleValue(0.5);
-    row->setDoubleValue(3.0);
+    column->SetDouble(0.5);
+    row->SetDouble(3.0);
     TS_ASSERT_EQUALS(t_2x2.GetValue(), 0.125);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.125);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.125);
   }
 
   void testMonoticallyIncreasingRows() {
@@ -1196,97 +1196,97 @@ public:
     TS_ASSERT(pm->HasNode("test2"));
     auto output = pm->GetNode("test2");
 
-    table->setDoubleValue(0.5);
-    row->setDoubleValue(2.0);
-    column->setDoubleValue(0.0);
+    table->SetDouble(0.5);
+    row->SetDouble(2.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), 3.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 3.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), 3.5);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), 3.1);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 3.1);
+    TS_ASSERT_EQUALS(output->GetDouble(), 3.1);
 
-    table->setDoubleValue(0.5);
-    row->setDoubleValue(4.0);
-    column->setDoubleValue(0.0);
+    table->SetDouble(0.5);
+    row->SetDouble(4.0);
+    column->SetDouble(0.0);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -0.25);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.25);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.25);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -0.85);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.85);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.85);
 
-    table->setDoubleValue(0.5);
-    row->setDoubleValue(2.0);
-    column->setDoubleValue(1.0);
+    table->SetDouble(0.5);
+    row->SetDouble(2.0);
+    column->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -1.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.5);
 
-    table->setDoubleValue(0.5);
-    row->setDoubleValue(4.0);
-    column->setDoubleValue(1.0);
+    table->SetDouble(0.5);
+    row->SetDouble(4.0);
+    column->SetDouble(1.0);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -0.0625);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.0625);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.0625);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_DELTA(t_2x2x2.GetValue(), 0.3875, epsilon);
-    TS_ASSERT_DELTA(output->getDoubleValue(), 0.3875, epsilon);
+    TS_ASSERT_DELTA(output->GetDouble(), 0.3875, epsilon);
 
-    table->setDoubleValue(-1.0);
-    row->setDoubleValue(2.5);
-    column->setDoubleValue(0.5);
+    table->SetDouble(-1.0);
+    row->SetDouble(2.5);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), 0.3125);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.3125);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.3125);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_DELTA(t_2x2x2.GetValue(), 0.95, epsilon);
-    TS_ASSERT_DELTA(output->getDoubleValue(), 0.95, epsilon);
+    TS_ASSERT_DELTA(output->GetDouble(), 0.95, epsilon);
 
-    table->setDoubleValue(-1.0);
-    row->setDoubleValue(4.5);
-    column->setDoubleValue(0.5);
+    table->SetDouble(-1.0);
+    row->SetDouble(4.5);
+    column->SetDouble(0.5);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -0.25);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.25);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.25);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -0.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), -0.5);
 
-    table->setDoubleValue(-1.0);
-    row->setDoubleValue(2.5);
-    column->setDoubleValue(1.5);
+    table->SetDouble(-1.0);
+    row->SetDouble(2.5);
+    column->SetDouble(1.5);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -1.375);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.375);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.375);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -1.6);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.6);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.6);
 
-    table->setDoubleValue(-1.0);
-    row->setDoubleValue(4.5);
-    column->setDoubleValue(1.5);
+    table->SetDouble(-1.0);
+    row->SetDouble(4.5);
+    column->SetDouble(1.5);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), 0.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.5);
 
-    table->setDoubleValue(-0.7);
+    table->SetDouble(-0.7);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), 0.6);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), 0.6);
+    TS_ASSERT_EQUALS(output->GetDouble(), 0.6);
 
-    table->setDoubleValue(-1.5);
-    row->setDoubleValue(1.0);
-    column->setDoubleValue(2.0);
+    table->SetDouble(-1.5);
+    row->SetDouble(1.0);
+    column->SetDouble(2.0);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -2.0);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -2.0);
+    TS_ASSERT_EQUALS(output->GetDouble(), -2.0);
 
-    table->setDoubleValue(1.0);
-    row->setDoubleValue(5.0);
-    column->setDoubleValue(-0.5);
+    table->SetDouble(1.0);
+    row->SetDouble(5.0);
+    column->SetDouble(-0.5);
     TS_ASSERT_EQUALS(t_2x2x2.GetValue(), -1.5);
-    TS_ASSERT_EQUALS(output->getDoubleValue(), -1.5);
+    TS_ASSERT_EQUALS(output->GetDouble(), -1.5);
   }
 };
 

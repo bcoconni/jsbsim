@@ -34,37 +34,37 @@ namespace JSBSim {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGDualNumber asin(FGDualNumber x) {
-  double v = std::asin(x.real);
-  if (fabs(x.real) != 1.0)
-    return FGDualNumber(v, x.diff / std::sqrt(1 - x.real * x.real));
-  if (x.diff == 0.0)
-    return FGDualNumber(v, 0.0); // The differential has no significance avoid raising an FPE.
+  double v = std::asin(x.value);
+  if (fabs(x.value) != 1.0)
+    return FGDualNumber(v, x.gradient / std::sqrt(1 - x.value * x.value));
+  if (x.gradient == 0.0)
+    return FGDualNumber(v, 0.0); // The gradient has no significance avoid raising an FPE.
   return FGDualNumber(v, std::numeric_limits<double>::infinity());
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGDualNumber acos(FGDualNumber x) {
-  double v = std::acos(x.real);
-  if (fabs(x.real) != 1.0)
-    return FGDualNumber(v, -x.diff / std::sqrt(1 - x.real * x.real));
-  if (x.diff == 0.0)
-    return FGDualNumber(v, 0.0); // The differential has no significance avoid raising an FPE.
+  double v = std::acos(x.value);
+  if (fabs(x.value) != 1.0)
+    return FGDualNumber(v, -x.gradient / std::sqrt(1 - x.value * x.value));
+  if (x.gradient == 0.0)
+    return FGDualNumber(v, 0.0); // The gradient has no significance avoid raising an FPE.
   return FGDualNumber(v, -std::numeric_limits<double>::infinity());
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGDualNumber pow(const FGDualNumber& x, double y) {
-  if (x.real != 0.0)
-    return FGDualNumber(std::pow(x.real, y), y * x.diff * std::pow(x.real, y-1.0));
+  if (x.value != 0.0)
+    return FGDualNumber(std::pow(x.value, y), y * x.gradient * std::pow(x.value, y-1.0));
   else {
     if (y >= 1.0)
-      return y > 1.0 ? FGDualNumber(0.0, 0.0) : FGDualNumber(0.0, x.diff);
+      return y > 1.0 ? FGDualNumber(0.0, 0.0) : FGDualNumber(0.0, x.gradient);
     if (y < 0.0)
       return FGDualNumber(std::numeric_limits<double>::infinity(),
                           std::numeric_limits<double>::signaling_NaN());
-     if (x.diff == 0.0)
+     if (x.gradient == 0.0)
        return y == 0.0 ? FGDualNumber(1.0, 0.0) : FGDualNumber(0.0, 0.0);
      return y == 0.0 ? FGDualNumber(1.0, std::numeric_limits<double>::infinity())
                      : FGDualNumber(0.0, std::numeric_limits<double>::signaling_NaN());
@@ -74,11 +74,11 @@ FGDualNumber pow(const FGDualNumber& x, double y) {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGDualNumber sqrt(const FGDualNumber& x) {
-  if (x.real != 0.0) {
-    double sqr = std::sqrt(x.real);
-    return FGDualNumber(sqr, 0.5*x.diff/sqr);
+  if (x.value != 0.0) {
+    double sqr = std::sqrt(x.value);
+    return FGDualNumber(sqr, 0.5*x.gradient/sqr);
   }
-  if (x.diff == 0.0)
+  if (x.gradient == 0.0)
     return FGDualNumber(0.0, 0.0);
   return FGDualNumber(0.0, std::numeric_limits<double>::infinity());
 }
@@ -86,10 +86,10 @@ FGDualNumber sqrt(const FGDualNumber& x) {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGDualNumber atan2(const FGDualNumber& y, const FGDualNumber& x) {
-  double v = std::atan2(y.real, x.real);
-  if (x.real != 0.0 && y.real != 0.0)
-    return FGDualNumber(v, (y.diff * x.real - y.real * x.diff) / (x.real * x.real + y.real * y.real));
-  if (x.diff == 0.0 && y.diff == 0.0)
+  double v = std::atan2(y.value, x.value);
+  if (x.value != 0.0 && y.value != 0.0)
+    return FGDualNumber(v, (y.gradient * x.value - y.value * x.gradient) / (x.value * x.value + y.value * y.value));
+  if (x.gradient == 0.0 && y.gradient == 0.0)
     return FGDualNumber(v, 0.0);
   return FGDualNumber(v, std::numeric_limits<double>::infinity());
 }
@@ -97,10 +97,10 @@ FGDualNumber atan2(const FGDualNumber& y, const FGDualNumber& x) {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FGDualNumber fabs(FGDualNumber x) {
-  if (x.real >= 0.0)
-    return FGDualNumber(x.real, x.diff);
+  if (x.value >= 0.0)
+    return FGDualNumber(x.value, x.gradient);
   else
-    return FGDualNumber(-x.real, -x.diff);
+    return FGDualNumber(-x.value, -x.gradient);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -108,7 +108,7 @@ FGDualNumber fabs(FGDualNumber x) {
 FGDualNumber modf(FGDualNumber x, FGDualNumber* y)
 {
   double fraction, integer;
-  fraction = std::modf(x.real, &integer);
+  fraction = std::modf(x.value, &integer);
   *y = {integer, 0.};
   return FGDualNumber(fraction, 1.);
 }
