@@ -264,10 +264,10 @@ jobs:
         os: [ macos-10.15, macos-11.0 ]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Set up Python 3.6
+      - name: Set up Python 3.7
         uses: actions/setup-python@v1
         with:
-          python-version: '3.6'
+          python-version: '3.7'
       - name: Install Python packages
         run: pip install -U cython numpy pandas scipy wheel
       - name: Checkout JSBSim
@@ -333,6 +333,9 @@ jobs:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
         os: [windows-latest, macos-10.15, macos-11.0]
+        exclude:
+          - os: macos-11.0
+            python-version: 3.6
     runs-on: ${{ matrix.os }}
     env:
       VERBOSE: 1
