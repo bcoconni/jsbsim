@@ -66,8 +66,9 @@ class FGDualNumber
 public:
 
   constexpr FGDualNumber(void) : value(0.0), gradient(0.0) {}
-  constexpr FGDualNumber(double a) : value(a), gradient(0.0) {}
-  constexpr FGDualNumber(double a, double b) : value(a), gradient(b) {}
+  constexpr FGDualNumber(double _value) : value(_value), gradient(0.0) {}
+  constexpr FGDualNumber(double _value, double _gradient)
+    : value(_value), gradient(_gradient) {}
 
   constexpr operator double () const { return value; }
   constexpr double getValue(void) const { return value; }
