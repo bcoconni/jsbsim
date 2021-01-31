@@ -544,7 +544,7 @@ public:
   /** Returns the quaternion that goes from ECEF to Body. */
   const FGQuaternion GetQuaternionECEF(void) const { return Qec2b; }
 
-  void SetPQR(unsigned int i, Real val) {
+  void SetPQR(int i, Real val) {
     VState.vPQR(i) = val;
     VState.vPQRi = VState.vPQR + Ti2b * in.vOmegaPlanet;
   }
