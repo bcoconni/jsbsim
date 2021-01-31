@@ -12,6 +12,13 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& jsbsim)
     .constructor<const std::string&>()
     .method("str", &SGPath::str);
 
+  // FGDualNumber
+  #ifdef AUTOMATIC_DIFFERENTIATION
+  jsbsim.add_type<FGDualNumber>("FGDualNumber")
+    .constructor<double>()
+    .method("getValue", &FGDualNumber::getValue);
+  #endif
+
   // FGPropertyManager
   jsbsim.add_type<FGPropertyManager>("FGPropertyManager");
 
@@ -28,7 +35,7 @@ JLCXX_MODULE define_julia_module(jlcxx::Module& jsbsim)
     .method("_LoadModel", static_cast<bool (FGFDMExec::*)(const std::string&, bool)>(&FGFDMExec::LoadModel))
     .method("RunIC", &FGFDMExec::RunIC)
     .method("Run", &FGFDMExec::Run)
-    .method("GetPropertyValue", &FGFDMExec::GetPropertyValue);
+    .method("_GetPropertyValue", &FGFDMExec::GetPropertyValue);
 
   // FGInitialCondition
   jsbsim.add_type<FGInitialCondition>("FGInitialCondition")

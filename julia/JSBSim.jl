@@ -40,4 +40,7 @@ module JSBSim
     ic = GetIC(fdm)
     Load(getindex(ic)[], path, useStoredPath)
   end
+  function GetPropertyValue(fdm::FGFDMExec, property::String)
+    return getValue(_GetPropertyValue(fdm, property))
+  end
 end

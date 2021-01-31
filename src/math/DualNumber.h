@@ -69,6 +69,7 @@ public:
   constexpr FGDualNumber(double a) : real(a), diff(0.0) {}
   constexpr FGDualNumber(double a, double b) : real(a), diff(b) {}
 
+  constexpr double getValue(void) const { return real; }
   constexpr operator double () const { return real; }
 
   constexpr FGDualNumber operator-() const {

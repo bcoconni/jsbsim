@@ -23,14 +23,23 @@ from libcpp.string cimport string
 from libcpp.memory cimport shared_ptr
 from libcpp.vector cimport vector
 
-cdef extern from "ExceptionManagement.h":
-    cdef void convertJSBSimToPyExc()
+DEF AUTOMATIC_DIFFERENTIATION="${AUTOMATIC_DIFFERENTIATION}"
 
-ctypedef double Real
+IF AUTOMATIC_DIFFERENTIATION == "ON":
+    cdef extern from "math/DualNumber.h" namespace "JSBSim":
+        cdef cppclass c_Real "JSBSim::FGDualNumber":
+            c_Real()
+
+    ctypedef c_Real Real
+ELSE:
+    ctypedef double Real
 
 cdef extern from "TypeConversion.h" namespace "JSBSim":
     cdef Real DoubleToReal(double x)
     cdef double RealToDouble(const Real& x)
+
+cdef extern from "ExceptionManagement.h":
+    cdef void convertJSBSimToPyExc()
 
 cdef extern from "initialization/FGInitialCondition.h" namespace "JSBSim":
     cdef cppclass c_FGInitialCondition "JSBSim::FGInitialCondition":
