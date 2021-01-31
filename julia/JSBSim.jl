@@ -40,4 +40,11 @@ module JSBSim
     ic = GetIC(fdm)
     Load(getindex(ic)[], path, useStoredPath)
   end
+  # Indentity function for when JSBSim is compiled w/o automatic differentiation
+  function getValue(x::Number)
+    return x
+  end
+  function GetPropertyValue(fdm::FGFDMExec, property::String)
+    return getValue(_GetPropertyValue(fdm, property))
+  end
 end

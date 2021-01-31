@@ -34,6 +34,10 @@ endif()
 # Compile definitions common to all platforms
 set(COMPILE_DEFINITIONS JSBSIM_VERSION="${PROJECT_VERSION}${VERSION_MESSAGE}")
 
+if(AUTOMATIC_DIFFERENTIATION)
+  list(APPEND COMPILE_DEFINITIONS AUTOMATIC_DIFFERENTIATION)
+endif(AUTOMATIC_DIFFERENTIATION)
+
 add_subdirectory(initialization)
 add_subdirectory(input_output)
 add_subdirectory(math)

@@ -28,13 +28,22 @@ from libcpp.memory cimport shared_ptr
 from libcpp.vector cimport vector
 from cpython.ref cimport PyObject
 
+DEF AUTOMATIC_DIFFERENTIATION="${AUTOMATIC_DIFFERENTIATION}"
+
+IF AUTOMATIC_DIFFERENTIATION == "ON":
+    cdef extern from "math/DualNumber.h" namespace "JSBSim":
+        cdef cppclass c_Real "JSBSim::FGDualNumber":
+            c_Real()
+
+    ctypedef c_Real Real
+ELSE:
+    ctypedef double Real
+
 cdef extern from "ExceptionManagement.h":
     cdef PyObject* base_error
     cdef PyObject* trimfailure_error
     cdef PyObject* geographic_error
     cdef void convertJSBSimToPyExc()
-
-ctypedef double Real
 
 cdef extern from "TypeConversion.h" namespace "JSBSim":
     cdef Real DoubleToReal(double x)

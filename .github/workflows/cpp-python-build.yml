@@ -43,12 +43,14 @@ jobs:
         shared_libs: [ON, OFF]
         build_julia: [OFF]
         display_stack_trace: [ON]
+        automatic_differentiation: [ON, OFF]
         include:
           - os: ubuntu-18.04
             expat: OFF
             shared_libs: OFF
             build_julia: ON
             display_stack_trace: OFF
+            automatic_differentiation: ON
     env:
       static_link: ${{ matrix.expat == 'OFF' && matrix.shared_libs == 'OFF' }}
     runs-on: ${{ matrix.os }}

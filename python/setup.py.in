@@ -178,6 +178,11 @@ if 'sdist' not in dist.commands and compiler.find_library_file([library_path],
     else:
         source_file = 'jsbsim.pyx'
 
+    if compiler.compiler_type == 'msvc':
+        cpp_compile_flag += ['/D'+flag for flag in convert_CMake_list_to_Python_list('NDEBUG;JSBSIM_STATIC_LINK;${AUTOMATIC_DIFFERENTIATION_FLAGS}')]
+    else:
+        cpp_compile_flag += ['-D'+flag for flag in convert_CMake_list_to_Python_list('NDEBUG;${AUTOMATIC_DIFFERENTIATION_FLAGS}')]
+
     ext_kwargs = { 'sources': [source_file],
                    'include_dirs': ['src'],
                    'libraries': ['JSBSim'] + link_libraries,
