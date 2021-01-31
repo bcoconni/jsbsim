@@ -549,7 +549,7 @@ public:
     VState.vPQRi = VState.vPQR + Ti2b * in.vOmegaPlanet;
   }
 
-  void SetUVW(unsigned int i, Real val) {
+  void SetUVW(int i, Real val) {
     VState.vUVW(i) = val;
     CalculateInertialVelocity();
   }
