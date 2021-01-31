@@ -823,7 +823,7 @@ void FGPropagate::bind(void)
   PropertyManager->Tie("velocities/v-east-fps", this, eEast, (PMF)&FGPropagate::GetVel);
   PropertyManager->Tie("velocities/v-down-fps", this, eDown, (PMF)&FGPropagate::GetVel);
 
-  PropertyManager->Tie("velocities/u-fps", this, eU, (PMF)&FGPropagate::GetUVW);
+  PropertyManager->Tie("velocities/u-fps", this, eU, &FGPropagate::GetUVW, &FGPropagate::SetUVW);
   PropertyManager->Tie("velocities/v-fps", this, eV, (PMF)&FGPropagate::GetUVW);
   PropertyManager->Tie("velocities/w-fps", this, eW, (PMF)&FGPropagate::GetUVW);
 
