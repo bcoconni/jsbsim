@@ -8,6 +8,10 @@ else()
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
+if(AUTOMATIC_DIFFERENTIATION)
+  add_definitions(-DAUTOMATIC_DIFFERENTIATION)
+endif(AUTOMATIC_DIFFERENTIATION)
+
 set(UNIT_TESTS FGColumnVector3Test
                StringUtilitiesTest
                FGJSBBaseTest

@@ -16,6 +16,7 @@ set(LIBRARY_VERSION ${PROJECT_VERSION})
 set(LIBRARY_SOVERSION ${PROJECT_VERSION_MAJOR})
 
 option(BUILD_DOCS "Set to ON to build JSBSim documentation" ON)
+option(AUTOMATIC_DIFFERENTIATION "Set to ON to build JSBSim with automatic differentiation" OFF)
 option(SYSTEM_EXPAT "Set to ON to build JSBSim using the system libExpat" OFF)
 if (SYSTEM_EXPAT)
   find_package(EXPAT)

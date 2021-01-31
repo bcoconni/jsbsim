@@ -9,8 +9,7 @@ set(SOURCES FGColumnVector3.cpp
             FGCondition.cpp
             FGRungeKutta.cpp
             FGModelFunctions.cpp
-            FGTemplateFunc.cpp
-            DualNumber.cpp)
+            FGTemplateFunc.cpp)
 
 set(HEADERS FGColumnVector3.h
             FGFunction.h
@@ -28,8 +27,12 @@ set(HEADERS FGColumnVector3.h
             FGTemplateFunc.h
             FGFunctionValue.h
             FGParameterValue.h
-            AutomaticDifferentiation.h
-            DualNumber.h)
+            AutomaticDifferentiation.h)
+
+if(AUTOMATIC_DIFFERENTIATION)
+    list(APPEND SOURCES DualNumber.cpp)
+    list(APPEND HEADERS DualNumber.h)
+endif(AUTOMATIC_DIFFERENTIATION)
 
 add_library(Math OBJECT ${HEADERS} ${SOURCES})
 set_target_properties(Math PROPERTIES TARGET_DIRECTORY
