@@ -26,6 +26,8 @@
 
 from cython.operator cimport dereference as deref
 
+DEF AUTOMATIC_DIFFERENTIATION="${AUTOMATIC_DIFFERENTIATION}"
+
 import errno
 import os
 import platform
@@ -713,6 +715,22 @@ cdef class FGFDMExec(FGJSBBase):
         """@Dox(JSBSim::FGFDMExec::SetPropertyValue)"""
         cdef Real _v = DoubleToReal(value)
         self.thisptr.SetPropertyValue(name.encode(), _v)
+
+    def get_property_gradient(self, name):
+        IF AUTOMATIC_DIFFERENTIATION == "ON":
+            cdef Real _v = self.thisptr.GetPropertyValue(name.encode())
+            return _v.getGradient()
+        ELSE:
+            return 0.0
+
+    def set_property_gradient(self, name, value):
+        IF AUTOMATIC_DIFFERENTIATION == "ON":
+            property_name = name.encode()
+            cdef Real _v0 = self.thisptr.GetPropertyValue(property_name)
+            cdef Real _v = Real(_v0.getValue(), value)
+            self.thisptr.SetPropertyValue(property_name, _v)
+        ELSE:
+            pass
 
     def get_model_name(self):
         """@Dox(JSBSim::FGFDMExec::GetModelName)"""
