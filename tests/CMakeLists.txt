@@ -48,6 +48,10 @@ set(PYTHON_TESTS ResetOutputFiles
                  TestMagnetometer
                  )
 
+if(AUTOMATIC_DIFFERENTIATION)
+  list(APPEND PYTHON_TESTS TestGradient)
+endif(AUTOMATIC_DIFFERENTIATION)
+
 foreach(test ${PYTHON_TESTS})
   add_test(NAME ${test}
     COMMAND ${PYTHON_EXECUTABLE} -B ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py)
