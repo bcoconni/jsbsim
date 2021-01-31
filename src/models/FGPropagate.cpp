@@ -824,12 +824,12 @@ void FGPropagate::bind(void)
   PropertyManager->Tie("velocities/v-down-fps", this, eDown, (PMF)&FGPropagate::GetVel);
 
   PropertyManager->Tie("velocities/u-fps", this, eU, &FGPropagate::GetUVW, &FGPropagate::SetUVW);
-  PropertyManager->Tie("velocities/v-fps", this, eV, (PMF)&FGPropagate::GetUVW);
-  PropertyManager->Tie("velocities/w-fps", this, eW, (PMF)&FGPropagate::GetUVW);
+  PropertyManager->Tie("velocities/v-fps", this, eV, &FGPropagate::GetUVW, &FGPropagate::SetUVW);
+  PropertyManager->Tie("velocities/w-fps", this, eW, &FGPropagate::GetUVW, &FGPropagate::SetUVW);
 
-  PropertyManager->Tie("velocities/p-rad_sec", this, eP, (PMF)&FGPropagate::GetPQR);
-  PropertyManager->Tie("velocities/q-rad_sec", this, eQ, (PMF)&FGPropagate::GetPQR);
-  PropertyManager->Tie("velocities/r-rad_sec", this, eR, (PMF)&FGPropagate::GetPQR);
+  PropertyManager->Tie("velocities/p-rad_sec", this, eP, &FGPropagate::GetPQR, &FGPropagate::SetPQR);
+  PropertyManager->Tie("velocities/q-rad_sec", this, eQ, &FGPropagate::GetPQR, &FGPropagate::SetPQR);
+  PropertyManager->Tie("velocities/r-rad_sec", this, eR, &FGPropagate::GetPQR, &FGPropagate::SetPQR);
 
   PropertyManager->Tie("velocities/pi-rad_sec", this, eP, (PMF)&FGPropagate::GetPQRi);
   PropertyManager->Tie("velocities/qi-rad_sec", this, eQ, (PMF)&FGPropagate::GetPQRi);
