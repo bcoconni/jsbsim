@@ -29,6 +29,9 @@ IF AUTOMATIC_DIFFERENTIATION == "ON":
     cdef extern from "math/DualNumber.h" namespace "JSBSim":
         cdef cppclass c_Real "JSBSim::FGDualNumber":
             c_Real()
+            c_Real(double value, double gradient)
+            double getValue()
+            double getGradient()
 
     ctypedef c_Real Real
 ELSE:
