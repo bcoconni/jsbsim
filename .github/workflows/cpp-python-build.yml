@@ -89,6 +89,7 @@ jobs:
           path: build/*.deb
 
   ManyLinux-Wheels:
+    name: ManyLinux Wheels
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
     needs: Linux
     runs-on: ubuntu-latest
@@ -134,6 +135,7 @@ jobs:
           path: build/python/dist/*-manylinux*.whl
 
   Windows-MinGW32:
+    name: Windows MinGW32
     if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
     runs-on: windows-latest
     steps:
