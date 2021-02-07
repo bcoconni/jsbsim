@@ -4,11 +4,10 @@ on: [push, pull_request]
 
 env:
   release: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
-  skip_workflow: ${{ startsWith(github.event.head_commit.message, '[skip ci]') && github.event_name != 'pull_request' }}
 
 jobs:
   Linux:
-    if: env.skip_workflow == 'false'
+    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
     strategy:
       matrix:
         os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
@@ -142,7 +141,7 @@ jobs:
           path: build/python/dist/*-manylinux*.whl
 
   Windows-MinGW32:
-    if: env.skip_workflow == 'false'
+    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
     runs-on: windows-latest
     steps:
       - name: Set up Python 3.9
@@ -184,7 +183,7 @@ jobs:
           path: build/Testing/Temporary
 
   Windows-MSVC:
-    if: env.skip_workflow == 'false'
+    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
     runs-on: windows-latest
     steps:
       - name: Set up Python 3.9
@@ -281,7 +280,7 @@ jobs:
             build\python\setup.py
 
   MacOSX:
-    if: env.skip_workflow == 'false'
+    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
     strategy:
       matrix:
         os: [ macos-10.15, ]
