@@ -220,7 +220,8 @@ jobs:
         run: python setup.py install
       - name: Configure JSBSim
         run: |
-          mkdir build && cd build
+          New-Item -Path .\build -ItemType Directory -Force
+          cd build
           # Julia does not support MSVC
           cmake -DCMAKE_INCLUDE_PATH="$(get-location)\..\cxxtest" -DBUILD_JULIA_PACKAGE=OFF ..
       - name: Build JSBSim
