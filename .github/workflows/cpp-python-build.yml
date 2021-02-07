@@ -194,6 +194,13 @@ jobs:
         run: pip install -U cython numpy pandas scipy wheel pywin32
       - name: Checkout JSBSim
         uses: actions/checkout@v2
+      - name: Cache CTest cost data
+        # This file is used by CTest to optimize the distribution of the tests
+        # between the cores and reduce execution time.
+        uses: actions/cache@v2
+        with:
+          path: build/Testing/Temporary/CTestCostData.txt
+          key: ${{ runner.os }}-${{ hashFiles('tests/CMakeLists.txt') }}
       - name: Install & Configure Doxygen
         if: env.release == 'true'
         run: |
@@ -294,6 +301,13 @@ jobs:
         run: pip install -U cython numpy pandas scipy wheel
       - name: Checkout JSBSim
         uses: actions/checkout@v2
+      - name: Cache CTest cost data
+        # This file is used by CTest to optimize the distribution of the tests
+        # between the cores and reduce execution time.
+        uses: actions/cache@v2
+        with:
+          path: build/Testing/Temporary/CTestCostData.txt
+          key: ${{ matrix.os }}-${{ hashFiles('tests/CMakeLists.txt') }}
       - name: Install & Configure Doxygen
         if: env.release == 'true'
         run: |
