@@ -327,7 +327,7 @@ jobs:
         run: python setup.py install
       - name: Configure JSBSim
         run: |
-          mkdir build && cd build
+          mkdir -p build && cd build
           cmake -DCMAKE_INCLUDE_PATH=$PWD/../cxxtest ..
       - name: Build JSBSim
         working-directory: build
