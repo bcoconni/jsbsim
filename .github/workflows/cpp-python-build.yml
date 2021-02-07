@@ -4,10 +4,11 @@ on: [push, pull_request]
 
 env:
   release: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) }}
+  skip_workflow: ${{ startsWith(github.event.head_commit.message, ['[skip ci]', '[ci skip]']) && github.event_name != 'pull_request' }}
 
 jobs:
   Linux:
-    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
+    if: env.skip_workflow == 'false'
     strategy:
       matrix:
         os: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
@@ -52,6 +53,13 @@ jobs:
         run: |
           mkdir build && cd build
           cmake -DCPACK_GENERATOR=DEB -DINSTALL_PYTHON_MODULE=ON -DCMAKE_C_FLAGS_DEBUG="-g -O2" -DCMAKE_CXX_FLAGS_DEBUG="-g -O2" -DCMAKE_BUILD_TYPE=Debug -DSYSTEM_EXPAT=${{matrix.expat}} -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} ..
+      - name: Cache CTest cost data
+        # This file is used by CTest to optimize the distribution of the tests
+        # between the cores and reduce execution time.
+        uses: actions/cache@v2
+        with:
+          path: build/Testing/Temporary/CTestCostData.txt
+          key: ${{ matrix.os }}-${{ hashFiles('tests/CMakeLists.txt') }}
       - name: Build JSBSim
         working-directory: build
         run: make -j2
@@ -134,7 +142,7 @@ jobs:
           path: build/python/dist/*-manylinux*.whl
 
   Windows-MinGW32:
-    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
+    if: env.skip_workflow == 'false'
     runs-on: windows-latest
     steps:
       - name: Set up Python 3.9
@@ -176,7 +184,7 @@ jobs:
           path: build/Testing/Temporary
 
   Windows-MSVC:
-    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
+    if: env.skip_workflow == 'false'
     runs-on: windows-latest
     steps:
       - name: Set up Python 3.9
@@ -273,7 +281,7 @@ jobs:
             build\python\setup.py
 
   MacOSX:
-    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') || github.event_name == 'pull_request' }}
+    if: env.skip_workflow == 'false'
     strategy:
       matrix:
         os: [ macos-10.15, ]
