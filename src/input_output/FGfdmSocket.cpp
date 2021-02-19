@@ -47,6 +47,7 @@ INCLUDES
 #include <unistd.h>
 #include <fcntl.h>
 #else
+#include <sys/select.h>
 #include <fcntl.h>
 #include <unistd.h>
 #endif
