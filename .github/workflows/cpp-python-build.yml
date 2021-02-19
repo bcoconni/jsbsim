@@ -520,12 +520,12 @@ jobs:
           python-version: '3.6'
       - name: PyPI deployment
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
         run: |
           pip install -U twine
-          twine upload dist/*.whl
-          twine upload dist/*.tar.gz
+          twine upload --repository testpypi dist/*.whl
+          twine upload --repository testpypi dist/*.tar.gz
 
     # Deploy stable release to GitHub
       - name: Get JSBSim version
