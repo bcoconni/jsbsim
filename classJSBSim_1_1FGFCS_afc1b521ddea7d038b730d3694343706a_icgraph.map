@@ -1,0 +1,7 @@
+<map id="GetThrottlePos" name="GetThrottlePos">
+<area shape="rect" id="node2" href="$classJSBSim_1_1FGFCS.html#a19d60d676eda1a38972e7cf3f7c707c7" title="Gets the flaps position. " alt="" coords="223,56,305,83"/>
+<area shape="rect" id="node6" href="$classJSBSim_1_1FGFDMExec.html#aa83769769c700eba0b0b82a5c62dbc71" title="This function executes each scheduled model in succession. " alt="" coords="172,107,356,133"/>
+<area shape="rect" id="node3" href="$classJSBSim_1_1FGFCS.html#aae4680454468e1f7bf3ee7a18b2c5a0c" title="Retrieves all component outputs for inclusion in output stream. " alt="" coords="404,5,567,32"/>
+<area shape="rect" id="node4" href="$classJSBSim_1_1FGOutputSocket.html#a0d7143a7146c3401f1c71e68d68097d6" title="Generates the output. " alt="" coords="615,23,796,65"/>
+<area shape="rect" id="node5" href="$classJSBSim_1_1FGOutputFG.html#ac139d3edf9cdfcdd83a3eba596995817" title="Evaluate the output directives from an XML file. " alt="" coords="408,107,563,149"/>
+</map>

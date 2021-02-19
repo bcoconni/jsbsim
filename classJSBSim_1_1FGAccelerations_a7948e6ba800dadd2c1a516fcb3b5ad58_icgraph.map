@@ -1,0 +1,7 @@
+<map id="GetPQRdot" name="GetPQRdot">
+<area shape="rect" id="node2" href="$classJSBSim_1_1FGAccelerations.html#a072db9ba5c626409e95ed1000e8fe9c6" title="Initializes the FGAccelerations class prior to a new execution. " alt="" coords="161,29,314,56"/>
+<area shape="rect" id="node4" href="$classJSBSim_1_1FGOutputSocket.html#a0d7143a7146c3401f1c71e68d68097d6" title="Generates the output. " alt="" coords="147,81,328,122"/>
+<area shape="rect" id="node5" href="$classJSBSim_1_1FGTrim.html#a6a5e26b6c78ad99b63d075c6acc70679" title="Execute the trim. " alt="" coords="150,147,325,173"/>
+<area shape="rect" id="node3" href="$classJSBSim_1_1FGAccelerations.html#acc320618711d9eb10e07dca9f96a62ef" title="Retrieves the weight applied on the body. " alt="" coords="411,29,501,56"/>
+<area shape="rect" id="node6" href="$classJSBSim_1_1FGFDMExec.html#a8ae88a0b73749057a42c729d2330f5ee" title="Executes trimming in the selected mode. " alt="" coords="376,139,536,181"/>
+</map>

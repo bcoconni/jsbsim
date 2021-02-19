@@ -1,0 +1,7 @@
+<map id="FGDeadBand" name="FGDeadBand">
+<area shape="rect" id="node2" href="$classJSBSim_1_1FGFCSComponent.html" title="Base class for JSBSim Flight Control System Components. " alt="" coords="597,191,736,217"/>
+<area shape="rect" id="node3" href="$classJSBSim_1_1FGJSBBase.html" title="JSBSim Base class. " alt="" coords="294,73,386,100"/>
+<area shape="rect" id="node4" title="STL class. " alt="" coords="5,43,64,69"/>
+<area shape="rect" id="node6" href="$classJSBSim_1_1FGPropertyManager.html" title="FGPropertyManager" alt="" coords="265,191,415,217"/>
+<area shape="rect" id="node7" href="$classJSBSim_1_1FGFCS.html" title="Encapsulates the Flight Control System (FCS) functionality. " alt="" coords="309,241,371,268"/>
+</map>
