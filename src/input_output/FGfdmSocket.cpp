@@ -43,11 +43,13 @@ INCLUDES
 #elif defined(__OpenBSD__)
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <fcntl.h>
 #include <unistd.h>
 #elif defined(__FreeBSD__)
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
 #include <fcntl.h>
 #include <unistd.h>
 #else
