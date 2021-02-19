@@ -38,18 +38,16 @@ HISTORY
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
+#include "FGfdmSocket.h"
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <ws2tcpip.h>
 #elif defined(__OpenBSD__)
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
 #include <fcntl.h>
 #include <unistd.h>
 #elif defined(__FreeBSD__)
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <fcntl.h>
 #include <unistd.h>
 #else
@@ -59,7 +57,6 @@ INCLUDES
 #endif
 #include <iomanip>
 #include <cstring>
-#include "FGfdmSocket.h"
 
 using std::cout;
 using std::cerr;

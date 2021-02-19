@@ -42,13 +42,13 @@ INCLUDES
 #include "FGJSBBase.h"
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
-  #include <winsock.h>
-  #include <io.h>
+#include <winsock.h>
+#include <io.h>
 #elif defined(__FreeBSD__)
-  #include <sys/types.h>
-  #include <netinet/in.h>
+#include <sys/types.h>
+#include <netinet/in.h>
 #else
-  #include <netdb.h>
+#include <netdb.h>
 #endif
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
