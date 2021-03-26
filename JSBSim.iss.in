@@ -14,13 +14,18 @@ WizardSmallImageFile=small\*.bmp
 [Components]
 Name: "executables"; Description: "JSBSim and aeromatic executables"; Types: full compact
 Name: "data"; Description: "JSBSim scripts and aircraft data"; Types: full
+Name: "development"; Description: "JSBSim C++ headers and libraries"; Types: full
 
 [Files]
-Source: "${CMAKE_BINARY_DIR}\src\JSBSim.exe"; DestDir: "{app}"; Components: executables
-Source: "${CMAKE_BINARY_DIR}\utils\aeromatic++\aeromatic.exe"; DestDir: "{app}"; Components: executables
+Source: "${CMAKE_BINARY_DIR}\src\RelWithDebInfo\JSBSim.exe"; DestDir: "{app}"; Components: executables
+Source: "${CMAKE_BINARY_DIR}\utils\aeromatic++\RelWithDebInfo\aeromatic.exe"; DestDir: "{app}"; Components: executables
 Source: "${CMAKE_BINARY_DIR}\msvcp*.dll"; DestDir: "{app}"; Components: executables
 Source: "${CMAKE_SOURCE_DIR}\aircraft\*.xml"; DestDir: "{app}\aircraft"; Flags: recursesubdirs; Components: data
 Source: "${CMAKE_SOURCE_DIR}\data_output\*.xml"; DestDir: "{app}\data_output"; Components: data
 Source: "${CMAKE_SOURCE_DIR}\engine\*.xml"; DestDir: "{app}\engine"; Components: data
 Source: "${CMAKE_SOURCE_DIR}\scripts\*.xml"; DestDir: "{app}\scripts"; Components: data
 Source: "${CMAKE_SOURCE_DIR}\systems\*.xml"; DestDir: "{app}\systems"; Components: data
+Source: "${CMAKE_SOURCE_DIR}\src\*.h"; DestDir: "{app}\include"; Flags: recursesubdirs; Components: development
+Source: "${CMAKE_SOURCE_DIR}\src\*.hxx"; DestDir: "{app}\include"; Flags: recursesubdirs; Components: development
+Source: "${CMAKE_SOURCE_DIR}\src\*.hpp"; DestDir: "{app}\include"; Flags: recursesubdirs; Components: development
+Source: "${CMAKE_BINARY_DIR}\src\RelWithDebInfo\*.lib"; DestDir: "{app}\lib\RelWithDebInfo"; Components: development
