@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+<fdm_config name="Falcon 9 Block 5" version="2.0">
+    <metrics>
+        <wingarea unit="FT2"> 1 </wingarea>
+        <wingspan unit="FT"> 1 </wingspan>
+        <chord unit="FT"> 1 </chord>
+    </metrics>
+    <aerodynamics/>
+    <ground_reactions/>
+    <mass_balance>
+        <pointmass name="First Stage Structure">
+            <form shape="tube">
+                <radius unit="FT"> 12.0 </radius>
+                <length unit="M"> 41.5 </length>
+            </form>
+            <weight unit="KG"> 17970 </weight>
+            <location unit="M">
+                <x> 20.75 </x>
+                <y>  0.0  </y>
+                <z>  0.0  </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 0">
+            <!-- Engine on the axis of symmetry -->
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 1">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> 1.176 </y>
+                <z> 0.0 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 2">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> 0.832 </y>
+                <z> 0.832 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 3">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> 1.176 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 4">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> -0.832 </y>
+                <z> 0.832 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 5">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> -1.176 </y>
+                <z> 0.0 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 6">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> -0.832 </y>
+                <z> -0.832 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 7">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> 0.0 </y>
+                <z> -1.176 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Engine 8">
+            <weight unit="KG"> 470 </weight>
+            <location unit="M">
+                <x> 0.0 </x>
+                <y> 0.832 </y>
+                <z> -0.832 </z>
+            </location>
+        </pointmass>
+
+        <pointmass name="Upper Elements">
+            <!-- 2nd stage, fairing, payload, etc. -->
+            <weight unit="KG"> 51800 </weight>
+            <location unit="M">
+                <x> 55.75 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </location>
+        </pointmass>
+    </mass_balance>
+
+    <propulsion>
+        <tank type="FUEL">
+            <location unit="M">
+                <x> 7.46 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </location>
+            <capacity unit="KG"> 133430 </capacity>
+            <contents unit="KG"> 133430 </contents>
+        </tank>
+
+        <tank type="OXIDIZER">
+            <location unit="M">
+                <x> 21.69 </x>
+                <y> 0.0 </y>
+                <z> 0.0 </z>
+            </location>
+            <capacity unit="KG"> 341570 </capacity>
+            <contents unit="KG"> 341570 </contents>
+        </tank>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 0 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> 0.0 </y>
+                    <z> 0.0 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 1 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> 1.176 </y>
+                    <z> 0.0 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 2 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> 0.832 </y>
+                    <z> 0.832 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 3 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> 0.0 </y>
+                    <z> 1.176 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 4 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> -0.832 </y>
+                    <z> 0.832 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 5 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> -1.176 </y>
+                    <z> 0.0 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 6 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> -0.832 </y>
+                    <z> -0.832 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 7 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> 0.0 </y>
+                    <z> -1.176 </z>
+                </location>
+            </thruster>
+        </engine>
+
+        <engine file="Merlin_1-D">
+            <!-- engine 8 -->
+            <feed> 0 </feed>
+            <feed> 1 </feed>
+            <thruster file="Merlin_1-D_nozzle">
+                <location unit="M">
+                    <x> 0.0 </x>
+                    <y> 0.832 </y>
+                    <z> -0.832 </z>
+                </location>
+            </thruster>
+        </engine>
+    </propulsion>
+</fdm_config>

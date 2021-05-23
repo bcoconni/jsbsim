@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+    Vacuum Isp
+    Sea Level Isp
+    Thrust @SL
+    Mass ratio     2.56 (Oxi to Fuel)
+-->
+<rocket_engine name="Merlin 1-D">
+  <isp> 311 </isp>
+  <maxthrottle> 1.0 </maxthrottle>
+  <minthrottle> 0.4 </minthrottle>
+  <slfuelflowmax unit="KG/SEC"> 90.35 </slfuelflowmax>
+  <sloxiflowmax unit="KG/SEC"> 231.30 </sloxiflowmax>
+</rocket_engine>

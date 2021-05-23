@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<runscript name="Falcon 9 static firing">
+    <use aircraft="Falcon9" initialize="LC39"/>
+    <run start="0.0" end="5.0" dt="0.005">
+        <property value="1"> forces/hold-down </property>
+
+        <event name="Start engine #0">
+            <condition> simulation/sim-time-sec ge 0.1 </condition>
+            <set name="fcs/throttle-cmd-norm[0]" value="1.0"/>
+            <notify/>
+        </event>
+
+        <event name="Engine #0 Thrust check">
+            <condition> simulation/sim-time-sec ge 1.0 </condition>
+            <notify>
+                <property caption="Engine #0 thrust (lbf)     "> propulsion/engine[0]/thrust-lbs </property>
+                <property caption="Fuel tank content (lbs)    "> propulsion/tank[0]/contents-lbs </property>
+                <property caption="Oxidizer tank content (lbs)"> propulsion/tank[1]/contents-lbs </property>
+                <property caption="Total thrust (lbf)         "> forces/fbx-prop-lbs </property>
+            </notify>
+        </event>
+
+        <event name="Engine #0 Fuel consumption check">
+            <condition> simulation/sim-time-sec ge 2.0 </condition>
+            <notify>
+                <property caption="Engine #0 thrust (lbf)     "> propulsion/engine[0]/thrust-lbs </property>
+                <property caption="Fuel tank content (lbs)    "> propulsion/tank[0]/contents-lbs </property>
+                <property caption="Oxidizer tank content (lbs)"> propulsion/tank[1]/contents-lbs </property>
+                <property caption="Total thrust (lbf)         "> forces/fbx-prop-lbs </property>
+            </notify>
+        </event>
+
+        <event name="Start all engines">
+            <condition> simulation/sim-time-sec ge 3.0 </condition>
+            <set name="fcs/throttle-cmd-norm[1]" value="1.0"/>
+            <set name="fcs/throttle-cmd-norm[2]" value="1.0"/>
+            <set name="fcs/throttle-cmd-norm[3]" value="1.0"/>
+            <set name="fcs/throttle-cmd-norm[4]" value="1.0"/>
+            <set name="fcs/throttle-cmd-norm[5]" value="1.0"/>
+            <set name="fcs/throttle-cmd-norm[6]" value="1.0"/>
+            <set name="fcs/throttle-cmd-norm[7]" value="1.0"/>
+            <set name="fcs/throttle-cmd-norm[8]" value="1.0"/>
+            <notify/>
+        </event>
+
+        <event name="Total thrust check">
+            <condition> simulation/sim-time-sec ge 4.0 </condition>
+            <notify>
+                <property caption="Engine #0 thrust (lbf)"> propulsion/engine[0]/thrust-lbs </property>
+                <property caption="Engine #1 thrust (lbf)"> propulsion/engine[1]/thrust-lbs </property>
+                <property caption="Engine #2 thrust (lbf)"> propulsion/engine[2]/thrust-lbs </property>
+                <property caption="Engine #3 thrust (lbf)"> propulsion/engine[3]/thrust-lbs </property>
+                <property caption="Engine #4 thrust (lbf)"> propulsion/engine[4]/thrust-lbs </property>
+                <property caption="Engine #5 thrust (lbf)"> propulsion/engine[5]/thrust-lbs </property>
+                <property caption="Engine #6 thrust (lbf)"> propulsion/engine[6]/thrust-lbs </property>
+                <property caption="Engine #7 thrust (lbf)"> propulsion/engine[7]/thrust-lbs </property>
+                <property caption="Engine #8 thrust (lbf)"> propulsion/engine[8]/thrust-lbs </property>
+                <property caption="Total thrust (lbf)    "> forces/fbx-prop-lbs </property>
+            </notify>
+        </event>
+   </run>
+</runscript>

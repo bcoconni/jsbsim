@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<initialize name="LC39">
+    <!--
+        This file sets up the vehicle to take off
+        from the launch pad.
+    -->
+    <latitude unit="DEG">   28.6269702 </latitude>
+    <longitude unit="DEG"> -80.6237944 </longitude>
+    <theta unit="DEG">  90.0 </theta>
+    <altitude unit="FT"> 0.0  </altitude>
+</initialize>
