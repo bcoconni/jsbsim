@@ -86,7 +86,7 @@ static int fp_flags = 0;
 static PyOS_sighandler_t handler = 0;
 
 static PyObject *fpe_error;
-PyMODINIT_FUNC PyInit_fpectl(void);
+PyMODINIT_FUNC initfpectl(void);
 static PyObject *turnon_sigfpe(PyObject *self,PyObject *args);
 static PyObject *turnoff_sigfpe(PyObject *self,PyObject *args);
 static PyObject *test_sigfpe(PyObject *self,PyObject *args);
