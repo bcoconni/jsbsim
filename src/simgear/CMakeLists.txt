@@ -5,7 +5,8 @@ add_subdirectory(misc)
 add_subdirectory(xml)
 add_subdirectory(io/iostreams)
 
-set(HEADERS compiler.h)
+set(HEADERS compiler.h
+            sg_inlines.h)
 
 add_library(Simgear OBJECT ${HEADERS})
 set_target_properties(Simgear PROPERTIES
