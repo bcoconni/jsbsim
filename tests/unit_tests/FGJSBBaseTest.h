@@ -3,6 +3,8 @@
 #include <cxxtest/TestSuite.h>
 #include <FGJSBBase.h>
 
+#include "input_output/FGXMLElement.h"
+
 class FGJSBBaseTest : public CxxTest::TestSuite, public JSBSim::FGJSBBase
 {
 public:

@@ -39,6 +39,7 @@ INCLUDES
 
 #include "FGJSBBase.h"
 #include "models/FGAtmosphere.h"
+#include "input_output/FGXMLElement.h"
 
 using namespace std;
 
@@ -84,6 +85,30 @@ unsigned int FGJSBBase::messageId = 0;
 int FGJSBBase::gaussian_random_number_phase = 0;
 
 short FGJSBBase::debug_lvl  = 1;
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+XMLException::XMLException(const Element* el, const string& msg)
+  : BaseException(msg), file_name(el->GetFileName()), line(el->GetLineNumber())
+{
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+XMLException::XMLException(const XMLException& e)
+  : BaseException(e.BaseException::what()), file_name(e.file_name), line(e.line)
+{
+  text << e.text.str();
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+const char* XMLException::what() const noexcept
+{
+  string msg(BaseException::what());
+  msg += text.str();
+  return msg.c_str();
+}
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

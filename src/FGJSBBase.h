@@ -61,6 +61,22 @@ class BaseException : public std::runtime_error {
     BaseException(const std::string& msg) : std::runtime_error(msg) {}
 };
 
+class Element;
+
+class XMLException : public BaseException {
+  public:
+    XMLException(const Element* el, const std::string& msg);
+    XMLException(const XMLException& e);
+    const std::string& GetFileName() const noexcept { return file_name; }
+    int GetLineNumber() const noexcept { return line; }
+    template<class T> XMLException& operator<<(const T& s) { text << s; return *this; }
+    const char* what() const noexcept;
+  private:
+    std::stringstream text;
+    const std::string file_name;
+    int line;
+};
+
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS DOCUMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/

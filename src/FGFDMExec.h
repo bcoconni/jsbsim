@@ -686,7 +686,7 @@ private:
   void SRand(int sr);
   int  SRand(void) const {return RandomSeed;}
   void LoadInputs(unsigned int idx);
-  void LoadPlanetConstants(void);
+  void LoadPlanetConstants(void) noexcept;
   void LoadModelConstants(void);
   bool Allocate(void);
   bool DeAllocate(void);

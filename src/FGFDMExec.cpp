@@ -178,7 +178,6 @@ FGFDMExec::~FGFDMExec()
 {
   try {
     Unbind();
-    DeAllocate();
   } catch (const string& msg ) {
     cout << "Caught error: " << msg << endl;
   }
@@ -401,8 +400,9 @@ void FGFDMExec::InitializeModels(void)
 
 bool FGFDMExec::DeAllocate(void)
 {
-
+  Unbind();
   Models.clear();
+  ChildFDMList.clear();
   modelLoaded = false;
   return modelLoaded;
 }
@@ -611,7 +611,7 @@ void FGFDMExec::LoadInputs(unsigned int idx)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFDMExec::LoadPlanetConstants(void)
+void FGFDMExec::LoadPlanetConstants(void) noexcept
 {
   Propagate->in.vOmegaPlanet     = Inertial->GetOmegaPlanet();
   Accelerations->in.vOmegaPlanet = Inertial->GetOmegaPlanet();
@@ -777,7 +777,16 @@ bool FGFDMExec::LoadModel(const string& model, bool addModelToPath)
 
   int saved_debug_lvl = debug_lvl;
   FGXMLFileRead XMLFileRead;
-  Element *document = XMLFileRead.LoadXMLDocument(aircraftCfgFileName); // "document" is a class member
+  Element *document;
+  try {
+    document = XMLFileRead.LoadXMLDocument(aircraftCfgFileName);
+  } catch(const BaseException& e) {
+    cerr << fgred
+         << "JSBSim failed to open the configuration file: " << aircraftCfgFileName
+         << fgdef << endl
+         << e.what() << endl;
+    return false;
+  }
 
   if (document) {
     if (IsChild) debug_lvl = 0;
@@ -797,164 +806,150 @@ bool FGFDMExec::LoadModel(const string& model, bool addModelToPath)
     }
 
     if (IsChild) debug_lvl = 0;
+    try {
+      // Process the planet element. This element is OPTIONAL.
+      element = document->FindElement("planet");
+      if (element) {
+        result = Models[eInertial]->Load(element);
+        if (!result)
+          throw XMLException(element, "Planet element has problems.");
 
-    // Process the planet element. This element is OPTIONAL.
-    element = document->FindElement("planet");
-    if (element) {
-      result = Models[eInertial]->Load(element);
-      if (!result) {
-        cerr << endl << "Planet element has problems in file " << aircraftCfgFileName << endl;
-        return result;
+        // Reload the planet constants and re-initialize the models.
+        LoadPlanetConstants();
+        IC->InitializeIC();
+        InitializeModels();
       }
-      // Reload the planet constants and re-initialize the models.
-      LoadPlanetConstants();
-      IC->InitializeIC();
-      InitializeModels();
+
+      // Process the metrics element. This element is REQUIRED.
+      element = document->FindElement("metrics");
+      if (element) {
+        result = Models[eAircraft]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft metrics element has problems.");
+      } else
+        throw XMLException(document, "No metrics element was found in the aircraft config file.");
+
+      // Process the mass_balance element. This element is REQUIRED.
+      element = document->FindElement("mass_balance");
+      if (element) {
+        result = Models[eMassBalance]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft mass_balance element has problems.");
+      } else
+        throw XMLException(document, "No mass_balance element was found in the aircraft config file.");
+
+      // Process the ground_reactions element. This element is REQUIRED.
+      element = document->FindElement("ground_reactions");
+      if (element) {
+        result = Models[eGroundReactions]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft ground_reactions element has problems.");
+      } else
+        throw XMLException(document, "No ground_reactions element was found in the aircraft config file.");
+
+      // Process the external_reactions element. This element is OPTIONAL.
+      element = document->FindElement("external_reactions");
+      if (element) {
+        result = Models[eExternalReactions]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft external_reactions element has problems.");
+      }
+
+      // Process the buoyant_forces element. This element is OPTIONAL.
+      element = document->FindElement("buoyant_forces");
+      if (element) {
+        result = Models[eBuoyantForces]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft buoyant_forces element has problems.");
+      }
+
+      // Process the propulsion element. This element is OPTIONAL.
+      element = document->FindElement("propulsion");
+      if (element) {
+        result = Propulsion->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft propulsion element has problems.");
+        for (unsigned int i=0; i < Propulsion->GetNumEngines(); ++i)
+          FCS->AddThrottle();
+      }
+
+      // Process the system element[s]. This element is OPTIONAL, and there may be more than one.
+      element = document->FindElement("system");
+      while (element) {
+        result = Models[eSystems]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft system element has problems.");
+        element = document->FindNextElement("system");
+      }
+
+      // Process the autopilot element. This element is OPTIONAL.
+      element = document->FindElement("autopilot");
+      if (element) {
+        result = Models[eSystems]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft autopilot element has problems.");
+      }
+
+      // Process the flight_control element. This element is OPTIONAL.
+      element = document->FindElement("flight_control");
+      if (element) {
+        result = Models[eSystems]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft flight_control element has problems.");
+      }
+
+      // Process the aerodynamics element. This element is OPTIONAL, but almost always expected.
+      element = document->FindElement("aerodynamics");
+      if (element) {
+        result = Models[eAerodynamics]->Load(element);
+        if (!result)
+          throw XMLException(element, "Aircraft aerodynamics element has problems.");
+      } else {
+        cerr << endl << "No expected aerodynamics element was found in the aircraft config file." << endl;
+      }
+
+      // Process the input element. This element is OPTIONAL, and there may be more than one.
+      element = document->FindElement("input");
+      while (element) {
+        if (!Input->Load(element))
+          throw XMLException(element, "Aircraft input element has problems.");
+
+        element = document->FindNextElement("input");
+      }
+
+      // Process the output element[s]. This element is OPTIONAL, and there may be
+      // more than one.
+      element = document->FindElement("output");
+      while (element) {
+        if (!Output->Load(element))
+          throw XMLException(element, "Aircraft output element has problems.");
+
+        element = document->FindNextElement("output");
+      }
+
+      // Lastly, process the child element. This element is OPTIONAL - and NOT YET SUPPORTED.
+      element = document->FindElement("child");
+      if (element) {
+        result = ReadChild(element);
+        if (!result)
+          throw XMLException(element, "Aircraft child element has problems.");
+      }
     }
-
-    // Process the metrics element. This element is REQUIRED.
-    element = document->FindElement("metrics");
-    if (element) {
-      result = Models[eAircraft]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft metrics element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-    } else {
-      cerr << endl << "No metrics element was found in the aircraft config file." << endl;
+    catch(const XMLException& e) {
+      cerr << endl
+           << "In file " << e.GetFileName() << ": line " << e.GetLineNumber() << endl
+           << e.what() << endl;
+      // Reset the models.
+      DeAllocate();
+      Allocate();
       return false;
     }
-
-    // Process the mass_balance element. This element is REQUIRED.
-    element = document->FindElement("mass_balance");
-    if (element) {
-      result = Models[eMassBalance]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft mass_balance element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-    } else {
-      cerr << endl << "No mass_balance element was found in the aircraft config file." << endl;
+    catch(const BaseException& e) {
+      cerr << e.what() << endl;
+      // Reset the models.
+      DeAllocate();
+      Allocate();
       return false;
-    }
-
-    // Process the ground_reactions element. This element is REQUIRED.
-    element = document->FindElement("ground_reactions");
-    if (element) {
-      result = Models[eGroundReactions]->Load(element);
-      if (!result) {
-        cerr << endl << element->ReadFrom()
-             << "Aircraft ground_reactions element has problems in file "
-             << aircraftCfgFileName << endl;
-        return result;
-      }
-    } else {
-      cerr << endl << "No ground_reactions element was found in the aircraft config file." << endl;
-      return false;
-    }
-
-    // Process the external_reactions element. This element is OPTIONAL.
-    element = document->FindElement("external_reactions");
-    if (element) {
-      result = Models[eExternalReactions]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft external_reactions element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-    }
-
-    // Process the buoyant_forces element. This element is OPTIONAL.
-    element = document->FindElement("buoyant_forces");
-    if (element) {
-      result = Models[eBuoyantForces]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft buoyant_forces element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-    }
-
-    // Process the propulsion element. This element is OPTIONAL.
-    element = document->FindElement("propulsion");
-    if (element) {
-      result = Propulsion->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft propulsion element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-      for (unsigned int i=0; i < Propulsion->GetNumEngines(); i++)
-        FCS->AddThrottle();
-    }
-
-    // Process the system element[s]. This element is OPTIONAL, and there may be more than one.
-    element = document->FindElement("system");
-    while (element) {
-      result = Models[eSystems]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft system element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-      element = document->FindNextElement("system");
-    }
-
-    // Process the autopilot element. This element is OPTIONAL.
-    element = document->FindElement("autopilot");
-    if (element) {
-      result = Models[eSystems]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft autopilot element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-    }
-
-    // Process the flight_control element. This element is OPTIONAL.
-    element = document->FindElement("flight_control");
-    if (element) {
-      result = Models[eSystems]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft flight_control element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-    }
-
-    // Process the aerodynamics element. This element is OPTIONAL, but almost always expected.
-    element = document->FindElement("aerodynamics");
-    if (element) {
-      result = Models[eAerodynamics]->Load(element);
-      if (!result) {
-        cerr << endl << "Aircraft aerodynamics element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
-    } else {
-      cerr << endl << "No expected aerodynamics element was found in the aircraft config file." << endl;
-    }
-
-    // Process the input element. This element is OPTIONAL, and there may be more than one.
-    element = document->FindElement("input");
-    while (element) {
-      if (!Input->Load(element))
-        return false;
-
-      element = document->FindNextElement("input");
-    }
-
-    // Process the output element[s]. This element is OPTIONAL, and there may be
-    // more than one.
-    element = document->FindElement("output");
-    while (element) {
-      if (!Output->Load(element))
-        return false;
-
-      element = document->FindNextElement("output");
-    }
-
-    // Lastly, process the child element. This element is OPTIONAL - and NOT YET SUPPORTED.
-    element = document->FindElement("child");
-    if (element) {
-      result = ReadChild(element);
-      if (!result) {
-        cerr << endl << "Aircraft child element has problems in file " << aircraftCfgFileName << endl;
-        return result;
-      }
     }
 
     // Since all vehicle characteristics have been loaded, place the values in the Inputs
@@ -1167,12 +1162,8 @@ bool FGFDMExec::ReadChild(Element* el)
   Element* location = el->FindElement("location");
   if (location) {
     child->Loc = location->FindElementTripletConvertTo("IN");
-  } else {
-    const string s("  No location was found for this child object!");
-    cerr << location->ReadFrom() << endl << highint << fgred
-         << s << reset << endl;
-    throw BaseException(s);
-  }
+  } else
+    throw XMLException(location, "No location was found for this child object!");
 
   Element* orientation = el->FindElement("orient");
   if (orientation) {
@@ -1225,7 +1216,7 @@ void FGFDMExec::DoTrim(int mode)
   if (Constructing) return;
 
   if (mode < 0 || mode > JSBSim::tNone)
-    throw("Illegal trimming mode!");
+    throw BaseException("Illegal trimming mode!");
 
   FGTrim trim(this, (JSBSim::TrimMode)mode);
   bool success = trim.DoTrim();
