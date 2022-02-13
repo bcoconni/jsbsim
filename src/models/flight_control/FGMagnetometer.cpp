@@ -62,11 +62,8 @@ FGMagnetometer::FGMagnetometer(FGFCS* fcs, Element* element)
   Element* location_element = element->FindElement("location");
   if (location_element)
     vLocation = location_element->FindElementTripletConvertTo("IN");
-  else {
-    cerr << element->ReadFrom()
-         << "No location given for magnetometer. " << endl;
-    throw("Malformed magnetometer specification.");
-  }
+  else
+    throw XMLException(element, "No location given for magnetometer.");
 
   vRadius = MassBalance->StructuralToBody(vLocation);
 

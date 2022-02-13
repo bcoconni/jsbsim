@@ -57,9 +57,9 @@ FGNozzle::FGNozzle(FGFDMExec* FDMExec, Element* nozzle_element, int num)
   if (nozzle_element->FindElement("area"))
     Area = nozzle_element->FindElementValueAsNumberConvertTo("area", "FT2");
   else {
-    const string s("Fatal Error: Nozzle exit area must be given in nozzle config file.");
-    cerr << s << endl;
-    throw BaseException(s);
+    XMLException exc(nozzle_element, "Missing parameter");
+    exc << "Nozzle exit area must be given in nozzle config file.";
+    throw exc;
   }
 
   Thrust = 0;

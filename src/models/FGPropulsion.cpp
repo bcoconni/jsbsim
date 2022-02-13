@@ -315,9 +315,8 @@ void FGPropulsion::InitRunning(int n)
 {
   if (n >= 0) { // A specific engine is supposed to be initialized
 
-    if (n >= (int)GetNumEngines() ) {
-      throw(string("Tried to initialize a non-existent engine!"));
-    }
+    if (n >= (int)GetNumEngines() )
+      throw BaseException("Tried to initialize a non-existent engine!");
 
     in.ThrottleCmd[n] = in.ThrottlePos[n] = 1; // Set the throttle command and position
     in.MixtureCmd[n] = in.MixturePos[n] = 1;   // Set the mixture command and position
@@ -378,39 +377,33 @@ bool FGPropulsion::Load(Element* el)
   while (engine_element) {
     if (!ModelLoader.Open(engine_element)) return false;
 
-    try {
-      // Locate the thruster definition
-      Element* thruster_element = engine_element->FindElement("thruster");
-      if (!thruster_element || !ModelLoader.Open(thruster_element))
-        throw("No thruster definition supplied with engine definition.");
+    // Locate the thruster definition
+    Element* thruster_element = engine_element->FindElement("thruster");
+    if (!thruster_element || !ModelLoader.Open(thruster_element))
+      throw XMLException(engine_element,
+                         "No thruster definition supplied with engine definition.");
 
-      if (engine_element->FindElement("piston_engine")) {
-        Element *element = engine_element->FindElement("piston_engine");
-        Engines.push_back(make_shared<FGPiston>(FDMExec, element, numEngines, in));
-      } else if (engine_element->FindElement("turbine_engine")) {
-        Element *element = engine_element->FindElement("turbine_engine");
-        Engines.push_back(make_shared<FGTurbine>(FDMExec, element, numEngines, in));
-      } else if (engine_element->FindElement("turboprop_engine")) {
-        Element *element = engine_element->FindElement("turboprop_engine");
-        Engines.push_back(make_shared<FGTurboProp>(FDMExec, element, numEngines, in));
-      } else if (engine_element->FindElement("rocket_engine")) {
-        Element *element = engine_element->FindElement("rocket_engine");
-        Engines.push_back(make_shared<FGRocket>(FDMExec, element, numEngines, in));
-      } else if (engine_element->FindElement("electric_engine")) {
-        Element *element = engine_element->FindElement("electric_engine");
-        Engines.push_back(make_shared<FGElectric>(FDMExec, element, numEngines, in));
-      } else if (engine_element->FindElement("brushless_dc_motor")) {
-        Element *element = engine_element->FindElement("brushless_dc_motor");
-        Engines.push_back(make_shared<FGBrushLessDCMotor>(FDMExec, element, numEngines, in));
-      }
-      else {
-        cerr << engine_element->ReadFrom() << " Unknown engine type" << endl;
-        return false;
-      }
-    } catch (std::string& str) {
-      cerr << endl << fgred << str << reset << endl;
-      return false;
+    if (engine_element->FindElement("piston_engine")) {
+      Element *element = engine_element->FindElement("piston_engine");
+      Engines.push_back(make_shared<FGPiston>(FDMExec, element, numEngines, in));
+    } else if (engine_element->FindElement("turbine_engine")) {
+      Element *element = engine_element->FindElement("turbine_engine");
+      Engines.push_back(make_shared<FGTurbine>(FDMExec, element, numEngines, in));
+    } else if (engine_element->FindElement("turboprop_engine")) {
+      Element *element = engine_element->FindElement("turboprop_engine");
+      Engines.push_back(make_shared<FGTurboProp>(FDMExec, element, numEngines, in));
+    } else if (engine_element->FindElement("rocket_engine")) {
+      Element *element = engine_element->FindElement("rocket_engine");
+      Engines.push_back(make_shared<FGRocket>(FDMExec, element, numEngines, in));
+    } else if (engine_element->FindElement("electric_engine")) {
+      Element *element = engine_element->FindElement("electric_engine");
+      Engines.push_back(make_shared<FGElectric>(FDMExec, element, numEngines, in));
+    } else if (engine_element->FindElement("brushless_dc_motor")) {
+      Element *element = engine_element->FindElement("brushless_dc_motor");
+      Engines.push_back(make_shared<FGBrushLessDCMotor>(FDMExec, element, numEngines, in));
     }
+    else
+      throw XMLException(engine_element, " Unknown engine type");
 
     numEngines++;
 

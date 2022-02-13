@@ -64,9 +64,9 @@ FGCondition::FGCondition(Element* element, std::shared_ptr<FGPropertyManager> Pr
     if (logic == "OR") Logic = eOR;
     else if (logic == "AND") Logic = eAND;
     else { // error
-      cerr << element->ReadFrom()
-           << "Unrecognized LOGIC token " << logic << endl;
-      throw std::invalid_argument("FGCondition: unrecognized logic value:'" + logic + "'");
+      XMLException exc(element, "");
+      exc << "FGCondition: unrecognized logic value:'" << logic << "'";
+      throw exc;
     }
   } else {
     Logic = eAND; // default
@@ -84,10 +84,9 @@ FGCondition::FGCondition(Element* element, std::shared_ptr<FGPropertyManager> Pr
     string tagName = condition_element->GetName();
 
     if (tagName != elName) {
-      cerr << condition_element->ReadFrom()
-           << "Unrecognized tag <" << tagName << "> in the condition statement."
-           << endl;
-      throw std::invalid_argument("FGCondition: unrecognized tag:'" + tagName + "'");
+      XMLException exc(condition_element, "");
+      exc << "Unrecognized tag <" << tagName << "> in the condition statement.";
+      throw exc;
     }
 
     conditions.push_back(new FGCondition(condition_element, PropertyManager));
@@ -115,17 +114,17 @@ FGCondition::FGCondition(const string& test, std::shared_ptr<FGPropertyManager> 
     conditional = test_strings[1];
     TestParam2 = new FGParameterValue(test_strings[2], PropertyManager, el);
   } else {
-    cerr << el->ReadFrom()
-         << "  Conditional test is invalid: \"" << test
-         << "\" has " << test_strings.size() << " elements in the "
-         << "test condition." << endl;
-    throw std::invalid_argument("FGCondition: incorrect number of test elements:" + std::to_string(test_strings.size()));
+    XMLException exc(el, "");
+    exc << "  Conditional test is invalid: \"" << test << "\" has "
+       << test_strings.size() << " elements in the test condition.";
+    throw exc;
   }
 
   Comparison = mComparison[conditional];
   if (Comparison == ecUndef) {
-    throw std::invalid_argument("FGCondition: Comparison operator: \""+conditional
-          +"\" does not exist.  Please check the conditional.");
+    XMLException exc(el, "");
+    exc << "Comparison operator: \"" << conditional << "\" does not exist.";
+    throw exc;
   }
 }
 

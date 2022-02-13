@@ -255,15 +255,15 @@ FGPiston::FGPiston(FGFDMExec* exec, Element* el, int engine_number, struct Input
       } else {
         cerr << "Unknown table type: " << name << " in piston engine definition." << endl;
       }
-    } catch (std::string& str) {
+    } catch (const BaseException& e) {
       // Make sure allocated resources are freed before rethrowing.
       // (C++ standard guarantees that a null pointer deletion is no-op).
       delete Lookup_Combustion_Efficiency;
       delete Mixture_Efficiency_Correlation;
-      throw("Error loading piston engine table:" + name + ". " + str);
+      cerr << "Error loading piston engine table:" << name << ". " << e.what();
+      throw;
     }
   }
-
 
   volumetric_efficiency_reduced = volumetric_efficiency;
 

@@ -104,9 +104,8 @@ unsigned int FGEngine::GetSourceTank(unsigned int i) const
 {
   if (i < SourceTanks.size()) {
     return SourceTanks[i];
-  } else {
-    throw("No such source tank is available for this engine");
-  }
+  } else
+    throw BaseException("No such source tank is available for this engine");
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,8 +163,9 @@ void FGEngine::LoadThruster(FGFDMExec* exec, Element *thruster_element)
     Element *document = thruster_element->FindElement("direct");
     Thruster = new FGThruster(exec, document, EngineNumber);
   } else {
-    cerr << thruster_element->ReadFrom() << " Unknown thruster type" << endl;
-    throw("Failed to load the thruster");
+    XMLException exc(thruster_element, "Failed to load the thruster");
+    exc << " Unknown thruster type";
+    throw exc;
   }
 
   Debug(2);
@@ -203,8 +203,9 @@ bool FGEngine::Load(FGFDMExec *exec, Element *engine_element)
   if (local_element) {
     try {
       LoadThruster(exec, local_element);
-    } catch (std::string& str) {
-      throw("Error loading engine " + Name + ". " + str);
+    } catch (const BaseException& e) {
+      cerr << "Error loading engine " << Name << ". " << e.what() << endl;
+      throw;
     }
   } else {
     cerr << "No thruster definition supplied with engine definition." << endl;

@@ -1016,16 +1016,11 @@ bool FGInitialCondition::Load(const SGPath& rstfile, bool useStoredPath)
   if (!document) {
     stringstream s;
     s << "File: " << init_file_name << " could not be read.";
-    cerr << s.str() << endl;
     throw BaseException(s.str());
   }
 
-  if (document->GetName() != string("initialize")) {
-    stringstream s;
-    s << "File: " << init_file_name << " is not a reset file.";
-    cerr << s.str() << endl;
-    throw BaseException(s.str());
-  }
+  if (document->GetName() != string("initialize"))
+    throw XMLException(document, "Not a reset file.");
 
   double version = HUGE_VAL;
   bool result = false;
@@ -1036,9 +1031,8 @@ bool FGInitialCondition::Load(const SGPath& rstfile, bool useStoredPath)
   if (version == HUGE_VAL) {
     result = Load_v1(document); // Default to the old version
   } else if (version >= 3.0) {
-    const string s("Only initialization file formats 1 and 2 are currently supported");
-    cerr << document->ReadFrom() << endl << s << endl;
-    throw BaseException(s);
+    throw XMLException(document,
+                      "Only initialization file formats 1 and 2 are currently supported");
   } else if (version >= 2.0) {
     result = Load_v2(document);
   } else if (version >= 1.0) {
@@ -1067,17 +1061,18 @@ bool FGInitialCondition::LoadLatitude(Element* position_el)
 
     if (fabs(latitude) > 0.5*M_PI) {
       string unit_type = latitude_el->GetAttributeValue("unit");
+      stringstream buffer;
       if (unit_type.empty()) unit_type="RAD";
 
-      cerr << latitude_el->ReadFrom() << "The latitude value "
-           << latitude_el->GetDataAsNumber() << " " << unit_type
-           << " is outside the range [";
+      XMLException exc(position_el, "");
+      exc << "The latitude value " << latitude_el->GetDataAsNumber()
+         << " " << unit_type << " is outside the range [";
       if (unit_type == "DEG")
-        cerr << "-90 DEG ; +90 DEG]" << endl;
+        exc << "-90 DEG ; +90 DEG]";
       else
-        cerr << "-PI/2 RAD; +PI/2 RAD]" << endl;
+        exc << "-PI/2 RAD; +PI/2 RAD]";
 
-      return false;
+      throw exc;
     }
 
     string lat_type = latitude_el->GetAttributeValue("type");
@@ -1247,8 +1242,7 @@ bool FGInitialCondition::Load_v2(Element* document)
         } else if (position_el->FindElement("altitudeMSL")) {
           SetAltitudeASLFtIC(position_el->FindElementValueAsNumberConvertTo("altitudeMSL", "FT"));
         } else {
-          cerr << endl << "  No altitude or radius initial condition is given." << endl;
-          result = false;
+          throw XMLException(position_el, "No altitude or radius initial condition is given.");
         }
 
         if (result)
@@ -1258,13 +1252,11 @@ bool FGInitialCondition::Load_v2(Element* document)
         position = position_el->FindElementTripletConvertTo("FT");
       }
     } else {
-      cerr << endl << "  Neither ECI nor ECEF frame is specified for initial position." << endl;
-      result = false;
+      throw XMLException(position_el,
+                         "Neither ECI nor ECEF frame is specified for initial position.");
     }
-  } else {
-    cerr << endl << "  Initial position not specified in this initialization file." << endl;
-    result = false;
-  }
+  } else
+    throw XMLException(document, "Initial position not specified in this initialization file.");
 
   // End of position initialization
 
@@ -1337,11 +1329,9 @@ bool FGInitialCondition::Load_v2(Element* document)
       orientation = FGQuaternion(vOrient);
 
     } else {
-
-      cerr << endl << fgred << "  Orientation frame type: \"" << frame
-           << "\" is not supported!" << reset << endl << endl;
-      result = false;
-
+      XMLException exc(orientation_el, "");
+      exc << "Orientation frame type: \"" << frame << "\" is not supported!";
+      throw exc;
     }
   }
 
@@ -1377,11 +1367,9 @@ bool FGInitialCondition::Load_v2(Element* document)
       vUVW_NED = Tb2l * vInitVelocity;
       lastSpeedSet = setuvw;
     } else {
-
-      cerr << endl << fgred << "  Velocity frame type: \"" << frame
-           << "\" is not supported!" << reset << endl << endl;
-      result = false;
-
+      XMLException exc(velocity_el, "");
+      exc << "Velocity frame type: \"" << frame << "\" is not supported!";
+      throw exc;
     }
 
   } else {
@@ -1425,11 +1413,9 @@ bool FGInitialCondition::Load_v2(Element* document)
     } else if (frame == "body") {
       vPQR_body = vAttRate;
     } else if (!frame.empty()) { // misspelling of frame
-
-      cerr << endl << fgred << "  Attitude rate frame type: \"" << frame
-           << "\" is not supported!" << reset << endl << endl;
-      result = false;
-
+      XMLException exc(attrate_el, "");
+      exc << "Attitude rate frame type: \"" << frame << "\" is not supported!";
+      throw exc;
     } else if (frame.empty()) {
       vPQR_body.InitMatrix();
     }

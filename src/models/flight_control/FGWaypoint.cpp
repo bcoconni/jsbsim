@@ -77,10 +77,9 @@ FGWaypoint::FGWaypoint(FGFCS* fcs, Element* element)
       }
     }
   } else {
-    cerr << element->ReadFrom() << endl
-         << "Target latitude is required for waypoint component: " << Name
-         << endl;
-    throw("Malformed waypoint definition");
+    XMLException exc(element, "Malformed waypoint definition");
+    exc << "Target latitude is required for waypoint component: " << Name;
+    throw exc;
   }
 
   if (element->FindElement("target_longitude") ) {
@@ -92,10 +91,9 @@ FGWaypoint::FGWaypoint(FGFCS* fcs, Element* element)
       }
     }
   } else {
-    cerr << element->ReadFrom() << endl
-         << "Target longitude is required for waypoint component: " << Name
-         << endl;
-    throw("Malformed waypoint definition");
+    XMLException exc(element, "Malformed waypoint definition");
+    exc << "Target longitude is required for waypoint component: " << Name;
+    throw exc;
   }
 
   if (element->FindElement("source_latitude") ) {
@@ -107,10 +105,9 @@ FGWaypoint::FGWaypoint(FGFCS* fcs, Element* element)
       }
     }
   } else {
-    cerr << element->ReadFrom() << endl
-         << "Source latitude is required for waypoint component: " << Name
-         << endl;
-    throw("Malformed waypoint definition");
+    XMLException exc(element, "Malformed waypoint definition");
+    exc << "Source latitude is required for waypoint component: " << Name;
+    throw exc;
   }
 
   if (element->FindElement("source_longitude") ) {
@@ -122,10 +119,9 @@ FGWaypoint::FGWaypoint(FGFCS* fcs, Element* element)
       }
     }
   } else {
-    cerr << element->ReadFrom() << endl
-         << "Source longitude is required for waypoint component: " << Name
-         << endl;
-    throw("Malformed waypoint definition");
+    XMLException exc(element, "Malformed waypoint definition");
+    exc << "Source longitude is required for waypoint component: " << Name;
+    throw exc;
   }
 
   unit = element->GetAttributeValue("unit");
@@ -134,10 +130,10 @@ FGWaypoint::FGWaypoint(FGFCS* fcs, Element* element)
       if      (unit == "DEG") eUnit = eDeg;
       else if (unit == "RAD") eUnit = eRad;
       else {
-        cerr << element->ReadFrom() << endl
-             << "Unknown unit " << unit << " in HEADING waypoint component, "
-             << Name << endl;
-        throw("Malformed waypoint definition");
+        XMLException exc(element, "Malformed waypoint definition");
+        exc << "Unknown unit " << unit << " in HEADING waypoint component, "
+            << Name;
+        throw exc;
       }
     } else {
       eUnit = eRad; // Default is radians if unspecified
@@ -147,10 +143,10 @@ FGWaypoint::FGWaypoint(FGFCS* fcs, Element* element)
       if      (unit == "FT") eUnit = eFeet;
       else if (unit == "M")  eUnit = eMeters;
       else {
-        cerr << element->ReadFrom() << endl
-             << "Unknown unit " << unit << " in DISTANCE waypoint component, "
-             << Name << endl;
-        throw("Malformed waypoint definition");
+        XMLException exc(element, "Malformed waypoint definition");
+        exc << "Unknown unit " << unit << " in DISTANCE waypoint component, "
+            << Name;
+        throw exc;
       }
     } else {
       eUnit = eFeet; // Default is feet if unspecified
@@ -179,19 +175,17 @@ bool FGWaypoint::Run(void )
   source.SetPositionGeodetic(source_longitude_rad, source_latitude_rad, 0.0);
 
   if (fabs(target_latitude_rad) > M_PI/2.0) {
-    cerr << endl;
-    cerr << "Target latitude in waypoint \"" << Name << "\" must be less than or equal to 90 degrees." << endl;
-    cerr << "(is longitude being mistakenly supplied?)" << endl;
-    cerr << endl;
-    throw("Waypoint target latitude exceeded 90 degrees.");
+    stringstream s;
+    s << "Target latitude in waypoint \"" << Name << "\" must be less than or equal to 90 degrees."
+      << "(is longitude being mistakenly supplied?)";
+    throw BaseException(s.str());
   }
 
   if (fabs(source_latitude_rad) > M_PI/2.0) {
-    cerr << endl;
-    cerr << "Source latitude in waypoint \"" << Name << "\" must be less than or equal to 90 degrees." << endl;
-    cerr << "(is longitude being mistakenly supplied?)" << endl;
-    cerr << endl;
-    throw("Source latitude exceeded 90 degrees.");
+    stringstream s;
+    s << "Source latitude in waypoint \"" << Name << "\" must be less than or equal to 90 degrees."
+      << "(is longitude being mistakenly supplied?)";
+    throw BaseException(s.str());
   }
 
   if (WaypointType == eHeading) {     // Calculate Heading

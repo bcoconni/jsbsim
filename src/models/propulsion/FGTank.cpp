@@ -120,18 +120,20 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
     Contents = 0.0;
   }
   if (Capacity <= GetUnusable()) {
-    cerr << el->ReadFrom() << "Tank capacity (" << Capacity
-         << " lbs) is lower than the amount of unusable fuel (" << GetUnusable()
-         << " lbs) for tank " << tank_number
-         << "! Did you accidentally swap unusable and capacity?" << endl;
-    throw("tank definition error");
+    XMLException exc(el, "Tank definition error.");
+    exc << "Tank capacity (" << Capacity
+        << " lbs) is lower than the amount of unusable fuel (" << GetUnusable()
+        << " lbs) for tank " << tank_number
+        << "! Did you accidentally swap unusable and capacity?";
+    throw exc;
   }
   if (Contents > Capacity) {
-    cerr << el->ReadFrom() << "Tank content (" << Contents
-         << " lbs) is greater than tank capacity (" << Capacity
-         << " lbs) for tank " << tank_number
-         << "! Did you accidentally swap contents and capacity?" << endl;
-    throw("tank definition error");
+    XMLException exc(el, "Tank definition error.");
+    exc << "Tank content (" << Contents
+        << " lbs) is greater than tank capacity (" << Capacity
+        << " lbs) for tank " << tank_number
+        << "! Did you accidentally swap contents and capacity?";
+    throw exc;
   }
   if (Contents < GetUnusable()) {
     cerr << el->ReadFrom() << "Tank content (" << Contents
@@ -158,7 +160,10 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
           function_ixx = new FGFunction(exec, element_ixx->FindElement("function"));
         }
       } else {
-        throw("For tank "+to_string(TankNumber)+" and when grain_config is specified an ixx must be specified when the FUNCTION grain type is specified.");
+        XMLException exc(element_Grain, "Tank definition error.");
+        exc << "For tank " << TankNumber
+            << " and when grain_config is specified an ixx must be specified when the FUNCTION grain type is specified.";
+        throw exc;
       }
 
       if (element_Grain->FindElement("iyy")) {
@@ -168,7 +173,10 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
           function_iyy = new FGFunction(exec, element_iyy->FindElement("function"));
         }
       } else {
-        throw("For tank "+to_string(TankNumber)+" and when grain_config is specified an iyy must be specified when the FUNCTION grain type is specified.");
+        XMLException exc(element_Grain, "Tank definition error.");
+        exc << "For tank " << TankNumber
+            << " and when grain_config is specified an iyy must be specified when the FUNCTION grain type is specified.";
+        throw exc;
       }
 
       if (element_Grain->FindElement("izz")) {
@@ -178,7 +186,10 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
           function_izz = new FGFunction(exec, element_izz->FindElement("function"));
         }
       } else {
-        throw("For tank "+to_string(TankNumber)+" and when grain_config is specified an izz must be specified when the FUNCTION grain type is specified.");
+        XMLException exc(element_Grain, "Tank definition error.");
+        exc << "For tank " << TankNumber
+            << " and when grain_config is specified an izz must be specified when the FUNCTION grain type is specified.";
+        throw exc;
       }
     }
     else
@@ -194,11 +205,9 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
 
     switch (grainType) {
       case gtCYLINDRICAL:
-        if (Radius <= InnerRadius) {
-          const string s("The bore diameter should be smaller than the total grain diameter!");
-          cerr << element_Grain->ReadFrom() << endl << s << endl;
-          throw BaseException(s);
-        }
+        if (Radius <= InnerRadius)
+          throw XMLException(element_Grain, "The bore diameter should be smaller than the total grain diameter!");
+
         Volume = M_PI * Length * (Radius*Radius - InnerRadius*InnerRadius); // cubic inches
         break;
       case gtENDBURNING:
@@ -208,11 +217,7 @@ FGTank::FGTank(FGFDMExec* exec, Element* el, int tank_number)
         Volume = 1;  // Volume is irrelevant for the FUNCTION type, but it can't be zero!
         break;
       case gtUNKNOWN:
-        {
-          const string s("Unknown grain type found in this rocket engine definition.");
-          cerr << el->ReadFrom() << endl << s << endl;
-          throw BaseException(s);
-        }
+          throw XMLException(element_Grain, "Unknown grain type found in this rocket engine definition.");
     }
     Density = (Capacity*lbtoslug)/Volume; // slugs/in^3
   }
@@ -376,11 +381,8 @@ void FGTank::CalculateInertias(void)
       Volume = (Contents*lbtoslug)/Density; // in^3
     } else if (Contents <= 0.0) {
       Volume = 0;
-    } else {
-      const string s("  Solid propellant grain density is zero!");
-      cerr << endl << s << endl;
-      throw BaseException(s);
-    }
+    } else
+      throw BaseException("Solid propellant grain density is zero!");
 
     switch (grainType) {
     case gtCYLINDRICAL:
@@ -402,11 +404,7 @@ void FGTank::CalculateInertias(void)
       Izz = function_izz->GetValue()*izz_unit;
       break;
     default:
-      {
-        const string s("Unknown grain type found.");
-        cerr << s << endl;
-        throw BaseException(s);
-      }
+        throw BaseException("Unknown grain type found.");
     }
 
   } else { // assume liquid propellant: shrinking snowball

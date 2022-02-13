@@ -43,7 +43,7 @@ INCLUDES
 #include "input_output/FGUDPInputSocket.h"
 #include "input_output/FGXMLFileRead.h"
 #include "input_output/FGModelLoader.h"
-
+ 
 using namespace std;
 
 namespace JSBSim {
@@ -84,7 +84,7 @@ bool FGInput::Load(Element* el)
   Element* element = ModelLoader.Open(el);
 
   if (!element) return false;
-
+  
   FGModel::PreLoad(element, FDMExec);
 
   size_t idx = InputTypes.size();
@@ -99,10 +99,8 @@ bool FGInput::Load(Element* el)
     Input = new FGInputSocket(FDMExec);
   } else if (type == "QTJSBSIM") {
     Input = new FGUDPInputSocket(FDMExec);
-  } else if (type != string("NONE")) {
-    cerr << element->ReadFrom()
-         << "Unknown type of input specified in config file" << endl;
-  }
+  } else if (type != string("NONE"))
+    throw XMLException(element, "Unknown type of input specified in config file");
 
   if (!Input) return false;
 

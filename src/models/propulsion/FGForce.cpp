@@ -105,11 +105,7 @@ const FGMatrix33& FGForce::Transform(void) const
   case tNone:
     return mT;
   default:
-    {
-      const string s("Unrecognized tranform requested from FGForce::Transform()");
-      cout << s << endl;
-      throw BaseException(s);
-    }
+    throw BaseException("Unrecognized tranform requested from FGForce::Transform()");
   }
 }
 

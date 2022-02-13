@@ -86,16 +86,16 @@ FGGain::FGGain(FGFCS* fcs, Element* element) : FGFCSComponent(fcs, element)
     }
     scale_element = element->FindElement("range");
     if (!scale_element)
-      throw(string("No range supplied for aerosurface scale component"));
+      throw XMLException(element, "No range supplied for aerosurface scale component");
     if (scale_element->FindElement("max") && scale_element->FindElement("min") )
     {
       OutMax = scale_element->FindElementValueAsNumber("max");
       OutMin = scale_element->FindElementValueAsNumber("min");
     } else {
-      cerr << scale_element->ReadFrom()
-           << "Maximum and minimum output values must be supplied for the "
-              "aerosurface scale component" << endl;
-      throw("Some inputs are missing.");
+      XMLException exc(scale_element, "Missing inputs.");
+      exc << "Maximum and minimum output values must be supplied for the "
+          <<  "aerosurface scale component";
+      throw exc;
     }
     ZeroCentered = true;
     Element* zero_centered = element->FindElement("zero_centered");
@@ -112,10 +112,9 @@ FGGain::FGGain(FGFCS* fcs, Element* element) : FGFCSComponent(fcs, element)
     if (element->FindElement("table")) {
       Table = new FGTable(PropertyManager, element->FindElement("table"));
     } else {
-      cerr << element->ReadFrom()
-           << "A table must be provided for the scheduled gain component"
-           << endl;
-      throw("Some inputs are missing.");
+      XMLException exc(element, "Missing inputs.");
+      exc << "A table must be provided for the scheduled gain component";
+      throw exc;
     }
   }
 

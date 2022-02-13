@@ -57,15 +57,12 @@ FGAccelerometer::FGAccelerometer(FGFCS* fcs, Element* element)
   Propagate = fcs->GetExec()->GetPropagate();
   Accelerations = fcs->GetExec()->GetAccelerations();
   MassBalance = fcs->GetExec()->GetMassBalance();
-  
+
   Element* location_element = element->FindElement("location");
   if (location_element)
     vLocation = location_element->FindElementTripletConvertTo("IN");
-  else {
-    cerr << element->ReadFrom()
-         << "No location given for accelerometer. " << endl;
-    throw("Malformed accelerometer specification");
-  }
+  else
+    throw XMLException(element, "No location given for accelerometer.");
 
   vRadius = MassBalance->StructuralToBody(vLocation);
 
@@ -86,7 +83,7 @@ bool FGAccelerometer::Run(void )
   // There is no input assumed. This is a dedicated acceleration sensor.
 
   vRadius = MassBalance->StructuralToBody(vLocation);
-    
+
   //aircraft forces
   vAccel = (Accelerations->GetBodyAccel()
             + Accelerations->GetPQRidot() * vRadius

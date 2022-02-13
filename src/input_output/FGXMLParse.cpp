@@ -31,6 +31,7 @@ INCLUDES
 
 #include "FGXMLParse.h"
 #include "input_output/string_utilities.h"
+#include "FGJSBBase.h"
 
 using namespace std;
 
@@ -76,9 +77,10 @@ void FGXMLParse::startElement (const char * name, const XMLAttributes &atts)
   }
 
   if (!current_element) {
-    cerr << "In file " << getPath() << ": line " << getLine() << endl
-         << "No current element read (running out of memory?)" << endl;
-    throw("Fatal error");
+    stringstream s;
+    s << "In file " << getPath() << ": line " << getLine() << endl
+      << "No current element read (running out of memory?)" << endl;
+    throw BaseException(s.str());
   }
 
   current_element->SetLineNumber(getLine());

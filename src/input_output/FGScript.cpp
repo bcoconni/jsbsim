@@ -407,16 +407,15 @@ bool FGScript::RunScript(void)
           if (thisEvent.SetParam[i] == 0L) { // Late bind property if necessary
             if (PropertyManager->HasNode(thisEvent.SetParamName[i])) {
               thisEvent.SetParam[i] = PropertyManager->GetNode(thisEvent.SetParamName[i]);
-            } else {
-              throw("No property, \""+thisEvent.SetParamName[i]+"\" is defined.");
-            }
+            } else
+              throw BaseException("No property, \""+thisEvent.SetParamName[i]+"\" is defined.");
           }
           thisEvent.OriginalValue[i] = thisEvent.SetParam[i]->getDoubleValue();
           if (thisEvent.Functions[i] != 0) { // Parameter should be set to a function value
             try {
               thisEvent.SetValue[i] = thisEvent.Functions[i]->GetValue();
-            } catch (string& msg) {
-              std::cerr << std::endl << "A problem occurred in the execution of the script. " << msg << endl;
+            } catch (const BaseException& e) {
+              std::cerr << std::endl << "A problem occurred in the execution of the script. " << e.what() << endl;
               throw;
             }
           }

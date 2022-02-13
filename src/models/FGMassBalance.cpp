@@ -268,11 +268,9 @@ void FGMassBalance::AddPointMass(Element* el)
   Element* loc_element = el->FindElement("location");
   string pointmass_name = el->GetAttributeValue("name");
   if (!loc_element) {
-    stringstream s;
-    s << el->ReadFrom() << "Pointmass " << pointmass_name
-         << " has no location.";
-    cerr << endl << s.str() << endl;
-    throw BaseException(s.str());
+    XMLException exc(el, "");
+    exc << "Pointmass " << pointmass_name << " has no location.";
+    throw exc;
   }
 
   double w = el->FindElementValueAsNumberConvertTo("weight", "LBS");

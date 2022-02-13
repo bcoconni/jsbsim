@@ -115,10 +115,10 @@ bool FGModel::Upload(Element* el, bool preLoad)
   if (!document) return false;
 
   if (document->GetName() != el->GetName()) {
-    cerr << el->ReadFrom()
-         << " Read model '" << document->GetName()
-         << "' while expecting model '" << el->GetName() << "'" << endl;
-    return false;
+    XMLException exc(el, "");
+    exc << " Read model '" << document->GetName()
+        << "' while expecting model '" << el->GetName() << "'";
+    throw exc;
   }
 
   bool result = true;

@@ -72,32 +72,32 @@ FGBrushLessDCMotor::FGBrushLessDCMotor(FGFDMExec* exec, Element* el, int engine_
   if (el->FindElement("maxvolts"))
     MaxVolts = el->FindElementValueAsNumberConvertTo("maxvolts", "VOLTS");
   else {
-    cerr << el->ReadFrom()
-         << "<maxvolts> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLException exc(el, "Missing parameter");
+    exc << "<maxvolts> is a mandatory parameter";
+    throw exc;
   }
 
   if (el->FindElement("velocityconstant"))
     Kv = el->FindElementValueAsNumber("velocityconstant");
   else {
-    cerr << el->ReadFrom()
-         << "<velocityconstant> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLException exc(el, "Missing parameter");
+    exc << "<velocityconstant> is a mandatory parameter";
+    throw exc;
   }
 
   if (el->FindElement("coilresistance"))
     CoilResistance = el->FindElementValueAsNumberConvertTo("coilresistance", "OHMS");
   else {
-    cerr << el->ReadFrom()
-         << "<coilresistance> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLException exc(el, "Missing parameter");
+    exc << "<coilresistance> is a mandatory parameter";
+    throw exc;
   }
   if (el->FindElement("noloadcurrent"))
     ZeroTorqueCurrent = el->FindElementValueAsNumberConvertTo("noloadcurrent", "AMPERES");
   else {
-    cerr << el->ReadFrom()
-         << "<noloadcurrent> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLException exc(el, "Missing parameter");
+    exc << "<noloadcurrent> is a mandatory parameter";
+    throw exc;
   }
 
   double MaxCurrent = MaxVolts / CoilResistance + ZeroTorqueCurrent;

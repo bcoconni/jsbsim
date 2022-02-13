@@ -70,14 +70,21 @@ public:
       infile.open(filename);
       if ( !infile.is_open()) {
         if (verbose) std::cerr << "Could not open file: " << filename << std::endl;
-        return 0L;
+        return nullptr;
       }
     } else {
       std::cerr << "No filename given." << std::endl;
-      return 0L;
+      return nullptr;
     }
 
-    readXML(infile, fparse, filename.utf8Str());
+    try {
+      readXML(infile, fparse, filename.utf8Str());
+    } catch(const std::runtime_error& e) {
+      throw BaseException(e.what());
+    } catch(...) {
+      throw;
+    }
+
     Element* document = fparse.GetDocument();
     infile.close();
 

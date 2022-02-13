@@ -59,9 +59,9 @@ FGFCSFunction::FGFCSFunction(FGFCS* fcs, Element* element)
   if (function_element)
     function = new FGFunction(fcs->GetExec(), function_element);
   else {
-    cerr << element->ReadFrom()
-         << "FCS Function should contain a \"function\" element" << endl;
-    throw("Malformed FCS function specification.");
+    XMLException exc(element, "Malformed FCS function specification.");
+    exc << "FCS Function should contain a <function> element";
+    throw exc;
   }
 
   bind(element, fcs->GetPropertyManager().get());

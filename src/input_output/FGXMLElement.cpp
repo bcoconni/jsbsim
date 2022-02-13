@@ -263,8 +263,9 @@ Element::~Element(void)
 
 string Element::GetAttributeValue(const string& attr)
 {
-  if (HasAttribute(attr))  return attributes[attr];
-  else                     return ("");
+  string value;
+  if (HasAttribute(attr)) value = attributes[attr];
+  return value;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -284,21 +285,16 @@ double Element::GetAttributeValueAsNumber(const string& attr)
 {
   string attribute = GetAttributeValue(attr);
 
-  if (attribute.empty()) {
-    std::stringstream s;
-    s << ReadFrom() << "Expecting numeric attribute value, but got no data";
-    cerr << s.str() << endl;
-    throw length_error(s.str());
-  }
+  if (attribute.empty())
+    throw XMLException(this, "Expecting numeric attribute value, but got no data");
   else {
     double number=0;
     if (is_number(trim(attribute)))
       number = atof(attribute.c_str());
     else {
-      std::stringstream s;
-      s << ReadFrom() << "Expecting numeric attribute value, but got: " << attribute;
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(this, "");
+      exc << "Expecting numeric attribute value, but got: " << attribute;
+      throw exc;
     }
 
     return (number);
@@ -349,29 +345,22 @@ double Element::GetDataAsNumber(void)
     if (is_number(trim(data_lines[0])))
       number = atof(data_lines[0].c_str());
     else {
-      std::stringstream s;
-      s << ReadFrom() << "Expected numeric value, but got: " << data_lines[0];
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(this, "");
+      exc << "Expected numeric value, but got: " << data_lines[0];
+      throw exc;
     }
 
     return number;
   } else if (data_lines.empty()) {
-    std::stringstream s;
-    s << ReadFrom() << "Expected numeric value, but got no data";
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    throw XMLException(this, "Expected numeric value, but got no data");
   } else {
-    cerr << ReadFrom() << "Attempting to get single data value in element "
-         << "<" << name << ">" << endl
-         << " from multiple lines:" << endl;
+    XMLException exc(this, "");
+    exc << "Attempting to get single data value in element "
+       << "<" << name << ">" << "\n"
+       << " from multiple lines:" << "\n";
     for(unsigned int i=0; i<data_lines.size(); ++i)
-      cerr << data_lines[i] << endl;
-    std::stringstream s;
-    s << ReadFrom() << "Attempting to get single data value in element "
-      << "<" << name << ">"
-      << " from multiple lines (" << data_lines.size() << ").";
-    throw length_error(s.str());
+      exc << data_lines[i] << "\n";
+    throw exc;
   }
 }
 
@@ -438,10 +427,9 @@ double Element::FindElementValueAsNumber(const string& el)
     value = DisperseValue(element, value);
     return value;
   } else {
-    std::stringstream s;
-    s << ReadFrom() << "Attempting to get non-existent element " << el;
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    XMLException exc(this, "");
+    exc << "Attempting to get non-existent element " << el;
+    throw exc;
   }
 }
 
@@ -486,28 +474,24 @@ double Element::FindElementValueAsNumberConvertTo(const string& el, const string
   Element* element = FindElement(el);
 
   if (!element) {
-    std::stringstream s;
-    s << ReadFrom() << "Attempting to get non-existent element " << el;
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    XMLException exc(this, "");
+    exc << "Attempting to get non-existent element " << el;
+    throw exc;
   }
 
   string supplied_units = element->GetAttributeValue("unit");
 
   if (!supplied_units.empty()) {
     if (convert.find(supplied_units) == convert.end()) {
-      std::stringstream s;
-      s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
-        << "\" does not exist (typo?).";
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(element, "");
+      exc << "Supplied unit: \"" << supplied_units << "\" does not exist (typo?).";
+      throw exc;
     }
     if (convert[supplied_units].find(target_units) == convert[supplied_units].end()) {
-      std::stringstream s;
-      s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
-        << "\" cannot be converted to " << target_units;
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(element, "");
+      exc << "Supplied unit: \"" << supplied_units << "\" cannot be converted to "
+         << target_units;
+      throw exc;
     }
   }
 
@@ -555,26 +539,22 @@ double Element::FindElementValueAsNumberConvertFromTo( const string& el,
   Element* element = FindElement(el);
 
   if (!element) {
-    std::stringstream s;
-    s << ReadFrom() << "Attempting to get non-existent element " << el;
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    XMLException exc(this, "");
+    exc << "Attempting to get non-existent element " << el;
+    throw exc;
   }
 
   if (!supplied_units.empty()) {
     if (convert.find(supplied_units) == convert.end()) {
-      std::stringstream s;
-      s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
-        << "\" does not exist (typo?).";
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(element, "");
+      exc << "Supplied unit: \"" << supplied_units << "\" does not exist (typo?).";
+      throw exc;
     }
     if (convert[supplied_units].find(target_units) == convert[supplied_units].end()) {
-      std::stringstream s;
-      s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
-        << "\" cannot be converted to " << target_units;
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(element, "");
+      exc << "Supplied unit: \"" << supplied_units << "\" cannot be converted to "
+         << target_units;
+      throw exc;
     }
   }
 
@@ -599,18 +579,15 @@ FGColumnVector3 Element::FindElementTripletConvertTo( const string& target_units
 
   if (!supplied_units.empty()) {
     if (convert.find(supplied_units) == convert.end()) {
-      std::stringstream s;
-      s << ReadFrom() << "Supplied unit: \"" << supplied_units
-        << "\" does not exist (typo?).";
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(this, "");
+      exc << "Supplied unit: \"" << supplied_units << "\" does not exist (typo?).";
+      throw exc;
     }
     if (convert[supplied_units].find(target_units) == convert[supplied_units].end()) {
-      std::stringstream s;
-      s << ReadFrom() << "Supplied unit: \"" << supplied_units
-        << "\" cannot be converted to " << target_units;
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      XMLException exc(this, "");
+      exc << "Supplied unit: \"" << supplied_units << "\" cannot be converted to "
+         << target_units;
+      throw exc;
     }
   }
 
@@ -685,10 +662,9 @@ double Element::DisperseValue(Element *e, double val, const std::string& supplie
         value = (val + disp * urn)*(fabs(urn)/urn);
       }
     } else {
-      std::stringstream s;
-      s << ReadFrom() << "Unknown dispersion type" << attType;
-      cerr << s.str() << endl;
-      throw domain_error(s.str());
+      XMLException exc(e, "");
+      exc << "Unknown dispersion type" << attType;
+      throw exc;
     }
 
   }

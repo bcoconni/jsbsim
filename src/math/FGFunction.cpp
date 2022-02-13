@@ -55,12 +55,12 @@ constexpr unsigned int MaxArgs = 9999;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-class WrongNumberOfArguments : public runtime_error
+class WrongNumberOfArguments : public XMLException
 {
 public:
   WrongNumberOfArguments(const string &msg, const vector<FGParameter_ptr> &p,
                          Element* el)
-    : runtime_error(msg), Parameters(p), element(el) {}
+    : XMLException(el, msg), Parameters(p), element(el) {}
   size_t NumberOfArguments(void) const { return Parameters.size(); }
   FGParameter* FirstParameter(void) const { return *(Parameters.cbegin()); }
   const Element* GetElement(void) const { return element; }
@@ -114,11 +114,9 @@ public:
     : FGFunction(pm), f(_f)
   {
     if (el->GetNumElements() != 0) {
-      ostringstream buffer;
-      buffer << el->ReadFrom() << fgred << highint
-             << "<" << el->GetName() << "> should have no arguments." << reset
-             << endl;
-      throw WrongNumberOfArguments(buffer.str(), Parameters, el);
+      WrongNumberOfArguments exc("", Parameters, el);
+      exc << "<" << el->GetName() << "> should have no arguments.";
+      throw exc;
     }
 
     bind(el, Prefix);
@@ -151,16 +149,14 @@ private:
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool GetBinary(double val, const string &ctxMsg)
+bool GetBinary(double val, const Element* el)
 {
   val = fabs(val);
   if (val < 1E-9) return false;
   else if (val-1 < 1E-9) return true;
   else {
-    cerr << ctxMsg << FGJSBBase::fgred << FGJSBBase::highint
-         << "Malformed conditional check in function definition."
-         << FGJSBBase::reset << endl;
-    throw("Fatal Error.");
+    XMLException exc(el, "Malformed conditional check in function definition.");
+    throw exc;
   }
 }
 
@@ -199,7 +195,7 @@ FGParameter_ptr VarArgsFn(const func_t& _f, FGFDMExec* fdmex, Element* el,
       return e.FirstParameter();
     }
     else
-      throw e.what();
+      throw;
   }
 }
 
@@ -242,11 +238,10 @@ FGFunction::FGFunction(FGFDMExec* fdmex, Element* el, const string& prefix,
 void FGFunction::CheckMinArguments(Element* el, unsigned int _min)
 {
   if (Parameters.size() < _min) {
-    ostringstream buffer;
-    buffer << el->ReadFrom() << fgred << highint
-           << "<" << el->GetName() << "> should have at least " << _min
-           << " argument(s)." << reset << endl;
-    throw WrongNumberOfArguments(buffer.str(), Parameters, el);
+    WrongNumberOfArguments exc("", Parameters, el);
+    exc << "<" << el->GetName() << "> should have at least " << _min
+        << " argument(s).";
+    throw exc;
   }
 }
 
@@ -255,11 +250,10 @@ void FGFunction::CheckMinArguments(Element* el, unsigned int _min)
 void FGFunction::CheckMaxArguments(Element* el, unsigned int _max)
 {
   if (Parameters.size() > _max) {
-    ostringstream buffer;
-    buffer << el->ReadFrom() << fgred << highint
-           << "<" << el->GetName() << "> should have no more than " << _max
-           << " argument(s)." << reset << endl;
-    throw WrongNumberOfArguments(buffer.str(), Parameters, el);
+    WrongNumberOfArguments exc("", Parameters, el);
+    exc << "<" << el->GetName() << "> should have no more than " << _max
+        << " argument(s).";
+    throw exc;
   }
 }
 
@@ -271,18 +265,16 @@ void FGFunction::CheckOddOrEvenArguments(Element* el, OddEven odd_even)
   switch(odd_even) {
   case OddEven::Even:
     if (Parameters.size() % 2 == 1) {
-      cerr << el->ReadFrom() << fgred << highint
-           << "<" << el->GetName() << "> must have an even number of arguments."
-           << reset << endl;
-      throw("Fatal Error");
+      XMLException exc(el, "");
+      exc << "<" << el->GetName() << "> must have an even number of arguments.";
+      throw exc;
     }
     break;
   case OddEven::Odd:
     if (Parameters.size() % 2 == 0) {
-      cerr << el->ReadFrom() << fgred << highint
-           << "<" << el->GetName() << "> must have an odd number of arguments."
-           << reset << endl;
-      throw("Fatal Error");
+      XMLException exc(el, "");
+      exc << "<" << el->GetName() << "> must have an odd number of arguments.";
+      throw exc;
     }
     break;
   default:
@@ -311,8 +303,8 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                       const string& Prefix)
 {
   Name = el->GetAttributeValue("name");
-  Element* element = el->GetElement();
-      
+  Element_ptr element = el->GetElement();
+
   auto sum = [](const decltype(Parameters)& Parameters)->double {
                double temp = 0.0;
 
@@ -321,7 +313,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
 
                return temp;
              };
-  
+
   while (element) {
     string operation = element->GetName();
 
@@ -333,15 +325,10 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
         Parameters.push_back(var);
       else {
         if (property_name.find("#") != string::npos) {
-          if (is_number(Prefix)) {
+          if (is_number(Prefix))
             property_name = replace(property_name,"#",Prefix);
-          }
-          else {
-            cerr << element->ReadFrom()
-                 << fgred << "Illegal use of the special character '#'"
-                 << reset << endl;
-            throw("Fatal Error.");
-          }
+          else
+            throw XMLException(element, "Illegal use of the special character '#'");
         }
 
         if (element->HasAttribute("apply")) {
@@ -423,10 +410,9 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                };
       Parameters.push_back(VarArgsFn<decltype(f)>(f, fdmex, element, Prefix, var));
     } else if (operation == "and") {
-      string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& Parameters)->double {
+      auto f = [element](const decltype(Parameters)& Parameters)->double {
                  for (auto p : Parameters) {
-                   if (!GetBinary(p->GetValue(), ctxMsg)) // As soon as one parameter is false, the expression is guaranteed to be false.
+                   if (!GetBinary(p->GetValue(), element)) // As soon as one parameter is false, the expression is guaranteed to be false.
                      return 0.0;
                  }
 
@@ -435,10 +421,9 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix,
                                                      var, MaxArgs));
     } else if (operation == "or") {
-      string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& Parameters)->double {
+      auto f = [element](const decltype(Parameters)& Parameters)->double {
                  for (auto p : Parameters) {
-                   if (GetBinary(p->GetValue(), ctxMsg)) // As soon as one parameter is true, the expression is guaranteed to be true.
+                   if (GetBinary(p->GetValue(), element)) // As soon as one parameter is true, the expression is guaranteed to be true.
                      return 1.0;
                  }
 
@@ -576,15 +561,13 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "not") {
-      string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
-                 return GetBinary(p[0]->GetValue(), ctxMsg) ? 0.0 : 1.0;
+      auto f = [element](const decltype(Parameters)& p)->double {
+                 return GetBinary(p[0]->GetValue(), element) ? 0.0 : 1.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "ifthen") {
-      string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
-                 if (GetBinary(p[0]->GetValue(), ctxMsg))
+      auto f = [element](const decltype(Parameters)& p)->double {
+                 if (GetBinary(p[0]->GetValue(), element))
                    return p[1]->GetValue();
                  else
                    return p[2]->GetValue();
@@ -623,14 +606,12 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       Parameters.push_back(new aFunc<decltype(f), 0>(f, PropertyManager, element,
                                                      Prefix));
     } else if (operation == "switch") {
-      string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
+      auto f = [element](const decltype(Parameters)& p)->double {
                  double temp = p[0]->GetValue();
                  if (temp < 0.0) {
-                   cerr << ctxMsg << fgred << highint
-                        << "The switch function index (" << temp
-                        << ") is negative." << reset << endl;
-                   throw("Fatal error");
+                   XMLException exc(element, "");
+                   exc << "The switch function index (" << temp << ") is negative.";
+                   throw exc;
                  }
                  size_t n = p.size()-1;
                  size_t i = static_cast<size_t>(temp+0.5);
@@ -638,12 +619,11 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                  if (i < n)
                    return p[i+1]->GetValue();
                  else {
-                   cerr << ctxMsg << fgred << highint
-                        << "The switch function index (" << temp
-                        << ") selected a value above the range of supplied values"
-                        << "[0:" << n-1 << "]"
-                        << " - not enough values were supplied." << reset << endl;
-                   throw("Fatal error");
+                   XMLException exc(element, "");
+                   exc << "The switch function index (" << temp
+                       << ") selected a value above the range of supplied values"
+                       << "[0:" << n-1 << "] - not enough values were supplied.";
+                   throw exc;
                  }
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix,
@@ -732,10 +712,10 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                  double sina = sin(alpha_local);
                  double cosb;
 
-                 if (fabs(cosa) > fabs(sina)) 
+                 if (fabs(cosa) > fabs(sina))
                    cosb = wind_local(eX) / cosa;
                  else
-                   cosb = wind_local(eZ) / sina;  
+                   cosb = wind_local(eZ) / sina;
 
                  return atan2(wind_local(eY), cosb)*radtodeg;
                };
@@ -790,8 +770,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
     } else if (operation == "rotation_bf_to_wf") {
       // Transforms the input vector from a body frame to a wind frame. The
       // origin of the vector remains the same.
-      string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
+      auto f = [element](const decltype(Parameters)& p)->double {
                  double rx = p[0]->GetValue();             //x component of input vector
                  double ry = p[1]->GetValue();             //y component of input vector
                  double rz = p[2]->GetValue();             //z component of input vector
@@ -800,12 +779,9 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                  double gamma = p[5]->GetValue()*degtorad; //roll angle of the body frame
                  int idx = static_cast<int>(p[6]->GetValue());
 
-                 if ((idx < 1) || (idx > 3)) {
-                   cerr << ctxMsg << fgred << highint
-                        << "The index must be one of the integer value 1, 2 or 3."
-                        << reset << endl;
-                   throw("Fatal error");
-                 }
+                 if ((idx < 1) || (idx > 3))
+                   throw XMLException(element,
+                                      "The index must be one of the integer value 1, 2 or 3.");
 
                  FGQuaternion qa(eY, -alpha), qb(eZ, beta), qc(eX, -gamma);
                  FGMatrix33 mT = (qa*qb*qc).GetT();
@@ -818,8 +794,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
     } else if (operation == "rotation_wf_to_bf") {
       // Transforms the input vector from q wind frame to a body frame. The
       // origin of the vector remains the same.
-      string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
+      auto f = [element](const decltype(Parameters)& p)->double {
                  double rx = p[0]->GetValue();             //x component of input vector
                  double ry = p[1]->GetValue();             //y component of input vector
                  double rz = p[2]->GetValue();             //z component of input vector
@@ -828,12 +803,9 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                  double gamma = p[5]->GetValue()*degtorad; //roll angle of the body frame
                  int idx = static_cast<int>(p[6]->GetValue());
 
-                 if ((idx < 1) || (idx > 3)) {
-                   cerr << ctxMsg << fgred << highint
-                        << "The index must be one of the integer value 1, 2 or 3."
-                        << reset << endl;
-                   throw("Fatal error");
-                 }
+                 if ((idx < 1) || (idx > 3))
+                   throw XMLException(element,
+                                      "The index must be one of the integer value 1, 2 or 3.");
 
                  FGQuaternion qa(eY, -alpha), qb(eZ, beta), qc(eX, -gamma);
                  FGMatrix33 mT = (qa*qb*qc).GetT();
@@ -845,9 +817,9 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                };
       Parameters.push_back(new aFunc<decltype(f), 7>(f, fdmex, element, Prefix, var));
     } else if (operation != "description") {
-      cerr << element->ReadFrom() << fgred << highint
-           << "Bad operation <" << operation
-           << "> detected in configuration file" << reset << endl;
+      XMLException exc(element, "");
+      exc << "Bad operation <" << operation << "> detected in configuration file";
+      throw exc;
     }
 
     // Optimize functions applied on constant parameters by replacing them by
@@ -919,7 +891,7 @@ void FGFunction::cacheValue(bool cache)
     cached = true;
   }
 }
-  
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 double FGFunction::GetValue(void) const
@@ -958,21 +930,21 @@ string FGFunction::CreateOutputNode(Element* el, const string& Prefix)
           Name = replace(Name,"#",Prefix);
           nName  = PropertyManager->mkPropertyName(Name, false);
         } else {
-          cerr << el->ReadFrom()
-               << "Malformed function name with number: " << Prefix
-               << " and property name: " << Name
-               << " but no \"#\" sign for substitution." << endl;
+          XMLException exc(el, "");
+          exc << "Malformed function name with number: " << Prefix
+              << " and property name: " << Name
+              << " but no \"#\" sign for substitution.";
+          throw exc;
         }
-      } else {
+      } else
         nName  = PropertyManager->mkPropertyName(Prefix + "/" + Name, false);
-      }
     }
 
     pNode = PropertyManager->GetNode(nName, true);
     if (pNode->isTied()) {
-      cerr << el->ReadFrom()
-           << "Property " << nName << " has already been successfully bound (late)." << endl;
-      throw("Failed to bind the property to an existing already tied node.");
+      XMLException exc(el, "");
+      exc << "Property " << nName << " has already been successfully bound (late).";
+      throw exc;
     }
   }
 

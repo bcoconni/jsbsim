@@ -131,9 +131,9 @@ FGFCSComponent::FGFCSComponent(FGFCS* _fcs, Element* element) : fcs(_fcs)
     bool node_exists = PropertyManager->HasNode(output_node_name);
     FGPropertyNode* OutputNode = PropertyManager->GetNode( output_node_name, true );
     if (!OutputNode) {
-      cerr << out_elem->ReadFrom() << "  Unable to process property: "
-           << output_node_name << endl;
-      throw(string("Invalid output property name in flight control definition"));
+      XMLException exc(out_elem, "Invalid output property in flight control definition");
+      exc << "Unable to process property: " << output_node_name;
+      throw exc;
     }
     OutputNodes.push_back(OutputNode);
     // If the node has just been created then it must be initialized to a
@@ -219,11 +219,11 @@ void FGFCSComponent::CheckInputNodes(size_t MinNodes, size_t MaxNodes, Element* 
   size_t num = InputNodes.size();
 
   if (num < MinNodes) {
-    cerr << el->ReadFrom()
-         << "    Not enough <input> nodes are provided" << endl
-         << "    Expecting " << MinNodes << " while " << num
-         << " are provided." << endl;
-    throw("Some inputs are missing.");
+    XMLException exc(el, "Missing inputs");
+    exc << "Not enough <input> nodes are provided."
+         << " Expecting " << MinNodes << " <input> nodes while " << num
+         << " are provided.";
+    throw exc;
   }
 
   if (num > MaxNodes) {

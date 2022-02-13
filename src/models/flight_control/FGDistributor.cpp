@@ -61,9 +61,8 @@ FGDistributor::FGDistributor(FGFCS* fcs, Element* element)
   string type_string = element->GetAttributeValue("type");
   if (type_string == "inclusive") Type = eInclusive;
   else if (type_string == "exclusive") Type = eExclusive;
-  else {
-    throw("Not a known Distributor type, "+type_string);
-  }
+  else
+    throw XMLException(element, "Not a known Distributor type, "+type_string);
 
   Element* case_element = element->FindElement("case");
   while (case_element) {

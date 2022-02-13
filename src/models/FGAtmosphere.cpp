@@ -236,7 +236,7 @@ double FGAtmosphere::ConvertToPSF(double p, ePressure unit) const
     targetPressure = p*70.7180803;
     break;
   default:
-    throw("Undefined pressure unit given");
+    throw BaseException("Undefined pressure unit given");
   }
 
   return targetPressure;
@@ -260,7 +260,7 @@ double FGAtmosphere::ConvertFromPSF(double p, ePressure unit) const
     targetPressure = p/70.7180803;
     break;
   default:
-    throw("Undefined pressure unit given");
+    throw BaseException("Undefined pressure unit given");
   }
 
   return targetPressure;

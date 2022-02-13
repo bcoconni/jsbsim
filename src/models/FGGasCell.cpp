@@ -85,11 +85,9 @@ FGGasCell::FGGasCell(FGFDMExec* exec, Element* el, unsigned int num,
   element = el->FindElement("location");
   if (element) {
     vXYZ = element->FindElementTripletConvertTo("IN");
-  } else {
-    const string s("Fatal Error: No location found for this gas cell.");
-    cerr << el->ReadFrom() << endl << s << endl;
-    throw BaseException(s);
-  }
+  } else
+    throw XMLException(el, "No location found for this gas cell.");
+
   if ((el->FindElement("x_radius") || el->FindElement("x_width")) &&
       (el->FindElement("y_radius") || el->FindElement("y_width")) &&
       (el->FindElement("z_radius") || el->FindElement("z_width"))) {
@@ -137,11 +135,9 @@ FGGasCell::FGGasCell(FGFDMExec* exec, Element* el, unsigned int num,
          2.0  * Zradius * Xwidth * Ywidth +
          Xwidth * Ywidth * Zwidth);
     }
-  } else {
-    const string s("Fatal Error: Gas cell shape must be given.");
-    cerr << el->ReadFrom() << endl << s << endl;
-    throw BaseException(s);
-  }
+  } else
+    throw XMLException(el, "Gas cell shape must be given.");
+
   if (el->FindElement("max_overpressure")) {
     MaxOverpressure = el->FindElementValueAsNumberConvertTo("max_overpressure",
                                                             "LBS/FT2");
@@ -518,11 +514,9 @@ FGBallonet::FGBallonet(FGFDMExec* exec, Element* el, unsigned int num,
   element = el->FindElement("location");
   if (element) {
     vXYZ = element->FindElementTripletConvertTo("IN");
-  } else {
-    const string s("Fatal Error: No location found for this ballonet.");
-    cerr << el->ReadFrom() << endl << s << endl;
-    throw BaseException(s);
-  }
+  } else
+    throw XMLException(el, "No location found for this ballonet.");
+
   if ((el->FindElement("x_radius") || el->FindElement("x_width")) &&
       (el->FindElement("y_radius") || el->FindElement("y_width")) &&
       (el->FindElement("z_radius") || el->FindElement("z_width"))) {
@@ -570,11 +564,9 @@ FGBallonet::FGBallonet(FGFDMExec* exec, Element* el, unsigned int num,
          2.0  * Zradius * Xwidth * Ywidth +
          Xwidth * Ywidth * Zwidth);
     }
-  } else {
-    const string s("Fatal Error: Ballonet shape must be given.");
-    cerr << el->ReadFrom() << endl << s << endl;
-    throw BaseException(s);
-  }
+  } else
+    throw XMLException(el, "Ballonet shape must be given.");
+
   if (el->FindElement("max_overpressure")) {
     MaxOverpressure = el->FindElementValueAsNumberConvertTo("max_overpressure",
                                                             "LBS/FT2");

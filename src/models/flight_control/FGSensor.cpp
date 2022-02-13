@@ -261,15 +261,15 @@ void FGSensor::bind(Element* el, FGPropertyManager* PropertyManager)
   PropertyManager->Tie( tmp_low, this, &FGSensor::GetFailLow, &FGSensor::SetFailLow);
   PropertyManager->Tie( tmp_high, this, &FGSensor::GetFailHigh, &FGSensor::SetFailHigh);
   PropertyManager->Tie( tmp_stuck, this, &FGSensor::GetFailStuck, &FGSensor::SetFailStuck);
-  
+
   if (!quant_property.empty()) {
     if (quant_property.find("/") == string::npos) { // not found
       string qprop = "fcs/" + PropertyManager->mkPropertyName(quant_property, true);
       FGPropertyNode* node = PropertyManager->GetNode(qprop, true);
       if (node->isTied()) {
-        cerr << el->ReadFrom()
-             << "Property " << tmp << " has already been successfully bound (late)." << endl;
-        throw("Failed to bind the property to an existing already tied node.");
+        XMLException exc(el, "Failed to bind the property to an existing already tied node.");
+             exc << "Property " << tmp << " has already been successfully bound (late).";
+        throw exc;
       }
       else
         PropertyManager->Tie(qprop, this, &FGSensor::GetQuantized);

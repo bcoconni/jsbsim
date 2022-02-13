@@ -111,8 +111,9 @@ FGPropeller::FGPropeller(FGFDMExec* exec, Element* prop_element, int num)
       } else {
         cerr << "Unknown table type: " << name << " in propeller definition." << endl;
       }
-    } catch (std::string& str) {
-      throw("Error loading propeller table:" + name + ". " + str);
+    } catch (BaseException& e) {
+      cerr << "Error loading propeller table:" << name << ". " << e.what();
+      throw;
     }
   }
   if( (cPower == 0) || (cThrust == 0)){

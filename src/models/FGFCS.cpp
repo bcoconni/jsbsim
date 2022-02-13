@@ -1,6 +1,6 @@
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- Module:       FGFCS.cpp 
+ Module:       FGFCS.cpp
  Author:       Jon Berndt
  Date started: 12/12/98
  Purpose:      Model the flight controls
@@ -80,7 +80,7 @@ FGFCS::FGFCS(FGFDMExec* fdm) : FGModel(fdm), ChannelRate(1)
   PTrimCmd = YTrimCmd = RTrimCmd = 0.0;
   GearCmd = GearPos = 1; // default to gear down
   BrakePos.resize(FGLGear::bgNumBrakeGroups);
-  TailhookPos = WingFoldPos = 0.0; 
+  TailhookPos = WingFoldPos = 0.0;
 
   bind();
   for (i=0;i<NForms;i++) {
@@ -490,14 +490,14 @@ bool FGFCS::Load(Element* document)
   Debug(2);
 
   Element* channel_element = document->FindElement("channel");
-  
+
   while (channel_element) {
-  
-    FGFCSChannel* newChannel = 0;
+
+    FGFCSChannel* newChannel = nullptr;
 
     string sOnOffProperty = channel_element->GetAttributeValue("execute");
     string sChannelName = channel_element->GetAttributeValue("name");
-    
+
     if (!channel_element->GetAttributeValue("execrate").empty())
       ChannelRate = channel_element->GetAttributeValueAsNumber("execrate");
     else
@@ -505,12 +505,12 @@ bool FGFCS::Load(Element* document)
 
     if (sOnOffProperty.length() > 0) {
       FGPropertyNode* OnOffPropertyNode = PropertyManager->GetNode(sOnOffProperty);
-      if (OnOffPropertyNode == 0) {
-        cerr << channel_element->ReadFrom() << highint << fgred
-             << "The On/Off property, " << sOnOffProperty << " specified for channel "
-             << channel_element->GetAttributeValue("name") << " is undefined or not "
-             << "understood. The simulation will abort" << reset << endl;
-        throw("Bad system definition");
+      if (!OnOffPropertyNode) {
+        XMLException exc(channel_element, "");
+        exc << "The On/Off property, " << sOnOffProperty << " specified for channel "
+            << channel_element->GetAttributeValue("name") << " is undefined or not "
+            << "understood.";
+        throw exc;
       } else
         newChannel = new FGFCSChannel(this, sChannelName, ChannelRate,
                                       OnOffPropertyNode);
@@ -520,9 +520,9 @@ bool FGFCS::Load(Element* document)
     SystemChannels.push_back(newChannel);
 
     if (debug_lvl > 0)
-      cout << endl << highint << fgblue << "    Channel " 
+      cout << endl << highint << fgblue << "    Channel "
          << normint << channel_element->GetAttributeValue("name") << reset << endl;
-  
+
     Element* component_element = channel_element->GetElement();
     while (component_element) {
       try {
@@ -553,9 +553,10 @@ bool FGFCS::Load(Element* document)
           // <integrator> is equivalent to <pid type="trap">
           Element* c1_el = component_element->FindElement("c1");
           if (!c1_el) {
-            cerr << component_element->ReadFrom();
-            throw("INTEGRATOR component " + component_element->GetAttributeValue("name")
-                  + " does not provide the parameter <c1>");
+            XMLException exc(component_element, "");
+            exc << "INTEGRATOR component " << component_element->GetAttributeValue("name")
+                << " does not provide the parameter <c1>";
+            throw exc;
           }
           c1_el->ChangeName("ki");
           if (!c1_el->HasAttribute("type"))

@@ -146,10 +146,9 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
                 << Name << "is ignored." << endl;
     }
   } else if (!call_type.empty()) {
-    std::cerr << el->ReadFrom()
-              <<"  An unknown table type attribute is listed: " << call_type
-              << endl;
-    throw BaseException("Unknown table type.");
+    XMLException exc(el, "");
+    exc << "An unknown table type attribute is listed: " << call_type;
+    throw exc;
   }
 
   // Determine and store the lookup properties for this table unless this table
@@ -209,21 +208,19 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
       string test_line = tableData->GetDataLine(1);  // examine second line in table for dimension
       if (FindNumColumns(test_line) == 2) dimension = 1;    // 1D table
       else if (FindNumColumns(test_line) > 2) dimension = 2; // 2D table
-      else {
-        std::cerr << tableData->ReadFrom()
-                  << "Invalid number of columns in table" << endl;
-      }
+      else
+        throw XMLException(tableData, "Invalid number of columns in table");
     }
 
   } else {
     brkpt_string = el->GetAttributeValue("breakPoint");
     if (brkpt_string.empty()) {
-     // no independentVars found, and table is not marked as internal, nor is it
-     // a 3D table
-      std::cerr << el->ReadFrom()
-                << "No independentVars found, and table is not marked as internal,"
-                << " nor is it a 3D table." << endl;
-      throw BaseException("No independent variable found for table.");
+      // no independentVars found, and table is not marked as internal, nor is it
+      // a 3D table
+      XMLException exc(el, "");
+      exc << "No independentVars found, and table is not marked as internal,"
+          << " nor is it a 3D table.";
+      throw exc;
     }
   }
   // end lookup property code
@@ -263,16 +260,10 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
 
     if (nRows >= 2) {
       nCols = FindNumColumns(tableData->GetDataLine(0));
-      if (nCols < 2) {
-        std::cerr << tableData->ReadFrom()
-                  << "Not enough columns in table data" << endl;
-        throw BaseException("Not enough columns in table data.");
-      }
-    } else {
-      std::cerr << tableData->ReadFrom()
-                << "Not enough rows in table data" << endl;
-      throw BaseException("Not enough rows in the table data.");
-    }
+      if (nCols < 2)
+        throw XMLException(tableData, "Not enough columns in table data");
+    } else
+      throw XMLException(tableData, "Not enough rows in table data");
 
     Type = tt2D;
     colCounter = 1;
@@ -320,14 +311,12 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
   if (dimension > 2) {
     for (b=2; b<=Tables.size(); ++b) {
       if (Data[b][1] <= Data[b-1][1]) {
-        std::cerr << el->ReadFrom()
-                  << fgred << highint
-                  << "  FGTable: breakpoint lookup is not monotonically increasing" << endl
-                  << "  in breakpoint " << b;
-        if (nameel != 0) std::cerr << " of table in " << nameel->GetAttributeValue("name");
-        std::cerr << ":" << reset << endl
-                  << "  " << Data[b][1] << "<=" << Data[b-1][1] << endl;
-        throw BaseException("Breakpoint lookup is not monotonically increasing");
+        XMLException exc(el, "");
+        exc << "FGTable: breakpoint lookup is not monotonically increasing"
+            << " in breakpoint " << b;
+        if (nameel != 0) exc << " of table in " << nameel->GetAttributeValue("name");
+        exc << ":\n" << Data[b][1] << "<=" << Data[b-1][1];
+        throw exc;
       }
     }
   }
@@ -336,14 +325,12 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
   if (dimension > 1) {
     for (c=2; c<=nCols; ++c) {
       if (Data[0][c] <= Data[0][c-1]) {
-        std::cerr << el->ReadFrom()
-                  << fgred << highint
-                  << "  FGTable: column lookup is not monotonically increasing" << endl
-                  << "  in column " << c;
-        if (nameel != 0) std::cerr << " of table in " << nameel->GetAttributeValue("name");
-        std::cerr << ":" << reset << endl
-                  << "  " << Data[0][c] << "<=" << Data[0][c-1] << endl;
-        throw BaseException("FGTable: column lookup is not monotonically increasing");
+        XMLException exc(el, "");
+        exc << "FGTable: column lookup is not monotonically increasing"
+            << " in column " << c;
+        if (nameel != 0) exc << " of table in " << nameel->GetAttributeValue("name");
+        exc << ":\n" << Data[0][c] << "<=" << Data[0][c-1];
+        throw exc;
       }
     }
   }
@@ -352,14 +339,12 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
   if (dimension < 3) { // in 3D tables, check only rows of subtables
     for (r=2; r<=nRows; ++r) {
       if (Data[r][0]<=Data[r-1][0]) {
-        std::cerr << el->ReadFrom()
-                  << fgred << highint
-                  << "  FGTable: row lookup is not monotonically increasing" << endl
-                  << "  in row " << r;
-        if (nameel != 0) std::cerr << " of table in " << nameel->GetAttributeValue("name");
-        std::cerr << ":" << reset << endl
-                  << "  " << Data[r][0] << "<=" << Data[r-1][0] << endl;
-        throw BaseException("FGTable: row lookup is not monotonically increasing");
+        XMLException exc(el, "");
+        exc << "FGTable: row lookup is not monotonically increasing"
+            << " in row " << r;
+        if (nameel != 0) exc << " of table in " << nameel->GetAttributeValue("name");
+        exc << ":\n" << Data[r][0] << "<=" << Data[r-1][0];
+        throw exc;
       }
     }
   }
@@ -429,8 +414,7 @@ double FGTable::GetValue(void) const
                     lookupProperty[eColumn]->getDoubleValue(),
                     lookupProperty[eTable]->getDoubleValue());
   default:
-    cerr << "Attempted to GetValue() for invalid/unknown table type" << endl;
-    throw(string("Attempted to GetValue() for invalid/unknown table type"));
+    throw BaseException("Attempted to GetValue() for invalid/unknown table type");
   }
 }
 
@@ -645,23 +629,23 @@ void FGTable::bind(Element* el, const string& Prefix)
         if (Name.find("#") != string::npos) { // if "#" is found
           Name = replace(Name, "#", Prefix);
         } else {
-          cerr << el->ReadFrom()
-                << "Malformed table name with number: " << Prefix
-                << " and property name: " << Name
-                << " but no \"#\" sign for substitution." << endl;
+          XMLException exc(el, "");
+          exc << "Malformed table name with number: " << Prefix
+              << " and property name: " << Name
+              << " but no \"#\" sign for substitution.";
+          throw exc;
         }
-      } else {
+      } else
         Name = Prefix + "/" + Name;
-      }
     }
     string tmp = PropertyManager->mkPropertyName(Name, false);
 
     if (PropertyManager->HasNode(tmp)) {
       FGPropertyNode* _property = PropertyManager->GetNode(tmp);
       if (_property->isTied()) {
-        cerr << el->ReadFrom()
-             << "Property " << tmp << " has already been successfully bound (late)." << endl;
-        throw("Failed to bind the property to an existing already tied node.");
+        XMLException exc(el, "");
+        exc << "Property " << tmp << " has already been successfully bound (late).";
+        throw exc;
       }
     }
 
