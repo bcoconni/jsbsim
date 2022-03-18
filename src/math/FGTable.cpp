@@ -54,13 +54,10 @@ FGTable::FGTable(int NRows)
   : nRows(NRows), nCols(1)
 {
   Type = tt1D;
-  colCounter = 0;
-  rowCounter = 1;
   // Fill unused elements with NaNs to detect illegal access.
   Data.push_back(std::numeric_limits<double>::quiet_NaN());
   Data.push_back(std::numeric_limits<double>::quiet_NaN());
   Debug(0);
-  lastRowIndex=lastColumnIndex=2;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,12 +66,9 @@ FGTable::FGTable(int NRows, int NCols)
   : nRows(NRows), nCols(NCols)
 {
   Type = tt2D;
-  colCounter = 1;
-  rowCounter = 0;
   // Fill unused elements with NaNs to detect illegal access.
   Data.push_back(std::numeric_limits<double>::quiet_NaN());
   Debug(0);
-  lastRowIndex=lastColumnIndex=2;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,8 +77,6 @@ FGTable::FGTable(const FGTable& t)
   : PropertyManager(t.PropertyManager)
 {
   Type = t.Type;
-  colCounter = t.colCounter;
-  rowCounter = t.rowCounter;
   nRows = t.nRows;
   nCols = t.nCols;
   internal = t.internal;
@@ -95,8 +87,6 @@ FGTable::FGTable(const FGTable& t)
 
   Tables = t.Tables;
   Data = t.Data;
-  lastRowIndex = t.lastRowIndex;
-  lastColumnIndex = t.lastColumnIndex;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -236,9 +226,6 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
     nRows = tableData->GetNumDataLines();
     nCols = 1;
     Type = tt1D;
-    colCounter = 0;
-    rowCounter = 1;
-    lastRowIndex = lastColumnIndex = 2;
     // Fill unused elements with NaNs to detect illegal access.
     Data.push_back(std::numeric_limits<double>::quiet_NaN());
     Data.push_back(std::numeric_limits<double>::quiet_NaN());
@@ -261,10 +248,6 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
     }
 
     Type = tt2D;
-    colCounter = 1;
-    rowCounter = 0;
-
-    lastRowIndex = lastColumnIndex = 2;
     // Fill unused elements with NaNs to detect illegal access.
     Data.push_back(std::numeric_limits<double>::quiet_NaN());
     *this << buf;
@@ -273,9 +256,6 @@ FGTable::FGTable(std::shared_ptr<FGPropertyManager> pm, Element* el,
     nRows = el->GetNumElements("tableData");
     nCols = 1;
     Type = tt3D;
-    colCounter = 1;
-    rowCounter = 1;
-    lastRowIndex = lastColumnIndex = 2;
     // Fill unused elements with NaNs to detect illegal access.
     Data.push_back(std::numeric_limits<double>::quiet_NaN());
 
