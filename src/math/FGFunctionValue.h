@@ -64,7 +64,7 @@ public:
                   FGTemplateFunc_ptr f, Element* el)
     :FGPropertyValue(propName, propertyManager, el), function(f) {}
 
-  double GetValue(void) const override { return function->GetValue(GetNode()); }
+  Real GetValue(void) const override { return function->GetValue(GetNode()); }
 
   std::string GetName(void) const override {
     return function->GetName() + "(" + FGPropertyValue::GetName() + ")";

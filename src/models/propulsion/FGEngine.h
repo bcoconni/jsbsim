@@ -104,30 +104,30 @@ class FGEngine : public FGModelFunctions
 {
 public:
   struct Inputs {
-    double Pressure;
-    double PressureRatio;
-    double Temperature;
-    double Density;
-    double DensityRatio;
-    double Soundspeed;
-    double TotalPressure;
-    double TAT_c;
-    double Vt;
-    double Vc;
-    double qbar;
-    double alpha;
-    double beta;
-    double H_agl;
+    Real Pressure;
+    Real PressureRatio;
+    Real Temperature;
+    Real Density;
+    Real DensityRatio;
+    Real Soundspeed;
+    Real TotalPressure;
+    Real TAT_c;
+    Real Vt;
+    Real Vc;
+    Real qbar;
+    Real alpha;
+    Real beta;
+    Real H_agl;
     FGColumnVector3 AeroUVW;
     FGColumnVector3 AeroPQR;
     FGColumnVector3 PQRi;
-    std::vector <double> ThrottleCmd;
-    std::vector <double> MixtureCmd;
-    std::vector <double> ThrottlePos;
-    std::vector <double> MixturePos;
-    std::vector <double> PropAdvance;
+    std::vector <Real> ThrottleCmd;
+    std::vector <Real> MixtureCmd;
+    std::vector <Real> ThrottlePos;
+    std::vector <Real> MixturePos;
+    std::vector <Real> PropAdvance;
     std::vector <bool> PropFeather;
-    double TotalDeltaT;
+    Real TotalDeltaT;
   };
 
   FGEngine(int engine_number, struct Inputs& input);
@@ -139,15 +139,15 @@ public:
   virtual const std::string&  GetName(void) const { return Name; }
 
   // Engine controls
-  virtual double  GetThrottleMin(void) const { return MinThrottle; }
-  virtual double  GetThrottleMax(void) const { return MaxThrottle; }
+  virtual Real  GetThrottleMin(void) const { return MinThrottle; }
+  virtual Real  GetThrottleMax(void) const { return MaxThrottle; }
   virtual bool    GetStarter(void) const     { return Starter; }
 
-  virtual double getFuelFlow_gph () const {return FuelFlow_gph;}
-  virtual double getFuelFlow_pph () const {return FuelFlow_pph;}
-  virtual double GetFuelFlowRate(void) const {return FuelFlowRate;}
-  virtual double GetFuelFlowRateGPH(void) const {return FuelFlowRate*3600/FuelDensity;}
-  virtual double GetFuelUsedLbs(void) const {return FuelUsedLbs;}
+  virtual Real getFuelFlow_gph () const {return FuelFlow_gph;}
+  virtual Real getFuelFlow_pph () const {return FuelFlow_pph;}
+  virtual Real GetFuelFlowRate(void) const {return FuelFlowRate;}
+  virtual Real GetFuelFlowRateGPH(void) const {return FuelFlowRate*3600/FuelDensity;}
+  virtual Real GetFuelUsedLbs(void) const {return FuelUsedLbs;}
   virtual bool   GetStarved(void) const { return Starved; }
   virtual bool   GetRunning(void) const { return Running; }
   virtual bool   GetCranking(void) const { return Cranking; }
@@ -158,7 +158,7 @@ public:
   virtual void SetRunning(bool bb) { Running=bb; }
   virtual void SetName(const std::string& name) { Name = name; }
   virtual void SetFuelFreeze(bool f) { FuelFreeze = f; }
-  virtual void SetFuelDensity(double d) { FuelDensity = d; }
+  virtual void SetFuelDensity(Real d) { FuelDensity = d; }
 
   virtual void SetStarter(bool s) { Starter = s; }
 
@@ -170,17 +170,17 @@ public:
   /** Calculates the thrust of the engine, and other engine functions. */
   virtual void Calculate(void) = 0;
 
-  virtual double GetThrust(void) const;
+  virtual Real GetThrust(void) const;
     
   /** The fuel need is calculated based on power levels and flow rate for that
       power level. It is also turned from a rate into an actual amount (pounds)
       by multiplying it by the delta T and the rate.
       @return Total fuel requirement for this engine in pounds. */
-  virtual double CalcFuelNeed(void);
+  virtual Real CalcFuelNeed(void);
 
-  virtual double CalcOxidizerNeed(void) {return 0.0;}
+  virtual Real CalcOxidizerNeed(void) {return 0.0;}
 
-  virtual double GetPowerAvailable(void) {return 0.0;};
+  virtual Real GetPowerAvailable(void) {return 0.0;};
 
   virtual const FGColumnVector3& GetBodyForces(void);
   virtual const FGColumnVector3& GetMoments(void);
@@ -202,23 +202,23 @@ protected:
   std::string Name;
   const int   EngineNumber;
   EngineType Type;
-  double SLFuelFlowMax;
-  double MaxThrottle;
-  double MinThrottle;
+  Real SLFuelFlowMax;
+  Real MaxThrottle;
+  Real MinThrottle;
 
-  double FuelExpended;
-  double FuelFlowRate;
-  double PctPower;
+  Real FuelExpended;
+  Real FuelFlowRate;
+  Real PctPower;
   bool  Starter;
   bool  Starved;
   bool  Running;
   bool  Cranking;
   bool  FuelFreeze;
 
-  double FuelFlow_gph;
-  double FuelFlow_pph;
-  double FuelUsedLbs;
-  double FuelDensity;
+  Real FuelFlow_gph;
+  Real FuelFlow_pph;
+  Real FuelUsedLbs;
+  Real FuelDensity;
 
   FGThruster* Thruster;
 

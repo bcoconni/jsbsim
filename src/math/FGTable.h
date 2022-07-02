@@ -250,10 +250,10 @@ public:
            const std::string& prefix="");
   FGTable (int );
   FGTable (int, int);
-  double GetValue(void) const;
-  double GetValue(double key) const;
-  double GetValue(double rowKey, double colKey) const;
-  double GetValue(double rowKey, double colKey, double TableKey) const;
+  Real GetValue(void) const;
+  Real GetValue(Real key) const;
+  Real GetValue(Real rowKey, Real colKey) const;
+  Real GetValue(Real rowKey, Real colKey, Real TableKey) const;
   /** Read the table in.
       Data in the config file should be in matrix format with the row
       independents as the first column and the column independents in
@@ -279,8 +279,8 @@ public:
   void operator<<(std::istream&);
   FGTable& operator<<(const double x);
 
-  double GetElement(unsigned int r, unsigned int c) const;
-  double operator()(unsigned int r, unsigned int c) const
+  Real GetElement(unsigned int r, unsigned int c) const;
+  Real operator()(unsigned int r, unsigned int c) const
   { return GetElement(r, c); }
 
   void SetRowIndexProperty(FGPropertyNode *node)
@@ -300,7 +300,7 @@ private:
   bool internal = false;
   std::shared_ptr<FGPropertyManager> PropertyManager; // Property root used to do late binding.
   FGPropertyValue_ptr lookupProperty[3];
-  std::vector<double> Data;
+  std::vector<Real> Data;
   std::vector<std::unique_ptr<FGTable>> Tables;
   unsigned int nRows, nCols;
   std::string Name;

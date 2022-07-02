@@ -363,12 +363,12 @@ public:
   }
 
   void testAngles() {
-    double phi = 10. * M_PI / 180.;
-    double theta = 45. * M_PI / 180.;
-    double psi = 265. * M_PI / 180.;
-    double cphi = cos(phi), sphi = sin(phi);
-    double cth = cos(theta), sth = sin(theta);
-    double cpsi = cos(psi), spsi = sin(psi);
+    Real phi = 10. * M_PI / 180.;
+    Real theta = 45. * M_PI / 180.;
+    Real psi = 265. * M_PI / 180.;
+    Real cphi = cos(phi), sphi = sin(phi);
+    Real cth = cos(theta), sth = sin(theta);
+    Real cpsi = cos(psi), spsi = sin(psi);
     const JSBSim::FGMatrix33 m_phi(1.0,   0.0,  0.0,
                                    0.0,  cphi, sphi,
                                    0.0, -sphi, cphi);
@@ -460,12 +460,12 @@ public:
 
   void test_angles_psi_270deg()
   {
-    double phi = 10. * M_PI / 180.;
-    double theta = 45. * M_PI / 180.;
-    double psi = 1.5*M_PI;
-    double cphi = cos(phi), sphi = sin(phi);
-    double cth = cos(theta), sth = sin(theta);
-    double cpsi = 0.0, spsi = -1.0;
+    Real phi = 10. * M_PI / 180.;
+    Real theta = 45. * M_PI / 180.;
+    Real psi = 1.5*M_PI;
+    Real cphi = cos(phi), sphi = sin(phi);
+    Real cth = cos(theta), sth = sin(theta);
+    Real cpsi = 0.0, spsi = -1.0;
     const JSBSim::FGMatrix33 m_phi(1.0,   0.0,  0.0,
                                    0.0,  cphi, sphi,
                                    0.0, -sphi, cphi);
@@ -496,12 +496,12 @@ public:
 
   void test_angles_phi_m90deg()
   {
-    double phi = -0.5*M_PI;
-    double theta = 10. * M_PI / 180.;
-    double psi = 45. * M_PI / 180.;
-    double cphi = 0.0, sphi = -1.0;
-    double cth = cos(theta), sth = sin(theta);
-    double cpsi = cos(psi), spsi = sin(psi);
+    Real phi = -0.5*M_PI;
+    Real theta = 10. * M_PI / 180.;
+    Real psi = 45. * M_PI / 180.;
+    Real cphi = 0.0, sphi = -1.0;
+    Real cth = cos(theta), sth = sin(theta);
+    Real cpsi = cos(psi), spsi = sin(psi);
     const JSBSim::FGMatrix33 m_phi(1.0,   0.0,  0.0,
                                    0.0,  cphi, sphi,
                                    0.0, -sphi, cphi);
@@ -532,12 +532,12 @@ public:
 
   void test_angles_gimbal_lock_up()
   {
-    double phi = 28. * M_PI / 180.;
-    double theta = 0.5*M_PI;
-    double psi = 0.0;
-    double cphi = cos(phi), sphi = sin(phi);
-    double cth = 0.0, sth = 1.0;
-    double cpsi = 1.0, spsi = 0.0;
+    Real phi = 28. * M_PI / 180.;
+    Real theta = 0.5*M_PI;
+    Real psi = 0.0;
+    Real cphi = cos(phi), sphi = sin(phi);
+    Real cth = 0.0, sth = 1.0;
+    Real cpsi = 1.0, spsi = 0.0;
     const JSBSim::FGMatrix33 m_phi(1.0,   0.0,  0.0,
                                    0.0,  cphi, sphi,
                                    0.0, -sphi, cphi);
@@ -568,12 +568,12 @@ public:
 
   void test_angles_gimbal_lock_up2()
   {
-    double phi = 28. * M_PI / 180.;
-    double theta = 0.5*M_PI;
-    double psi = 17. * M_PI / 180.;
-    double cphi = cos(phi), sphi = sin(phi);
-    double cth = 0.0, sth = 1.0;
-    double cpsi = cos(psi), spsi = sin(psi);
+    Real phi = 28. * M_PI / 180.;
+    Real theta = 0.5*M_PI;
+    Real psi = 17. * M_PI / 180.;
+    Real cphi = cos(phi), sphi = sin(phi);
+    Real cth = 0.0, sth = 1.0;
+    Real cpsi = cos(psi), spsi = sin(psi);
     const JSBSim::FGMatrix33 m_phi(1.0,   0.0,  0.0,
                                    0.0,  cphi, sphi,
                                    0.0, -sphi, cphi);
@@ -604,12 +604,12 @@ public:
 
   void test_angles_gimbal_lock_down()
   {
-    double phi = 28. * M_PI / 180.;
-    double theta = -0.5*M_PI;
-    double psi = 0.0;
-    double cphi = cos(phi), sphi = sin(phi);
-    double cth = 0.0, sth = -1.0;
-    double cpsi = 1.0, spsi = 0.0;
+    Real phi = 28. * M_PI / 180.;
+    Real theta = -0.5*M_PI;
+    Real psi = 0.0;
+    Real cphi = cos(phi), sphi = sin(phi);
+    Real cth = 0.0, sth = -1.0;
+    Real cpsi = 1.0, spsi = 0.0;
     const JSBSim::FGMatrix33 m_phi(1.0,   0.0,  0.0,
                                    0.0,  cphi, sphi,
                                    0.0, -sphi, cphi);
@@ -640,12 +640,12 @@ public:
 
   void test_angles_gimbal_lock_down2()
   {
-    double phi = 28. * M_PI / 180.;
-    double theta = -0.5*M_PI;
-    double psi = 17. * M_PI / 180.;
-    double cphi = cos(phi), sphi = sin(phi);
-    double cth = 0.0, sth = -1.0;
-    double cpsi = cos(psi), spsi = sin(psi);
+    Real phi = 28. * M_PI / 180.;
+    Real theta = -0.5*M_PI;
+    Real psi = 17. * M_PI / 180.;
+    Real cphi = cos(phi), sphi = sin(phi);
+    Real cth = 0.0, sth = -1.0;
+    Real cpsi = cos(psi), spsi = sin(psi);
     const JSBSim::FGMatrix33 m_phi(1.0,   0.0,  0.0,
                                    0.0,  cphi, sphi,
                                    0.0, -sphi, cphi);

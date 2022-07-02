@@ -78,7 +78,7 @@ void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override)
 
   while (property_element) {
     SGPropertyNode* node = nullptr;
-    double value=0.0;
+    Real value=0.0;
     if ( ! property_element->GetAttributeValue("value").empty())
       value = property_element->GetAttributeValueAsNumber("value");
 

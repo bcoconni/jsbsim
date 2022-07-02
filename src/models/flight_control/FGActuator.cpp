@@ -175,13 +175,13 @@ bool FGActuator::Run(void )
   Clip();
 
   if (clip) {
-    double clipmax = ClipMax->GetValue();
+    Real clipmax = ClipMax->GetValue();
     saturated = false;
 
     if (Output >= clipmax && clipmax != 0)
       saturated = true;
     else{
-      double clipmin = ClipMin->GetValue();
+      Real clipmin = ClipMin->GetValue();
       if (Output <= clipmin && clipmin != 0)
         saturated = true;
     }
@@ -205,7 +205,7 @@ void FGActuator::Lag(void)
 {
   // "Output" on the right side of the "=" is the current frame input
   // for this Lag filter
-  double input = Output;
+  Real input = Output;
 
   if (initialized) {
     // Check if lag value has changed via dynamic property
@@ -223,15 +223,15 @@ void FGActuator::Lag(void)
 void FGActuator::Hysteresis(void)
 {
   // Note: this function acts cumulatively on the "Output" parameter. So,
-  // "Output" is - for the purposes of this Hysteresis method - really the input
+  // "Output" is - for the purposes of this Hysteresis method - Really the input
   // to the method.
-  double input = Output;
+  Real input = Output;
 
   if ( initialized ) {
     if (input > PreviousHystOutput)
-      Output = max(PreviousHystOutput, input-0.5*hysteresis_width);
+      Output = std::max<Real>(PreviousHystOutput, input-0.5*hysteresis_width);
     else if (input < PreviousHystOutput)
-      Output = min(PreviousHystOutput, input+0.5*hysteresis_width);
+      Output = std::min<Real>(PreviousHystOutput, input+0.5*hysteresis_width);
   }
 
   PreviousHystOutput = Output;
@@ -242,18 +242,18 @@ void FGActuator::Hysteresis(void)
 void FGActuator::RateLimit(void)
 {
   // Note: this function acts cumulatively on the "Output" parameter. So,
-  // "Output" is - for the purposes of this RateLimit method - really the input
+  // "Output" is - for the purposes of this RateLimit method - Really the input
   // to the method.
-  double input = Output;
+  Real input = Output;
   if ( initialized ) {
-    double delta = input - PreviousRateLimOutput;
+    Real delta = input - PreviousRateLimOutput;
     if (rate_limit_incr) {
-      double rate_limit = rate_limit_incr->GetValue();
+      Real rate_limit = rate_limit_incr->GetValue();
       if (delta > dt * rate_limit)
         Output = PreviousRateLimOutput + rate_limit * dt;
     }
     if (rate_limit_decr) {
-      double rate_limit = -rate_limit_decr->GetValue();
+      Real rate_limit = -rate_limit_decr->GetValue();
       if (delta < dt * rate_limit)
         Output = PreviousRateLimOutput + rate_limit * dt;
     }
@@ -266,9 +266,9 @@ void FGActuator::RateLimit(void)
 void FGActuator::Deadband(void)
 {
   // Note: this function acts cumulatively on the "Output" parameter. So,
-  // "Output" is - for the purposes of this Deadband method - really the input
+  // "Output" is - for the purposes of this Deadband method - Really the input
   // to the method.
-  double input = Output;
+  Real input = Output;
 
   if (input < -deadband_width/2.0) {
     Output = (input + deadband_width/2.0);
@@ -306,7 +306,7 @@ void FGActuator::bind(Element* el, FGPropertyManager* PropertyManager)
 void FGActuator::InitializeLagCoefficients()
 {
   lagVal = lag->GetValue();
-  double denom = 2.00 + dt * lagVal;
+  Real denom = 2.00 + dt * lagVal;
   ca = dt * lagVal / denom;
   cb = (2.00 - dt * lagVal) / denom;
 }

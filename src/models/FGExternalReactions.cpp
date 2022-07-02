@@ -136,7 +136,7 @@ bool FGExternalReactions::Run(bool Holding)
 
 void FGExternalReactions::bind(void)
 {
-  typedef double (FGExternalReactions::*PMF)(int) const;
+  typedef Real (FGExternalReactions::*PMF)(int) const;
   PropertyManager->Tie("moments/l-external-lbsft", this, eL, (PMF)&FGExternalReactions::GetMoments);
   PropertyManager->Tie("moments/m-external-lbsft", this, eM, (PMF)&FGExternalReactions::GetMoments);
   PropertyManager->Tie("moments/n-external-lbsft", this, eN, (PMF)&FGExternalReactions::GetMoments);

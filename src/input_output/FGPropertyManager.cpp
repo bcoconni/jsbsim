@@ -200,7 +200,7 @@ float FGPropertyNode::GetFloat (const string &name, float defaultValue ) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropertyNode::GetDouble (const string &name, double defaultValue ) const
+Real FGPropertyNode::GetDouble (const string &name, Real defaultValue ) const
 {
   return getDoubleValue(name.c_str(), defaultValue);
 }
@@ -242,7 +242,7 @@ bool FGPropertyNode::SetFloat (const string &name, float val)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool FGPropertyNode::SetDouble (const string &name, double val)
+bool FGPropertyNode::SetDouble (const string &name, Real val)
 {
   return setDoubleValue(name.c_str(), val);
 }

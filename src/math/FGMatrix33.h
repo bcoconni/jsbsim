@@ -112,11 +112,11 @@ public:
       @param m32 value of the 3,2 Matrix element.
       @param m33 value of the 3,3 Matrix element.
 
-      Create a matrix from the doubles given in the arguments.
+      Create a matrix from the Reals given in the arguments.
    */
-  FGMatrix33(const double m11, const double m12, const double m13,
-             const double m21, const double m22, const double m23,
-             const double m31, const double m32, const double m33)
+  FGMatrix33(const Real m11, const Real m12, const Real m13,
+             const Real m21, const Real m22, const Real m23,
+             const Real m31, const Real m32, const Real m33)
   {
     data[0] = m11;
     data[1] = m21;
@@ -152,7 +152,7 @@ public:
       @return the value of the matrix entry at the given row and
       column indices. Indices are counted starting with 1.
    */
-  double operator()(unsigned int row, unsigned int col) const {
+  Real operator()(unsigned int row, unsigned int col) const {
     return data[(col-1)*eRows+row-1];
   }
 
@@ -165,12 +165,12 @@ public:
       @return a reference to the matrix entry at the given row and
       column indices. Indices are counted starting with 1.
    */
-  double& operator()(unsigned int row, unsigned int col) {
+  Real& operator()(unsigned int row, unsigned int col) {
     return data[(col-1)*eRows+row-1];
   }
 
   /** Read access the entries of the matrix.
-      This function is just a shortcut for the <tt>double&
+      This function is just a shortcut for the <tt>Real&
       operator()(unsigned int row, unsigned int col)</tt> function. It is
       used internally to access the elements in a more convenient way.
 
@@ -182,12 +182,12 @@ public:
       @return the value of the matrix entry at the given row and
       column indices. Indices are counted starting with 1.
    */
-  double Entry(unsigned int row, unsigned int col) const {
+  Real Entry(unsigned int row, unsigned int col) const {
     return data[(col-1)*eRows+row-1];
   }
 
   /** Write access the entries of the matrix.
-      This function is just a shortcut for the <tt>double&
+      This function is just a shortcut for the <tt>Real&
       operator()(unsigned int row, unsigned int col)</tt> function. It is
       used internally to access the elements in a more convenient way.
 
@@ -199,7 +199,7 @@ public:
       @return a reference to the matrix entry at the given row and
       column indices. Indices are counted starting with 1.
    */
-   double& Entry(unsigned int row, unsigned int col) {
+   Real& Entry(unsigned int row, unsigned int col) {
      return data[(col-1)*eRows+row-1];
    }
 
@@ -237,9 +237,9 @@ public:
 /** Initialize the matrix.
     This function initializes a matrix to user specified values.
  */
-  void InitMatrix(const double m11, const double m12, const double m13,
-                  const double m21, const double m22, const double m23,
-                  const double m31, const double m32, const double m33)
+  void InitMatrix(const Real m11, const Real m12, const Real m13,
+                  const Real m21, const Real m22, const Real m23,
+                  const Real m31, const Real m32, const Real m33)
   {
     data[0] = m11;
     data[1] = m21;
@@ -263,7 +263,7 @@ public:
   /** Determinant of the matrix.
       @return the determinant of the matrix.
    */
-  double Determinant(void) const;
+  Real Determinant(void) const;
 
   /** Return if the matrix is invertible.
       Checks and returns if the matrix is nonsingular and thus
@@ -277,7 +277,7 @@ public:
   /** Return the inverse of the matrix.
       Computes and returns if the inverse of the matrix. It is computed
       by Cramers Rule. Also there are no checks performed if the matrix
-      is invertible. If you are not sure that it really is check this
+      is invertible. If you are not sure that it Really is check this
       with the @ref Invertible() call before.
    */
   FGMatrix33 Inverse(void) const;
@@ -307,9 +307,9 @@ public:
       @param lv initializer list of at most 9 values.
 
       Copy the content of the list into *this. */
-  FGMatrix33& operator=(std::initializer_list<double> lv)
+  FGMatrix33& operator=(std::initializer_list<Real> lv)
   {
-    double *v = data;
+    Real *v = data;
     for(auto& x: lv) {
       *v = x;
       v += 3;
@@ -368,7 +368,7 @@ public:
       Compute and return the product of the current matrix with the
       scalar value scalar given in the argument.
   */
-  FGMatrix33 operator*(const double scalar) const;
+  FGMatrix33 operator*(const Real scalar) const;
 
   /** Multiply the matrix with 1.0/scalar.
 
@@ -378,7 +378,7 @@ public:
       Compute and return the product of the current matrix with the
       scalar value 1.0/scalar, where scalar is given in the argument.
   */
-  FGMatrix33 operator/(const double scalar) const;
+  FGMatrix33 operator/(const Real scalar) const;
 
   /** In place matrix subtraction.
 
@@ -418,7 +418,7 @@ public:
       Compute the product of the current matrix and the scalar value scalar
       given in the argument.
   */
-  FGMatrix33& operator*=(const double scalar);
+  FGMatrix33& operator*=(const Real scalar);
 
   /** In place matrix scale.
 
@@ -428,10 +428,10 @@ public:
       Compute the product of the current matrix and the scalar value
       1.0/scalar, where scalar is given in the argument.
   */
-  FGMatrix33& operator/=(const double scalar);
+  FGMatrix33& operator/=(const Real scalar);
 
 private:
-  double data[eRows*eColumns];
+  Real data[eRows*eColumns];
 };
 
 /** Scalar multiplication.
@@ -441,7 +441,7 @@ private:
 
     Multiply the Matrix with a scalar value.
 */
-inline FGMatrix33 operator*(double scalar, const FGMatrix33& A) {
+inline FGMatrix33 operator*(Real scalar, const FGMatrix33& A) {
   // use already defined operation.
   return A*scalar;
 }

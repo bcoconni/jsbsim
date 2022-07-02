@@ -92,9 +92,9 @@ public:
   bool Run(bool Holding) override;
   bool Load(Element* el) override;
   const FGColumnVector3& GetForces(void) const {return vForces;}
-  double GetForces(int idx) const {return vForces(idx);}
+  Real GetForces(int idx) const {return vForces(idx);}
   const FGColumnVector3& GetMoments(void) const {return vMoments;}
-  double GetMoments(int idx) const {return vMoments(idx);}
+  Real GetMoments(int idx) const {return vMoments(idx);}
   std::string GetGroundReactionStrings(std::string delimeter) const;
   std::string GetGroundReactionValues(std::string delimeter) const;
   bool GetWOW(void) const;
@@ -110,11 +110,11 @@ public:
 
   /** Gets the steering command.
       @return steering command in range from -1.0 - 1.0 */
-  double GetDsCmd(void) const { return DsCmd; }
+  Real GetDsCmd(void) const { return DsCmd; }
 
   /** Sets the steering command
       @param cmd steering command in percent*/
-  void SetDsCmd(double cmd);
+  void SetDsCmd(Real cmd);
 
   void RegisterLagrangeMultiplier(LagrangeMultiplier* lmult) { multipliers.push_back(lmult); }
   std::vector <LagrangeMultiplier*>* GetMultipliersList(void) { return &multipliers; }
@@ -126,7 +126,7 @@ private:
   FGColumnVector3 vForces;
   FGColumnVector3 vMoments;
   std::vector <LagrangeMultiplier*> multipliers;
-  double DsCmd;
+  Real DsCmd;
 
   void bind(void);
   void Debug(int from) override;

@@ -110,7 +110,7 @@ void FGFilter::ReadFilterCoefficients(Element* element, int index,
 
 void FGFilter::CalculateDynamicFilters(void)
 {
-  double denom;
+  Real denom;
 
   switch (FilterType) {
     case eLag:

@@ -450,7 +450,7 @@ FGTable::~FGTable()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetElement(unsigned int r, unsigned int c) const
+Real FGTable::GetElement(unsigned int r, unsigned int c) const
 {
   assert(r <= nRows && c <= nCols);
   if (Type == tt3D) {
@@ -463,7 +463,7 @@ double FGTable::GetElement(unsigned int r, unsigned int c) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(void) const
+Real FGTable::GetValue(void) const
 {
   assert(!internal);
 
@@ -491,7 +491,7 @@ double FGTable::GetValue(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(double key) const
+Real FGTable::GetValue(Real key) const
 {
   assert(Data.size() == 2*nRows+2);
   // If the key is off the end (or before the beginning) of the table, just
@@ -506,19 +506,19 @@ double FGTable::GetValue(double key) const
   unsigned int r = 2;
   while (Data[2*r] < key) r++;
 
-  double x0 = Data[2*r-2];
-  double Span = Data[2*r] - x0;
+  Real x0 = Data[2*r-2];
+  Real Span = Data[2*r] - x0;
   assert(Span > 0.0);
-  double Factor = (key - x0) / Span;
+  Real Factor = (key - x0) / Span;
   assert(Factor >= 0.0 && Factor <= 1.0);
 
-  double y0 = Data[2*r-1];
+  Real y0 = Data[2*r-1];
   return Factor*(Data[2*r+1] - y0) + y0;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(double rowKey, double colKey) const
+Real FGTable::GetValue(Real rowKey, Real colKey) const
 {
   if (nCols == 1) return GetValue(rowKey);
 
@@ -526,13 +526,13 @@ double FGTable::GetValue(double rowKey, double colKey) const
 
   unsigned int c = 2;
   while(Data[c] < colKey && c < nCols) c++;
-  double x0 = Data[c-1];
-  double Span = Data[c] - x0;
+  Real x0 = Data[c-1];
+  Real Span = Data[c] - x0;
   assert(Span > 0.0);
-  double cFactor = Constrain(0.0, (colKey - x0) / Span, 1.0);
+  Real cFactor = Constrain(0.0, (colKey - x0) / Span, 1.0);
 
   if (nRows == 1) {
-    double y0 = Data[(nCols+1)+c-1];
+    Real y0 = Data[(nCols+1)+c-1];
     return cFactor*(Data[(nCols+1)+c] - y0) + y0;
   }
 
@@ -541,16 +541,16 @@ double FGTable::GetValue(double rowKey, double colKey) const
   x0 = Data[(r-1)*(nCols+1)];
   Span = Data[r*(nCols+1)] - x0;
   assert(Span > 0.0);
-  double rFactor = Constrain(0.0, (rowKey - x0) / Span, 1.0);
-  double col1temp = rFactor*Data[r*(nCols+1)+c-1]+(1.0-rFactor)*Data[(r-1)*(nCols+1)+c-1];
-  double col2temp = rFactor*Data[r*(nCols+1)+c]+(1.0-rFactor)*Data[(r-1)*(nCols+1)+c];
+  Real rFactor = Constrain(0.0, (rowKey - x0) / Span, 1.0);
+  Real col1temp = rFactor*Data[r*(nCols+1)+c-1]+(1.0-rFactor)*Data[(r-1)*(nCols+1)+c-1];
+  Real col2temp = rFactor*Data[r*(nCols+1)+c]+(1.0-rFactor)*Data[(r-1)*(nCols+1)+c];
 
   return cFactor*(col2temp-col1temp)+col1temp;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTable::GetValue(double rowKey, double colKey, double tableKey) const
+Real FGTable::GetValue(Real rowKey, Real colKey, Real tableKey) const
 {
   assert(Data.size() == nRows+1);
   // If the key is off the end (or before the beginning) of the table, just
@@ -565,13 +565,13 @@ double FGTable::GetValue(double rowKey, double colKey, double tableKey) const
   unsigned int r = 2;
   while (Data[r] < tableKey) r++;
 
-  double x0 = Data[r-1];
-  double Span = Data[r] - x0;
+  Real x0 = Data[r-1];
+  Real Span = Data[r] - x0;
   assert(Span > 0.0);
-  double Factor = (tableKey - x0) / Span;
+  Real Factor = (tableKey - x0) / Span;
   assert(Factor >= 0.0 && Factor <= 1.0);
 
-  double y0 = Tables[r-2]->GetValue(rowKey, colKey);
+  Real y0 = Tables[r-2]->GetValue(rowKey, colKey);
   return Factor*(Tables[r-1]->GetValue(rowKey, colKey) - y0) + y0;
 }
 
@@ -666,7 +666,7 @@ void FGTable::Print(void)
 
 void FGTable::bind(Element* el, const string& Prefix)
 {
-  typedef double (FGTable::*PMF)(void) const;
+  using PMF = Real (FGTable::*)(void) const;
 
   if ( !Name.empty() && !internal) {
     if (!Prefix.empty()) {

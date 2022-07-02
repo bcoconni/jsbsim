@@ -107,10 +107,10 @@ public:
 
   /** Set the output rate for this output instances.
       @param rtHz new output rate in Hz */
-  void SetRateHz(double rtHz);
+  void SetRateHz(Real rtHz);
 
   /// Get the output rate in Hz for this output.
-  double GetRateHz(void) const;
+  Real GetRateHz(void) const;
 
   /** Set the activated subsystems for this output instance.
       @param subSystems bitfield that describes the activated subsystems

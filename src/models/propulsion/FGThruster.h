@@ -84,50 +84,50 @@ public:
 
   enum eType {ttNozzle, ttRotor, ttPropeller, ttDirect};
 
-  virtual double Calculate(double tt) {
+  virtual Real Calculate(Real tt) {
        Thrust = cos(ReverserAngle)*tt;
        vFn(1) = Thrust;
        return Thrust;
   }
   void SetName(std::string name) {Name = name;}
-  virtual void SetRPM(double rpm) {};
-  virtual void SetEngineRPM(double rpm) {};
-  virtual double GetPowerRequired(void) {return 0.0;}
-  double GetThrust(void) const {return Thrust;}
+  virtual void SetRPM(Real rpm) {};
+  virtual void SetEngineRPM(Real rpm) {};
+  virtual Real GetPowerRequired(void) {return 0.0;}
+  Real GetThrust(void) const {return Thrust;}
   eType GetType(void) {return Type;}
   std::string GetName(void) {return Name;}
-  void SetReverserAngle(double angle) {ReverserAngle = angle;}
-  double GetReverserAngle(void) const {return ReverserAngle;}
-  virtual double GetRPM(void) const { return 0.0; };
-  virtual double GetEngineRPM(void) const { return 0.0; };
-  double GetGearRatio(void) {return GearRatio; }
+  void SetReverserAngle(Real angle) {ReverserAngle = angle;}
+  Real GetReverserAngle(void) const {return ReverserAngle;}
+  virtual Real GetRPM(void) const { return 0.0; };
+  virtual Real GetEngineRPM(void) const { return 0.0; };
+  Real GetGearRatio(void) {return GearRatio; }
   virtual std::string GetThrusterLabels(int id, const std::string& delimeter);
   virtual std::string GetThrusterValues(int id, const std::string& delimeter);
 
   virtual void ResetToIC(void);
 
   struct Inputs {
-    double TotalDeltaT;
-    double H_agl;
+    Real TotalDeltaT;
+    Real H_agl;
     FGColumnVector3 PQRi;
     FGColumnVector3 AeroPQR;
     FGColumnVector3 AeroUVW;
-    double Density;
-    double Pressure;
-    double Soundspeed;
-    double Alpha;
-    double Beta;
-    double Vt;
+    Real Density;
+    Real Pressure;
+    Real Soundspeed;
+    Real Alpha;
+    Real Beta;
+    Real Vt;
   } in;
 
 protected:
   eType Type;
   std::string Name;
-  double Thrust;
-  double PowerRequired;
-  double GearRatio;
-  double ThrustCoeff;
-  double ReverserAngle;
+  Real Thrust;
+  Real PowerRequired;
+  Real GearRatio;
+  Real ThrustCoeff;
+  Real ReverserAngle;
   int EngineNum;
   virtual void Debug(int from);
 };

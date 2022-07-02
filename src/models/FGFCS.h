@@ -94,7 +94,7 @@ CLASS DOCUMENTATION
 
     In the above case we can see the first few components of the pitch channel
     defined. The input to the first component (a summer), as can be seen in the "Pitch trim
-    sum" component, is really the sum of two parameters: elevator command (from
+    sum" component, is Really the sum of two parameters: elevator command (from
     the stick - a pilot input), and pitch trim.
     The next component created is an aerosurface scale component - a type of
     gain (see the LoadFCS() method for insight on how the various types of
@@ -210,50 +210,50 @@ public:
   //@{
   /** Gets the aileron command.
       @return aileron command in range from -1.0 - 1.0 */
-  double GetDaCmd(void) const { return DaCmd; }
+  Real GetDaCmd(void) const { return DaCmd; }
 
   /** Gets the elevator command.
       @return elevator command in range from -1.0 - 1.0 */
-  double GetDeCmd(void) const { return DeCmd; }
+  Real GetDeCmd(void) const { return DeCmd; }
 
   /** Gets the rudder command.
       @return rudder command in range from -1.0 - 1.0 */
-  double GetDrCmd(void) const { return DrCmd; }
+  Real GetDrCmd(void) const { return DrCmd; }
 
   /** Gets the steering command.
        @return steering command in range from -1.0 - 1.0 */
-   double GetDsCmd(void) const { return fdmex->GetGroundReactions()->GetDsCmd(); }
+   Real GetDsCmd(void) const { return fdmex->GetGroundReactions()->GetDsCmd(); }
 
   /** Gets the flaps command.
       @return flaps command in range from 0 to 1.0 */
-  double GetDfCmd(void) const { return DfCmd; }
+  Real GetDfCmd(void) const { return DfCmd; }
 
   /** Gets the speedbrake command.
       @return speedbrake command in range from 0 to 1.0 */
-  double GetDsbCmd(void) const { return DsbCmd; }
+  Real GetDsbCmd(void) const { return DsbCmd; }
 
   /** Gets the spoiler command.
       @return spoiler command in range from 0 to 1.0 */
-  double GetDspCmd(void) const { return DspCmd; }
+  Real GetDspCmd(void) const { return DspCmd; }
 
   /** Gets the throttle command.
       @param engine engine ID number
       @return throttle command in range from 0 - 1.0 for the given engine */
-  double GetThrottleCmd(int engine) const;
+  Real GetThrottleCmd(int engine) const;
 
-  const std::vector<double>& GetThrottleCmd() const {return ThrottleCmd;}
+  const std::vector<Real>& GetThrottleCmd() const {return ThrottleCmd;}
 
   /** Gets the mixture command.
       @param engine engine ID number
       @return mixture command in range from 0 - 1.0 for the given engine */
-  double GetMixtureCmd(int engine) const { return MixtureCmd[engine]; }
+  Real GetMixtureCmd(int engine) const { return MixtureCmd[engine]; }
 
-  const std::vector<double>& GetMixtureCmd() const {return MixtureCmd;}
+  const std::vector<Real>& GetMixtureCmd() const {return MixtureCmd;}
 
   /** Gets the prop pitch command.
       @param engine engine ID number
       @return pitch command in range from 0.0 - 1.0 for the given engine */
-  double GetPropAdvanceCmd(int engine) const { return PropAdvanceCmd[engine]; }
+  Real GetPropAdvanceCmd(int engine) const { return PropAdvanceCmd[engine]; }
 
   /** Gets the prop feather command.
       @param engine engine ID number
@@ -262,91 +262,91 @@ public:
 
   /** Gets the pitch trim command.
       @return pitch trim command in range from -1.0 to 1.0 */
-  double GetPitchTrimCmd(void) const { return PTrimCmd; }
+  Real GetPitchTrimCmd(void) const { return PTrimCmd; }
 
   /** Gets the rudder trim command.
       @return rudder trim command in range from -1.0 - 1.0 */
-  double GetYawTrimCmd(void) const { return YTrimCmd; }
+  Real GetYawTrimCmd(void) const { return YTrimCmd; }
 
   /** Gets the aileron trim command.
       @return aileron trim command in range from -1.0 - 1.0 */
-  double GetRollTrimCmd(void) const { return RTrimCmd; }
+  Real GetRollTrimCmd(void) const { return RTrimCmd; }
 
   /** Get the gear extend/retract command. 0 commands gear up, 1 down.
       defaults to down.
       @return the current value of the gear extend/retract command*/
-  double GetGearCmd(void) const { return GearCmd; }
+  Real GetGearCmd(void) const { return GearCmd; }
   //@}
 
   /// @name Aerosurface position retrieval
   //@{
   /** Gets the left aileron position.
       @return aileron position in radians */
-  double GetDaLPos( int form = ofRad )
+  Real GetDaLPos( int form = ofRad )
                          const { return DaLPos[form]; }
 
   /** Gets the right aileron position.
       @return aileron position in radians */
-  double GetDaRPos( int form = ofRad )
+  Real GetDaRPos( int form = ofRad )
                          const { return DaRPos[form]; }
 
   /** Gets the elevator position.
       @return elevator position in radians */
-  double GetDePos( int form = ofRad )
+  Real GetDePos( int form = ofRad )
                          const { return DePos[form]; }
 
   /** Gets the rudder position.
       @return rudder position in radians */
-  double GetDrPos( int form = ofRad )
+  Real GetDrPos( int form = ofRad )
                          const { return DrPos[form]; }
 
   /** Gets the speedbrake position.
       @return speedbrake position in radians */
-  double GetDsbPos( int form = ofRad )
+  Real GetDsbPos( int form = ofRad )
                          const { return DsbPos[form]; }
 
   /** Gets the spoiler position.
       @return spoiler position in radians */
-  double GetDspPos( int form = ofRad )
+  Real GetDspPos( int form = ofRad )
                          const { return DspPos[form]; }
 
   /** Gets the flaps position.
       @return flaps position in radians */
-  double GetDfPos( int form = ofRad )
+  Real GetDfPos( int form = ofRad )
                          const { return DfPos[form]; }
 
   /** Gets the throttle position.
       @param engine engine ID number
       @return throttle position for the given engine in range from 0 - 1.0 */
-  double GetThrottlePos(int engine) const;
+  Real GetThrottlePos(int engine) const;
 
-  const std::vector<double>& GetThrottlePos() const {return ThrottlePos;}
+  const std::vector<Real>& GetThrottlePos() const {return ThrottlePos;}
 
   /** Gets the mixture position.
       @param engine engine ID number
       @return mixture position for the given engine in range from 0 - 1.0 */
-  double GetMixturePos(int engine) const { return MixturePos[engine]; }
+  Real GetMixturePos(int engine) const { return MixturePos[engine]; }
 
-  const std::vector<double>& GetMixturePos() const {return MixturePos;}
+  const std::vector<Real>& GetMixturePos() const {return MixturePos;}
 
   /** Gets the gear position (0 up, 1 down), defaults to down
       @return gear position (0 up, 1 down) */
-  double GetGearPos(void) const { return GearPos; }
+  Real GetGearPos(void) const { return GearPos; }
 
   /** Gets the tailhook position (0 up, 1 down)
       @return tailhook position (0 up, 1 down) */
-  double GetTailhookPos(void) const { return TailhookPos; }
+  Real GetTailhookPos(void) const { return TailhookPos; }
 
   /** Gets the wing fold position (0 unfolded, 1 folded)
       @return wing fold position (0 unfolded, 1 folded) */
-  double GetWingFoldPos(void) const { return WingFoldPos; }
+  Real GetWingFoldPos(void) const { return WingFoldPos; }
 
   /** Gets the prop pitch position.
       @param engine engine ID number
       @return prop pitch position for the given engine in range from 0 - 1.0 */
-  double GetPropAdvance(int engine) const { return PropAdvance[engine]; }
+  Real GetPropAdvance(int engine) const { return PropAdvance[engine]; }
 
-  const std::vector<double>& GetPropAdvance() const { return PropAdvance; }
+  const std::vector<Real>& GetPropAdvance() const { return PropAdvance; }
 
   /** Gets the prop feather position.
       @param engine engine ID number
@@ -371,62 +371,62 @@ public:
   //@{
   /** Sets the aileron command
       @param cmd aileron command */
-  void SetDaCmd( double cmd ) { DaCmd = cmd; }
+  void SetDaCmd( Real cmd ) { DaCmd = cmd; }
 
   /** Sets the elevator command
       @param cmd elevator command in percent*/
-  void SetDeCmd(double cmd ) { DeCmd = cmd; }
+  void SetDeCmd(Real cmd ) { DeCmd = cmd; }
 
   /** Sets the rudder command
       @param cmd rudder command in percent*/
-  void SetDrCmd(double cmd) { DrCmd = cmd; }
+  void SetDrCmd(Real cmd) { DrCmd = cmd; }
 
   /** Sets the steering command
        @param cmd steering command in percent*/
-   void SetDsCmd(double cmd) { fdmex->GetGroundReactions()->SetDsCmd( cmd ); }
+   void SetDsCmd(Real cmd) { fdmex->GetGroundReactions()->SetDsCmd( cmd ); }
 
   /** Sets the flaps command
       @param cmd flaps command in percent*/
-  void SetDfCmd(double cmd) { DfCmd = cmd; }
+  void SetDfCmd(Real cmd) { DfCmd = cmd; }
 
   /** Sets the speedbrake command
       @param cmd speedbrake command in percent*/
-  void SetDsbCmd(double cmd) { DsbCmd = cmd; }
+  void SetDsbCmd(Real cmd) { DsbCmd = cmd; }
 
   /** Sets the spoilers command
       @param cmd spoilers command in percent*/
-  void SetDspCmd(double cmd) { DspCmd = cmd; }
+  void SetDspCmd(Real cmd) { DspCmd = cmd; }
 
   /** Sets the pitch trim command
       @param cmd pitch trim command in percent*/
-  void SetPitchTrimCmd(double cmd) { PTrimCmd = cmd; }
+  void SetPitchTrimCmd(Real cmd) { PTrimCmd = cmd; }
 
   /** Sets the rudder trim command
       @param cmd rudder trim command in percent*/
-  void SetYawTrimCmd(double cmd) { YTrimCmd = cmd; }
+  void SetYawTrimCmd(Real cmd) { YTrimCmd = cmd; }
 
   /** Sets the aileron trim command
       @param cmd aileron trim command in percent*/
-  void SetRollTrimCmd(double cmd) { RTrimCmd = cmd; }
+  void SetRollTrimCmd(Real cmd) { RTrimCmd = cmd; }
 
   /** Sets the throttle command for the specified engine
       @param engine engine ID number
       @param cmd normalized throttle command (0.0 - 1.0)*/
-  void SetThrottleCmd(int engine, double cmd);
+  void SetThrottleCmd(int engine, Real cmd);
 
   /** Sets the mixture command for the specified engine
       @param engine engine ID number
       @param cmd normalized mixture command (0.0 - 1.0)*/
-  void SetMixtureCmd(int engine, double cmd);
+  void SetMixtureCmd(int engine, Real cmd);
 
   /** Set the gear extend/retract command, defaults to down
       @param gear command 0 for up, 1 for down */
-   void SetGearCmd(double gearcmd) { GearCmd = gearcmd; }
+   void SetGearCmd(Real gearcmd) { GearCmd = gearcmd; }
 
   /** Sets the propeller pitch command for the specified engine
       @param engine engine ID number
       @param cmd pitch command in percent (0.0 - 1.0)*/
-  void SetPropAdvanceCmd(int engine, double cmd);
+  void SetPropAdvanceCmd(int engine, Real cmd);
 
    /** Sets the propeller feather command for the specified engine
       @param engine engine ID number
@@ -438,58 +438,58 @@ public:
   //@{
   /** Sets the left aileron position
       @param cmd left aileron position in radians*/
-  void SetDaLPos( int form , double pos );
+  void SetDaLPos( int form , Real pos );
 
   /** Sets the right aileron position
       @param cmd right aileron position in radians*/
-  void SetDaRPos( int form , double pos );
+  void SetDaRPos( int form , Real pos );
 
   /** Sets the elevator position
       @param cmd elevator position in radians*/
-  void SetDePos( int form , double pos );
+  void SetDePos( int form , Real pos );
 
   /** Sets the rudder position
       @param cmd rudder position in radians*/
-  void SetDrPos( int form , double pos );
+  void SetDrPos( int form , Real pos );
 
    /** Sets the flaps position
       @param cmd flaps position in radians*/
-  void SetDfPos( int form , double pos );
+  void SetDfPos( int form , Real pos );
 
   /** Sets the speedbrake position
       @param cmd speedbrake position in radians*/
-  void SetDsbPos( int form , double pos );
+  void SetDsbPos( int form , Real pos );
 
   /** Sets the spoiler position
       @param cmd spoiler position in radians*/
-  void SetDspPos( int form , double pos );
+  void SetDspPos( int form , Real pos );
 
   /** Sets the actual throttle setting for the specified engine
       @param engine engine ID number
       @param cmd normalized throttle setting (0.0 - 1.0)*/
-  void SetThrottlePos(int engine, double cmd);
+  void SetThrottlePos(int engine, Real cmd);
 
   /** Sets the actual mixture setting for the specified engine
       @param engine engine ID number
       @param cmd normalized mixture setting (0.0 - 1.0)*/
-  void SetMixturePos(int engine, double cmd);
+  void SetMixturePos(int engine, Real cmd);
 
   /** Set the gear extend/retract position, defaults to down
       @param gear position 0 up, 1 down       */
-   void SetGearPos(double gearpos) { GearPos = gearpos; }
+   void SetGearPos(Real gearpos) { GearPos = gearpos; }
 
   /** Set the tailhook position
       @param tailhook position 0 up, 1 down       */
-   void SetTailhookPos(double hookpos) { TailhookPos = hookpos; }
+   void SetTailhookPos(Real hookpos) { TailhookPos = hookpos; }
 
   /** Set the wing fold position
       @param wing fold position 0 unfolded, 1 folded  */
-   void SetWingFoldPos(double foldpos) { WingFoldPos = foldpos; }
+   void SetWingFoldPos(Real foldpos) { WingFoldPos = foldpos; }
 
   /** Sets the actual prop pitch setting for the specified engine
       @param engine engine ID number
       @param cmd prop pitch setting in percent (0.0 - 1.0)*/
-  void SetPropAdvance(int engine, double cmd);
+  void SetPropAdvance(int engine, Real cmd);
 
   /** Sets the actual prop feather setting for the specified engine
       @param engine engine ID number
@@ -501,34 +501,34 @@ public:
   //@{
   /** Sets the left brake group
       @param cmd brake setting in percent (0.0 - 1.0) */
-  void SetLBrake(double cmd) {BrakePos[FGLGear::bgLeft] = cmd;}
+  void SetLBrake(Real cmd) {BrakePos[FGLGear::bgLeft] = cmd;}
 
   /** Sets the right brake group
       @param cmd brake setting in percent (0.0 - 1.0) */
-  void SetRBrake(double cmd) {BrakePos[FGLGear::bgRight] = cmd;}
+  void SetRBrake(Real cmd) {BrakePos[FGLGear::bgRight] = cmd;}
 
   /** Sets the center brake group
       @param cmd brake setting in percent (0.0 - 1.0) */
-  void SetCBrake(double cmd) {BrakePos[FGLGear::bgCenter] = cmd;}
+  void SetCBrake(Real cmd) {BrakePos[FGLGear::bgCenter] = cmd;}
 
   /** Gets the brake for a specified group.
       @param bg which brakegroup to retrieve the command for
       @return the brake setting for the supplied brake group argument */
-  double GetBrake(FGLGear::BrakeGroup bg);
+  Real GetBrake(FGLGear::BrakeGroup bg);
 
-  const std::vector<double>& GetBrakePos() const {return BrakePos;}
+  const std::vector<Real>& GetBrakePos() const {return BrakePos;}
 
   /** Gets the left brake.
       @return the left brake setting. */
-  double GetLBrake(void) const {return BrakePos[FGLGear::bgLeft];}
+  Real GetLBrake(void) const {return BrakePos[FGLGear::bgLeft];}
 
   /** Gets the right brake.
       @return the right brake setting. */
-  double GetRBrake(void) const {return BrakePos[FGLGear::bgRight];}
+  Real GetRBrake(void) const {return BrakePos[FGLGear::bgRight];}
 
   /** Gets the center brake.
       @return the center brake setting. */
-  double GetCBrake(void) const {return BrakePos[FGLGear::bgCenter];}
+  Real GetCBrake(void) const {return BrakePos[FGLGear::bgCenter];}
   //@}
 
   enum SystemType { stFCS, stSystem, stAutoPilot }; 
@@ -542,30 +542,30 @@ public:
   SGPath FindFullPathName(const SGPath& path) const override;
 
   void AddThrottle(void);
-  double GetDt(void) const;
+  Real GetDt(void) const;
 
   std::shared_ptr<FGPropertyManager> GetPropertyManager(void) { return PropertyManager; }
 
   bool GetTrimStatus(void) const { return FDMExec->GetTrimStatus(); }
-  double GetChannelDeltaT(void) const { return GetDt() * ChannelRate; }
+  Real GetChannelDeltaT(void) const { return GetDt() * ChannelRate; }
 
 private:
-  double DaCmd, DeCmd, DrCmd, DfCmd, DsbCmd, DspCmd;
-  double DePos[NForms], DaLPos[NForms], DaRPos[NForms], DrPos[NForms];
-  double DfPos[NForms], DsbPos[NForms], DspPos[NForms];
-  double PTrimCmd, YTrimCmd, RTrimCmd;
-  std::vector <double> ThrottleCmd;
-  std::vector <double> ThrottlePos;
-  std::vector <double> MixtureCmd;
-  std::vector <double> MixturePos;
-  std::vector <double> PropAdvanceCmd;
-  std::vector <double> PropAdvance;
+  Real DaCmd, DeCmd, DrCmd, DfCmd, DsbCmd, DspCmd;
+  Real DePos[NForms], DaLPos[NForms], DaRPos[NForms], DrPos[NForms];
+  Real DfPos[NForms], DsbPos[NForms], DspPos[NForms];
+  Real PTrimCmd, YTrimCmd, RTrimCmd;
+  std::vector <Real> ThrottleCmd;
+  std::vector <Real> ThrottlePos;
+  std::vector <Real> MixtureCmd;
+  std::vector <Real> MixturePos;
+  std::vector <Real> PropAdvanceCmd;
+  std::vector <Real> PropAdvance;
   std::vector <bool> PropFeatherCmd;
   std::vector <bool> PropFeather;
-  //double LeftBrake, RightBrake, CenterBrake; // Brake settings
-  std::vector <double> BrakePos; // left, center, right - defined by FGLGear:: enum
-  double GearCmd,GearPos;
-  double TailhookPos, WingFoldPos;
+  //Real LeftBrake, RightBrake, CenterBrake; // Brake settings
+  std::vector <Real> BrakePos; // left, center, right - defined by FGLGear:: enum
+  Real GearCmd,GearPos;
+  Real TailhookPos, WingFoldPos;
   SystemType systype;
   int ChannelRate;
   FGFDMExec* fdmex;

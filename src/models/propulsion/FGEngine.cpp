@@ -90,7 +90,7 @@ void FGEngine::ResetToIC(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGEngine::CalcFuelNeed(void)
+Real FGEngine::CalcFuelNeed(void)
 {
   FuelFlowRate = SLFuelFlowMax*PctPower;
   FuelExpended = FuelFlowRate*in.TotalDeltaT;
@@ -111,7 +111,7 @@ unsigned int FGEngine::GetSourceTank(unsigned int i) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGEngine::GetThrust(void) const 
+Real FGEngine::GetThrust(void) const 
 {
   return Thruster->GetThrust();
 }

@@ -4,9 +4,9 @@
 #include <math/FGQuaternion.h>
 #include "TestAssertions.h"
 
-const double epsilon = 100. * std::numeric_limits<double>::epsilon();
+constexpr double epsilon = 100. * std::numeric_limits<double>::epsilon();
 
-double NormalizedAngle(double angle) {
+Real NormalizedAngle(Real angle) {
   if (angle > M_PI) angle -= 2.0*M_PI;
   if (angle <= -M_PI) angle += 2.0*M_PI;
   return angle;
@@ -16,7 +16,7 @@ void CheckLocation(const JSBSim::FGLocation& loc,
                    JSBSim::FGColumnVector3 vec) {
   const JSBSim::FGQuaternion qloc(2, -0.5*M_PI);
   JSBSim::FGQuaternion q;
-  double r = vec.Magnitude();
+  Real r = vec.Magnitude();
 
   TS_ASSERT_DELTA(vec(1), loc(1), r*epsilon);
   TS_ASSERT_DELTA(vec(2), loc(2), r*epsilon);
@@ -206,7 +206,7 @@ public:
 
     for (unsigned int i=1; i < 4; i++) {
       l = lv;
-      double x = v(i) + 1.0;
+      Real x = v(i) + 1.0;
       l.Entry(i) = x;
 
       for (unsigned int j=1; j < 4; j++) {
@@ -238,7 +238,7 @@ public:
 
     for (unsigned int i=1; i < 4; i++) {
       l = v;
-      double x = v(i) + 1.0;
+      Real x = v(i) + 1.0;
       l(i) = x;
 
       for (unsigned int j=1; j < 4; j++) {
@@ -393,7 +393,7 @@ public:
 
       for (unsigned int ilon=0; ilon < 12; ilon++) {
         double r = ilon + 1;
-        double lon = NormalizedAngle(ilon*M_PI/6.0);
+        Real lon = NormalizedAngle(ilon*M_PI/6.0);
         l.SetLongitude(lon);
         TS_ASSERT_DELTA(lon, l.GetLongitude(), epsilon);
         TS_ASSERT_DELTA(lat, l.GetLatitude(), epsilon);
@@ -418,7 +418,7 @@ public:
       double lat = ilat*M_PI/12.0;
       for (unsigned int ilon=0; ilon < 12; ilon++) {
         double r = ilon + 1;
-        double lon = NormalizedAngle(ilon*M_PI/6.0);
+        Real lon = NormalizedAngle(ilon*M_PI/6.0);
 
         l.SetPosition(lon, lat, r);
         TS_ASSERT_DELTA(lon, l.GetLongitude(), epsilon);
@@ -474,8 +474,8 @@ public:
   }
 
   void testGeodetic() {
-    const double a = 20925646.32546; // WGS84 semimajor axis length in feet
-    const double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+    constexpr double a = 20925646.32546; // WGS84 semimajor axis length in feet
+    constexpr double b = 20855486.5951;  // WGS84 semiminor axis length in feet
     JSBSim::FGLocation l;
 
     l.SetEllipse(a, b);
@@ -484,7 +484,7 @@ public:
       double glat = ilat*M_PI/12.0;
       for (unsigned int ilon=0; ilon < 12; ilon++) {
         double h = ilon + 1.0;
-        double lon = NormalizedAngle(ilon*M_PI/6.0);
+        Real lon = NormalizedAngle(ilon*M_PI/6.0);
         double ac = a * cos(glat);
         double bs = b * sin(glat);
         double N = a*a / sqrt(ac*ac + bs*bs);
@@ -503,12 +503,12 @@ public:
       double glat = ilat*M_PI/12.0;
       for (unsigned int ilon=0; ilon < 12; ilon++) {
         double h = ilon + 1.0;
-        double lon = NormalizedAngle(ilon*M_PI/6.0);
+        Real lon = NormalizedAngle(ilon*M_PI/6.0);
         double ac = a * cos(glat);
         double bs = b * sin(glat);
         double N = a*a / sqrt(ac*ac + bs*bs);
-        double x = (N+h)*cos(glat)*cos(lon);
-        double y = (N+h)*cos(glat)*sin(lon);
+        Real x = (N+h)*cos(glat)*cos(lon);
+        Real y = (N+h)*cos(glat)*sin(lon);
         double z = (b*b*N/(a*a)+h)*sin(glat);
         l.SetPositionGeodetic(lon, glat, h);
         TS_ASSERT_DELTA(x, l(1), epsilon*fabs(x));
@@ -565,8 +565,8 @@ public:
     TS_ASSERT_DELTA(0.0, l.GetSinLongitude(), epsilon);
 
     // Geodetic calculations next to the North Pole
-    const double a = 20925646.32546; // WGS84 semimajor axis length in feet
-    const double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+    constexpr double a = 20925646.32546; // WGS84 semimajor axis length in feet
+    constexpr double b = 20855486.5951;  // WGS84 semiminor axis length in feet
     l.SetEllipse(a, b);
     l = b * v;
     TS_ASSERT_DELTA(90.0, l.GetGeodLatitudeDeg(), epsilon);
@@ -622,9 +622,9 @@ public:
 
   void testNavigationOnSphericalEarth()
   {
-    double slr = 20925646.32546; // Sea Level Radius
-    double lat0 = 1.0;
-    double lon0 = 1.0;
+    constexpr double slr = 20925646.32546; // Sea Level Radius
+    constexpr double lat0 = 1.0;
+    constexpr double lon0 = 1.0;
     JSBSim::FGLocation l0(lon0, lat0, slr);
     l0.SetEllipse(slr, slr);
 
@@ -635,20 +635,20 @@ public:
       double dlat = lat - lat0;
       for (int ilon = -5; ilon < 6; ilon++)
       {
-        double lon = NormalizedAngle(ilon * M_PI / 6.0);
-        double dlon = lon - lon0;
+        Real lon = NormalizedAngle(ilon * M_PI / 6.0);
+        Real dlon = lon - lon0;
         // Compute the distance
-        double distance_a = pow(sin(0.5 * dlat), 2.) + (cos(lat0) * cos(lat) * pow(sin(0.5 * dlon), 2.));
-        double distance = 2. * slr * atan2(sqrt(distance_a), sqrt(1. - distance_a));
+        Real distance_a = pow(sin(0.5 * dlat), 2.) + (cos(lat0) * cos(lat) * pow(sin(0.5 * dlon), 2.));
+        Real distance = 2. * slr * atan2(sqrt(distance_a), sqrt(1. - distance_a));
 #ifdef __APPLE__
         TS_ASSERT_DELTA(distance, l0.GetDistanceTo(lon, lat), 1E-6);
 #else
         TS_ASSERT_DELTA(distance, l0.GetDistanceTo(lon, lat), 1E-7);
 #endif
         // Compute the heading
-        double Y = sin(dlon) * cos(lat);
-        double X = cos(lat0) * sin(lat) - sin(lat0) * cos(lat) * cos(dlon);
-        double heading = NormalizedAngle(atan2(Y, X));
+        Real Y = sin(dlon) * cos(lat);
+        Real X = cos(lat0) * sin(lat) - sin(lat0) * cos(lat) * cos(dlon);
+        Real heading = NormalizedAngle(atan2(Y, X));
         TS_ASSERT_DELTA(heading, l0.GetHeadingTo(lon, lat), epsilon);
       }
     }
@@ -656,8 +656,8 @@ public:
 
   void testNavigationOnOblateEarth()
   {
-    const double a = 20925646.32546; // WGS84 semimajor axis length in feet
-    const double b = 20855486.5951;  // WGS84 semiminor axis length in feet
+    constexpr double a = 20925646.32546; // WGS84 semimajor axis length in feet
+    constexpr double b = 20855486.5951;  // WGS84 semiminor axis length in feet
     JSBSim::FGLocation l;
     l.SetEllipse(a, b);
     l.SetPositionGeodetic(0., 0., 0.);
@@ -665,8 +665,8 @@ public:
     // Distance and heading to other points on the equator.
     for (int ilon = -5; ilon < 6; ilon++)
     {
-      double lon = NormalizedAngle(ilon * M_PI / 6.0);
-      double distance = abs(lon * a);
+      Real lon = NormalizedAngle(ilon * M_PI / 6.0);
+      Real distance = abs(lon * a);
       TS_ASSERT_DELTA(distance, l.GetDistanceTo(lon, 0.), 1.);
       if (ilon != 0)
         TS_ASSERT_DELTA(lon > 0 ? 0.5 * M_PI : -0.5 * M_PI,
@@ -680,7 +680,7 @@ public:
     // Distance and heading to the poles.
     for (int ilon = -5; ilon < 6; ilon++)
     {
-      double lon = NormalizedAngle(ilon * M_PI / 6.0);
+      Real lon = NormalizedAngle(ilon * M_PI / 6.0);
       l.SetPositionGeodetic(lon, 0., 0.);
       TS_ASSERT_DELTA(0.25*p, l.GetDistanceTo(0., 0.5*M_PI), 1.);
       TS_ASSERT_DELTA(0., l.GetHeadingTo(0., 0.5*M_PI), epsilon);
@@ -692,7 +692,7 @@ public:
     for (int ilat = -5; ilat <= 5; ++ilat) {
       double glat = ilat * M_PI / 12.0;
       for (int ilon = -5; ilon <= 6; ++ilon) {
-        double lon = NormalizedAngle(ilon * M_PI / 6.0);
+        Real lon = NormalizedAngle(ilon * M_PI / 6.0);
         l.SetPositionGeodetic(lon, glat, 0.);
         TS_ASSERT_DELTA(0.5*p, l.GetDistanceTo(lon+M_PI, -glat), 1.);
       }

@@ -54,7 +54,7 @@ FGInertial::FGInertial(FGFDMExec* fgex)
   Name = "Earth";
 
   // Earth defaults
-  double RotationRate    = 0.00007292115;
+  Real RotationRate    = 0.00007292115;
   GM              = 14.0764417572E15;   // WGS84 value
   J2              = 1.08262982E-03;     // WGS84 value for J2
   a               = 20925646.32546;     // WGS84 semimajor axis length in feet
@@ -63,7 +63,7 @@ FGInertial::FGInertial(FGFDMExec* fgex)
 
   // Lunar defaults
   /*
-  double RotationRate    = 0.0000026617;
+  Real RotationRate    = 0.0000026617;
   GM              = 1.7314079E14;         // Lunar GM
   J2              = 2.033542482111609E-4; // value for J2
   a               = 5702559.05;           // semimajor axis length in feet
@@ -107,7 +107,7 @@ bool FGInertial::Load(Element* el)
   GeographicLib::Geodesic geod(a, 1.-b/a);
 
   if (el->FindElement("rotation_rate")) {
-    double RotationRate = el->FindElementValueAsNumberConvertTo("rotation_rate", "RAD/SEC");
+    Real RotationRate = el->FindElementValueAsNumberConvertTo("rotation_rate", "RAD/SEC");
     vOmegaPlanet = {0., 0., RotationRate};
   }
   if (el->FindElement("GM"))
@@ -140,7 +140,7 @@ bool FGInertial::Run(bool Holding)
   switch (gravType) {
   case gtStandard:
     {
-      double radius = in.Position.GetRadius();
+      Real radius = in.Position.GetRadius();
       vGravAccel = -(GetGAccel(radius) / radius) * in.Position;
     }
     break;
@@ -184,7 +184,7 @@ FGMatrix33 FGInertial::GetTl2ec(const FGLocation& location) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGInertial::GetGAccel(double r) const
+Real FGInertial::GetGAccel(Real r) const
 {
   return GM/(r*r);
 }
@@ -201,14 +201,14 @@ FGColumnVector3 FGInertial::GetGravityJ2(const FGLocation& position) const
   FGColumnVector3 J2Gravity;
 
   // Gravitation accel
-  double r = position.GetRadius();
-  double sinLat = sin(position.GetLatitude());
+  Real r = position.GetRadius();
+  Real sinLat = sin(position.GetLatitude());
 
-  double adivr = a/r;
-  double preCommon = 1.5*J2*adivr*adivr;
-  double xy = 1.0 - 5.0*(sinLat*sinLat);
-  double z = 3.0 - 5.0*(sinLat*sinLat);
-  double GMOverr2 = GM/(r*r);
+  Real adivr = a/r;
+  Real preCommon = 1.5*J2*adivr*adivr;
+  Real xy = 1.0 - 5.0*(sinLat*sinLat);
+  Real z = 3.0 - 5.0*(sinLat*sinLat);
+  Real GMOverr2 = GM/(r*r);
 
   J2Gravity(1) = -GMOverr2 * ((1.0 + (preCommon * xy)) * position(eX)/r);
   J2Gravity(2) = -GMOverr2 * ((1.0 + (preCommon * xy)) * position(eY)/r);
@@ -219,15 +219,15 @@ FGColumnVector3 FGInertial::GetGravityJ2(const FGLocation& position) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGInertial::SetAltitudeAGL(FGLocation& location, double altitudeAGL)
+void FGInertial::SetAltitudeAGL(FGLocation& location, Real altitudeAGL)
 {
   FGColumnVector3 vDummy;
   FGLocation contact;
   contact.SetEllipse(a, b);
   GroundCallback->GetAGLevel(location, contact, vDummy, vDummy, vDummy);
-  double groundHeight = contact.GetGeodAltitude();
-  double longitude = location.GetLongitude();
-  double geodLat = location.GetGeodLatitudeRad();
+  Real groundHeight = contact.GetGeodAltitude();
+  Real longitude = location.GetLongitude();
+  Real geodLat = location.GetGeodLatitudeRad();
   location.SetPositionGeodetic(longitude, geodLat,
                                groundHeight + altitudeAGL);
 }

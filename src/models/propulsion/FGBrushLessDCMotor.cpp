@@ -100,7 +100,7 @@ FGBrushLessDCMotor::FGBrushLessDCMotor(FGFDMExec* exec, Element* el, int engine_
     throw BaseException("Missing parameter");
   }
 
-  double MaxCurrent = MaxVolts / CoilResistance + ZeroTorqueCurrent;
+  Real MaxCurrent = MaxVolts / CoilResistance + ZeroTorqueCurrent;
 
   PowerWatts = MaxCurrent * MaxVolts;
 
@@ -130,8 +130,8 @@ void FGBrushLessDCMotor::Calculate(void)
     ((FGPropeller*)Thruster)->SetFeather(in.PropFeather[EngineNumber]);
   }
 
-  double RPM = Thruster->GetRPM();
-  double V = MaxVolts * in.ThrottlePos[EngineNumber];
+  Real RPM = Thruster->GetRPM();
+  Real V = MaxVolts * in.ThrottlePos[EngineNumber];
 
   Current = (V - RPM / Kv) / CoilResistance; // Equation (4) from Drela's document
 
@@ -140,7 +140,7 @@ void FGBrushLessDCMotor::Calculate(void)
   // motor to overcome internal friction : it is always resisting the torque and
   // consequently has an opposite to the current.
 
-  double Torque = 0;
+  Real Torque = 0;
 
   if (Current >= ZeroTorqueCurrent)
     Torque = (Current - ZeroTorqueCurrent) / Kv * WattperRPMtoftpound;
@@ -148,7 +148,7 @@ void FGBrushLessDCMotor::Calculate(void)
     Torque = (Current + ZeroTorqueCurrent) / Kv * WattperRPMtoftpound;
 
   // EnginePower must be non zero when accelerating from RPM == 0.0
-  double EnginePower = ((2 * M_PI) * max(RPM, 0.0001) * Torque) / 60;  //units [#*ft/s]
+  Real EnginePower = ((2 * M_PI) * max(RPM, 0.0001) * Torque) / 60;  //units [#*ft/s]
   HP = EnginePower / hptowatts * NMtoftpound;  // units[HP]
   LoadThrusterInputs();
   Thruster->Calculate(EnginePower);

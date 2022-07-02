@@ -193,12 +193,12 @@ class JSBSIM_API FGLGear : protected FGSurface, public FGForce
 {
 public:
   struct Inputs {
-    double Vground;
-    double VcalibratedKts;
-    double Temperature;
-    double DistanceAGL;
-    double DistanceASL;
-    double TotalDeltaT;
+    Real Vground;
+    Real VcalibratedKts;
+    Real Temperature;
+    Real DistanceAGL;
+    Real DistanceASL;
+    Real TotalDeltaT;
     bool TakeoffThrottle;
     bool WOW;
     FGMatrix33 Tb2l;
@@ -208,9 +208,9 @@ public:
     FGColumnVector3 UVW;
     FGColumnVector3 vXYZcg; // CG coordinates expressed in the structural frame
     FGLocation Location;
-    std::vector <double> BrakePos;
-    double FCSGearPos;
-    double EmptyWeight;
+    std::vector <Real> BrakePos;
+    Real FCSGearPos;
+    Real EmptyWeight;
   };
 
   /// Brake grouping enumerators
@@ -243,24 +243,24 @@ public:
   FGColumnVector3 GetBodyLocation(void) const {
     return Ts2b * (vXYZn - in.vXYZcg);
   }
-  double GetBodyLocation(int idx) const {
+  Real GetBodyLocation(int idx) const {
     FGColumnVector3 vWhlBodyVec = Ts2b * (vXYZn - in.vXYZcg);
     return vWhlBodyVec(idx);
   }
 
   const FGColumnVector3& GetLocalGear(void) const { return vLocalGear; }
-  double GetLocalGear(int idx) const { return vLocalGear(idx); }
+  Real GetLocalGear(int idx) const { return vLocalGear(idx); }
 
   /// Gets the name of the gear
   const std::string& GetName(void) const {return name; }
   /// Gets the Weight On Wheels flag value
   bool    GetWOW(void) const {return WOW; }
   /// Gets the current compressed length of the gear in feet
-  double  GetCompLen(void) const {return compressLength;}
+  Real  GetCompLen(void) const {return compressLength;}
   /// Gets the current gear compression velocity in ft/sec
-  double  GetCompVel(void) const {return compressSpeed; }
+  Real  GetCompVel(void) const {return compressSpeed; }
   /// Gets the gear compression force in pounds
-  double  GetCompForce(void) const {return StrutForce;   }
+  Real  GetCompForce(void) const {return StrutForce;   }
 
   /// Sets the weight-on-wheels flag.
   void SetWOW(bool wow) {WOW = wow;}
@@ -271,11 +271,11 @@ public:
   /** Get the console touchdown reporting feature
       @return true if reporting is turned on */
   bool GetReport(void) const  { return ReportEnable; }
-  double GetSteerNorm(void) const {
-    return maxSteerAngle == 0.0 ? 0.0 : radtodeg/maxSteerAngle*SteerAngle;
+  Real GetSteerNorm(void) const {
+    return maxSteerAngle == 0.0 ? Real(0.0) : radtodeg/maxSteerAngle*SteerAngle;
   }
-  void SetSteerCmd(double cmd) { SetSteerAngleDeg(cmd * maxSteerAngle); }
-  double GetstaticFCoeff(void) const { return staticFCoeff; }
+  void SetSteerCmd(Real cmd) { SetSteerAngleDeg(cmd * maxSteerAngle); }
+  Real GetstaticFCoeff(void) const { return staticFCoeff; }
 
   int  GetBrakeGroup(void) const   { return (int)eBrakeGrp; }
   int  GetSteerType(void) const    { return (int)eSteerType; }
@@ -285,36 +285,36 @@ public:
   bool GetGearUnitUp(void) const   { return isRetractable ? (GetGearUnitPos() < 0.01) : false; }
   bool GetGearUnitDown(void) const { return isRetractable ? (GetGearUnitPos() > 0.99) : true; }
 
-  double GetWheelRollForce(void) {
+  Real GetWheelRollForce(void) {
     UpdateForces();
     FGColumnVector3 vForce = mTGear.Transposed() * FGForce::GetBodyForces();
     return vForce(eX)*cos(SteerAngle) + vForce(eY)*sin(SteerAngle); }
-  double GetWheelSideForce(void) {
+  Real GetWheelSideForce(void) {
     UpdateForces();
     FGColumnVector3 vForce = mTGear.Transposed() * FGForce::GetBodyForces();
     return vForce(eY)*cos(SteerAngle) - vForce(eX)*sin(SteerAngle); }
-  double GetBodyXForce(void) {
+  Real GetBodyXForce(void) {
     UpdateForces();
     return FGForce::GetBodyForces()(eX);
   }
-  double GetBodyYForce(void) {
+  Real GetBodyYForce(void) {
     UpdateForces();
     return FGForce::GetBodyForces()(eY);
   }
-  double GetBodyZForce(void) {
+  Real GetBodyZForce(void) {
     UpdateForces();
     return FGForce::GetBodyForces()(eZ);
   }
-  double GetWheelRollVel(void) const   { return vWhlVelVec(eX)*cos(SteerAngle)
+  Real GetWheelRollVel(void) const   { return vWhlVelVec(eX)*cos(SteerAngle)
                                               + vWhlVelVec(eY)*sin(SteerAngle);  }
-  double GetWheelSideVel(void) const   { return vWhlVelVec(eY)*cos(SteerAngle)
+  Real GetWheelSideVel(void) const   { return vWhlVelVec(eY)*cos(SteerAngle)
                                               - vWhlVelVec(eX)*sin(SteerAngle);  }
-  double GetWheelSlipAngle(void) const { return WheelSlip;       }
-  double GetWheelVel(int axis) const   { return vWhlVelVec(axis);}
+  Real GetWheelSlipAngle(void) const { return WheelSlip;       }
+  Real GetWheelVel(int axis) const   { return vWhlVelVec(axis);}
   bool IsBogey(void) const             { return (eContactType == ctBOGEY);}
-  double GetGearUnitPos(void) const;
-  double GetSteerAngleDeg(void) const { return radtodeg*SteerAngle; }
-  void SetSteerAngleDeg(double angle) {
+  Real GetGearUnitPos(void) const;
+  Real GetSteerAngleDeg(void) const { return radtodeg*SteerAngle; }
+  void SetSteerAngleDeg(Real angle) {
     if (eSteerType != stFixed && !Castered)
       SteerAngle = degtorad * angle;
   }
@@ -333,26 +333,26 @@ private:
   FGColumnVector3 vGroundNormal;
   FGTable *ForceY_Table;
   FGFunction *fStrutForce;
-  double SteerAngle;
-  double kSpring;
-  double bDamp;
-  double bDampRebound;
-  double compressLength;
-  double compressSpeed;
-  double rollingFCoeff;
-  double Stiffness, Shape, Peak, Curvature; // Pacejka factors
-  double BrakeFCoeff;
-  double maxCompLen;
-  double SinkRate;
-  double GroundSpeed;
-  double TakeoffDistanceTraveled;
-  double TakeoffDistanceTraveled50ft;
-  double LandingDistanceTraveled;
-  double MaximumStrutForce, StrutForce;
-  double MaximumStrutTravel;
-  double FCoeff;
-  double WheelSlip;
-  double GearPos;
+  Real SteerAngle;
+  Real kSpring;
+  Real bDamp;
+  Real bDampRebound;
+  Real compressLength;
+  Real compressSpeed;
+  Real rollingFCoeff;
+  Real Stiffness, Shape, Peak, Curvature; // Pacejka factors
+  Real BrakeFCoeff;
+  Real maxCompLen;
+  Real SinkRate;
+  Real GroundSpeed;
+  Real TakeoffDistanceTraveled;
+  Real TakeoffDistanceTraveled50ft;
+  Real LandingDistanceTraveled;
+  Real MaximumStrutForce, StrutForce;
+  Real MaximumStrutTravel;
+  Real FCoeff;
+  Real WheelSlip;
+  Real GearPos;
   bool WOW;
   bool lastWOW;
   bool FirstContact;
@@ -370,7 +370,7 @@ private:
   SteerType   eSteerType;
   DampType    eDampType;
   DampType    eDampTypeRebound;
-  double  maxSteerAngle;
+  Real  maxSteerAngle;
 
   LagrangeMultiplier LMultiplier[3];
 
@@ -390,7 +390,7 @@ private:
   void ComputeGroundFrame(void);
   void ComputeJacobian(const FGColumnVector3& vWhlContactVec);
   void UpdateForces(void);
-  void SetstaticFCoeff(double coeff);
+  void SetstaticFCoeff(Real coeff);
   void CrashDetect(void);
   void InitializeReporting(void);
   void ResetReporting(void);

@@ -52,7 +52,7 @@ namespace JSBSim {
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-FGTransmission::FGTransmission(FGFDMExec *exec, int num, double dt) :
+FGTransmission::FGTransmission(FGFDMExec *exec, int num, Real dt) :
   FreeWheelTransmission(1.0),
   ThrusterMoment(1.0), EngineMoment(1.0), EngineFriction(0.0),
   ClutchCtrlNorm(1.0), BrakeCtrlNorm(0.0), MaxBrakePower(0.0),
@@ -72,19 +72,19 @@ FGTransmission::~FGTransmission(){
 
 // basically P = Q*w and Q_Engine + (-Q_Rotor) = J * dw/dt, J = Moment
 //
-void FGTransmission::Calculate(double EnginePower, double ThrusterTorque, double dt) {
+void FGTransmission::Calculate(Real EnginePower, Real ThrusterTorque, Real dt) {
 
-  double coupling = 1.0, coupling_sq = 1.0;
-  double fw_mult = 1.0;
+  Real coupling = 1.0, coupling_sq = 1.0;
+  Real fw_mult = 1.0;
 
-  double d_omega = 0.0, engine_d_omega = 0.0, thruster_d_omega = 0.0; // relative changes
+  Real d_omega = 0.0, engine_d_omega = 0.0, thruster_d_omega = 0.0; // relative changes
 
-  double engine_omega = rpm_to_omega(EngineRPM);
-  double safe_engine_omega = engine_omega < 1e-1 ? 1e-1 : engine_omega;
-  double engine_torque = EnginePower / safe_engine_omega;
+  Real engine_omega = rpm_to_omega(EngineRPM);
+  Real safe_engine_omega = engine_omega < 1e-1 ? Real(1e-1) : engine_omega;
+  Real engine_torque = EnginePower / safe_engine_omega;
 
-  double thruster_omega = rpm_to_omega(ThrusterRPM);
-  double safe_thruster_omega = thruster_omega < 1e-1 ? 1e-1 : thruster_omega;
+  Real thruster_omega = rpm_to_omega(ThrusterRPM);
+  Real safe_thruster_omega = thruster_omega < 1e-1 ? Real(1e-1) : thruster_omega;
 
   engine_torque  -= EngineFriction / safe_engine_omega;
   ThrusterTorque += Constrain(0.0, BrakeCtrlNorm, 1.0) * MaxBrakePower / safe_thruster_omega;

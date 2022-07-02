@@ -138,9 +138,9 @@ bool FGBuoyantForces::Load(Element *document)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGBuoyantForces::GetGasMass(void) const
+Real FGBuoyantForces::GetGasMass(void) const
 {
-  double Gw = 0.0;
+  Real Gw = 0.0;
 
   for (unsigned int i = 0; i < Cells.size(); i++) {
     Gw += Cells[i]->GetMass();
@@ -241,7 +241,7 @@ string FGBuoyantForces::GetBuoyancyValues(const string& delimeter)
 
 void FGBuoyantForces::bind(void)
 {
-  using PSF = void (FGBuoyantForces::*)(int, double);
+  using PSF = void (FGBuoyantForces::*)(int, Real);
   PropertyManager->Tie("moments/l-buoyancy-lbsft", this, eL,
                        &FGBuoyantForces::GetMoments, (PSF)nullptr);
   PropertyManager->Tie("moments/m-buoyancy-lbsft", this, eM,

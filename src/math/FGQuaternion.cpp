@@ -79,7 +79,7 @@ FGQuaternion::FGQuaternion(const FGQuaternion& q) : mCacheValid(q.mCacheValid)
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 // Initialize with the three euler angles
-FGQuaternion::FGQuaternion(double phi, double tht, double psi): mCacheValid(false)
+FGQuaternion::FGQuaternion(Real phi, Real tht, Real psi): mCacheValid(false)
 {
   InitializeFromEulerAngles(phi, tht, psi);
 }
@@ -88,9 +88,9 @@ FGQuaternion::FGQuaternion(double phi, double tht, double psi): mCacheValid(fals
 
 FGQuaternion::FGQuaternion(FGColumnVector3 vOrient): mCacheValid(false)
 {
-  double phi = vOrient(ePhi);
-  double tht = vOrient(eTht);
-  double psi = vOrient(ePsi);
+  Real phi = vOrient(ePhi);
+  Real tht = vOrient(eTht);
+  Real psi = vOrient(ePsi);
 
   InitializeFromEulerAngles(phi, tht, psi);
 }
@@ -103,28 +103,28 @@ FGQuaternion::FGQuaternion(FGColumnVector3 vOrient): mCacheValid(false)
 // the reference frame to the body frame. See "Quaternions and Rotation
 // Sequences", Jack B. Kuipers, sections 9.2 and 7.6. 
 
-void FGQuaternion::InitializeFromEulerAngles(double phi, double tht, double psi)
+void FGQuaternion::InitializeFromEulerAngles(Real phi, Real tht, Real psi)
 {
   mEulerAngles(ePhi) = phi;
   mEulerAngles(eTht) = tht;
   mEulerAngles(ePsi) = psi;
 
-  double thtd2 = 0.5*tht;
-  double psid2 = 0.5*psi;
-  double phid2 = 0.5*phi;
+  Real thtd2 = 0.5*tht;
+  Real psid2 = 0.5*psi;
+  Real phid2 = 0.5*phi;
   
-  double Sthtd2 = sin(thtd2);
-  double Spsid2 = sin(psid2);
-  double Sphid2 = sin(phid2);
+  Real Sthtd2 = sin(thtd2);
+  Real Spsid2 = sin(psid2);
+  Real Sphid2 = sin(phid2);
   
-  double Cthtd2 = cos(thtd2);
-  double Cpsid2 = cos(psid2);
-  double Cphid2 = cos(phid2);
+  Real Cthtd2 = cos(thtd2);
+  Real Cpsid2 = cos(psid2);
+  Real Cphid2 = cos(phid2);
   
-  double Cphid2Cthtd2 = Cphid2*Cthtd2;
-  double Cphid2Sthtd2 = Cphid2*Sthtd2;
-  double Sphid2Sthtd2 = Sphid2*Sthtd2;
-  double Sphid2Cthtd2 = Sphid2*Cthtd2;
+  Real Cphid2Cthtd2 = Cphid2*Cthtd2;
+  Real Cphid2Sthtd2 = Cphid2*Sthtd2;
+  Real Sphid2Sthtd2 = Sphid2*Sthtd2;
+  Real Sphid2Cthtd2 = Sphid2*Cthtd2;
   
   data[0] = Cphid2Cthtd2*Cpsid2 + Sphid2Sthtd2*Spsid2;
   data[1] = Sphid2Cthtd2*Cpsid2 - Cphid2Sthtd2*Spsid2;
@@ -139,7 +139,7 @@ void FGQuaternion::InitializeFromEulerAngles(double phi, double tht, double psi)
 FGQuaternion::FGQuaternion(const FGMatrix33& m) : mCacheValid(false)
 {
   data[0] = 0.50*sqrt(1.0 + m(1,1) + m(2,2) + m(3,3));
-  double t = 0.25/data[0];
+  Real t = 0.25/data[0];
   data[1] = t*(m(2,3) - m(3,2));
   data[2] = t*(m(3,1) - m(1,3));
   data[3] = t*(m(1,2) - m(2,1));
@@ -170,10 +170,10 @@ FGQuaternion FGQuaternion::GetQDot(const FGColumnVector3& PQR) const
 void FGQuaternion::Normalize()
 {
   // Note: this does not touch the cache since it does not change the orientation
-  double norm = Magnitude();
+  Real norm = Magnitude();
   if (norm == 0.0 || fabs(norm - 1.000) < 1e-10) return;
 
-  double rnorm = 1.0/norm;
+  Real rnorm = 1.0/norm;
 
   data[0] *= rnorm;
   data[1] *= rnorm;
@@ -188,22 +188,22 @@ void FGQuaternion::ComputeDerivedUnconditional(void) const
 {
   mCacheValid = true;
 
-  double q0 = data[0]; // use some aliases/shorthand for the quat elements.
-  double q1 = data[1];
-  double q2 = data[2];
-  double q3 = data[3];
+  Real q0 = data[0]; // use some aliases/shorthand for the quat elements.
+  Real q1 = data[1];
+  Real q2 = data[2];
+  Real q3 = data[3];
 
   // Now compute the transformation matrix.
-  double q0q0 = q0*q0;
-  double q1q1 = q1*q1;
-  double q2q2 = q2*q2;
-  double q3q3 = q3*q3;
-  double q0q1 = q0*q1;
-  double q0q2 = q0*q2;
-  double q0q3 = q0*q3;
-  double q1q2 = q1*q2;
-  double q1q3 = q1*q3;
-  double q2q3 = q2*q3;
+  Real q0q0 = q0*q0;
+  Real q1q1 = q1*q1;
+  Real q2q2 = q2*q2;
+  Real q3q3 = q3*q3;
+  Real q0q1 = q0*q1;
+  Real q0q2 = q0*q2;
+  Real q0q3 = q0*q3;
+  Real q1q2 = q1*q2;
+  Real q1q3 = q1*q3;
+  Real q2q3 = q2*q3;
   
   mT(1,1) = q0q0 + q1q1 - q2q2 - q3q3; // This is found from Eqn. 1.3-32 in
   mT(1,2) = 2.0*(q1q2 + q0q3);         // Stevens and Lewis

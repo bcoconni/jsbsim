@@ -87,19 +87,19 @@ public:
   ~FGBrushLessDCMotor();
 
   void Calculate(void);
-  double GetPowerAvailable(void) {return (HP * hptoftlbssec);}
-  double CalcFuelNeed(void) { return 0.; }
+  Real GetPowerAvailable(void) {return (HP * hptoftlbssec);}
+  Real CalcFuelNeed(void) { return 0.; }
   std::string GetEngineLabels(const std::string& delimiter);
   std::string GetEngineValues(const std::string& delimiter);
 
 private:
-  double ZeroTorqueCurrent; // Zero torque current [A]
-  double CoilResistance;    // Internal resistance [Ohm]
-  double PowerWatts;        // Maximum engine power
-  double MaxVolts;          // Max voltage available from battery [V]
-  double Kv;                // Speed constant of brusless DC motors [RPM/V]
-  double HP;                // Engine output, in horsepower
-  double Current;           // Current [A]
+  Real ZeroTorqueCurrent; // Zero torque current [A]
+  Real CoilResistance;    // Internal resistance [Ohm]
+  Real PowerWatts;        // Maximum engine power
+  Real MaxVolts;          // Max voltage available from battery [V]
+  Real Kv;                // Speed constant of brusless DC motors [RPM/V]
+  Real HP;                // Engine output, in horsepower
+  Real Current;           // Current [A]
   void Debug(int from);
 };
 }

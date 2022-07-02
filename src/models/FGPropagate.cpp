@@ -220,7 +220,7 @@ bool FGPropagate::Run(bool Holding)
   if (FGModel::Run(Holding)) return true;  // Fast return if we have nothing to do ...
   if (Holding) return false;
 
-  double dt = in.DeltaT * rate;  // The 'stepsize'
+  Real dt = in.DeltaT * rate;  // The 'stepsize'
 
   // Propagate rotational / translational velocity, angular /translational position, respectively.
 
@@ -239,8 +239,8 @@ bool FGPropagate::Run(bool Holding)
   epa += in.vOmegaPlanet(eZ)*dt;
 
   // 2. Update the Ti2ec and Tec2i transforms from the updated EPA
-  double cos_epa = cos(epa);
-  double sin_epa = sin(epa);
+  Real cos_epa = cos(epa);
+  Real sin_epa = sin(epa);
   Ti2ec = { cos_epa, sin_epa, 0.0,
             -sin_epa, cos_epa, 0.0,
             0.0, 0.0, 1.0 };
@@ -336,7 +336,7 @@ void FGPropagate::CalculateUVW(void)
 void FGPropagate::Integrate( FGColumnVector3& Integrand,
                              FGColumnVector3& Val,
                              deque <FGColumnVector3>& ValDot,
-                             double dt,
+                             Real dt,
                              eIntegrateType integration_type)
 {
   ValDot.push_front(Val);
@@ -371,7 +371,7 @@ void FGPropagate::Integrate( FGColumnVector3& Integrand,
 void FGPropagate::Integrate( FGQuaternion& Integrand,
                              FGQuaternion& Val,
                              deque <FGQuaternion>& ValDot,
-                             double dt,
+                             Real dt,
                              eIntegrateType integration_type)
 {
   ValDot.push_front(Val);
@@ -418,13 +418,13 @@ void FGPropagate::Integrate( FGQuaternion& Integrand,
       // constants C1, C2, C3 and C4 have the same value than those in ref. [7] pp. 11
       FGColumnVector3 wi = 0.5 * VState.vPQRi;
       FGColumnVector3 wdoti = 0.5 * in.vPQRidot;
-      double omegak2 = DotProduct(VState.vPQRi, VState.vPQRi);
-      double omegak = omegak2 > 1E-6 ? sqrt(omegak2) : 1E-6;
-      double rhok = 0.5 * dt * omegak;
-      double C1 = cos(rhok);
-      double C2 = 2.0 * sin(rhok) / omegak;
-      double C3 = 4.0 * (1.0 - C1) / (omegak*omegak);
-      double C4 = 4.0 * (dt - C2) / (omegak*omegak);
+      Real omegak2 = DotProduct(VState.vPQRi, VState.vPQRi);
+      Real omegak = omegak2 > 1E-6 ? sqrt(omegak2) : Real(1E-6);
+      Real rhok = 0.5 * dt * omegak;
+      Real C1 = cos(rhok);
+      Real C2 = 2.0 * sin(rhok) / omegak;
+      Real C3 = 4.0 * (1.0 - C1) / (omegak*omegak);
+      Real C4 = 4.0 * (dt - C2) / (omegak*omegak);
       FGColumnVector3 Omega = C2*wi + C3*wdoti + C4*wi*wdoti;
       FGQuaternion q;
 
@@ -436,22 +436,22 @@ void FGPropagate::Integrate( FGQuaternion& Integrand,
       Integrand = Integrand * q;
 
       /* Cross check with ref. [7] pp.11-12 formulas and code pp. 20
-      double pk = VState.vPQRi(eP);
-      double qk = VState.vPQRi(eQ);
-      double rk = VState.vPQRi(eR);
-      double pdotk = in.vPQRidot(eP);
-      double qdotk = in.vPQRidot(eQ);
-      double rdotk = in.vPQRidot(eR);
-      double Ap = -0.25 * (pk*pdotk + qk*qdotk + rk*rdotk);
-      double Bp = 0.25 * (pk*qdotk - qk*pdotk);
-      double Cp = 0.25 * (pdotk*rk - pk*rdotk);
-      double Dp = 0.25 * (qk*rdotk - qdotk*rk);
-      double C2p = sin(rhok) / omegak;
-      double C3p = 2.0 * (1.0 - cos(rhok)) / (omegak*omegak);
-      double H = C1 + C4 * Ap;
-      double G = -C2p*rk - C3p*rdotk + C4*Bp;
-      double J = C2p*qk + C3p*qdotk - C4*Cp;
-      double K = C2p*pk + C3p*pdotk - C4*Dp;
+      Real pk = VState.vPQRi(eP);
+      Real qk = VState.vPQRi(eQ);
+      Real rk = VState.vPQRi(eR);
+      Real pdotk = in.vPQRidot(eP);
+      Real qdotk = in.vPQRidot(eQ);
+      Real rdotk = in.vPQRidot(eR);
+      Real Ap = -0.25 * (pk*pdotk + qk*qdotk + rk*rdotk);
+      Real Bp = 0.25 * (pk*qdotk - qk*pdotk);
+      Real Cp = 0.25 * (pdotk*rk - pk*rdotk);
+      Real Dp = 0.25 * (qk*rdotk - qdotk*rk);
+      Real C2p = sin(rhok) / omegak;
+      Real C3p = 2.0 * (1.0 - cos(rhok)) / (omegak*omegak);
+      Real H = C1 + C4 * Ap;
+      Real G = -C2p*rk - C3p*rdotk + C4*Bp;
+      Real J = C2p*qk + C3p*qdotk - C4*Cp;
+      Real K = C2p*pk + C3p*pdotk - C4*Dp;
 
       cout << "q:       " << q << endl;
 
@@ -514,7 +514,7 @@ void FGPropagate::ComputeOrbitalParameters(void)
     N = {1., 0., 0.};
   }
   R.Normalize();
-  double vr = DotProduct(R, VState.vInertialVelocity);
+  Real vr = DotProduct(R, VState.vInertialVelocity);
   FGColumnVector3 eVector = (VState.vInertialVelocity*angularMomentum/in.GM - R);
   Eccentricity = eVector.Magnitude();
   if (Eccentricity > 1E-8) {
@@ -534,7 +534,7 @@ void FGPropagate::ComputeOrbitalParameters(void)
   PeriapsisRadius = h*h / (in.GM * (1+Eccentricity));
 
   if (Eccentricity < 1.0) {
-    double semimajor = 0.5*(ApoapsisRadius + PeriapsisRadius);
+    Real semimajor = 0.5*(ApoapsisRadius + PeriapsisRadius);
     OrbitalPeriod = 2.*M_PI*pow(semimajor, 1.5)/sqrt(in.GM);
   }
   else
@@ -570,16 +570,16 @@ void FGPropagate::SetInertialRates(const FGColumnVector3& vRates) {
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropagate::GetAltitudeASL() const
+Real FGPropagate::GetAltitudeASL() const
 {
   return VState.vLocation.GetRadius() - VState.vLocation.GetSeaLevelRadius();
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropagate::SetAltitudeASL(double altASL)
+void FGPropagate::SetAltitudeASL(Real altASL)
 {
-  double slr = VState.vLocation.GetSeaLevelRadius();
+  Real slr = VState.vLocation.GetSeaLevelRadius();
   VState.vLocation.SetRadius(slr + altASL);
   UpdateVehicleState();
 }
@@ -596,7 +596,7 @@ void FGPropagate::RecomputeLocalTerrainVelocity()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropagate::GetTerrainElevation(void) const
+Real FGPropagate::GetTerrainElevation(void) const
 {
   FGColumnVector3 vDummy;
   FGLocation contact;
@@ -607,14 +607,14 @@ double FGPropagate::GetTerrainElevation(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropagate::SetTerrainElevation(double terrainElev)
+void FGPropagate::SetTerrainElevation(Real terrainElev)
 {
   Inertial->SetTerrainElevation(terrainElev);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropagate::GetLocalTerrainRadius(void) const
+Real FGPropagate::GetLocalTerrainRadius(void) const
 {
   FGLocation contact;
   FGColumnVector3 vDummy;
@@ -624,21 +624,21 @@ double FGPropagate::GetLocalTerrainRadius(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropagate::GetDistanceAGL(void) const
+Real FGPropagate::GetDistanceAGL(void) const
 {
   return Inertial->GetAltitudeAGL(VState.vLocation);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropagate::GetDistanceAGLKm(void) const
+Real FGPropagate::GetDistanceAGLKm(void) const
 {
   return GetDistanceAGL()*0.0003048;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropagate::SetDistanceAGL(double tt)
+void FGPropagate::SetDistanceAGL(Real tt)
 {
   Inertial->SetAltitudeAGL(VState.vLocation, tt);
   UpdateVehicleState();
@@ -646,7 +646,7 @@ void FGPropagate::SetDistanceAGL(double tt)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropagate::SetDistanceAGLKm(double tt)
+void FGPropagate::SetDistanceAGLKm(Real tt)
 {
   SetDistanceAGL(tt*3280.8399);
 }
@@ -744,7 +744,7 @@ void FGPropagate::WriteStateFile(int num)
   else               path.append("initfile.");
 
   // Append sim time to the filename since there may be more than one created during a simulation run
-  path.concat(to_string((double)FDMExec->GetSimTime())+".xml");
+  path.concat(to_string((Real)FDMExec->GetSimTime())+".xml");
 
   switch(num) {
   case 1:
@@ -814,7 +814,7 @@ void FGPropagate::WriteStateFile(int num)
 
 void FGPropagate::bind(void)
 {
-  typedef double (FGPropagate::*PMF)(int) const;
+  typedef Real (FGPropagate::*PMF)(int) const;
   typedef int (FGPropagate::*iPMF)(void) const;
 
   PropertyManager->Tie("velocities/h-dot-fps", this, &FGPropagate::Gethdot);

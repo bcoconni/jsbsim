@@ -120,7 +120,7 @@ public:
   /// altitude.
   /// @param altitude The altitude above sea level (ASL) in feet.
   /// @return Modeled temperature in degrees Rankine at the specified altitude.
-  double GetTemperature(double altitude) const override;
+  Real GetTemperature(Real altitude) const override;
 
   /// Returns the standard temperature in degrees Rankine at a specified
   /// altitude.
@@ -128,23 +128,23 @@ public:
   ///                 temperature at.
   /// @return The STANDARD temperature in degrees Rankine at the specified
   ///         altitude.
-  virtual double GetStdTemperature(double altitude) const;
+  virtual Real GetStdTemperature(Real altitude) const;
 
   /// Returns the standard sea level temperature in degrees Rankine.
   /// @return The STANDARD temperature at sea level in degrees Rankine.
-  virtual double GetStdTemperatureSL() const { return StdSLtemperature; }
+  virtual Real GetStdTemperatureSL() const { return StdSLtemperature; }
 
   /// Returns the ratio of the standard temperature at the supplied altitude 
   /// over the standard sea level temperature.
-  virtual double GetStdTemperatureRatio(double h) const { return GetStdTemperature(h)/StdSLtemperature; }
+  virtual Real GetStdTemperatureRatio(Real h) const { return GetStdTemperature(h)/StdSLtemperature; }
 
   /// Returns the temperature bias over the sea level value in degrees Rankine.
-  virtual double GetTemperatureBias(eTemperature to) const
+  virtual Real GetTemperatureBias(eTemperature to) const
   { if (to == eCelsius || to == eKelvin) return TemperatureBias/1.80; else return TemperatureBias; }
 
   /// Returns the temperature gradient to be applied on top of the standard
   /// temperature gradient.
-  virtual double GetTemperatureDeltaGradient(eTemperature to)
+  virtual Real GetTemperatureDeltaGradient(eTemperature to)
   { if (to == eCelsius || to == eKelvin) return TemperatureDeltaGradient/1.80; else return TemperatureDeltaGradient; }
 
   /// Sets the Sea Level temperature, if it is to be different than the
@@ -156,7 +156,7 @@ public:
   /// this function.
   /// @param t the temperature value in the unit provided.
   /// @param unit the unit of the temperature.
-  void SetTemperatureSL(double t, eTemperature unit=eFahrenheit) override;
+  void SetTemperatureSL(Real t, eTemperature unit=eFahrenheit) override;
 
   /// Sets the temperature at the supplied altitude, if it is to be different
   /// than the standard temperature.
@@ -169,7 +169,7 @@ public:
   /// @param t The temperature value in the unit provided.
   /// @param h The altitude in feet above sea level.
   /// @param unit The unit of the temperature.
-  void SetTemperature(double t, double h, eTemperature unit=eFahrenheit) override;
+  void SetTemperature(Real t, Real h, eTemperature unit=eFahrenheit) override;
 
   /// Sets the temperature bias to be added to the standard temperature at all
   /// altitudes.
@@ -180,7 +180,7 @@ public:
   /// this function with a calculated bias.
   /// @param t the temperature value in the unit provided.
   /// @param unit the unit of the temperature.
-  virtual void SetTemperatureBias(eTemperature unit, double t);
+  virtual void SetTemperatureBias(eTemperature unit, Real t);
 
   /// Sets a Sea Level temperature delta that is ramped out by 86 km.
   /// The value of the delta is used to calculate a delta gradient that is
@@ -195,7 +195,7 @@ public:
   /// temperature profile as desired.
   /// @param t the sea level temperature delta value in the unit provided.
   /// @param unit the unit of the temperature.
-  virtual void SetSLTemperatureGradedDelta(eTemperature unit, double t);
+  virtual void SetSLTemperatureGradedDelta(eTemperature unit, Real t);
 
   /// Sets the temperature delta value at the supplied altitude/elevation above
   /// sea level, to be added to the standard temperature and ramped out by
@@ -204,7 +204,7 @@ public:
   /// temperature at sea level.
   /// @param t the temperature skew value in the unit provided.
   /// @param unit the unit of the temperature.
-  virtual void SetTemperatureGradedDelta(double t, double h, eTemperature unit=eFahrenheit);
+  virtual void SetTemperatureGradedDelta(Real t, Real h, eTemperature unit=eFahrenheit);
 
   /// This function resets the model to apply no bias or delta gradient to the
   /// temperature.
@@ -217,10 +217,10 @@ public:
   /// @name Pressure access functions.
   //@{
   /// Returns the pressure at a specified altitude in psf.
-  double GetPressure(double altitude) const override;
+  Real GetPressure(Real altitude) const override;
 
   /// Returns the standard pressure at the specified altitude.
-  virtual double GetStdPressure(double altitude) const;
+  virtual Real GetStdPressure(Real altitude) const;
 
   /** Sets the sea level pressure for modeling an off-standard pressure
       profile. This could be useful in the case where the pressure at an
@@ -228,7 +228,7 @@ public:
       @param pressure The pressure in the units specified.
       @param unit the unit of measure that the specified pressure is
                        supplied in.*/
-  void SetPressureSL(ePressure unit, double pressure) override;
+  void SetPressureSL(ePressure unit, Real pressure) override;
 
   /** Resets the sea level to the Standard sea level pressure, and recalculates
       dependent parameters so that the pressure calculations are standard. */
@@ -239,7 +239,7 @@ public:
   /// @name Density access functions.
   //@{
   /// Returns the standard density at a specified altitude
-  virtual double GetStdDensity(double altitude) const;
+  virtual Real GetStdDensity(Real altitude) const;
   //@}
 
   //  *************************************************************************
@@ -249,33 +249,33 @@ public:
       @param dewpoint The dew point in the units specified
       @param unit The unit of measure that the specified dew point is supplied
                   in. */
-  void SetDewPoint(eTemperature unit, double dewpoint);
+  void SetDewPoint(eTemperature unit, Real dewpoint);
   /** Returns the dew point.
       @param to The unit of measure that the dew point should be supplied in. */
-  double GetDewPoint(eTemperature to) const;
+  Real GetDewPoint(eTemperature to) const;
   /** Sets the partial pressure of water vapor.
       @param Pv The vapor pressure in the units specified
       @param unit The unit of measure that the specified vapor pressure is
                   supplied in. */
-  void SetVaporPressure(ePressure unit, double Pv);
+  void SetVaporPressure(ePressure unit, Real Pv);
   /** Returns the partial pressure of water vapor.
       @param to The unit of measure that the water vapor should be supplied in.
   */
-  double GetVaporPressure(ePressure to) const;
+  Real GetVaporPressure(ePressure to) const;
   /** Returns the saturated pressure of water vapor.
       @param to The unit of measure that the water vapor should be supplied in.
   */
-  double GetSaturatedVaporPressure(ePressure to) const;
+  Real GetSaturatedVaporPressure(ePressure to) const;
   /** Sets the relative humidity.
       @param RH The relative humidity in percent. */
-  void SetRelativeHumidity(double RH);
+  void SetRelativeHumidity(Real RH);
   /// Returns the relative humidity in percent.
-  double GetRelativeHumidity(void) const;
+  Real GetRelativeHumidity(void) const;
   /** Sets the vapor mass per million of dry air mass units.
       @param frac The fraction of water in ppm of dry air. */
-  void SetVaporMassFractionPPM(double frac);
+  void SetVaporMassFractionPPM(Real frac);
   /// Returns the vapor mass per million of dry air mass units (ppm).
-  double GetVaporMassFractionPPM(void) const;
+  Real GetVaporMassFractionPPM(void) const;
   //@}
 
   /// Prints the U.S. Standard Atmosphere table.
@@ -283,23 +283,23 @@ public:
 
 protected:
   /// Standard sea level conditions
-  double StdSLtemperature, StdSLdensity, StdSLpressure, StdSLsoundspeed;
+  Real StdSLtemperature, StdSLdensity, StdSLpressure, StdSLsoundspeed;
 
-  double TemperatureBias;
-  double TemperatureDeltaGradient;
-  double GradientFadeoutAltitude;
-  double VaporMassFraction;
-  double SaturatedVaporPressure;
+  Real TemperatureBias;
+  Real TemperatureDeltaGradient;
+  Real GradientFadeoutAltitude;
+  Real VaporMassFraction;
+  Real SaturatedVaporPressure;
 
   FGTable StdAtmosTemperatureTable;
   FGTable MaxVaporMassFraction;
-  std::vector<double> LapseRates;
-  std::vector<double> PressureBreakpoints;
-  std::vector<double> StdPressureBreakpoints;
-  std::vector<double> StdDensityBreakpoints;
-  std::vector<double> StdLapseRates;
+  std::vector<Real> LapseRates;
+  std::vector<Real> PressureBreakpoints;
+  std::vector<Real> StdPressureBreakpoints;
+  std::vector<Real> StdDensityBreakpoints;
+  std::vector<Real> StdLapseRates;
 
-  void Calculate(double altitude) override;
+  void Calculate(Real altitude) override;
 
   /// Recalculate the lapse rate vectors when the temperature profile is altered
   /// in a way that would change the lapse rates, such as when a gradient is
@@ -309,17 +309,17 @@ protected:
 
   /// Calculate (or recalculate) the atmospheric pressure breakpoints at the 
   /// altitudes in the standard temperature table.
-  void CalculatePressureBreakpoints(double SLpress);
+  void CalculatePressureBreakpoints(Real SLpress);
 
   /// Calculate the atmospheric density breakpoints at the 
   /// altitudes in the standard temperature table.
   void CalculateStdDensityBreakpoints();
 
   /// Convert a geometric altitude to a geopotential altitude
-  double GeopotentialAltitude(double geometalt) const { return (geometalt * EarthRadius) / (EarthRadius + geometalt); }
+  Real GeopotentialAltitude(Real geometalt) const { return (geometalt * EarthRadius) / (EarthRadius + geometalt); }
 
   /// Convert a geopotential altitude to a geometric altitude
-  double GeometricAltitude(double geopotalt) const { return (geopotalt * EarthRadius) / (EarthRadius - geopotalt); }
+  Real GeometricAltitude(Real geopotalt) const { return (geopotalt * EarthRadius) / (EarthRadius - geopotalt); }
 
   /** Calculates the density altitude given any temperature or pressure bias.
   Calculated density for the specified geometric altitude given any temperature
@@ -330,7 +330,7 @@ protected:
   https://en.wikipedia.org/wiki/Density_altitude
   https://wahiduddin.net/calc/density_altitude.htm
   */
-  double CalculateDensityAltitude(double density, double geometricAlt) override;
+  Real CalculateDensityAltitude(Real density, Real geometricAlt) override;
 
   /** Calculates the pressure altitude given any temperature or pressure bias.
   Calculated density for the specified geometric altitude given any temperature
@@ -340,13 +340,13 @@ protected:
   @see
   https://en.wikipedia.org/wiki/Pressure_altitude
   */
-  double CalculatePressureAltitude(double pressure, double geometricAlt) override;
+  Real CalculatePressureAltitude(Real pressure, Real geometricAlt) override;
 
   /// Calculate the pressure of water vapor with the Magnus formula.
-  double CalculateVaporPressure(double temperature);
+  Real CalculateVaporPressure(Real temperature);
 
   /// Validate the value of the vapor mass fraction
-  void ValidateVaporMassFraction(double geometricAlt);
+  void ValidateVaporMassFraction(Real geometricAlt);
 
   /// Calculate the SL density
   void CalculateSLDensity(void) { SLdensity = SLpressure / (Reng * SLtemperature); }

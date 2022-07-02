@@ -102,7 +102,7 @@ public:
       @param phi The euler X axis (roll) angle in radians
       @param tht The euler Y axis (attitude) angle in radians
       @param psi The euler Z axis (heading) angle in radians  */
-  FGQuaternion(double phi, double tht, double psi);
+  FGQuaternion(Real phi, Real tht, Real psi);
 
   /** Initializer by euler angle vector.
       Initialize the quaternion with the euler angle vector.
@@ -114,13 +114,13 @@ public:
       is given in the first argument.
       @param idx Index of the euler angle to initialize
       @param angle The euler angle in radians  */
-  FGQuaternion(int idx, double angle)
+  FGQuaternion(int idx, Real angle)
     : mCacheValid(false) {
 
-    double angle2 = 0.5*angle;
+    Real angle2 = 0.5*angle;
 
-    double Sangle2 = sin(angle2);
-    double Cangle2 = cos(angle2);
+    Real Sangle2 = sin(angle2);
+    Real Cangle2 = cos(angle2);
 
     if (idx == ePhi) {
       data[0] = Cangle2;
@@ -149,14 +149,14 @@ public:
       @param angle The angle in radians
       @param axis  The rotation axis
    */
-  FGQuaternion(double angle, const FGColumnVector3& axis)
+  FGQuaternion(Real angle, const FGColumnVector3& axis)
     : mCacheValid(false) {
 
-    double angle2 = 0.5 * angle;
+    Real angle2 = 0.5 * angle;
 
-    double length = axis.Magnitude();
-    double Sangle2 = sin(angle2) / length;
-    double Cangle2 = cos(angle2);
+    Real length = axis.Magnitude();
+    Real Sangle2 = sin(angle2) / length;
+    Real Cangle2 = cos(angle2);
 
     data[0] = Cangle2;
     data[1] = Sangle2 * axis(1);
@@ -207,7 +207,7 @@ public:
       @return a reference to the i-th euler angles corresponding
       to this quaternion rotation.
    */
-  double GetEuler(int i) const {
+  Real GetEuler(int i) const {
     ComputeDerived();
     return mEulerAngles(i);
   }
@@ -217,7 +217,7 @@ public:
       @return a reference to the i-th euler angles corresponding
       to this quaternion rotation.
       units degrees */
-  double GetEulerDeg(int i) const {
+  Real GetEulerDeg(int i) const {
     ComputeDerived();
     return radtodeg*mEulerAngles(i);
   }
@@ -234,7 +234,7 @@ public:
   /** Retrieves sine of the given euler angle.
       @return the sine of the Euler angle theta (pitch attitude) corresponding
       to this quaternion rotation.  */
-  double GetSinEuler(int i) const {
+  Real GetSinEuler(int i) const {
     ComputeDerived();
     return mEulerSines(i);
   }
@@ -242,7 +242,7 @@ public:
   /** Retrieves cosine of the given euler angle.
       @return the sine of the Euler angle theta (pitch attitude) corresponding
       to this quaternion rotation.  */
-  double GetCosEuler(int i) const {
+  Real GetCosEuler(int i) const {
     ComputeDerived();
     return mEulerCosines(i);
   }
@@ -256,7 +256,7 @@ public:
 
       Note that the index given in the argument is unchecked.
    */
-  double operator()(unsigned int idx) const { return data[idx-1]; }
+  Real operator()(unsigned int idx) const { return data[idx-1]; }
 
   /** Write access the entries of the vector.
 
@@ -267,7 +267,7 @@ public:
 
       Note that the index given in the argument is unchecked.
    */
-  double& operator()(unsigned int idx) { mCacheValid = false; return data[idx-1]; }
+  Real& operator()(unsigned int idx) { mCacheValid = false; return data[idx-1]; }
 
   /** Read access the entries of the vector.
 
@@ -276,13 +276,13 @@ public:
       Return the value of the matrix entry at the given index.
       Indices are counted starting with 1.
 
-      This function is just a shortcut for the <tt>double
+      This function is just a shortcut for the <tt>Real
       operator()(unsigned int idx) const</tt> function. It is
       used internally to access the elements in a more convenient way.
 
       Note that the index given in the argument is unchecked.
   */
-  double Entry(unsigned int idx) const { return data[idx-1]; }
+  Real Entry(unsigned int idx) const { return data[idx-1]; }
 
   /** Write access the entries of the vector.
 
@@ -291,13 +291,13 @@ public:
       Return a reference to the vector entry at the given index.
       Indices are counted starting with 1.
 
-      This function is just a shortcut for the <tt>double&
+      This function is just a shortcut for the <tt>Real&
       operator()(unsigned int idx)</tt> function. It is
       used internally to access the elements in a more convenient way.
 
       Note that the index given in the argument is unchecked.
   */
-  double& Entry(unsigned int idx) {
+  Real& Entry(unsigned int idx) {
     mCacheValid = false;
    return data[idx-1];
   }
@@ -367,7 +367,7 @@ public:
   /** Arithmetic operator "*=".
       @param scalar a multiplicative value.
       @return a quaternion reference representing Q, where Q = Q * scalar. */
-  const FGQuaternion& operator*=(double scalar) {
+  const FGQuaternion& operator*=(Real scalar) {
     data[0] *= scalar;
     data[1] *= scalar;
     data[2] *= scalar;
@@ -379,7 +379,7 @@ public:
   /** Arithmetic operator "/=".
       @param scalar a divisor value.
       @return a quaternion reference representing Q, where Q = Q / scalar. */
-  const FGQuaternion& operator/=(double scalar) {
+  const FGQuaternion& operator/=(Real scalar) {
     return operator*=(1.0/scalar);
   }
 
@@ -415,10 +415,10 @@ public:
       @param q a quaternion to be multiplied.
       @return a quaternion reference representing Q, where Q = Q * q. */
   const FGQuaternion& operator*=(const FGQuaternion& q) {
-    double q0 = data[0]*q.data[0]-data[1]*q.data[1]-data[2]*q.data[2]-data[3]*q.data[3];
-    double q1 = data[0]*q.data[1]+data[1]*q.data[0]+data[2]*q.data[3]-data[3]*q.data[2];
-    double q2 = data[0]*q.data[2]-data[1]*q.data[3]+data[2]*q.data[0]+data[3]*q.data[1];
-    double q3 = data[0]*q.data[3]+data[1]*q.data[2]-data[2]*q.data[1]+data[3]*q.data[0];
+    Real q0 = data[0]*q.data[0]-data[1]*q.data[1]-data[2]*q.data[2]-data[3]*q.data[3];
+    Real q1 = data[0]*q.data[1]+data[1]*q.data[0]+data[2]*q.data[3]-data[3]*q.data[2];
+    Real q2 = data[0]*q.data[2]-data[1]*q.data[3]+data[2]*q.data[0]+data[3]*q.data[1];
+    Real q3 = data[0]*q.data[3]+data[1]*q.data[2]-data[2]*q.data[1]+data[3]*q.data[0];
     data[0] = q0;
     data[1] = q1;
     data[2] = q2;
@@ -434,10 +434,10 @@ public:
       the identity orientation.
   */
   FGQuaternion Inverse(void) const {
-    double norm = SqrMagnitude();
+    Real norm = SqrMagnitude();
     if (norm == 0.0)
       return *this;
-    double rNorm = 1.0/norm;
+    Real rNorm = 1.0/norm;
     return FGQuaternion( data[0]*rNorm, -data[1]*rNorm,
                          -data[2]*rNorm, -data[3]*rNorm );
   }
@@ -451,19 +451,19 @@ public:
     return FGQuaternion( data[0], -data[1], -data[2], -data[3] );
   }
 
-  friend FGQuaternion operator*(double, const FGQuaternion&);
+  friend FGQuaternion operator*(Real, const FGQuaternion&);
 
   /** Length of the vector.
 
       Compute and return the euclidean norm of this vector.
   */
-  double Magnitude(void) const { return sqrt(SqrMagnitude()); }
+  Real Magnitude(void) const { return sqrt(SqrMagnitude()); }
 
   /** Square of the length of the vector.
 
       Compute and return the square of the euclidean norm of this vector.
   */
-  double SqrMagnitude(void) const {
+  Real SqrMagnitude(void) const {
     return  data[0]*data[0] + data[1]*data[1]
           + data[2]*data[2] + data[3]*data[3];
   }
@@ -485,7 +485,7 @@ public:
 
 private:
   /** Copying by assigning the vector valued components.  */
-  FGQuaternion(double q1, double q2, double q3, double q4) : mCacheValid(false)
+  FGQuaternion(Real q1, Real q2, Real q3, Real q4) : mCacheValid(false)
     { data[0] = q1; data[1] = q2; data[2] = q3; data[3] = q4; }
 
   /** Computation of derived values.
@@ -496,7 +496,7 @@ private:
   /** Computation of derived values.
       This function checks if the derived values like euler angles and
       transformation matrices are already computed. If so, it
-      returns. If they need to be computed the real worker routine
+      returns. If they need to be computed the Real worker routine
       FGQuaternion::ComputeDerivedUnconditional(void) const
       is called. */
   void ComputeDerived(void) const {
@@ -505,7 +505,7 @@ private:
   }
 
   /** The quaternion values itself. This is the master copy. */
-  double data[4];
+  Real data[4];
 
   /** A data validity flag.
       This class implements caching of the derived values like the
@@ -526,7 +526,7 @@ private:
   mutable FGColumnVector3 mEulerSines;
   mutable FGColumnVector3 mEulerCosines;
 
-  void InitializeFromEulerAngles(double phi, double tht, double psi);
+  void InitializeFromEulerAngles(Real phi, Real tht, Real psi);
 };
 
 /** Scalar multiplication.
@@ -536,7 +536,7 @@ private:
 
     Multiply the Vector with a scalar value.
 */
-inline FGQuaternion operator*(double scalar, const FGQuaternion& q) {
+inline FGQuaternion operator*(Real scalar, const FGQuaternion& q) {
   return FGQuaternion(scalar*q.data[0], scalar*q.data[1], scalar*q.data[2], scalar*q.data[3]);
 }
 
@@ -547,8 +547,8 @@ inline FGQuaternion operator*(double scalar, const FGQuaternion& q) {
 */
 inline FGQuaternion QExp(const FGColumnVector3& omega) {
   FGQuaternion qexp;
-  double angle = omega.Magnitude();
-  double sina_a = angle > 0.0 ? sin(angle)/angle : 1.0;
+  Real angle = omega.Magnitude();
+  Real sina_a = angle > 0.0 ? sin(angle)/angle : Real(1.0);
 
   qexp.data[0] = cos(angle);
   qexp.data[1] = omega(1) * sina_a;

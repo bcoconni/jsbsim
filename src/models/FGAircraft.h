@@ -131,38 +131,38 @@ public:
   const std::string& GetAircraftName(void) const { return AircraftName; }
 
   /// Gets the wing area
-  double GetWingArea(void) const { return WingArea; }
+  Real GetWingArea(void) const { return WingArea; }
   /// Gets the wing span
-  double GetWingSpan(void) const { return WingSpan; }
+  Real GetWingSpan(void) const { return WingSpan; }
   /// Gets the average wing chord
-  double Getcbar(void) const { return cbar; }
-  double GetWingIncidence(void) const { return WingIncidence; }
-  double GetWingIncidenceDeg(void) const { return WingIncidence*radtodeg; }
-  double GetHTailArea(void) const { return HTailArea; }
-  double GetHTailArm(void)  const { return HTailArm; }
-  double GetVTailArea(void) const { return VTailArea; }
-  double GetVTailArm(void)  const { return VTailArm; }
-  double Getlbarh(void) const { return lbarh; } // HTailArm / cbar
-  double Getlbarv(void) const { return lbarv; } // VTailArm / cbar
-  double Getvbarh(void) const { return vbarh; } // H. Tail Volume
-  double Getvbarv(void) const { return vbarv; } // V. Tail Volume
+  Real Getcbar(void) const { return cbar; }
+  Real GetWingIncidence(void) const { return WingIncidence; }
+  Real GetWingIncidenceDeg(void) const { return WingIncidence*radtodeg; }
+  Real GetHTailArea(void) const { return HTailArea; }
+  Real GetHTailArm(void)  const { return HTailArm; }
+  Real GetVTailArea(void) const { return VTailArea; }
+  Real GetVTailArm(void)  const { return VTailArm; }
+  Real Getlbarh(void) const { return lbarh; } // HTailArm / cbar
+  Real Getlbarv(void) const { return lbarv; } // VTailArm / cbar
+  Real Getvbarh(void) const { return vbarh; } // H. Tail Volume
+  Real Getvbarv(void) const { return vbarv; } // V. Tail Volume
   const FGColumnVector3& GetMoments(void) const { return vMoments; }
-  double GetMoments(int idx) const { return vMoments(idx); }
+  Real GetMoments(int idx) const { return vMoments(idx); }
   const FGColumnVector3& GetForces(void) const { return vForces; }
-  double GetForces(int idx) const { return vForces(idx); }
+  Real GetForces(int idx) const { return vForces(idx); }
   /** Gets the the aero reference point (RP) coordinates.
       @return a vector containing the RP coordinates in the structural frame. */
   const FGColumnVector3& GetXYZrp(void) const { return vXYZrp; }
   const FGColumnVector3& GetXYZvrp(void) const { return vXYZvrp; }
   const FGColumnVector3& GetXYZep(void) const { return vXYZep; }
-  double GetXYZrp(int idx) const { return vXYZrp(idx); }
-  double GetXYZvrp(int idx) const { return vXYZvrp(idx); }
-  double GetXYZep(int idx) const { return vXYZep(idx); }
+  Real GetXYZrp(int idx) const { return vXYZrp(idx); }
+  Real GetXYZvrp(int idx) const { return vXYZvrp(idx); }
+  Real GetXYZep(int idx) const { return vXYZep(idx); }
   void SetAircraftName(const std::string& name) {AircraftName = name;}
 
-  void SetXYZrp(int idx, double value) {vXYZrp(idx) = value;}
+  void SetXYZrp(int idx, Real value) {vXYZrp(idx) = value;}
 
-  void SetWingArea(double S) {WingArea = S;}
+  void SetWingArea(Real S) {WingArea = S;}
 
   struct Inputs {
     FGColumnVector3 AeroForce;
@@ -185,9 +185,9 @@ private:
   FGColumnVector3 vXYZep;
   FGColumnVector3 vDXYZcg;
 
-  double WingArea, WingSpan, cbar, WingIncidence;
-  double HTailArea, VTailArea, HTailArm, VTailArm;
-  double lbarh,lbarv,vbarh,vbarv;
+  Real WingArea, WingSpan, cbar, WingIncidence;
+  Real HTailArea, VTailArea, HTailArm, VTailArm;
+  Real lbarh,lbarv,vbarh,vbarv;
   std::string AircraftName;
 
   void bind(void);

@@ -337,7 +337,7 @@ void FGfdmSocket::Append(const char* item)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGfdmSocket::Append(double item)
+void FGfdmSocket::Append(Real item)
 {
   if (buffer.tellp() > 0) buffer << ',';
   buffer << std::setw(12) << std::setprecision(precision) << item;

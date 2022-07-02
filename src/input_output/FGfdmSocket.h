@@ -80,7 +80,7 @@ public:
   int Reply(const std::string& text);
   void Append(const std::string& s) {Append(s.c_str());}
   void Append(const char*);
-  void Append(double);
+  void Append(Real);
   void Append(long);
   void Clear(void);
   void Clear(const std::string& s);

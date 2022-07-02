@@ -85,11 +85,11 @@ public:
 private:
   FGPropertyNode_ptr target_angle_pNode;
   FGPropertyNode_ptr source_angle_pNode;
-  double target_angle;
-  double source_angle;
-  double target_angle_unit;
-  double source_angle_unit;
-  double output_unit;
+  Real target_angle;
+  Real source_angle;
+  Real target_angle_unit;
+  Real source_angle_unit;
+  Real output_unit;
   std::string unit;
 
   void Debug(int from) override;

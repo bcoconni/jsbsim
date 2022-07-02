@@ -179,7 +179,7 @@ bool FGFCS::Run(bool Holding)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetDaLPos( int form , double pos )
+void FGFCS::SetDaLPos( int form , Real pos )
 {
   switch(form) {
   case ofRad:
@@ -198,7 +198,7 @@ void FGFCS::SetDaLPos( int form , double pos )
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetDaRPos( int form , double pos )
+void FGFCS::SetDaRPos( int form , Real pos )
 {
   switch(form) {
   case ofRad:
@@ -217,7 +217,7 @@ void FGFCS::SetDaRPos( int form , double pos )
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetDePos( int form , double pos )
+void FGFCS::SetDePos( int form , Real pos )
 {
   switch(form) {
   case ofRad:
@@ -236,7 +236,7 @@ void FGFCS::SetDePos( int form , double pos )
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetDrPos( int form , double pos )
+void FGFCS::SetDrPos( int form , Real pos )
 {
   switch(form) {
   case ofRad:
@@ -255,7 +255,7 @@ void FGFCS::SetDrPos( int form , double pos )
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetDfPos( int form , double pos )
+void FGFCS::SetDfPos( int form , Real pos )
 {
   switch(form) {
   case ofRad:
@@ -274,7 +274,7 @@ void FGFCS::SetDfPos( int form , double pos )
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetDsbPos( int form , double pos )
+void FGFCS::SetDsbPos( int form , Real pos )
 {
   switch(form) {
   case ofRad:
@@ -293,7 +293,7 @@ void FGFCS::SetDsbPos( int form , double pos )
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetDspPos( int form , double pos )
+void FGFCS::SetDspPos( int form , Real pos )
 {
   switch(form) {
   case ofRad:
@@ -312,7 +312,7 @@ void FGFCS::SetDspPos( int form , double pos )
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetThrottleCmd(int engineNum, double setting)
+void FGFCS::SetThrottleCmd(int engineNum, Real setting)
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -330,7 +330,7 @@ void FGFCS::SetThrottleCmd(int engineNum, double setting)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetThrottlePos(int engineNum, double setting)
+void FGFCS::SetThrottlePos(int engineNum, Real setting)
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -348,7 +348,7 @@ void FGFCS::SetThrottlePos(int engineNum, double setting)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGFCS::GetThrottleCmd(int engineNum) const
+Real FGFCS::GetThrottleCmd(int engineNum) const
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -366,7 +366,7 @@ double FGFCS::GetThrottleCmd(int engineNum) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGFCS::GetThrottlePos(int engineNum) const
+Real FGFCS::GetThrottlePos(int engineNum) const
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -384,7 +384,7 @@ double FGFCS::GetThrottlePos(int engineNum) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetMixtureCmd(int engineNum, double setting)
+void FGFCS::SetMixtureCmd(int engineNum, Real setting)
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -398,7 +398,7 @@ void FGFCS::SetMixtureCmd(int engineNum, double setting)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetMixturePos(int engineNum, double setting)
+void FGFCS::SetMixturePos(int engineNum, Real setting)
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -412,7 +412,7 @@ void FGFCS::SetMixturePos(int engineNum, double setting)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetPropAdvanceCmd(int engineNum, double setting)
+void FGFCS::SetPropAdvanceCmd(int engineNum, Real setting)
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -426,7 +426,7 @@ void FGFCS::SetPropAdvanceCmd(int engineNum, double setting)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGFCS::SetPropAdvance(int engineNum, double setting)
+void FGFCS::SetPropAdvance(int engineNum, Real setting)
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
@@ -601,7 +601,7 @@ bool FGFCS::Load(Element* document)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGFCS::GetBrake(FGLGear::BrakeGroup bg)
+Real FGFCS::GetBrake(FGLGear::BrakeGroup bg)
 {
   return BrakePos[bg];
 }
@@ -685,7 +685,7 @@ void FGFCS::AddThrottle(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGFCS::GetDt(void) const
+Real FGFCS::GetDt(void) const
 {
   return FDMExec->GetDeltaT()*rate;
 }

@@ -172,10 +172,10 @@ FGWaypoint::~FGWaypoint()
 
 bool FGWaypoint::Run(void )
 {
-  double source_latitude_rad = source_latitude->GetValue() * source_latitude_unit;
-  double source_longitude_rad = source_longitude->GetValue() * source_longitude_unit;
-  double target_latitude_rad = target_latitude->GetValue() * target_latitude_unit;
-  double target_longitude_rad = target_longitude->GetValue() * target_longitude_unit;
+  Real source_latitude_rad = source_latitude->GetValue() * source_latitude_unit;
+  Real source_longitude_rad = source_longitude->GetValue() * source_longitude_unit;
+  Real target_latitude_rad = target_latitude->GetValue() * target_latitude_unit;
+  Real target_longitude_rad = target_longitude->GetValue() * target_longitude_unit;
   source.SetPositionGeodetic(source_longitude_rad, source_latitude_rad, 0.0);
 
   if (fabs(target_latitude_rad) > M_PI/2.0) {
@@ -195,17 +195,15 @@ bool FGWaypoint::Run(void )
   }
 
   if (WaypointType == eHeading) {     // Calculate Heading
-
-    double heading_to_waypoint_rad = source.GetHeadingTo(target_longitude_rad,
-                                                         target_latitude_rad);
+    Real heading_to_waypoint_rad = source.GetHeadingTo(target_longitude_rad,
+                                                       target_latitude_rad);
 
     if (eUnit == eDeg) Output = heading_to_waypoint_rad * radtodeg;
     else               Output = heading_to_waypoint_rad;
 
   } else {                            // Calculate Distance
-
-    double wp_distance = source.GetDistanceTo(target_longitude_rad,
-                                              target_latitude_rad);
+    Real wp_distance = source.GetDistanceTo(target_longitude_rad,
+                                            target_latitude_rad);
     if (eUnit == eMeters) Output = FeetToMeters(wp_distance);
     else                  Output = wp_distance;
 

@@ -59,7 +59,7 @@ CLASS IMPLEMENTATION
 // square a value, but preserve the original sign
 
 /*
-static inline double square_signed (double value)
+static inline Real square_signed (Real value)
 {
     if (value < 0)
         return value * value * -1;
@@ -69,7 +69,7 @@ static inline double square_signed (double value)
 */
 
 /// simply square a value
-constexpr double sqr(double x) { return x*x; }
+constexpr Real sqr(Real x) { return x*x; }
 
 FGWinds::FGWinds(FGFDMExec* fdmex) : FGModel(fdmex)
 {
@@ -158,7 +158,7 @@ bool FGWinds::Run(bool Holding)
 //
 // psi is the angle that the wind is blowing *towards*
 
-void FGWinds::SetWindspeed(double speed)
+void FGWinds::SetWindspeed(Real speed)
 {
   if (vWindNED.Magnitude() == 0.0) {
     psiw = 0.0;
@@ -172,7 +172,7 @@ void FGWinds::SetWindspeed(double speed)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGWinds::GetWindspeed(void) const
+Real FGWinds::GetWindspeed(void) const
 {
   return vWindNED.Magnitude();
 }
@@ -181,16 +181,16 @@ double FGWinds::GetWindspeed(void) const
 //
 // psi is the angle that the wind is blowing *towards*
 
-void FGWinds::SetWindPsi(double dir)
+void FGWinds::SetWindPsi(Real dir)
 {
-  double mag = GetWindspeed();
+  Real mag = GetWindspeed();
   psiw = dir;
   SetWindspeed(mag);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGWinds::Turbulence(double h)
+void FGWinds::Turbulence(Real h)
 {
   switch (turbType) {
 
@@ -208,12 +208,12 @@ void FGWinds::Turbulence(double h)
     if (Rhythmicity > 1.0) Rhythmicity = 1.0;
 
     // generate a sine wave corresponding to turbulence rate in hertz
-    double time = FDMExec->GetSimTime();
-    double sinewave = sin( time * TurbRate * 6.283185307 );
+    Real time = FDMExec->GetSimTime();
+    Real sinewave = sin( time * TurbRate * 6.283185307 );
 
-    double random = 0.0;
+    Real random = 0.0;
     if (target_time == 0.0) {
-      strength = random = 1 - 2.0*(double(rand())/double(RAND_MAX));
+      strength = random = 1 - 2.0*(Real(rand())/Real(RAND_MAX));
       target_time = time + 0.71 + (random * 0.5);
     }
     if (time > target_time) {
@@ -222,10 +222,10 @@ void FGWinds::Turbulence(double h)
     }
 
     // max vertical wind speed in fps, corresponds to TurbGain = 1.0
-    double max_vs = 40;
+    Real max_vs = 40;
 
     vTurbulenceNED.InitMatrix();
-    double delta = strength * max_vs * TurbGain * (1-Rhythmicity) * spike;
+    Real delta = strength * max_vs * TurbGain * (1-Rhythmicity) * spike;
 
     // Vertical component of turbulence.
     vTurbulenceNED(eDown) = sinewave * max_vs * TurbGain * Rhythmicity;
@@ -255,7 +255,7 @@ void FGWinds::Turbulence(double h)
     }
 
     // Turbulence model according to MIL-F-8785C (Flying Qualities of Piloted Aircraft)
-    double b_w = in.wingspan, L_u, L_w, sig_u, sig_w;
+    Real b_w = in.wingspan, L_u, L_w, sig_u, sig_w;
 
       if (b_w == 0.) b_w = 30.;
 
@@ -280,7 +280,7 @@ void FGWinds::Turbulence(double h)
 
     // keep values from last timesteps
     // TODO maybe use deque?
-    static double
+    static Real
       xi_u_km1 = 0, nu_u_km1 = 0,
       xi_v_km1 = 0, xi_v_km2 = 0, nu_v_km1 = 0, nu_v_km2 = 0,
       xi_w_km1 = 0, xi_w_km2 = 0, nu_w_km1 = 0, nu_w_km2 = 0,
@@ -288,7 +288,7 @@ void FGWinds::Turbulence(double h)
       xi_q_km1 = 0, xi_r_km1 = 0;
 
 
-    double
+    Real
       T_V = in.totalDeltaT, // for compatibility of nomenclature
       sig_p = 1.9/sqrt(L_w*b_w)*sig_w, // Yeager1998, eq. (8)
       //sig_q = sqrt(M_PI/2/L_w/b_w), // eq. (14)
@@ -309,7 +309,7 @@ void FGWinds::Turbulence(double h)
 
     if (turbType == ttTustin) {
       // the following is the Tustin formulation of Yeager's report
-      double
+      Real
         omega_w = in.V/L_w, // hidden in nomenclature p. 3
         omega_v = in.V/L_u, // this is defined nowhere
         C_BL  = 1/tau_u/tan(T_V/2/tau_u), // eq. (19)
@@ -354,7 +354,7 @@ void FGWinds::Turbulence(double h)
     }
 
     // rotate by wind azimuth and assign the velocities
-    double cospsi = cos(psiw), sinpsi = sin(psiw);
+    Real cospsi = cos(psiw), sinpsi = sin(psiw);
     vTurbulenceNED(eNorth) =  cospsi*xi_u + sinpsi*xi_v;
     vTurbulenceNED(eEast) = -sinpsi*xi_u + cospsi*xi_v;
     vTurbulenceNED(eDown) = xi_w;
@@ -385,9 +385,9 @@ void FGWinds::Turbulence(double h)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGWinds::CosineGustProfile(double startDuration, double steadyDuration, double endDuration, double elapsedTime)
+Real FGWinds::CosineGustProfile(Real startDuration, Real steadyDuration, Real endDuration, Real elapsedTime)
 {
-  double factor = 0.0;
+  Real factor = 0.0;
   if (elapsedTime >= 0 && elapsedTime <= startDuration) {
     factor = (1.0 - cos(M_PI*elapsedTime/startDuration))/2.0;
   } else if (elapsedTime > startDuration && (elapsedTime <= (startDuration + steadyDuration))) {
@@ -407,7 +407,7 @@ void FGWinds::CosineGust()
 {
   struct OneMinusCosineProfile& profile = oneMinusCosineGust.gustProfile;
 
-  double factor = CosineGustProfile( profile.startupDuration,
+  Real factor = CosineGustProfile( profile.startupDuration,
                                      profile.steadyDuration,
                                      profile.endDuration,
                                      profile.elapsedTime);
@@ -459,16 +459,16 @@ void FGWinds::NumberOfUpDownburstCells(int num)
 // Up/Downburst is centered) and the current vehicle location. The distance
 // here is calculated from the Haversine formula.
 
-double FGWinds::DistanceFromRingCenter(double lat, double lon)
+Real FGWinds::DistanceFromRingCenter(Real lat, Real lon)
 {
-  double deltaLat = in.latitude - lat;
-  double deltaLong = in.longitude - lon;
-  double dLat2 = deltaLat/2.0;
-  double dLong2 = deltaLong/2.0;
-  double a = sin(dLat2)*sin(dLat2)
+  Real deltaLat = in.latitude - lat;
+  Real deltaLong = in.longitude - lon;
+  Real dLat2 = deltaLat/2.0;
+  Real dLong2 = deltaLong/2.0;
+  Real a = sin(dLat2)*sin(dLat2)
              + cos(lat)*cos(in.latitude)*sin(dLong2)*sin(dLong2);
-  double c = 2.0*atan2(sqrt(a), sqrt(1.0 - a));
-  double d = in.planetRadius*c;
+  Real c = 2.0*atan2(sqrt(a), sqrt(1.0 - a));
+  Real d = in.planetRadius*c;
   return d;
 }
 
@@ -478,7 +478,7 @@ void FGWinds::UpDownBurst()
 {
 
   for (unsigned int i=0; i<UpDownBurstCells.size(); i++) {
-    /*double d =*/ DistanceFromRingCenter(UpDownBurstCells[i]->ringLatitude, UpDownBurstCells[i]->ringLongitude);
+    /*Real d =*/ DistanceFromRingCenter(UpDownBurstCells[i]->ringLatitude, UpDownBurstCells[i]->ringLongitude);
 
   }
 }
@@ -487,11 +487,11 @@ void FGWinds::UpDownBurst()
 
 void FGWinds::bind(void)
 {
-  typedef double (FGWinds::*PMF)(int) const;
+  typedef Real (FGWinds::*PMF)(int) const;
   typedef int (FGWinds::*PMFt)(void) const;
-  typedef void   (FGWinds::*PMFd)(int,double);
+  typedef void   (FGWinds::*PMFd)(int,Real);
   typedef void   (FGWinds::*PMFi)(int);
-  typedef double (FGWinds::*Ptr)(void) const;
+  typedef Real (FGWinds::*Ptr)(void) const;
 
   // User-specified steady, constant, wind properties (local navigational/geographic frame: N-E-D)
   PropertyManager->Tie("atmosphere/psiw-rad", this, &FGWinds::GetWindPsi, &FGWinds::SetWindPsi);

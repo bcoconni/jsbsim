@@ -281,7 +281,7 @@ void FGLGear::ResetToIC(void)
 
 const FGColumnVector3& FGLGear::GetBodyForces(FGSurface *surface)
 {
-  double gearPos = 1.0;
+  Real gearPos = 1.0;
 
   vFn.InitMatrix();
 
@@ -297,7 +297,7 @@ const FGColumnVector3& FGLGear::GetBodyForces(FGSurface *surface)
 
     // Compute the height of the theoretical location of the wheel (if strut is
     // not compressed) with respect to the ground level
-    double height = fdmex->GetInertial()->GetContactPoint(gearLoc, contact,
+    Real height = fdmex->GetInertial()->GetContactPoint(gearLoc, contact,
                                                           normal, terrainVel,
                                                           dummy);
 
@@ -312,7 +312,7 @@ const FGColumnVector3& FGLGear::GetBodyForces(FGSurface *surface)
     }
 
     FGColumnVector3 vWhlDisplVec;
-    double LGearProj = 1.0;
+    Real LGearProj = 1.0;
 
     if (height < 0.0) {
       WOW = true;
@@ -322,7 +322,7 @@ const FGColumnVector3& FGLGear::GetBodyForces(FGSurface *surface)
       // in the Z direction of the local coordinate frame. We now need to
       // transform this height in actual compression of the strut (BOGEY) or in
       // the normal direction to the ground (STRUCTURE)
-      double normalZ = (in.Tec2l*normal)(eZ);
+      Real normalZ = (in.Tec2l*normal)(eZ);
       LGearProj = -(mTGear.Transposed() * vGroundNormal)(eZ);
 
       // The following equations use the vector to the tire contact patch
@@ -330,7 +330,7 @@ const FGColumnVector3& FGLGear::GetBodyForces(FGSurface *surface)
       switch(eContactType) {
       case ctBOGEY:
         if (isSolid) {
-          compressLength = LGearProj > 0.0 ? height * normalZ / LGearProj : 0.0;
+          compressLength = LGearProj > 0.0 ? height * normalZ / LGearProj : Real(0.0);
           vWhlDisplVec = mTGear * FGColumnVector3(0., 0., -compressLength);
         } else {
           // Gears don't (or hardly) compress in liquids
@@ -369,7 +369,7 @@ const FGColumnVector3& FGLGear::GetBodyForces(FGSurface *surface)
         // If the gear is entering in contact with the ground during the current
         // time step, the compression speed might actually be lower than the
         // aircraft velocity projected along the gear leg (compressSpeed).
-        double maxCompressSpeed = compressLength/in.TotalDeltaT;
+        Real maxCompressSpeed = compressLength/in.TotalDeltaT;
         if (fabs(compressSpeed) > maxCompressSpeed)
           compressSpeed = sign(compressSpeed)*maxCompressSpeed;
       }
@@ -552,7 +552,7 @@ void FGLGear::ReportTakeoffOrLanding(void)
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// Crash detection logic (really out-of-bounds detection)
+// Crash detection logic (Really out-of-bounds detection)
 
 void FGLGear::CrashDetect(void)
 {
@@ -599,7 +599,7 @@ void FGLGear::ComputeSideForceCoefficient(void)
   if (ForceY_Table) {
     FCoeff = ForceY_Table->GetValue(WheelSlip);
   } else {
-    double StiffSlip = Stiffness*WheelSlip;
+    Real StiffSlip = Stiffness*WheelSlip;
     FCoeff = Peak * sin(Shape*atan(StiffSlip - Curvature*(StiffSlip - atan(StiffSlip))));
   }
   FCoeff *= staticFFactor;
@@ -615,10 +615,10 @@ void FGLGear::ComputeSideForceCoefficient(void)
 void FGLGear::ComputeVerticalStrutForce()
 {
   if (fStrutForce)
-    StrutForce = min(fStrutForce->GetValue(), (double)0.0);
+    StrutForce = min(fStrutForce->GetValue(), 0.0);
   else {
-    double springForce = -compressLength * kSpring;
-    double dampForce = 0;
+    Real springForce = -compressLength * kSpring;
+    Real dampForce = 0;
 
     if (compressSpeed >= 0.0) {
 
@@ -636,7 +636,7 @@ void FGLGear::ComputeVerticalStrutForce()
 
     }
 
-    StrutForce = min(springForce + dampForce, (double)0.0);
+    StrutForce = min(springForce + dampForce, 0.0);
     if (StrutForce > maximumForce) {
       StrutForce = maximumForce;
       compressLength = -StrutForce / kSpring;
@@ -655,13 +655,13 @@ void FGLGear::ComputeVerticalStrutForce()
   }
 
   // Remember these values for reporting
-  MaximumStrutForce = max(MaximumStrutForce, fabs(StrutForce));
-  MaximumStrutTravel = max(MaximumStrutTravel, fabs(compressLength));
+  MaximumStrutForce = std::max<Real>(MaximumStrutForce, fabs(StrutForce));
+  MaximumStrutTravel = std::max<Real>(MaximumStrutTravel, fabs(compressLength));
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGLGear::GetGearUnitPos(void) const
+Real FGLGear::GetGearUnitPos(void) const
 {
   // hack to provide backward compatibility to gear/gear-pos-norm property
   if( useFCSGearPos || in.FCSGearPos != 1.0 ) {
@@ -762,7 +762,7 @@ void FGLGear::UpdateForces(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGLGear::SetstaticFCoeff(double coeff)
+void FGLGear::SetstaticFCoeff(Real coeff)
 {
   staticFCoeff = coeff;
   Peak = coeff;

@@ -136,7 +136,7 @@ bool FGAerodynamics::Run(bool Holding)
   if (Holding) return false; // if paused don't execute
 
   unsigned int axis_ctr;
-  const double twovel=2*in.Vt;
+  const Real twovel=2*in.Vt;
 
   // The lift coefficient squared (property aero/cl-squared) is computed before
   // the aero functions are called to make sure that they use the same value for
@@ -601,7 +601,7 @@ string FGAerodynamics::GetAeroFunctionValues(const string& delimeter) const
 
 void FGAerodynamics::bind(void)
 {
-  typedef double (FGAerodynamics::*PMF)(int) const;
+  typedef Real (FGAerodynamics::*PMF)(int) const;
 
   PropertyManager->Tie("forces/fbx-aero-lbs",  this, eX, (PMF)&FGAerodynamics::GetForces);
   PropertyManager->Tie("forces/fby-aero-lbs",  this, eY, (PMF)&FGAerodynamics::GetForces);
@@ -654,8 +654,8 @@ void FGAerodynamics::bind(void)
 
 void FGAerodynamics::BuildStabilityTransformMatrices(void)
 {
-  double ca = cos(in.Alpha);
-  double sa = sin(in.Alpha);
+  Real ca = cos(in.Alpha);
+  Real sa = sin(in.Alpha);
 
   // Stability-to-body
   Ts2b(1, 1) = ca;

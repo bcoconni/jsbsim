@@ -142,7 +142,7 @@ void FGAccelerations::CalculatePQRdot(void)
     // Reference: See Harris and Lyle "Spacecraft Gravitational Torques",
     //            NASA SP-8024 (1969) eqn (2) (page 7)
     FGColumnVector3 R = in.Ti2b * in.vInertialPosition;
-    double invRadius = 1.0 / R.Magnitude();
+    Real invRadius = 1.0 / R.Magnitude();
     R *= invRadius;
     in.Moment += (3.0 * in.vGravAccel.Magnitude() * invRadius) * (R * (in.J * R));
   }
@@ -229,7 +229,7 @@ void FGAccelerations::SetHoldDown(bool hd)
 // The friction forces are resolved in the body frame relative to the origin
 // (Earth center).
 
-void FGAccelerations::CalculateFrictionForces(double dt)
+void FGAccelerations::CalculateFrictionForces(Real dt)
 {
   vector<LagrangeMultiplier*>& multipliers = *in.MultipliersList;
   size_t n = multipliers.size();
@@ -240,8 +240,8 @@ void FGAccelerations::CalculateFrictionForces(double dt)
   // If no gears are in contact with the ground then return
   if (!n) return;
 
-  vector<double> a(n*n); // Will contain Jac*M^-1*Jac^T
-  vector<double> rhs(n);
+  vector<Real> a(n*n); // Will contain Jac*M^-1*Jac^T
+  vector<Real> rhs(n);
 
   // Assemble the linear system of equations
   for (unsigned int i=0; i < n; i++) {
@@ -277,7 +277,7 @@ void FGAccelerations::CalculateFrictionForces(double dt)
   // 2. Divide every line of 'a' and 'rhs' by a[i,i]. This is in order to save
   //    a division computation at each iteration of Gauss-Seidel.
   for (unsigned int i=0; i < n; i++) {
-    double d = a[i*n+i];
+    Real d = a[i*n+i];
     FGColumnVector3 U = multipliers[i]->ForceJacobian;
     FGColumnVector3 r = multipliers[i]->LeverArm;
 
@@ -289,11 +289,11 @@ void FGAccelerations::CalculateFrictionForces(double dt)
 
   // Resolve the Lagrange multipliers with the projected Gauss-Seidel method
   for (int iter=0; iter < 50; iter++) {
-    double norm = 0.;
+    Real norm = 0.;
 
     for (unsigned int i=0; i < n; i++) {
-      double lambda0 = multipliers[i]->value;
-      double dlambda = rhs[i];
+      Real lambda0 = multipliers[i]->value;
+      Real dlambda = rhs[i];
 
       for (unsigned int j=0; j < n; j++)
         dlambda -= a[i*n+j]*multipliers[j]->value;
@@ -310,7 +310,7 @@ void FGAccelerations::CalculateFrictionForces(double dt)
   // Calculate the total friction forces and moments
 
   for (unsigned int i=0; i< n; i++) {
-    double lambda = multipliers[i]->value;
+    Real lambda = multipliers[i]->value;
     FGColumnVector3 U = multipliers[i]->ForceJacobian;
     FGColumnVector3 r = multipliers[i]->LeverArm;
 
@@ -343,7 +343,7 @@ void FGAccelerations::InitializeDerivatives(void)
 
 void FGAccelerations::bind(void)
 {
-  using PMF = double (FGAccelerations::*)(int) const;
+  using PMF = Real (FGAccelerations::*)(int) const;
 
   PropertyManager->Tie("accelerations/pdot-rad_sec2", this, eP, (PMF)&FGAccelerations::GetPQRdot);
   PropertyManager->Tie("accelerations/qdot-rad_sec2", this, eQ, (PMF)&FGAccelerations::GetPQRdot);

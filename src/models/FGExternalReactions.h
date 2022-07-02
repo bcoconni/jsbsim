@@ -57,7 +57,7 @@ CLASS DOCUMENTATION
 
 /** Manages the external and/or arbitrary forces and moments.
 
-    The external reactions capability in JSBSim really should be named
+    The external reactions capability in JSBSim Really should be named
     "arbitrary forces and moments", because this feature can be used to model a
     wide variety of forces and moments that act on a vehicle. Some examples
     include: parachutes, catapult, arresting hook, and tow line.
@@ -155,13 +155,13 @@ public:
       @return the total force in pounds.
   */
   const FGColumnVector3& GetForces(void) const {return vTotalForces;}
-  double GetForces(int idx) const {return vTotalForces(idx);}
+  Real GetForces(int idx) const {return vTotalForces(idx);}
 
   /** Retrieves the total moment resulting from the forces defined in the external reactions.
       @return the total moment in foot-pounds.
   */
   const FGColumnVector3& GetMoments(void) const {return vTotalMoments;}
-  double GetMoments(int idx) const {return vTotalMoments(idx);}
+  Real GetMoments(int idx) const {return vTotalMoments(idx);}
 
 private:
 

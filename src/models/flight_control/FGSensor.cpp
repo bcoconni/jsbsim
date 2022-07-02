@@ -88,7 +88,7 @@ FGSensor::FGSensor(FGFCS* fcs, Element* element) : FGFCSComponent(fcs, element)
   }
   if ( element->FindElement("lag") ) {
     lag = element->FindElementValueAsNumber("lag");
-    double denom = 2.00 + dt*lag;
+    Real denom = 2.00 + dt*lag;
     ca = dt*lag / denom;
     cb = (2.00 - dt*lag) / denom;
   }
@@ -180,10 +180,10 @@ void FGSensor::ProcessSensorSignal(void)
 
 void FGSensor::Noise(void)
 {
-  double random_value=0.0;
+  Real random_value=0.0;
 
   if (DistributionType == eUniform) {
-    random_value = 2.0*(((double)rand()/(double)RAND_MAX) - 0.5);
+    random_value = 2.0*(((Real)rand()/(Real)RAND_MAX) - 0.5);
   } else {
     random_value = GaussianRandomNumber();
   }
@@ -227,7 +227,7 @@ void FGSensor::Quantize(void)
 {
   if (Output < min) Output = min;
   if (Output > max) Output = max;
-  double portion = Output - min;
+  Real portion = Output - min;
   quantized = (int)(portion/granularity);
   Output = quantized*granularity + min;
 }

@@ -258,16 +258,16 @@ FGColumnVector3 FGTank::GetXYZ(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTank::GetXYZ(int idx) const
+Real FGTank::GetXYZ(int idx) const
 {
   return vXYZ_drain(idx) + (Contents/Capacity)*(vXYZ(idx)-vXYZ_drain(idx));
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTank::Drain(double used)
+Real FGTank::Drain(Real used)
 {
-  double remaining = Contents - used;
+  Real remaining = Contents - used;
 
   if (remaining >= GetUnusable()) { // Reduce contents by amount used.
     Contents -= used;
@@ -286,9 +286,9 @@ double FGTank::Drain(double used)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTank::Fill(double amount)
+Real FGTank::Fill(Real amount)
 {
-  double overage = 0.0;
+  Real overage = 0.0;
 
   Contents += amount;
 
@@ -307,7 +307,7 @@ double FGTank::Fill(double amount)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGTank::SetContents(double amount)
+void FGTank::SetContents(Real amount)
 {
   Contents = amount;
   if (Contents > Capacity) {
@@ -322,7 +322,7 @@ void FGTank::SetContents(double amount)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGTank::SetContentsGallons(double gallons)
+void FGTank::SetContentsGallons(Real gallons)
 {
   SetContents(gallons * Density);
 }
@@ -330,16 +330,16 @@ void FGTank::SetContentsGallons(double gallons)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTank::Calculate(double dt, double TAT_C)
+Real FGTank::Calculate(Real dt, Real TAT_C)
 {
   if(ExternalFlow < 0.) Drain( -ExternalFlow *dt);
   else Fill(ExternalFlow * dt);
 
   if (Temperature == -9999.0) return 0.0;
-  double HeatCapacity = 900.0;        // Joules/lbm/C
-  double TempFlowFactor = 1.115;      // Watts/sqft/C
-  double Tdiff = TAT_C - Temperature;
-  double dTemp = 0.0;                 // Temp change due to one surface
+  Real HeatCapacity = 900.0;        // Joules/lbm/C
+  Real TempFlowFactor = 1.115;      // Watts/sqft/C
+  Real Tdiff = TAT_C - Temperature;
+  Real dTemp = 0.0;                 // Temp change due to one surface
   if (fabs(Tdiff) > 0.1 && Contents > 0.01) {
     dTemp = (TempFlowFactor * Area * Tdiff * dt) / (Contents * HeatCapacity);
   }
@@ -366,9 +366,9 @@ double FGTank::Calculate(double dt, double TAT_C)
 
 void FGTank::CalculateInertias(void)
 {
-  double Mass = Contents*lbtoslug;
-  double RadSumSqr;
-  double Rad2 = Radius*Radius;
+  Real Mass = Contents*lbtoslug;
+  Real RadSumSqr;
+  Real Rad2 = Radius*Radius;
 
   if (grainType != gtUNKNOWN) { // assume solid propellant
 
@@ -418,7 +418,7 @@ void FGTank::CalculateInertias(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGTank::ProcessFuelName(const std::string& name)
+Real FGTank::ProcessFuelName(const std::string& name)
 {
    if      (name == "AVGAS")    return 6.02;
    else if (name == "JET-A")    return 6.74;

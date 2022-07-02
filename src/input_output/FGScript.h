@@ -184,7 +184,7 @@ public:
                       default. If a file name is passed in, it will override the
                       one present in the script.
       @return true if successful */
-  bool LoadScript(const SGPath& script, double default_dT,
+  bool LoadScript(const SGPath& script, Real default_dT,
                   const SGPath& initfile);
 
   /** This function is called each pass through the executive Run() method IF
@@ -215,9 +215,9 @@ private:
     bool             Notify;
     bool             NotifyKML;
     bool             Notified;
-    double           Delay;
-    double           StartTime;
-    double           TimeSpan;
+    Real           Delay;
+    Real           StartTime;
+    Real           TimeSpan;
     std::string           Name;
     std::string           Description;
     std::vector <FGPropertyNode_ptr>  SetParam;
@@ -226,11 +226,11 @@ private:
     std::vector <std::string>              DisplayString;
     std::vector <eAction> Action;
     std::vector <eType>   Type;
-    std::vector <double>  SetValue;
-    std::vector <double>  TC;
-    std::vector <double>  newValue;
-    std::vector <double>  OriginalValue;
-    std::vector <double>  ValueSpan;
+    std::vector <Real>  SetValue;
+    std::vector <Real>  TC;
+    std::vector <Real>  newValue;
+    std::vector <Real>  OriginalValue;
+    std::vector <Real>  ValueSpan;
     std::vector <bool>    Transiting;
     std::vector <FGFunction*> Functions;
 
@@ -253,8 +253,8 @@ private:
   };
 
   std::string  ScriptName;
-  double  StartTime;
-  double  EndTime;
+  Real  StartTime;
+  Real  EndTime;
   std::vector <struct event> Events;
 
   FGPropertyReader LocalProperties;

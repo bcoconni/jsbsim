@@ -38,6 +38,7 @@ INCLUDES
 
 #include "JSBSim_API.h"
 #include "simgear/structure/SGSharedPtr.hxx"
+#include "AutomaticDifferentiation.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -61,21 +62,21 @@ class JSBSIM_API FGParameter : public SGReferenced
 {
 public:
   virtual ~FGParameter(void) {};
-  virtual double GetValue(void) const = 0;
+  virtual Real GetValue(void) const = 0;
   virtual std::string GetName(void) const = 0;
   virtual bool IsConstant(void) const { return false; }
 
   // SGPropertyNode impersonation.
-  double getDoubleValue(void) const { return GetValue(); }
+  Real getDoubleValue(void) const { return GetValue(); }
 };
 
 typedef SGSharedPtr<FGParameter> FGParameter_ptr;
 
-inline double operator*(double v, const FGParameter_ptr& p) {
+inline Real operator*(Real v, const FGParameter_ptr& p) {
   return v*p->GetValue();
 }
 
-inline double operator*(const FGParameter_ptr& p, double v) {
+inline Real operator*(const FGParameter_ptr& p, Real v) {
   return p->GetValue()*v;
 }
 

@@ -222,7 +222,7 @@ public:
       @param used the amount of fuel used in lbs.
       @return the remaining contents of the tank in lbs.
   */
-  double Drain(double used);
+  Real Drain(Real used);
 
   /** Performs local, tanks-specific calculations, such as fuel temperature.
       This function calculates the temperature of the fuel in the tank.
@@ -230,7 +230,7 @@ public:
       @param TempC the Total Air Temperature in degrees Celsius.
       @return the current temperature in degrees Celsius.
   */
-  double Calculate(double dt, double TempC);
+  Real Calculate(Real dt, Real TempC);
 
   /** Retrieves the type of tank: Fuel or Oxidizer.
       @return the tank type, 0 for undefined, 1 for fuel, and 2 for oxidizer.
@@ -251,90 +251,90 @@ public:
 
   /** Gets the tank fill level.
       @return the fill level in percent, from 0 to 100.*/
-  double GetPctFull(void) const {return PctFull;}
+  Real GetPctFull(void) const {return PctFull;}
 
   /** Gets the capacity of the tank.
       @return the capacity of the tank in pounds. */
-  double GetCapacity(void) const {return Capacity;}
+  Real GetCapacity(void) const {return Capacity;}
 
   /** Gets the capacity of the tank.
       @return the capacity of the tank in gallons. */
-  double GetCapacityGallons(void) const {return Capacity/Density;}
+  Real GetCapacityGallons(void) const {return Capacity/Density;}
 
   /** Gets the contents of the tank.
       @return the contents of the tank in pounds. */
-  double GetContents(void) const {return Contents;}
+  Real GetContents(void) const {return Contents;}
 
   /** Gets the contents of the tank.
       @return the contents of the tank in gallons. */
-  double GetContentsGallons(void) const {return Contents/Density;}
+  Real GetContentsGallons(void) const {return Contents/Density;}
 
   /** Gets the temperature of the fuel.
       The temperature of the fuel is calculated if an initial tempearture is
       given in the configuration file. 
       @return the temperature of the fuel in degrees C IF an initial temperature
       is given, otherwise 0.0 C is returned. */
-  double GetTemperature_degC(void) const {return Temperature;}
+  Real GetTemperature_degC(void) const {return Temperature;}
 
   /** Gets the temperature of the fuel.
       The temperature of the fuel is calculated if an initial tempearture is
       given in the configuration file. 
       @return the temperature of the fuel in degrees F IF an initial temperature
       is given, otherwise 32 degrees F is returned. */
-  double GetTemperature(void) const {return CelsiusToFahrenheit(Temperature);}
+  Real GetTemperature(void) const {return CelsiusToFahrenheit(Temperature);}
 
   /** Returns the density of a named fuel type.
       @return the density, in lbs/gal, or 6.6 if name cannot be resolved. */
-  double ProcessFuelName(const std::string& name);
+  Real ProcessFuelName(const std::string& name);
 
   /** Returns the amount of unusable fuel in the tank.
       @return the amount in lbs. */
-  double GetUnusable(void) const {return UnusableVol*Density;}
+  Real GetUnusable(void) const {return UnusableVol*Density;}
 
   /** Returns the unusable volume of fuel in the tank.
       @return the volume in gal. */
-  double GetUnusableVolume(void) const {return UnusableVol;}
+  Real GetUnusableVolume(void) const {return UnusableVol;}
 
   /** Sets the volume of unusable fuel in the tank.
       @param amount the amount of unusable fuel in gal. */
-  void SetUnusableVolume(double volume) {UnusableVol = volume;}
+  void SetUnusableVolume(Real volume) {UnusableVol = volume;}
 
-  double GetIxx(void) const {return Ixx;}
-  double GetIyy(void) const {return Iyy;}
-  double GetIzz(void) const {return Izz;}
+  Real GetIxx(void) const {return Ixx;}
+  Real GetIyy(void) const {return Iyy;}
+  Real GetIzz(void) const {return Izz;}
 
-  inline double GetLocationX(void) const { return vXYZ(eX); }
-  inline double GetLocationY(void) const { return vXYZ(eY); }
-  inline double GetLocationZ(void) const { return vXYZ(eZ); }
-  inline void SetLocationX(double x) { vXYZ(eX) = x; }
-  inline void SetLocationY(double y) { vXYZ(eY) = y; }
-  inline void SetLocationZ(double z) { vXYZ(eZ) = z; }
+  inline Real GetLocationX(void) const { return vXYZ(eX); }
+  inline Real GetLocationY(void) const { return vXYZ(eY); }
+  inline Real GetLocationZ(void) const { return vXYZ(eZ); }
+  inline void SetLocationX(Real x) { vXYZ(eX) = x; }
+  inline void SetLocationY(Real y) { vXYZ(eY) = y; }
+  inline void SetLocationZ(Real z) { vXYZ(eZ) = z; }
 
-  double GetStandpipe(void) const {return Standpipe;}
+  Real GetStandpipe(void) const {return Standpipe;}
 
   int  GetPriority(void) const {return Priority;}
   void SetPriority(int p) { Priority = p; Selected = p>0 ? true:false; } 
 
   /** Returns the fuel density.
       @return the density in lbs/gal. */
-  double GetDensity(void) const {return Density;}
+  Real GetDensity(void) const {return Density;}
   /** Sets the fuel density.
       @param d the density in lbs/gal. */
-  void   SetDensity(double d) { Density = d; }
+  void   SetDensity(Real d) { Density = d; }
 
-  double GetExternalFlow(void) const {return ExternalFlow;}
-  void   SetExternalFlow(double f) { ExternalFlow = f; }
+  Real GetExternalFlow(void) const {return ExternalFlow;}
+  void   SetExternalFlow(Real f) { ExternalFlow = f; }
 
   FGColumnVector3 GetXYZ(void) const;
-  double GetXYZ(int idx) const;
+  Real GetXYZ(int idx) const;
 
   GrainType GetGrainType(void) const {return grainType;}
 
-  double Fill(double amount);
-  void SetContents(double amount);
-  void SetContentsGallons(double gallons);
-  void SetTemperature(double temp) { Temperature = temp; }
-  void SetStandpipe(double amount) { Standpipe = amount; }
+  Real Fill(Real amount);
+  void SetContents(Real amount);
+  void SetContentsGallons(Real gallons);
+  void SetTemperature(Real temp) { Temperature = temp; }
+  void SetStandpipe(Real amount) { Standpipe = amount; }
   void SetSelected(bool sel) { sel==true ? SetPriority(1):SetPriority(0); }
 
 private:
@@ -342,30 +342,30 @@ private:
   GrainType grainType;
   int TankNumber;
   std::string Name;
-  double ixx_unit;
-  double iyy_unit;
-  double izz_unit;
+  Real ixx_unit;
+  Real iyy_unit;
+  Real izz_unit;
   FGColumnVector3 vXYZ;
   FGColumnVector3 vXYZ_drain;
   FGFunction* function_ixx;
   FGFunction* function_iyy;
   FGFunction* function_izz;
-  double Capacity, UnusableVol;
-  double Radius;
-  double InnerRadius;
-  double Length;
-  double Volume;
-  double Density;
-  double Ixx;
-  double Iyy;
-  double Izz;
-  double InertiaFactor;
-  double PctFull;
-  double Contents, InitialContents;
-  double Area;
-  double Temperature, InitialTemperature;
-  double Standpipe, InitialStandpipe;
-  double ExternalFlow;
+  Real Capacity, UnusableVol;
+  Real Radius;
+  Real InnerRadius;
+  Real Length;
+  Real Volume;
+  Real Density;
+  Real Ixx;
+  Real Iyy;
+  Real Izz;
+  Real InertiaFactor;
+  Real PctFull;
+  Real Contents, InitialContents;
+  Real Area;
+  Real Temperature, InitialTemperature;
+  Real Standpipe, InitialStandpipe;
+  Real ExternalFlow;
   bool  Selected;
   int Priority, InitialPriority;
 

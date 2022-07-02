@@ -86,7 +86,7 @@ SGPath ResetName;
 vector <string> LogOutputName;
 vector <SGPath> LogDirectiveName;
 vector <string> CommandLineProperties;
-vector <double> CommandLinePropertyValues;
+vector <Real> CommandLinePropertyValues;
 JSBSim::FGFDMExec* FDMExec;
 JSBSim::FGTrim* trimmer;
 
@@ -96,10 +96,10 @@ bool suspend;
 bool catalog;
 bool nohighlight;
 
-double end_time = 1e99;
-double simulation_rate = 1./120.;
+Real end_time = 1e99;
+Real simulation_rate = 1./120.;
 bool override_sim_rate = false;
-double sleep_period=0.01;
+Real sleep_period=0.01;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -110,14 +110,14 @@ int real_main(int argc, char* argv[]);
 void PrintHelp(void);
 
 #if defined(__BORLANDC__) || defined(_MSC_VER) || defined(__MINGW32__)
-  double getcurrentseconds(void)
+  Real getcurrentseconds(void)
   {
     struct timeb tm_ptr;
     ftime(&tm_ptr);
     return tm_ptr.time + tm_ptr.millitm*0.001;
   }
 #else
-  double getcurrentseconds(void)
+  Real getcurrentseconds(void)
   {
     struct timeval tval;
     struct timezone tz;
@@ -319,16 +319,16 @@ int real_main(int argc, char* argv[])
   bool result = false, success;
   bool was_paused = false;
   
-  double frame_duration;
+  Real frame_duration;
 
-  double new_five_second_value = 0.0;
-  double actual_elapsed_time = 0;
-  double initial_seconds = 0;
-  double current_seconds = 0.0;
-  double paused_seconds = 0.0;
-  double sim_lag_time = 0;
-  double cycle_duration = 0.0;
-  double override_sim_rate_value = 0.0;
+  Real new_five_second_value = 0.0;
+  Real actual_elapsed_time = 0;
+  Real initial_seconds = 0;
+  Real current_seconds = 0.0;
+  Real paused_seconds = 0.0;
+  Real sim_lag_time = 0;
+  Real cycle_duration = 0.0;
+  Real override_sim_rate_value = 0.0;
   long sleep_nseconds = 0;
 
   realtime = false;
@@ -677,7 +677,7 @@ bool options(int count, char **arg)
       if (n != string::npos) {
          string propName = value.substr(0,value.find("="));
          string propValueString = value.substr(value.find("=")+1);
-         double propValue = atof(propValueString.c_str());
+         Real propValue = atof(propValueString.c_str());
          CommandLineProperties.push_back(propName);
          CommandLinePropertyValues.push_back(propValue);
       } else {

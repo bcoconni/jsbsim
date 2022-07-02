@@ -168,11 +168,11 @@ public:
    */
   bool SetAttributeValue(const std::string& key, const std::string& value);
 
-  /** Retrieves an attribute value as a double precision real number.
+  /** Retrieves an attribute value as a Real precision Real number.
       @param key specifies the attribute key to retrieve the value of.
       @return the key value (as a number), or the HUGE_VAL if no such
               attribute exists. */
-  double GetAttributeValueAsNumber(const std::string& key);
+  Real GetAttributeValueAsNumber(const std::string& key);
 
   /** Retrieves the element name.
       @return the element name, or the empty string if no name has been set.*/
@@ -196,10 +196,10 @@ public:
 
   /** Converts the element data to a number.
       This function attempts to convert the first (and presumably only) line of
-      data "owned" by the element into a real number. If there is not exactly one
+      data "owned" by the element into a Real number. If there is not exactly one
       line of data owned by the element, then HUGE_VAL is returned.
       @return the numeric value of the data owned by the element.*/
-  double GetDataAsNumber(void);
+  Real GetDataAsNumber(void);
 
   /** Returns a pointer to the element requested by index.
       This function also resets an internal counter to the index, so that
@@ -265,13 +265,13 @@ public:
 
   /** Searches for the named element and returns the data belonging to it as a number.
       This function allows the data belonging to a named element to be returned
-      as a double. If no element is found, HUGE_VAL is returned. If no
+      as a Real. If no element is found, HUGE_VAL is returned. If no
       argument is supplied, the data for the first element is returned.
       @param el the name of the element being searched for (the empty string by
       default)
-      @return the data value for the named element as a double, or HUGE_VAL if the
+      @return the data value for the named element as a Real, or HUGE_VAL if the
               data is missing. */
-  double FindElementValueAsNumber(const std::string& el="");
+  Real FindElementValueAsNumber(const std::string& el="");
 
   /** Searches for the named element and returns the data belonging to it as a bool.
       This function allows the data belonging to a named element to be returned
@@ -285,7 +285,7 @@ public:
   
   /** Searches for the named element and converts and returns the data belonging to it.
       This function allows the data belonging to a named element to be returned
-      as a double. If no element is found, HUGE_VAL is returned. If no
+      as a Real. If no element is found, HUGE_VAL is returned. If no
       argument is supplied, the data for the first element is returned. Additionally,
       this function converts the value from the units specified in the config file (via
       the UNITS="" attribute in the element definition) to the native units used by
@@ -296,13 +296,13 @@ public:
       default)
       @param target_units the string representing the native units used by JSBSim
              to which the value returned will be converted.
-      @return the unit-converted data value for the named element as a double,
+      @return the unit-converted data value for the named element as a Real,
               or HUGE_VAL if the data is missing. */
-  double FindElementValueAsNumberConvertTo(const std::string& el, const std::string& target_units);
+  Real FindElementValueAsNumberConvertTo(const std::string& el, const std::string& target_units);
 
   /** Searches for the named element and converts and returns the data belonging to it.
       This function allows the data belonging to a named element to be returned
-      as a double. If no element is found, HUGE_VAL is returned. If no
+      as a Real. If no element is found, HUGE_VAL is returned. If no
       argument is supplied, the data for the first element is returned. Additionally,
       this function converts the value from the units specified in the supplied_units
       parameter to the units specified in the target_units parameter. JSBSim itself,
@@ -315,9 +315,9 @@ public:
              supplied by the config file.
       @param target_units the string representing the native units used by JSBSim
              to which the value returned will be converted.
-      @return the unit-converted data value for the named element as a double,
+      @return the unit-converted data value for the named element as a Real,
               or HUGE_VAL if the data is missing. */
-  double FindElementValueAsNumberConvertFromTo( const std::string& el,
+  Real FindElementValueAsNumberConvertFromTo( const std::string& el,
                                                 const std::string& supplied_units,
                                                 const std::string& target_units);
 
@@ -332,7 +332,7 @@ public:
       @return a column vector object built from the LOCATION or ORIENT components. */
   FGColumnVector3 FindElementTripletConvertTo( const std::string& target_units);
 
-  double DisperseValue(Element *e, double val, const std::string& supplied_units="",
+  Real DisperseValue(Element *e, Real val, const std::string& supplied_units="",
                        const std::string& target_units="");
 
   /** This function sets the value of the parent class attribute to the supplied
@@ -393,7 +393,7 @@ private:
   unsigned int element_index;
   std::string file_name;
   int line_number;
-  typedef std::map <std::string, std::map <std::string, double> > tMapConvert;
+  typedef std::map <std::string, std::map <std::string, Real> > tMapConvert;
   static tMapConvert convert;
   static bool converterIsInitialized;
 };

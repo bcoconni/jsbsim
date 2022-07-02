@@ -280,7 +280,7 @@ public:
       @param idx the index of the velocity component desired (1-based).
       @return The body frame velocity component.
   */
-  double GetUVW(int idx) const { return VState.vUVW(idx); }
+  Real GetUVW(int idx) const { return VState.vUVW(idx); }
 
   /** Retrieves a Local frame velocity component.
       Retrieves a Local frame velocity component. The velocity returned is
@@ -293,25 +293,25 @@ public:
       @param idx the index of the velocity component desired (1-based).
       @return The body frame velocity component.
   */
-  double GetVel(int idx) const { return vVel(idx); }
+  Real GetVel(int idx) const { return vVel(idx); }
 
   /** Retrieves the total inertial velocity in ft/sec.
   */
-  double GetInertialVelocityMagnitude(void) const { return VState.vInertialVelocity.Magnitude(); }
+  Real GetInertialVelocityMagnitude(void) const { return VState.vInertialVelocity.Magnitude(); }
 
   /** Retrieves the total local NED velocity in ft/sec.
   */
-  double GetNEDVelocityMagnitude(void) const { return VState.vUVW.Magnitude(); }
+  Real GetNEDVelocityMagnitude(void) const { return VState.vUVW.Magnitude(); }
 
   /** Retrieves the inertial velocity vector in ft/sec.
   */
   const FGColumnVector3& GetInertialVelocity(void) const { return VState.vInertialVelocity; }
-  double GetInertialVelocity(int i) const { return VState.vInertialVelocity(i); }
+  Real GetInertialVelocity(int i) const { return VState.vInertialVelocity(i); }
 
   /** Retrieves the inertial position vector.
   */
   const FGColumnVector3& GetInertialPosition(void) const { return VState.vInertialPosition; }
-  double GetInertialPosition(int i) const { return VState.vInertialPosition(i); }
+  Real GetInertialPosition(int i) const { return VState.vInertialPosition(i); }
 
   /** Calculates and retrieves the velocity vector relative to the earth centered earth fixed (ECEF) frame.
   */
@@ -320,21 +320,21 @@ public:
   /** Calculates and retrieves the velocity vector relative to the earth centered earth fixed (ECEF) frame
       for a particular axis.
   */
-  double GetECEFVelocity(int idx) const {return (Tb2ec * VState.vUVW)(idx); }
+  Real GetECEFVelocity(int idx) const {return (Tb2ec * VState.vUVW)(idx); }
 
   /** Returns the current altitude above sea level.
       This function returns the altitude above sea level.
       units ft
       @return The current altitude above sea level in feet.
   */
-  double GetAltitudeASL(void) const;
+  Real GetAltitudeASL(void) const;
 
   /** Returns the current altitude above sea level.
       This function returns the altitude above sea level.
       units meters
       @return The current altitude above sea level in meters.
   */
-  double GetAltitudeASLmeters(void) const { return GetAltitudeASL()*fttom;}
+  Real GetAltitudeASLmeters(void) const { return GetAltitudeASL()*fttom;}
 
   /** Retrieves a body frame angular velocity component relative to the ECEF frame.
       Retrieves a body frame angular velocity component. The angular velocity
@@ -347,7 +347,7 @@ public:
       @param axis the index of the angular velocity component desired (1-based).
       @return The body frame angular velocity component.
   */
-  double GetPQR(int axis) const {return VState.vPQR(axis);}
+  Real GetPQR(int axis) const {return VState.vPQR(axis);}
 
   /** Retrieves a body frame angular velocity component relative to the ECI (inertial) frame.
       Retrieves a body frame angular velocity component. The angular velocity
@@ -360,7 +360,7 @@ public:
       @param axis the index of the angular velocity component desired (1-based).
       @return The body frame angular velocity component.
   */
-  double GetPQRi(int axis) const {return VState.vPQRi(axis);}
+  Real GetPQRi(int axis) const {return VState.vPQRi(axis);}
 
   /** Retrieves a vehicle Euler angle component.
       Retrieves an Euler angle (Phi, Theta, or Psi) from the quaternion that
@@ -372,7 +372,7 @@ public:
       units radians
       @return An Euler angle.
   */
-  double GetEuler(int axis) const { return VState.qAttitudeLocal.GetEuler(axis); }
+  Real GetEuler(int axis) const { return VState.qAttitudeLocal.GetEuler(axis); }
 
   /** Retrieves a vehicle Euler angle component in degrees.
       Retrieves an Euler angle (Phi, Theta, or Psi) from the quaternion that
@@ -384,7 +384,7 @@ public:
       units degrees
       @return An Euler angle in degrees.
   */
-  double GetEulerDeg(int axis) const { return VState.qAttitudeLocal.GetEuler(axis) * radtodeg; }
+  Real GetEulerDeg(int axis) const { return VState.qAttitudeLocal.GetEuler(axis) * radtodeg; }
 
   /** Retrieves the cosine of a vehicle Euler angle component.
       Retrieves the cosine of an Euler angle (Phi, Theta, or Psi) from the
@@ -396,7 +396,7 @@ public:
       units none
       @return The cosine of an Euler angle.
   */
-  double GetCosEuler(int idx) const { return VState.qAttitudeLocal.GetCosEuler(idx); }
+  Real GetCosEuler(int idx) const { return VState.qAttitudeLocal.GetCosEuler(idx); }
 
   /** Retrieves the sine of a vehicle Euler angle component.
       Retrieves the sine of an Euler angle (Phi, Theta, or Psi) from the
@@ -408,14 +408,14 @@ public:
       units none
       @return The sine of an Euler angle.
   */
-  double GetSinEuler(int idx) const { return VState.qAttitudeLocal.GetSinEuler(idx); }
+  Real GetSinEuler(int idx) const { return VState.qAttitudeLocal.GetSinEuler(idx); }
 
   /** Returns the current altitude rate.
       Returns the current altitude rate (rate of climb).
       units ft/sec
       @return The current rate of change in altitude.
   */
-  double Gethdot(void) const { return -vVel(eDown); }
+  Real Gethdot(void) const { return -vVel(eDown); }
 
   /** Returns the "constant" LocalTerrainRadius.
       The LocalTerrainRadius parameter is set by the calling application or set to
@@ -423,42 +423,42 @@ public:
       units feet
       @return distance of the local terrain from the center of the earth.
       */
-  double GetLocalTerrainRadius(void) const;
+  Real GetLocalTerrainRadius(void) const;
 
   /** Returns the Earth position angle.
       @return Earth position angle in radians.
    */
-  double GetEarthPositionAngle(void) const { return epa; }
+  Real GetEarthPositionAngle(void) const { return epa; }
 
   /** Returns the Earth position angle in degrees.
       @return Earth position angle in degrees.
   */
-  double GetEarthPositionAngleDeg(void) const { return epa*radtodeg;}
+  Real GetEarthPositionAngleDeg(void) const { return epa*radtodeg;}
 
   const FGColumnVector3& GetTerrainVelocity(void) const { return LocalTerrainVelocity; }
   const FGColumnVector3& GetTerrainAngularVelocity(void) const { return LocalTerrainAngularVelocity; }
   void RecomputeLocalTerrainVelocity();
 
-  double GetTerrainElevation(void) const;
-  double GetDistanceAGL(void)  const;
-  double GetDistanceAGLKm(void)  const;
-  double GetRadius(void) const {
+  Real GetTerrainElevation(void) const;
+  Real GetDistanceAGL(void)  const;
+  Real GetDistanceAGLKm(void)  const;
+  Real GetRadius(void) const {
       if (VState.vLocation.GetRadius() == 0) return 1.0;
       else return VState.vLocation.GetRadius();
   }
-  double GetLongitude(void) const { return VState.vLocation.GetLongitude(); }
-  double GetLatitude(void) const { return VState.vLocation.GetLatitude(); }
+  Real GetLongitude(void) const { return VState.vLocation.GetLongitude(); }
+  Real GetLatitude(void) const { return VState.vLocation.GetLatitude(); }
 
-  double GetGeodLatitudeRad(void) const { return VState.vLocation.GetGeodLatitudeRad(); }
-  double GetGeodLatitudeDeg(void) const { return VState.vLocation.GetGeodLatitudeDeg(); }
+  Real GetGeodLatitudeRad(void) const { return VState.vLocation.GetGeodLatitudeRad(); }
+  Real GetGeodLatitudeDeg(void) const { return VState.vLocation.GetGeodLatitudeDeg(); }
 
-  double GetGeodeticAltitude(void) const { return VState.vLocation.GetGeodAltitude(); }
-  double GetGeodeticAltitudeKm(void) const { return VState.vLocation.GetGeodAltitude()*0.0003048; }
+  Real GetGeodeticAltitude(void) const { return VState.vLocation.GetGeodAltitude(); }
+  Real GetGeodeticAltitudeKm(void) const { return VState.vLocation.GetGeodAltitude()*0.0003048; }
 
-  double GetLongitudeDeg(void) const { return VState.vLocation.GetLongitudeDeg(); }
-  double GetLatitudeDeg(void) const { return VState.vLocation.GetLatitudeDeg(); }
+  Real GetLongitudeDeg(void) const { return VState.vLocation.GetLongitudeDeg(); }
+  Real GetLatitudeDeg(void) const { return VState.vLocation.GetLatitudeDeg(); }
   const FGLocation& GetLocation(void) const { return VState.vLocation; }
-  double GetLocation(int i) const { return VState.vLocation(i); }
+  Real GetLocation(int i) const { return VState.vLocation(i); }
 
   /** Retrieves the local-to-body transformation matrix.
       The quaternion class, being the means by which the orientation of the
@@ -529,7 +529,7 @@ public:
       respect to the inertial frame.
       @param EPA Earth position angle in radians.
    */
-  void SetEarthPositionAngle(double EPA) {epa = EPA;}
+  void SetEarthPositionAngle(Real EPA) {epa = EPA;}
 
   void SetInertialOrientation(const FGQuaternion& Qi);
   void SetInertialVelocity(const FGColumnVector3& Vi);
@@ -544,42 +544,42 @@ public:
   /** Returns the quaternion that goes from ECEF to Body. */
   const FGQuaternion GetQuaternionECEF(void) const { return Qec2b; }
 
-  void SetPQR(unsigned int i, double val) {
+  void SetPQR(unsigned int i, Real val) {
     VState.vPQR(i) = val;
     VState.vPQRi = VState.vPQR + Ti2b * in.vOmegaPlanet;
   }
 
-  void SetUVW(unsigned int i, double val) {
+  void SetUVW(unsigned int i, Real val) {
     VState.vUVW(i) = val;
     CalculateInertialVelocity();
   }
 
 // SET functions
 
-  void SetLongitude(double lon)
+  void SetLongitude(Real lon)
   {
     VState.vLocation.SetLongitude(lon);
     UpdateVehicleState();
   }
-  void SetLongitudeDeg(double lon) { SetLongitude(lon*degtorad); }
-  void SetLatitude(double lat)
+  void SetLongitudeDeg(Real lon) { SetLongitude(lon*degtorad); }
+  void SetLatitude(Real lat)
   {
     VState.vLocation.SetLatitude(lat);
     UpdateVehicleState();
   }
-  void SetLatitudeDeg(double lat) { SetLatitude(lat*degtorad); }
-  void SetRadius(double r)
+  void SetLatitudeDeg(Real lat) { SetLatitude(lat*degtorad); }
+  void SetRadius(Real r)
   {
     VState.vLocation.SetRadius(r);
     VState.vInertialPosition = Tec2i * VState.vLocation;
   }
 
-  void SetAltitudeASL(double altASL);
-  void SetAltitudeASLmeters(double altASL) { SetAltitudeASL(altASL/fttom); }
+  void SetAltitudeASL(Real altASL);
+  void SetAltitudeASLmeters(Real altASL) { SetAltitudeASL(altASL/fttom); }
 
-  void SetTerrainElevation(double tt);
-  void SetDistanceAGL(double tt);
-  void SetDistanceAGLKm(double tt);
+  void SetTerrainElevation(Real tt);
+  void SetDistanceAGL(Real tt);
+  void SetDistanceAGLKm(Real tt);
 
   void SetInitialState(const FGInitialCondition*);
   void SetLocation(const FGLocation& l);
@@ -588,7 +588,7 @@ public:
       FGLocation l = FGLocation(lv);
       SetLocation(l);
   }
-  void SetPosition(const double Lon, const double Lat, const double Radius)
+  void SetPosition(const Real Lon, const Real Lat, const Real Radius)
   {
       FGLocation l = FGLocation(Lon, Lat, Radius);
       SetLocation(l);
@@ -611,10 +611,10 @@ public:
     FGColumnVector3 vPQRidot;
     FGColumnVector3 vUVWidot;
     FGColumnVector3 vOmegaPlanet;
-    double SemiMajor;
-    double SemiMinor;
-    double GM; // Gravitational parameter
-    double DeltaT;
+    Real SemiMajor;
+    Real SemiMinor;
+    Real GM; // Gravitational parameter
+    Real DeltaT;
   } in;
 
 private:
@@ -637,18 +637,18 @@ private:
   FGMatrix33 Tb2i;   // body to ECI frame rotation matrix
   FGMatrix33 Ti2l;
   FGMatrix33 Tl2i;
-  double epa;        // Earth Position Angle
+  Real epa;        // Earth Position Angle
 
   // Orbital parameters
-  double h;               // Specific angular momentum
-  double Inclination;     // Inclination (angle between the orbital plane and the equatorial plane)
-  double RightAscension;  // Right ascension of the ascending node
-  double Eccentricity;    // Eccentricity
-  double PerigeeArgument; // Argument of perigee (angle between the apsis line and the node line)
-  double TrueAnomaly;     // True anomaly (angle of the vehicule from the apsis line)
-  double ApoapsisRadius;  // Apoapsis radius (farthest point from the planet)
-  double PeriapsisRadius; // Periapsis radius (closest point to the planet)
-  double OrbitalPeriod;   // Period of elliptic orbits
+  Real h;               // Specific angular momentum
+  Real Inclination;     // Inclination (angle between the orbital plane and the equatorial plane)
+  Real RightAscension;  // Right ascension of the ascending node
+  Real Eccentricity;    // Eccentricity
+  Real PerigeeArgument; // Argument of perigee (angle between the apsis line and the node line)
+  Real TrueAnomaly;     // True anomaly (angle of the vehicule from the apsis line)
+  Real ApoapsisRadius;  // Apoapsis radius (farthest point from the planet)
+  Real PeriapsisRadius; // Periapsis radius (closest point to the planet)
+  Real OrbitalPeriod;   // Period of elliptic orbits
 
   FGQuaternion Qec2b;
 
@@ -666,13 +666,13 @@ private:
   void Integrate( FGColumnVector3& Integrand,
                   FGColumnVector3& Val,
                   std::deque <FGColumnVector3>& ValDot,
-                  double dt,
+                  Real dt,
                   eIntegrateType integration_type);
 
   void Integrate( FGQuaternion& Integrand,
                   FGQuaternion& Val,
                   std::deque <FGQuaternion>& ValDot,
-                  double dt,
+                  Real dt,
                   eIntegrateType integration_type);
 
   void UpdateLocationMatrices(void);

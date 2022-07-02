@@ -3,7 +3,7 @@
 Module: FGRealValue.cpp
 Author: Jon Berndt
 Date started: 12/10/2004
-Purpose: Stores real values
+Purpose: Stores Real values
 
  ------------- Copyright (C) 2001  Jon S. Berndt (jon@jsbsim.org) -------------
 

@@ -76,10 +76,10 @@ public:
       @param w Angular velocity at the contact point
       @return altitude above ground
    */
-  virtual double GetAGLevel(double t, const FGLocation& location,
-                            FGLocation& contact,
-                            FGColumnVector3& normal, FGColumnVector3& v,
-                            FGColumnVector3& w) const = 0;
+  virtual Real GetAGLevel(Real t, const FGLocation& location,
+                          FGLocation& contact,
+                          FGColumnVector3& normal, FGColumnVector3& v,
+                          FGColumnVector3& w) const = 0;
 
   /** Compute the altitude above ground.
       The altitude depends on location l.
@@ -90,32 +90,32 @@ public:
       @param w Angular velocity at the contact point
       @return altitude above ground
    */
-  virtual double GetAGLevel(const FGLocation& location, FGLocation& contact,
-                            FGColumnVector3& normal, FGColumnVector3& v,
-                            FGColumnVector3& w) const
+  virtual Real GetAGLevel(const FGLocation& location, FGLocation& contact,
+                          FGColumnVector3& normal, FGColumnVector3& v,
+                          FGColumnVector3& w) const
   { return GetAGLevel(time, location, contact, normal, v, w); }
 
   /** Set the terrain elevation.
       Only needs to be implemented if JSBSim should be allowed
       to modify the local terrain radius (see the default implementation)
    */
-  virtual void SetTerrainElevation(double h) {}
+  virtual void SetTerrainElevation(Real h) {}
 
   /** Set the planet semimajor and semiminor axes.
       Only needs to be implemented if JSBSim should be allowed to modify
       the planet dimensions.
    */
-  virtual void SetEllipse(double semimajor, double semiminor) {}
+  virtual void SetEllipse(Real semimajor, Real semiminor) {}
 
   /** Set the simulation time.
       The elapsed time can be used by the ground callbck to assess the planet
       rotation or the movement of objects.
       @param _time elapsed time in seconds since the simulation started.
    */
-  void SetTime(double _time) { time = _time; }
+  void SetTime(Real _time) { time = _time; }
 
 protected:
-  double time;
+  Real time;
 };
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -125,23 +125,22 @@ protected:
 class JSBSIM_API FGDefaultGroundCallback : public FGGroundCallback
 {
 public:
-  explicit FGDefaultGroundCallback(double semiMajor, double semiMinor) :
+  explicit FGDefaultGroundCallback(Real semiMajor, Real semiMinor) :
     a(semiMajor), b(semiMinor) {}
 
-  double GetAGLevel(double t, const FGLocation& location,
-                    FGLocation& contact,
-                    FGColumnVector3& normal, FGColumnVector3& v,
-                    FGColumnVector3& w) const override;
+  Real GetAGLevel(Real t, const FGLocation& location, FGLocation& contact,
+                  FGColumnVector3& normal, FGColumnVector3& v,
+                  FGColumnVector3& w) const override;
 
-  void SetTerrainElevation(double h) override
+  void SetTerrainElevation(Real h) override
   { mTerrainElevation = h; }
 
-  void SetEllipse(double semimajor, double semiminor) override
+  void SetEllipse(Real semimajor, Real semiminor) override
   { a = semimajor; b = semiminor; }
 
 private:
-  double a, b;
-  double mTerrainElevation = 0.0;
+  Real a, b;
+  Real mTerrainElevation = 0.0;
 };
 
 }

@@ -46,6 +46,7 @@ INCLUDES
 
 #include "JSBSim_API.h"
 #include "input_output/string_utilities.h"
+#include "math/AutomaticDifferentiation.h"
 
 #ifndef M_PI
 #  define M_PI 3.14159265358979323846
@@ -93,25 +94,25 @@ public:
     enum mType {eText, eInteger, eDouble, eBool} type;
     bool bVal;
     int  iVal;
-    double dVal;
+    Real dVal;
   };
 
   /// First order, (low pass / lag) filter
   class Filter {
-    double prev_in;
-    double prev_out;
-    double ca;
-    double cb;
+    Real prev_in;
+    Real prev_out;
+    Real ca;
+    Real cb;
   public:
     Filter(void) {}
-    Filter(double coeff, double dt) {
+    Filter(Real coeff, Real dt) {
       prev_in = prev_out = 0.0;
-      double denom = 2.0 + coeff*dt;
+      Real denom = 2.0 + coeff*dt;
       ca = coeff*dt/denom;
       cb = (2.0 - coeff*dt)/denom;
     }
-    double execute(double in) {
-      double out = (in + prev_in)*ca + prev_out*cb;
+    Real execute(Real in) {
+      Real out = (in + prev_in)*ca + prev_out*cb;
       prev_in = in;
       prev_out = out;
       return out;
@@ -193,70 +194,70 @@ public:
   /** Converts from degrees Kelvin to degrees Fahrenheit.
   *   @param kelvin The temperature in degrees Kelvin.
   *   @return The temperature in Fahrenheit. */
-  static constexpr double KelvinToFahrenheit (double kelvin) {
+  static constexpr Real KelvinToFahrenheit (Real kelvin) {
     return 1.8*kelvin - 459.4;
   }
 
   /** Converts from degrees Celsius to degrees Rankine.
   *   @param celsius The temperature in degrees Celsius.
   *   @return The temperature in Rankine. */
-  static constexpr double CelsiusToRankine (double celsius) {
+  static constexpr Real CelsiusToRankine (Real celsius) {
     return celsius * 1.8 + 491.67;
   }
 
   /** Converts from degrees Rankine to degrees Celsius.
   *   @param rankine The temperature in degrees Rankine.
   *   @return The temperature in Celsius. */
-  static constexpr double RankineToCelsius (double rankine) {
+  static constexpr Real RankineToCelsius (Real rankine) {
     return (rankine - 491.67)/1.8;
   }
 
   /** Converts from degrees Kelvin to degrees Rankine.
   *   @param kelvin The temperature in degrees Kelvin.
   *   @return The temperature in Rankine. */
-  static constexpr double KelvinToRankine (double kelvin) {
+  static constexpr Real KelvinToRankine (Real kelvin) {
     return kelvin * 1.8;
   }
 
   /** Converts from degrees Rankine to degrees Kelvin.
   *   @param rankine The temperature in degrees Rankine.
   *   @return The temperature in Kelvin. */
-  static constexpr double RankineToKelvin (double rankine) {
+  static constexpr Real RankineToKelvin (Real rankine) {
     return rankine/1.8;
   }
 
   /** Converts from degrees Fahrenheit to degrees Celsius.
   *   @param fahrenheit The temperature in degrees Fahrenheit.
   *   @return The temperature in Celsius. */
-  static constexpr double FahrenheitToCelsius (double fahrenheit) {
+  static constexpr Real FahrenheitToCelsius (Real fahrenheit) {
     return (fahrenheit - 32.0)/1.8;
   }
 
   /** Converts from degrees Celsius to degrees Fahrenheit.
   *   @param celsius The temperature in degrees Celsius.
   *   @return The temperature in Fahrenheit. */
-  static constexpr double CelsiusToFahrenheit (double celsius) {
+  static constexpr Real CelsiusToFahrenheit (Real celsius) {
     return celsius * 1.8 + 32.0;
   }
 
   /** Converts from degrees Celsius to degrees Kelvin
   *   @param celsius The temperature in degrees Celsius.
   *   @return The temperature in Kelvin. */
-  static constexpr double CelsiusToKelvin (double celsius) {
+  static constexpr Real CelsiusToKelvin (Real celsius) {
     return celsius + 273.15;
   }
 
   /** Converts from degrees Kelvin to degrees Celsius
   *   @param celsius The temperature in degrees Kelvin.
   *   @return The temperature in Celsius. */
-  static constexpr double KelvinToCelsius (double kelvin) {
+  static constexpr Real KelvinToCelsius (Real kelvin) {
     return kelvin - 273.15;
   }
 
   /** Converts from feet to meters
   *   @param measure The length in feet.
   *   @return The length in meters. */
-  static constexpr double FeetToMeters (double measure) {
+  static constexpr Real FeetToMeters (Real measure) {
     return measure*0.3048;
   }
 
@@ -267,7 +268,7 @@ public:
   *   @param mach  The Mach number
   *   @param p     Pressure in psf
   *   @return The total pressure in front of the Pitot tube in psf */
-  static double PitotTotalPressure(double mach, double p);
+  static Real PitotTotalPressure(Real mach, Real p);
 
   /** Compute the Mach number from the differential pressure (qc) and the
   *   static pressure. Based on the formulas in the US Air Force Aircraft
@@ -275,7 +276,7 @@ public:
   *   @param qc    The differential/impact pressure
   *   @param p     Pressure in psf
   *   @return The Mach number */
-  static double MachFromImpactPressure(double qc, double p);
+  static Real MachFromImpactPressure(Real qc, Real p);
 
   /** Calculate the calibrated airspeed from the Mach number. Based on the
   *   formulas in the US Air Force Aircraft Performance Flight Testing
@@ -284,7 +285,7 @@ public:
   *   @param p     Pressure in psf
   *   @return The calibrated airspeed (CAS) in ft/s
   * */
-  static double VcalibratedFromMach(double mach, double p);
+  static Real VcalibratedFromMach(Real mach, Real p);
 
   /** Calculate the Mach number from the calibrated airspeed.Based on the
   *   formulas in the US Air Force Aircraft Performance Flight Testing
@@ -293,15 +294,15 @@ public:
   *   @param p     Pressure in psf
   *   @return The Mach number
   * */
-  static double MachFromVcalibrated(double vcas, double p);
+  static Real MachFromVcalibrated(Real vcas, Real p);
 
   /** Finite precision comparison.
       @param a first value to compare
       @param b second value to compare
       @return if the two values can be considered equal up to roundoff */
-  static bool EqualToRoundoff(double a, double b) {
-    double eps = 2.0*DBL_EPSILON;
-    return std::fabs(a - b) <= eps * std::max<double>(std::fabs(a), std::fabs(b));
+  static bool EqualToRoundoff(Real a, Real b) {
+    Real eps = 2.0*DBL_EPSILON;
+    return fabs(a - b) <= eps * std::max<Real>(fabs(a), fabs(b));
   }
 
   /** Finite precision comparison.
@@ -331,13 +332,13 @@ public:
 
   /** Constrain a value between a minimum and a maximum value.
   */
-  static constexpr double Constrain(double min, double value, double max) {
+  static constexpr Real Constrain(Real min, Real value, Real max) {
     return value<min?(min):(value>max?(max):(value));
   }
 
-  static constexpr double sign(double num) {return num>=0.0?1.0:-1.0;}
+  static constexpr Real sign(Real num) {return num>=0.0?1.0:-1.0;}
 
-  static double GaussianRandomNumber(void);
+  static Real GaussianRandomNumber(void);
 
 protected:
   static Message localMsg;

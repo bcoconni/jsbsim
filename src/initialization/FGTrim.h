@@ -128,19 +128,19 @@ class JSBSIM_API FGTrim : public FGJSBBase
   unsigned int Nsub;
   TrimMode mode;
   int DebugLevel, Debug;
-  double Tolerance, A_Tolerance;
-  std::vector<double> sub_iterations, successful;
+  Real Tolerance, A_Tolerance;
+  std::vector<Real> sub_iterations, successful;
   std::vector<bool> solution;
   unsigned int max_sub_iterations;
   unsigned int max_iterations;
   unsigned int total_its;
   bool gamma_fallback;
   int solutionDomain;
-  double xlo,xhi,alo,ahi;
-  double targetNlf;
+  Real xlo,xhi,alo,ahi;
+  Real targetNlf;
   int debug_axis;
 
-  double psidot;
+  Real psidot;
 
   FGFDMExec* fdmex;
   FGInitialCondition fgic;
@@ -170,7 +170,7 @@ class JSBSIM_API FGTrim : public FGJSBBase
   };
 
   struct RotationParameters {
-    double angleMin;
+    Real angleMin;
     std::vector<ContactPoints>::iterator contactRef;
   };
 
@@ -267,7 +267,7 @@ public:
       held to a tolerance of 1/10th of the given.  The default is
       0.001 for the recti-linear accelerations and 0.0001 for the angular.
   */
-  inline void SetTolerance(double tt) {
+  inline void SetTolerance(Real tt) {
     Tolerance = tt;
     A_Tolerance = tt / 10;
   }
@@ -285,8 +285,8 @@ public:
   */
   inline void DebugState(State state) { debug_axis=state; }
 
-  inline void SetTargetNlf(double nlf) { targetNlf=nlf; }
-  inline double GetTargetNlf(void) { return targetNlf; }
+  inline void SetTargetNlf(Real nlf) { targetNlf=nlf; }
+  inline Real GetTargetNlf(void) { return targetNlf; }
 
 };
 }
