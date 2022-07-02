@@ -149,12 +149,12 @@ bool FGAuxiliary::Run(bool Holding)
   vAeroUVW = in.vUVW - in.Tl2b * in.TotalWindNED;
 
   alpha = beta = adot = bdot = 0;
-  double AeroU2 = vAeroUVW(eU)*vAeroUVW(eU);
-  double AeroV2 = vAeroUVW(eV)*vAeroUVW(eV);
-  double AeroW2 = vAeroUVW(eW)*vAeroUVW(eW);
-  double mUW = AeroU2 + AeroW2;
+  Real AeroU2 = vAeroUVW(eU)*vAeroUVW(eU);
+  Real AeroV2 = vAeroUVW(eV)*vAeroUVW(eV);
+  Real AeroW2 = vAeroUVW(eW)*vAeroUVW(eW);
+  Real mUW = AeroU2 + AeroW2;
 
-  double Vt2 = mUW + AeroV2;
+  Real Vt2 = mUW + AeroV2;
   Vt = sqrt(Vt2);
 
   if ( Vt > 0.001 ) {
@@ -162,7 +162,7 @@ bool FGAuxiliary::Run(bool Holding)
 
     if ( mUW >= 1E-6 ) {
       alpha = atan2(vAeroUVW(eW), vAeroUVW(eU));
-      double Vtdot = (vAeroUVW(eU)*in.vUVWdot(eU) + vAeroUVW(eV)*in.vUVWdot(eV) + vAeroUVW(eW)*in.vUVWdot(eW))/Vt;
+      Real Vtdot = (vAeroUVW(eU)*in.vUVWdot(eU) + vAeroUVW(eV)*in.vUVWdot(eV) + vAeroUVW(eW)*in.vUVWdot(eW))/Vt;
       adot = (vAeroUVW(eU)*in.vUVWdot(eW) - vAeroUVW(eW)*in.vUVWdot(eU))/mUW;
       bdot = (in.vUVWdot(eV)*Vt - vAeroUVW(eV)*Vtdot)/(Vt*sqrt(mUW));
     }
@@ -172,7 +172,7 @@ bool FGAuxiliary::Run(bool Holding)
 
   Re = Vt * in.Wingchord / in.KinematicViscosity;
 
-  double densityD2 = 0.5*in.Density;
+  Real densityD2 = 0.5*in.Density;
 
   qbar = densityD2 * Vt2;
   qbarUW = densityD2 * (mUW);
@@ -246,7 +246,7 @@ bool FGAuxiliary::Run(bool Holding)
 
 void FGAuxiliary::UpdateWindMatrices(void)
 {
-  double ca, cb, sa, sb;
+  Real ca, cb, sa, sb;
 
   ca = cos(alpha);
   sa = sin(alpha);
@@ -268,7 +268,7 @@ void FGAuxiliary::UpdateWindMatrices(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAuxiliary::GetNlf(void) const
+Real FGAuxiliary::GetNlf(void) const
 {
   if (in.Mass != 0)
     return (in.vFw(3))/(in.Mass*slugtolb);
@@ -278,7 +278,7 @@ double FGAuxiliary::GetNlf(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAuxiliary::GetLongitudeRelativePosition(void) const
+Real FGAuxiliary::GetLongitudeRelativePosition(void) const
 {
   return in.vLocation.GetDistanceTo(FDMExec->GetIC()->GetLongitudeRadIC(),
                                     in.vLocation.GetGeodLatitudeRad())* fttom;
@@ -286,7 +286,7 @@ double FGAuxiliary::GetLongitudeRelativePosition(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAuxiliary::GetLatitudeRelativePosition(void) const
+Real FGAuxiliary::GetLatitudeRelativePosition(void) const
 {
   return in.vLocation.GetDistanceTo(in.vLocation.GetLongitude(),
                                     FDMExec->GetIC()->GetGeodLatitudeRadIC())* fttom;
@@ -294,7 +294,7 @@ double FGAuxiliary::GetLatitudeRelativePosition(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAuxiliary::GetDistanceRelativePosition(void) const
+Real FGAuxiliary::GetDistanceRelativePosition(void) const
 {
   auto ic = FDMExec->GetIC();
   return in.vLocation.GetDistanceTo(ic->GetLongitudeRadIC(),
@@ -305,8 +305,8 @@ double FGAuxiliary::GetDistanceRelativePosition(void) const
 
 void FGAuxiliary::bind(void)
 {
-  typedef double (FGAuxiliary::*PMF)(int) const;
-  typedef double (FGAuxiliary::*PF)(void) const;
+  typedef Real (FGAuxiliary::*PMF)(int) const;
+  typedef Real (FGAuxiliary::*PF)(void) const;
   PropertyManager->Tie("propulsion/tat-r", this, &FGAuxiliary::GetTotalTemperature);
   PropertyManager->Tie("propulsion/tat-c", this, &FGAuxiliary::GetTAT_C);
   PropertyManager->Tie("propulsion/pt-lbs_sqft", this, &FGAuxiliary::GetTotalPressure);
@@ -369,7 +369,7 @@ void FGAuxiliary::bind(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGAuxiliary::BadUnits(void) const
+Real FGAuxiliary::BadUnits(void) const
 {
   cerr << "Bad units" << endl; return 0.0;
 }

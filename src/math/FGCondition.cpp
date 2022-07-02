@@ -188,7 +188,7 @@ bool FGCondition::Evaluate(void )
 
   } else {
 
-    double compareValue = TestParam2->GetValue();
+    Real compareValue = TestParam2->GetValue();
 
     switch (Comparison) {
     case ecUndef:

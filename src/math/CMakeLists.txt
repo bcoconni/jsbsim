@@ -28,7 +28,8 @@ set(HEADERS FGColumnVector3.h
             FGTemplateFunc.h
             FGFunctionValue.h
             FGParameterValue.h
-            FGStateSpace.h)
+            FGStateSpace.h
+            AutomaticDifferentiation.h)
 
 add_library(Math OBJECT ${HEADERS} ${SOURCES})
 set_target_properties(Math PROPERTIES TARGET_DIRECTORY

@@ -113,7 +113,7 @@ public:
   bool Run(void) override;
 
 private:
-  double Bias;
+  Real Bias;
   void Debug(int from) override;
 };
 }

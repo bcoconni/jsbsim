@@ -98,7 +98,7 @@ void FGElectric::Calculate(void)
 
   LoadThrusterInputs();
   // Filters out negative powers when the propeller is not rotating.
-  double power = HP * hptoftlbssec;
+  Real power = HP * hptoftlbssec;
   if (RPM <= 0.1) power = max(power, 0.0);
   Thruster->Calculate(power);
 
@@ -107,7 +107,7 @@ void FGElectric::Calculate(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGElectric::CalcFuelNeed(void)
+Real FGElectric::CalcFuelNeed(void)
 {
   return 0;
 }

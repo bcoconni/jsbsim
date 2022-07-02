@@ -68,7 +68,7 @@ public:
   class const_iterator
   {
   public:
-    explicit const_iterator(const std::map<SGPropertyNode_ptr, double>::const_iterator &it) : prop_it(it) {}
+    explicit const_iterator(const std::map<SGPropertyNode_ptr, Real>::const_iterator &it) : prop_it(it) {}
     const_iterator& operator++() { ++prop_it; return *this; }
     bool operator!=(const const_iterator& it) const { return prop_it != it.prop_it; }
     FGPropertyNode* operator*() {
@@ -77,7 +77,7 @@ public:
     }
 
   private:
-    std::map<SGPropertyNode_ptr, double>::const_iterator prop_it;
+    std::map<SGPropertyNode_ptr, Real>::const_iterator prop_it;
   };
 
   const_iterator begin(void) const { return const_iterator(interface_prop_initial_value.begin()); }
@@ -85,7 +85,7 @@ public:
   bool empty(void) const { return interface_prop_initial_value.empty(); }
 
 private:
-  std::map<SGPropertyNode_ptr, double> interface_prop_initial_value;
+  std::map<SGPropertyNode_ptr, Real> interface_prop_initial_value;
 };
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

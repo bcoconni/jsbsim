@@ -279,7 +279,7 @@ cdef class FGAtmosphere:
         return deref(self.thisptr).SetTemperature(t, h, unit)
 
     def get_temperature(self, h):
-        """@Dox(JSBSim::FGAtmosphere::GetTemperature(double))"""
+        """@Dox(JSBSim::FGAtmosphere::GetTemperature(Real))"""
         self.__intercept_invalid_pointer()
         return deref(self.thisptr).GetTemperature(h)
 

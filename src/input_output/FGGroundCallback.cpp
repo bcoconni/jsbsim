@@ -38,7 +38,7 @@ namespace JSBSim {
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGDefaultGroundCallback::GetAGLevel(double t, const FGLocation& loc,
+Real FGDefaultGroundCallback::GetAGLevel(Real t, const FGLocation& loc,
                                     FGLocation& contact, FGColumnVector3& normal,
                                     FGColumnVector3& vel, FGColumnVector3& angularVel) const
 {
@@ -46,9 +46,9 @@ double FGDefaultGroundCallback::GetAGLevel(double t, const FGLocation& loc,
   angularVel.InitMatrix();
   FGLocation l = loc;
   l.SetEllipse(a,b);
-  double latitude = l.GetGeodLatitudeRad();
-  double cosLat = cos(latitude);
-  double longitude = l.GetLongitude();
+  Real latitude = l.GetGeodLatitudeRad();
+  Real cosLat = cos(latitude);
+  Real longitude = l.GetLongitude();
   normal = FGColumnVector3(cosLat*cos(longitude), cosLat*sin(longitude),
                            sin(latitude));
   contact.SetEllipse(a, b);

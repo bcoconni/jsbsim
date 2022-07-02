@@ -84,7 +84,7 @@ bool FGDeadBand::Run(void)
 {
   Input = InputNodes[0]->getDoubleValue();
 
-  double HalfWidth = 0.5*Width;
+  Real HalfWidth = 0.5*Width;
 
   if (Input < -HalfWidth) {
     Output = (Input + HalfWidth)*gain;

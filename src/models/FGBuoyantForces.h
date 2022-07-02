@@ -129,7 +129,7 @@ public:
 
   /** Gets a component of the total Buoyant force vector.
       @return a component of the force vector in lbs. */
-  double GetForces(int idx) const {return vTotalForces(idx);}
+  Real GetForces(int idx) const {return vTotalForces(idx);}
 
   /** Gets the total Buoyancy moment vector.
       @return a moment vector in the body frame in lbs ft. */
@@ -137,12 +137,12 @@ public:
 
   /** Gets a component of the total Buoyancy moment vector.
       @return a component of the moment vector in the body frame in lbs ft. */
-  double GetMoments(int idx) const {return vTotalMoments(idx);}
+  Real GetMoments(int idx) const {return vTotalMoments(idx);}
 
   /** Gets the total gas mass. The gas mass is part of the aircraft's
       inertia.
       @return mass in slugs. */
-  double GetGasMass(void) const;
+  Real GetGasMass(void) const;
 
   /** Gets the total moment from the gas mass.
       @return a moment vector in the structural frame in lbs in. */

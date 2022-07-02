@@ -125,7 +125,7 @@ FGSwitch::~FGSwitch()
 bool FGSwitch::Run(void )
 {
   bool pass = false;
-  double default_output=0.0;
+  Real default_output=0.0;
 
   // To detect errors early, make sure all conditions and values can be
   // evaluated in the first time step.

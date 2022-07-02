@@ -106,57 +106,57 @@ public:
   // @{
   /// Returns the actual, modeled temperature at the current altitude in degrees Rankine.
   /// @return Modeled temperature in degrees Rankine.
-  virtual double GetTemperature() const {return Temperature;}
+  virtual Real GetTemperature() const {return Temperature;}
 
   /// Returns the actual modeled temperature in degrees Rankine at a specified altitude.
   /// @param altitude The altitude above sea level (ASL) in feet.
   /// @return Modeled temperature in degrees Rankine at the specified altitude.
-  virtual double GetTemperature(double altitude) const = 0; 
+  virtual Real GetTemperature(Real altitude) const = 0; 
 
   /// Returns the actual, modeled sea level temperature in degrees Rankine.
   /// @return The modeled temperature in degrees Rankine at sea level.
-  virtual double GetTemperatureSL() const { return SLtemperature; }
+  virtual Real GetTemperatureSL() const { return SLtemperature; }
 
   /// Returns the ratio of the at-current-altitude temperature as modeled
   /// over the sea level value.
-  virtual double GetTemperatureRatio() const { return GetTemperature()/SLtemperature; }
+  virtual Real GetTemperatureRatio() const { return GetTemperature()/SLtemperature; }
 
   /// Returns the ratio of the temperature as modeled at the supplied altitude
   /// over the sea level value.
-  virtual double GetTemperatureRatio(double h) const { return GetTemperature(h)/SLtemperature; }
+  virtual Real GetTemperatureRatio(Real h) const { return GetTemperature(h)/SLtemperature; }
 
   /// Sets the Sea Level temperature.
   /// @param t the temperature value in the unit provided.
   /// @param unit the unit of the temperature.
-  virtual void SetTemperatureSL(double t, eTemperature unit=eFahrenheit);
+  virtual void SetTemperatureSL(Real t, eTemperature unit=eFahrenheit);
 
   /// Sets the temperature at the supplied altitude.
   /// @param t The temperature value in the unit provided.
   /// @param h The altitude in feet above sea level.
   /// @param unit The unit of the temperature.
-  virtual void SetTemperature(double t, double h, eTemperature unit=eFahrenheit) = 0;
+  virtual void SetTemperature(Real t, Real h, eTemperature unit=eFahrenheit) = 0;
   //@}
 
   //  *************************************************************************
   /// @name Pressure access functions.
   //@{
   /// Returns the pressure in psf.
-  virtual double GetPressure(void) const {return Pressure;}
+  virtual Real GetPressure(void) const {return Pressure;}
 
   /// Returns the pressure at a specified altitude in psf.
-  virtual double GetPressure(double altitude) const = 0;
+  virtual Real GetPressure(Real altitude) const = 0;
 
   // Returns the sea level pressure in target units, default in psf.
-  virtual double GetPressureSL(ePressure to=ePSF) const { return ConvertFromPSF(SLpressure, to);  }
+  virtual Real GetPressureSL(ePressure to=ePSF) const { return ConvertFromPSF(SLpressure, to);  }
 
   /// Returns the ratio of at-altitude pressure over the sea level value.
-  virtual double GetPressureRatio(void) const { return Pressure/SLpressure; }
+  virtual Real GetPressureRatio(void) const { return Pressure/SLpressure; }
 
   /** Sets the sea level pressure for modeling.
       @param pressure The pressure in the units specified.
       @param unit the unit of measure that the specified pressure is
                   supplied in.*/
-  virtual void SetPressureSL(ePressure unit, double pressure);
+  virtual void SetPressureSL(ePressure unit, Real pressure);
   //@}
 
   //  *************************************************************************
@@ -164,50 +164,50 @@ public:
   //@{
   /** Returns the density in slugs/ft^3.
       This function may only be used if Run() is called first. */
-  virtual double GetDensity(void)  const {return Density;}
+  virtual Real GetDensity(void)  const {return Density;}
 
   /** Returns the density in slugs/ft^3 at a given altitude in ft. */
-  virtual double GetDensity(double altitude) const;
+  virtual Real GetDensity(Real altitude) const;
 
   /// Returns the sea level density in slugs/ft^3
-  virtual double GetDensitySL(void)  const { return SLdensity; }
+  virtual Real GetDensitySL(void)  const { return SLdensity; }
 
   /// Returns the ratio of at-altitude density over the sea level value.
-  virtual double GetDensityRatio(void) const { return Density/SLdensity; }
+  virtual Real GetDensityRatio(void) const { return Density/SLdensity; }
   //@}
 
   //  *************************************************************************
   /// @name Speed of sound access functions.
   //@{
   /// Returns the speed of sound in ft/sec.
-  virtual double GetSoundSpeed(void) const {return Soundspeed;}
+  virtual Real GetSoundSpeed(void) const {return Soundspeed;}
 
   /// Returns the speed of sound in ft/sec at a given altitude in ft.
-  virtual double GetSoundSpeed(double altitude) const;
+  virtual Real GetSoundSpeed(Real altitude) const;
   
   /// Returns the sea level speed of sound in ft/sec.
-  virtual double GetSoundSpeedSL(void) const { return SLsoundspeed; }
+  virtual Real GetSoundSpeedSL(void) const { return SLsoundspeed; }
 
   /// Returns the ratio of at-altitude sound speed over the sea level value.
-  virtual double GetSoundSpeedRatio(void) const { return Soundspeed/SLsoundspeed; }
+  virtual Real GetSoundSpeedRatio(void) const { return Soundspeed/SLsoundspeed; }
   //@}
 
   //  *************************************************************************
   /// @name Viscosity access functions.
   //@{
   /// Returns the absolute viscosity.
-  virtual double GetAbsoluteViscosity(void) const {return Viscosity;}
+  virtual Real GetAbsoluteViscosity(void) const {return Viscosity;}
 
   /// Returns the kinematic viscosity.
-  virtual double GetKinematicViscosity(void) const {return KinematicViscosity;}
+  virtual Real GetKinematicViscosity(void) const {return KinematicViscosity;}
   //@}
 
-  virtual double GetDensityAltitude() const {return DensityAltitude;}
+  virtual Real GetDensityAltitude() const {return DensityAltitude;}
 
-  virtual double GetPressureAltitude() const {return PressureAltitude;}
+  virtual Real GetPressureAltitude() const {return PressureAltitude;}
 
   struct Inputs {
-    double altitudeASL;
+    Real altitudeASL;
   } in;
 
   static constexpr double StdDaySLtemperature = 518.67;
@@ -215,44 +215,44 @@ public:
   static const double StdDaySLsoundspeed;
 
 protected:
-  double    SLtemperature,    SLdensity,    SLpressure,    SLsoundspeed; // Sea level conditions
-  double      Temperature,      Density,      Pressure,      Soundspeed; // Current actual conditions at altitude
+  Real    SLtemperature,    SLdensity,    SLpressure,    SLsoundspeed; // Sea level conditions
+  Real      Temperature,      Density,      Pressure,      Soundspeed; // Current actual conditions at altitude
 
-  double PressureAltitude;
-  double DensityAltitude;
+  Real PressureAltitude;
+  Real DensityAltitude;
 
   static constexpr double SutherlandConstant = 198.72;  // deg Rankine
   static constexpr double Beta = 2.269690E-08; // slug/(sec ft R^0.5)
-  double Viscosity, KinematicViscosity;
+  Real Viscosity, KinematicViscosity;
 
   /// Calculate the atmosphere for the given altitude.
-  virtual void Calculate(double altitude);
+  virtual void Calculate(Real altitude);
 
   /// Calculates the density altitude given any temperature or pressure bias.
   /// Calculated density for the specified geometric altitude given any temperature
   /// or pressure biases is passed in.
   /// @param density
   /// @param geometricAlt
-  virtual double CalculateDensityAltitude(double density, double geometricAlt) { return geometricAlt; }
+  virtual Real CalculateDensityAltitude(Real density, Real geometricAlt) { return geometricAlt; }
 
   /// Calculates the pressure altitude given any temperature or pressure bias.
   /// Calculated pressure for the specified geometric altitude given any temperature
   /// or pressure biases is passed in.
   /// @param pressure
   /// @param geometricAlt
-  virtual double CalculatePressureAltitude(double pressure, double geometricAlt) { return geometricAlt; }
+  virtual Real CalculatePressureAltitude(Real pressure, Real geometricAlt) { return geometricAlt; }
 
   /// Converts to Rankine from one of several unit systems.
-  double ConvertToRankine(double t, eTemperature unit) const;
+  Real ConvertToRankine(Real t, eTemperature unit) const;
   
   /// Converts from Rankine to one of several unit systems.
-  double ConvertFromRankine(double t, eTemperature unit) const;
+  Real ConvertFromRankine(Real t, eTemperature unit) const;
 
   /// Converts to PSF (pounds per square foot) from one of several unit systems.
-  double ConvertToPSF(double t, ePressure unit=ePSF) const;
+  Real ConvertToPSF(Real t, ePressure unit=ePSF) const;
 
   /// Converts from PSF (pounds per square foot) to one of several unit systems.
-  double ConvertFromPSF(double t, ePressure unit=ePSF) const;
+  Real ConvertFromPSF(Real t, ePressure unit=ePSF) const;
 
   /// @name ISA constants
   //@{
@@ -267,7 +267,7 @@ protected:
   */
   static constexpr double g0 = 9.80665 / fttom;
   /// Specific gas constant for air - ft*lbf/slug/R
-  static double Reng;
+  static Real Reng;
   //@}
 
   static constexpr double SHRatio = 1.4;

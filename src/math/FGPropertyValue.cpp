@@ -76,14 +76,14 @@ FGPropertyNode* FGPropertyValue::GetNode(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGPropertyValue::GetValue(void) const
+Real FGPropertyValue::GetValue(void) const
 {
   return GetNode()->getDoubleValue()*Sign;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropertyValue::SetValue(double value)
+void FGPropertyValue::SetValue(Real value)
 {
   // SetValue() ignores the Sign flag. So make sure it is never called with a
   // negative sign.

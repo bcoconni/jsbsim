@@ -108,10 +108,10 @@ private:
   std::unique_ptr<FGPropertyValue> target_longitude;
   std::unique_ptr<FGPropertyValue> source_latitude;
   std::unique_ptr<FGPropertyValue> source_longitude;
-  double target_latitude_unit;
-  double target_longitude_unit;
-  double source_latitude_unit;
-  double source_longitude_unit;
+  Real target_latitude_unit;
+  Real target_longitude_unit;
+  Real source_latitude_unit;
+  Real source_longitude_unit;
   std::string unit;
   enum {eNone=0, eDeg, eRad, eFeet, eMeters} eUnit;
   enum {eNoType=0, eHeading, eDistance} WaypointType;

@@ -113,7 +113,7 @@ void FGInputSocket::Read(bool Holding)
 {
   string line, token;
   size_t start=0, string_start=0, string_end=0;
-  double value=0;
+  Real value=0;
   FGPropertyNode* node=0;
 
   if (socket == 0) return;

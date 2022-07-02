@@ -125,15 +125,15 @@ public:
                      false if no error */
   bool Run(bool Holding) override;
 
-  double GetMass(void) const {return Mass;}
-  double GetWeight(void) const {return Weight;}
-  double GetEmptyWeight(void) const {return EmptyWeight;}
+  Real GetMass(void) const {return Mass;}
+  Real GetWeight(void) const {return Weight;}
+  Real GetEmptyWeight(void) const {return EmptyWeight;}
   /** Returns the coordinates of the center of gravity expressed in the
       structural frame. */
   const FGColumnVector3& GetXYZcg(void) const {return vXYZcg;}
-  double GetXYZcg(int axis) const  {return vXYZcg(axis);}
+  Real GetXYZcg(int axis) const  {return vXYZcg(axis);}
   const FGColumnVector3& GetDeltaXYZcg(void) const {return vDeltaXYZcg;}
-  double GetDeltaXYZcg(int axis) const  {return vDeltaXYZcg(axis);}
+  Real GetDeltaXYZcg(int axis) const  {return vDeltaXYZcg(axis);}
 
   /** Computes the inertia contribution of a pointmass.
       Computes and returns the inertia matrix of a pointmass of mass
@@ -143,16 +143,16 @@ public:
       @param mass_sl the mass of this single pointmass given in slugs
       @param r the location of this single pointmass in the structural frame
    */
-  FGMatrix33 GetPointmassInertia(double mass_sl, const FGColumnVector3& r) const
+  FGMatrix33 GetPointmassInertia(Real mass_sl, const FGColumnVector3& r) const
   {
     FGColumnVector3 v = StructuralToBody( r );
     FGColumnVector3 sv = mass_sl*v;
-    double xx = sv(1)*v(1);
-    double yy = sv(2)*v(2);
-    double zz = sv(3)*v(3);
-    double xy = -sv(1)*v(2);
-    double xz = -sv(1)*v(3);
-    double yz = -sv(2)*v(3);
+    Real xx = sv(1)*v(1);
+    Real yy = sv(2)*v(2);
+    Real zz = sv(3)*v(3);
+    Real xy = -sv(1)*v(2);
+    Real xz = -sv(1)*v(3);
+    Real yz = -sv(2)*v(3);
     return FGMatrix33( yy+zz, xy, xz,
                        xy, xx+zz, yz,
                        xz, yz, xx+yy );
@@ -169,11 +169,11 @@ public:
    */
   FGColumnVector3 StructuralToBody(const FGColumnVector3& r) const;
 
-  void SetEmptyWeight(double EW) { EmptyWeight = EW;}
+  void SetEmptyWeight(Real EW) { EmptyWeight = EW;}
   void SetBaseCG(const FGColumnVector3& CG) {vbaseXYZcg = vXYZcg = CG;}
 
   void AddPointMass(Element* el);
-  double GetTotalPointMassWeight(void) const;
+  Real GetTotalPointMassWeight(void) const;
 
   const FGColumnVector3& GetPointMassMoment(void);
   /// Returns the inertia matrix expressed in the body frame.
@@ -184,8 +184,8 @@ public:
   void GetMassPropertiesReport(int i);
   
   struct Inputs {
-    double GasMass;
-    double TanksWeight;
+    Real GasMass;
+    Real TanksWeight;
     FGColumnVector3 GasMoment;
     FGMatrix33 GasInertia;
     FGColumnVector3 TanksMoment;
@@ -195,9 +195,9 @@ public:
 
 private:
   std::shared_ptr<FGPropagate> Propagate;
-  double Weight;
-  double EmptyWeight;
-  double Mass;
+  Real Weight;
+  Real EmptyWeight;
+  Real Mass;
   FGMatrix33 mJ;
   FGMatrix33 mJinv;
   FGMatrix33 pmJ;
@@ -211,17 +211,17 @@ private:
   FGColumnVector3 vPMxyz;
   FGColumnVector3 PointMassCG;
   const FGMatrix33& CalculatePMInertias(void);
-  double GetIxx(void) const { return mJ(1,1); }
-  double GetIyy(void) const { return mJ(2,2); }
-  double GetIzz(void) const { return mJ(3,3); }
-  double GetIxy(void) const { return -mJ(1,2); }
-  double GetIxz(void) const { return mJ(1,3); }
-  double GetIyz(void) const { return -mJ(2,3); }
+  Real GetIxx(void) const { return mJ(1,1); }
+  Real GetIyy(void) const { return mJ(2,2); }
+  Real GetIzz(void) const { return mJ(3,3); }
+  Real GetIxy(void) const { return -mJ(1,2); }
+  Real GetIxz(void) const { return mJ(1,3); }
+  Real GetIyz(void) const { return -mJ(2,3); }
 
   /** The PointMass structure encapsulates a point mass object, moments of inertia
      mass, location, etc. */
   struct PointMass {
-    PointMass(double w, FGColumnVector3& vXYZ) :
+    PointMass(Real w, FGColumnVector3& vXYZ) :
       eShapeType(esUnspecified), Location(vXYZ), Weight(w), Radius(0.0),
       Length(0.0) {}
 
@@ -254,30 +254,30 @@ private:
 
     enum esShape {esUnspecified, esTube, esCylinder, esSphere, esBall} eShapeType;
     FGColumnVector3 Location;
-    double Weight; /// Weight in pounds.
-    double Radius; /// Radius in feet.
-    double Length; /// Length in feet.
+    Real Weight; /// Weight in pounds.
+    Real Radius; /// Radius in feet.
+    Real Length; /// Length in feet.
     std::string Name;
     FGMatrix33 mPMInertia;
 
-    double GetPointMassLocation(int axis) const {return Location(axis);}
-    double GetPointMassWeight(void) const {return Weight;}
+    Real GetPointMassLocation(int axis) const {return Location(axis);}
+    Real GetPointMassWeight(void) const {return Weight;}
     esShape GetShapeType(void) {return eShapeType;}
     const FGColumnVector3& GetLocation(void) {return Location;}
     const FGMatrix33& GetPointMassInertia(void) {return mPMInertia;}
     const std::string& GetName(void) {return Name;}
 
-    void SetPointMassLocation(int axis, double value) {Location(axis) = value;}
-    void SetPointMassWeight(double wt) {
+    void SetPointMassLocation(int axis, Real value) {Location(axis) = value;}
+    void SetPointMassWeight(Real wt) {
       Weight = wt;
       CalculateShapeInertia();
     }
     void SetPointMassShapeType(esShape st) {eShapeType = st;}
-    void SetRadius(double r) {Radius = r;}
-    void SetLength(double l) {Length = l;}
+    void SetRadius(Real r) {Radius = r;}
+    void SetLength(Real l) {Length = l;}
     void SetName(const std::string& name) {Name = name;}
     void SetPointMassMoI(const FGMatrix33& MoI) { mPMInertia = MoI; }
-    double GetPointMassMoI(int r, int c) {return mPMInertia(r,c);}
+    Real GetPointMassMoI(int r, int c) {return mPMInertia(r,c);}
 
     void bind(FGPropertyManager* PropertyManager, unsigned int num);
   };

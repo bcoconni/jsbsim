@@ -111,7 +111,7 @@ CLASS DOCUMENTATION
 
     - that we model a vehicle near the Earth
     - that the Earth surface average radius is about 2*10^7, ft
-    - that we use double values for the representation of the location
+    - that we use Real values for the representation of the location
 
     we have an accuracy of about
 
@@ -159,7 +159,7 @@ public:
       @param lon longitude
       @param lat GEOCENTRIC latitude
       @param radius distance from center of earth to vehicle in feet*/
-  FGLocation(double lon, double lat, double radius);
+  FGLocation(Real lon, Real lat, Real radius);
 
   /** Constructor to initialize the location with the cartesian coordinates
       (X,Y,Z) contained in the input FGColumnVector3. Distances are in feet,
@@ -181,7 +181,7 @@ public:
       The arguments should be within the bounds of -pi <= lon <= pi.
       The behavior of this function with arguments outside this range is left as
       an exercise to the gentle reader ... */
-  void SetLongitude(double longitude);
+  void SetLongitude(Real longitude);
 
   /** Set the GEOCENTRIC latitude.
       @param latitude GEOCENTRIC latitude in rad to set.
@@ -194,7 +194,7 @@ public:
       The arguments should be within the bounds of -pi/2 <= lat <= pi/2.
       The behavior of this function with arguments outside this range is left as
       an exercise to the gentle reader ... */
-  void SetLatitude(double latitude);
+  void SetLatitude(Real latitude);
 
   /** Set the distance from the center of the earth.
       @param radius Radius in ft to set.
@@ -206,56 +206,56 @@ public:
       The argument should be positive.
       The behavior of this function called with a negative argument is left as
       an exercise to the gentle reader ... */
-  void SetRadius(double radius);
+  void SetRadius(Real radius);
 
   /** Sets the longitude, latitude and the distance from the center of the earth.
       @param lon longitude in radians
       @param lat GEOCENTRIC latitude in radians
       @param radius distance from center of earth to vehicle in feet*/
-  void SetPosition(double lon, double lat, double radius);
+  void SetPosition(Real lon, Real lat, Real radius);
 
   /** Sets the longitude, latitude and the distance above the reference spheroid.
       @param lon longitude in radians
       @param lat GEODETIC latitude in radians
       @param height distance above the reference ellipsoid to vehicle in feet*/
-  void SetPositionGeodetic(double lon, double lat, double height);
+  void SetPositionGeodetic(Real lon, Real lat, Real height);
 
   /** Sets the semimajor and semiminor axis lengths for this planet.
       The eccentricity and flattening are calculated from the semimajor
       and semiminor axis lengths.
       @param semimajor planet semi-major axis in ft.
       @param semiminor planet semi-minor axis in ft.*/
-  void SetEllipse(double semimajor, double semiminor);
+  void SetEllipse(Real semimajor, Real semiminor);
 
   /** Get the longitude.
       @return the longitude in rad of the location represented with this
       class instance. The returned values are in the range between
       -pi <= lon <= pi. Longitude is positive east and negative west. */
-  double GetLongitude() const { ComputeDerived(); return mLon; }
+  Real GetLongitude() const { ComputeDerived(); return mLon; }
 
   /** Get the longitude.
       @return the longitude in deg of the location represented with this
       class instance. The returned values are in the range between
       -180 <= lon <= 180.  Longitude is positive east and negative west. */
-  double GetLongitudeDeg() const { ComputeDerived(); return radtodeg*mLon; }
+  Real GetLongitudeDeg() const { ComputeDerived(); return radtodeg*mLon; }
 
   /** Get the sine of Longitude. */
-  double GetSinLongitude() const { ComputeDerived(); return -mTec2l(2,1); }
+  Real GetSinLongitude() const { ComputeDerived(); return -mTec2l(2,1); }
 
   /** Get the cosine of Longitude. */
-  double GetCosLongitude() const { ComputeDerived(); return mTec2l(2,2); }
+  Real GetCosLongitude() const { ComputeDerived(); return mTec2l(2,2); }
 
   /** Get the GEOCENTRIC latitude in radians.
       @return the geocentric latitude in rad of the location represented with
       this class instance. The returned values are in the range between
       -pi/2 <= lon <= pi/2. Latitude is positive north and negative south. */
-  double GetLatitude() const { ComputeDerived(); return mLat; }
+  Real GetLatitude() const { ComputeDerived(); return mLat; }
 
   /** Get the GEODETIC latitude in radians.
       @return the geodetic latitude in rad of the location represented with this
       class instance. The returned values are in the range between
       -pi/2 <= lon <= pi/2. Latitude is positive north and negative south. */
-  double GetGeodLatitudeRad(void) const {
+  Real GetGeodLatitudeRad(void) const {
     assert(mEllipseSet);
     ComputeDerived(); return mGeodLat;
   }
@@ -264,31 +264,31 @@ public:
       @return the geocentric latitude in deg of the location represented with
       this class instance. The returned value is in the range between
       -90 <= lon <= 90. Latitude is positive north and negative south. */
-  double GetLatitudeDeg() const { ComputeDerived(); return radtodeg*mLat; }
+  Real GetLatitudeDeg() const { ComputeDerived(); return radtodeg*mLat; }
 
   /** Get the GEODETIC latitude in degrees.
       @return the geodetic latitude in degrees of the location represented by
       this class instance. The returned value is in the range between
       -90 <= lon <= 90. Latitude is positive north and negative south. */
-  double GetGeodLatitudeDeg(void) const {
+  Real GetGeodLatitudeDeg(void) const {
     assert(mEllipseSet);
     ComputeDerived(); return radtodeg*mGeodLat;
   }
 
   /** Gets the geodetic altitude in feet. */
-  double GetGeodAltitude(void) const {
+  Real GetGeodAltitude(void) const {
     assert(mEllipseSet);
     ComputeDerived(); return GeodeticAltitude;
   }
 
   /** Get the sea level radius in feet below the current location. */
-  double GetSeaLevelRadius(void) const;
+  Real GetSeaLevelRadius(void) const;
 
   /** Get the distance from the center of the earth in feet.
       @return the distance of the location represented with this class
       instance to the center of the earth in ft. The radius value is
       always positive. */
-  double GetRadius() const { ComputeDerived(); return mRadius; }
+  Real GetRadius() const { ComputeDerived(); return mRadius; }
 
   /** Transform matrix from local horizontal to earth centered frame.
       @return a const reference to the rotation matrix of the transform from
@@ -306,7 +306,7 @@ public:
       @param target_longitude the target longitude in radians
       @param target_latitude the target geodetic latitude in radians
       @return The geodetic distance in feet between the two locations */
-  double GetDistanceTo(double target_longitude, double target_latitude) const;
+  Real GetDistanceTo(Real target_longitude, Real target_latitude) const;
   
   /** Get the heading that should be followed from the current location to
       a given location along the shortest path. Earth curvature is taken into
@@ -315,7 +315,7 @@ public:
       @param target_latitude the target geodetic latitude in radians
       @return The heading in radians that should be followed to reach the
               targeted location along the shortest path */
-  double GetHeadingTo(double target_longitude, double target_latitude) const;
+  Real GetHeadingTo(Real target_longitude, Real target_latitude) const;
 
   /** Conversion from Local frame coordinates to a location in the
       earth centered and fixed frame.
@@ -344,34 +344,34 @@ public:
       Return the value of the matrix entry at the given index.
       Indices are counted starting with 1.
       Note that the index given in the argument is unchecked. */
-  double operator()(unsigned int idx) const { return mECLoc.Entry(idx); }
+  Real operator()(unsigned int idx) const { return mECLoc.Entry(idx); }
 
   /** Write access the entries of the vector.
       @param idx the component index.
       @return a reference to the vector entry at the given index.
       Indices are counted starting with 1.
       Note that the index given in the argument is unchecked. */
-  double& operator()(unsigned int idx) { mCacheValid = false; return mECLoc.Entry(idx); }
+  Real& operator()(unsigned int idx) { mCacheValid = false; return mECLoc.Entry(idx); }
 
   /** Read access the entries of the vector.
       @param idx the component index.
       @return the value of the matrix entry at the given index.
       Indices are counted starting with 1.
-      This function is just a shortcut for the <tt>double
+      This function is just a shortcut for the <tt>Real
       operator()(unsigned int idx) const</tt> function. It is
       used internally to access the elements in a more convenient way.
       Note that the index given in the argument is unchecked. */
-  double Entry(unsigned int idx) const { return mECLoc.Entry(idx); }
+  Real Entry(unsigned int idx) const { return mECLoc.Entry(idx); }
 
   /** Write access the entries of the vector.
       @param idx the component index.
       @return a reference to the vector entry at the given index.
       Indices are counted starting with 1.
-      This function is just a shortcut for the double&
+      This function is just a shortcut for the Real&
       operator()(unsigned int idx) function. It is
       used internally to access the elements in a more convenient way.
       Note that the index given in the argument is unchecked. */
-  double& Entry(unsigned int idx) {
+  Real& Entry(unsigned int idx) {
     mCacheValid = false; return mECLoc.Entry(idx);
   }
 
@@ -430,7 +430,7 @@ public:
       The cartesian coordinates of the ECEF position vector on the left side of
       the equality are scaled by the supplied value (right side), and a
       reference to this object is returned. */
-  const FGLocation& operator*=(double scalar) {
+  const FGLocation& operator*=(Real scalar) {
     mCacheValid = false;
     mECLoc *= scalar;
     return *this;
@@ -440,7 +440,7 @@ public:
       The cartesian coordinates of the ECEF position vector on the left side of
       the equality are scaled by the inverse of the supplied value (right side),
       and a reference to this object is returned. */
-  const FGLocation& operator/=(double scalar) {
+  const FGLocation& operator/=(Real scalar) {
     return operator*=(1.0/scalar);
   }
 
@@ -466,7 +466,7 @@ public:
       A new object is returned that defines a position made of the cartesian
       coordinates of the provided ECEF position scaled by the supplied scalar
       value. */
-  FGLocation operator*(double scalar) const {
+  FGLocation operator*(Real scalar) const {
     FGLocation result(scalar*mECLoc);
     if (mEllipseSet) result.SetEllipse(a, ec*a);
     return result;
@@ -504,22 +504,22 @@ private:
   FGColumnVector3 mECLoc;
 
   /** The cached lon/lat/radius values. */
-  mutable double mLon;
-  mutable double mLat;
-  mutable double mRadius;
-  mutable double mGeodLat;
-  mutable double GeodeticAltitude;
+  mutable Real mLon;
+  mutable Real mLat;
+  mutable Real mRadius;
+  mutable Real mGeodLat;
+  mutable Real GeodeticAltitude;
 
   /** The cached rotation matrices from and to the associated frames. */
   mutable FGMatrix33 mTl2ec;
   mutable FGMatrix33 mTec2l;
 
   /* Terms for geodetic latitude calculation. Values are from WGS84 model */
-  double a;    // Earth semimajor axis in feet
-  double e2;   // Earth eccentricity squared
-  double c;
-  double ec;
-  double ec2;
+  Real a;    // Earth semimajor axis in feet
+  Real e2;   // Earth eccentricity squared
+  Real c;
+  Real ec;
+  Real ec2;
 
   /** A data validity flag.
       This class implements caching of the derived values like the
@@ -539,7 +539,7 @@ private:
     @param l Vector to multiply.
 
     Multiply the Vector with a scalar value. */
-inline FGLocation operator*(double scalar, const FGLocation& l)
+inline FGLocation operator*(Real scalar, const FGLocation& l)
 {
   return l.operator*(scalar);
 }

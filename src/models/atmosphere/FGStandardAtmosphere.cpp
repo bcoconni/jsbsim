@@ -176,7 +176,7 @@ bool FGStandardAtmosphere::InitModel(void)
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::Calculate(double altitude)
+void FGStandardAtmosphere::Calculate(Real altitude)
 {
   FGAtmosphere::Calculate(altitude);
   SaturatedVaporPressure = CalculateVaporPressure(Temperature);
@@ -188,33 +188,33 @@ void FGStandardAtmosphere::Calculate(double altitude)
 // These calculations are from equations 33a and 33b in the U.S. Standard
 // Atmosphere document referenced in the documentation for this code.
 
-double FGStandardAtmosphere::GetPressure(double altitude) const
+Real FGStandardAtmosphere::GetPressure(Real altitude) const
 {
-  double GeoPotAlt = GeopotentialAltitude(altitude);
+  Real GeoPotAlt = GeopotentialAltitude(altitude);
 
   // Iterate through the altitudes to find the current Base Altitude
   // in the table. That is, if the current altitude (the argument passed in)
   // is 20000 ft, then the base altitude from the table is 0.0. If the
   // passed-in altitude is 40000 ft, the base altitude is 36089.2388 ft (and
   // the index "b" is 2 - the second entry in the table).
-  double BaseAlt = StdAtmosTemperatureTable(1,0);
+  Real BaseAlt = StdAtmosTemperatureTable(1,0);
   unsigned int numRows = StdAtmosTemperatureTable.GetNumRows();
   unsigned int b;
 
   for (b=0; b < numRows-2; ++b) {
-    double testAlt = StdAtmosTemperatureTable(b+2,0);
+    Real testAlt = StdAtmosTemperatureTable(b+2,0);
     if (GeoPotAlt < testAlt)
       break;
     BaseAlt = testAlt;
   }
 
-  double Tmb = GetTemperature(GeometricAltitude(BaseAlt));
-  double deltaH = GeoPotAlt - BaseAlt;
-  double Lmb = LapseRates[b];
+  Real Tmb = GetTemperature(GeometricAltitude(BaseAlt));
+  Real deltaH = GeoPotAlt - BaseAlt;
+  Real Lmb = LapseRates[b];
 
   if (Lmb != 0.0) {
-    double Exp = g0 / (Rdry*Lmb);
-    double factor = Tmb/(Tmb + Lmb*deltaH);
+    Real Exp = g0 / (Rdry*Lmb);
+    Real factor = Tmb/(Tmb + Lmb*deltaH);
     return PressureBreakpoints[b]*pow(factor, Exp);
   } else
     return PressureBreakpoints[b]*exp(-g0*deltaH/(Rdry*Tmb));
@@ -222,7 +222,7 @@ double FGStandardAtmosphere::GetPressure(double altitude) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::SetPressureSL(ePressure unit, double pressure)
+void FGStandardAtmosphere::SetPressureSL(ePressure unit, Real pressure)
 {
   SLpressure = ConvertToPSF(pressure, unit);
   CalculateSLDensity();
@@ -241,11 +241,11 @@ void FGStandardAtmosphere::CalculateSLSoundSpeedAndDensity(void)
 // Get the modeled temperature at a specified altitude, including any bias or gradient
 // effects.
 
-double FGStandardAtmosphere::GetTemperature(double altitude) const
+Real FGStandardAtmosphere::GetTemperature(Real altitude) const
 {
-  double GeoPotAlt = GeopotentialAltitude(altitude);
+  Real GeoPotAlt = GeopotentialAltitude(altitude);
 
-  double T;
+  Real T;
 
   if (GeoPotAlt >= 0.0) {
     T = StdAtmosTemperatureTable.GetValue(GeoPotAlt);
@@ -270,9 +270,9 @@ double FGStandardAtmosphere::GetTemperature(double altitude) const
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Retrieves the standard temperature at a particular altitude.
 
-double FGStandardAtmosphere::GetStdTemperature(double altitude) const
+Real FGStandardAtmosphere::GetStdTemperature(Real altitude) const
 {
-  double GeoPotAlt = GeopotentialAltitude(altitude);
+  Real GeoPotAlt = GeopotentialAltitude(altitude);
 
   if (GeoPotAlt >= 0.0)
     return StdAtmosTemperatureTable.GetValue(GeoPotAlt);
@@ -282,33 +282,33 @@ double FGStandardAtmosphere::GetStdTemperature(double altitude) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::GetStdPressure(double altitude) const
+Real FGStandardAtmosphere::GetStdPressure(Real altitude) const
 {
-  double GeoPotAlt = GeopotentialAltitude(altitude);
+  Real GeoPotAlt = GeopotentialAltitude(altitude);
 
   // Iterate through the altitudes to find the current Base Altitude
   // in the table. That is, if the current altitude (the argument passed in)
   // is 20000 ft, then the base altitude from the table is 0.0. If the
   // passed-in altitude is 40000 ft, the base altitude is 36089.2388 ft (and
   // the index "b" is 2 - the second entry in the table).
-  double BaseAlt = StdAtmosTemperatureTable(1,0);
+  Real BaseAlt = StdAtmosTemperatureTable(1,0);
   unsigned int numRows = StdAtmosTemperatureTable.GetNumRows();
   unsigned int b;
 
   for (b=0; b < numRows-2; ++b) {
-    double testAlt = StdAtmosTemperatureTable(b+2,0);
+    Real testAlt = StdAtmosTemperatureTable(b+2,0);
     if (GeoPotAlt < testAlt)
       break;
     BaseAlt = testAlt;
   }
 
-  double Tmb = GetStdTemperature(GeometricAltitude(BaseAlt));
-  double deltaH = GeoPotAlt - BaseAlt;
-  double Lmb = LapseRates[b];
+  Real Tmb = GetStdTemperature(GeometricAltitude(BaseAlt));
+  Real deltaH = GeoPotAlt - BaseAlt;
+  Real Lmb = LapseRates[b];
 
   if (Lmb != 0.0) {
-    double Exp = g0 / (Rdry*Lmb);
-    double factor = Tmb/(Tmb + Lmb*deltaH);
+    Real Exp = g0 / (Rdry*Lmb);
+    Real factor = Tmb/(Tmb + Lmb*deltaH);
     return StdPressureBreakpoints[b]*pow(factor, Exp);
   } else
     return StdPressureBreakpoints[b]*exp(-g0*deltaH/(Rdry*Tmb));
@@ -317,17 +317,17 @@ double FGStandardAtmosphere::GetStdPressure(double altitude) const
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Get the standard density at a specified altitude
 
-double FGStandardAtmosphere::GetStdDensity(double altitude) const
+Real FGStandardAtmosphere::GetStdDensity(Real altitude) const
 {
   return GetStdPressure(altitude)/(Rdry * GetStdTemperature(altitude));
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::SetTemperature(double t, double h, eTemperature unit)
+void FGStandardAtmosphere::SetTemperature(Real t, Real h, eTemperature unit)
 {
-  double targetTemp = ConvertToRankine(t, unit);
-  double GeoPotAlt = GeopotentialAltitude(h);
+  Real targetTemp = ConvertToRankine(t, unit);
+  Real GeoPotAlt = GeopotentialAltitude(h);
 
   TemperatureBias = targetTemp - GetStdTemperature(h);
 
@@ -342,7 +342,7 @@ void FGStandardAtmosphere::SetTemperature(double t, double h, eTemperature unit)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::SetTemperatureBias(eTemperature unit, double t)
+void FGStandardAtmosphere::SetTemperatureBias(eTemperature unit, Real t)
 {
   if (unit == eCelsius || unit == eKelvin)
     t *= 1.80; // If temp delta "t" is given in metric, scale up to English
@@ -360,7 +360,7 @@ void FGStandardAtmosphere::SetTemperatureBias(eTemperature unit, double t)
 // Internally, the Rankine scale is used for calculations, so any temperature
 // supplied must be converted to that unit.
 
-void FGStandardAtmosphere::SetTemperatureSL(double t, eTemperature unit)
+void FGStandardAtmosphere::SetTemperatureSL(Real t, eTemperature unit)
 {
   SetTemperature(t, 0.0, unit);
 }
@@ -368,7 +368,7 @@ void FGStandardAtmosphere::SetTemperatureSL(double t, eTemperature unit)
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Sets a Sea Level temperature delta that is ramped out by 86 km (282,152 ft).
 
-void FGStandardAtmosphere::SetSLTemperatureGradedDelta(eTemperature unit, double deltemp)
+void FGStandardAtmosphere::SetSLTemperatureGradedDelta(eTemperature unit, Real deltemp)
 {
   SetTemperatureGradedDelta(deltemp, 0.0, unit);
 }
@@ -380,7 +380,7 @@ void FGStandardAtmosphere::SetSLTemperatureGradedDelta(eTemperature unit, double
 // temperature, we only need to be concerned about a scale factor and not
 // the actual temperature itself.
 
-void FGStandardAtmosphere::SetTemperatureGradedDelta(double deltemp, double h, eTemperature unit)
+void FGStandardAtmosphere::SetTemperatureGradedDelta(Real deltemp, Real h, eTemperature unit)
 {
   if (unit == eCelsius || unit == eKelvin)
     deltemp *= 1.80; // If temp delta "t" is given in metric, scale up to English
@@ -426,32 +426,32 @@ void FGStandardAtmosphere::CalculateLapseRates()
 
   for (unsigned int bh=0; bh < numRows-1; bh++)
   {
-    double t0 = StdAtmosTemperatureTable(bh+1,1);
-    double t1 = StdAtmosTemperatureTable(bh+2,1);
-    double h0 = StdAtmosTemperatureTable(bh+1,0);
-    double h1 = StdAtmosTemperatureTable(bh+2,0);
+    Real t0 = StdAtmosTemperatureTable(bh+1,1);
+    Real t1 = StdAtmosTemperatureTable(bh+2,1);
+    Real h0 = StdAtmosTemperatureTable(bh+1,0);
+    Real h1 = StdAtmosTemperatureTable(bh+2,0);
     LapseRates.push_back((t1 - t0) / (h1 - h0) - TemperatureDeltaGradient);
   }
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::CalculatePressureBreakpoints(double SLpress)
+void FGStandardAtmosphere::CalculatePressureBreakpoints(Real SLpress)
 {
   PressureBreakpoints[0] = SLpress;
 
   for (unsigned int b=0; b<PressureBreakpoints.size()-1; b++) {
-    double BaseTemp = StdAtmosTemperatureTable(b+1,1);
-    double BaseAlt = StdAtmosTemperatureTable(b+1,0);
-    double UpperAlt = StdAtmosTemperatureTable(b+2,0);
-    double deltaH = UpperAlt - BaseAlt;
-    double Tmb = BaseTemp
+    Real BaseTemp = StdAtmosTemperatureTable(b+1,1);
+    Real BaseAlt = StdAtmosTemperatureTable(b+1,0);
+    Real UpperAlt = StdAtmosTemperatureTable(b+2,0);
+    Real deltaH = UpperAlt - BaseAlt;
+    Real Tmb = BaseTemp
                  + TemperatureBias 
                  + (GradientFadeoutAltitude - BaseAlt)*TemperatureDeltaGradient;
     if (LapseRates[b] != 0.00) {
-      double Lmb = LapseRates[b];
-      double Exp = g0 / (Rdry*Lmb);
-      double factor = Tmb/(Tmb + Lmb*deltaH);
+      Real Lmb = LapseRates[b];
+      Real Exp = g0 / (Rdry*Lmb);
+      Real factor = Tmb/(Tmb + Lmb*deltaH);
       PressureBreakpoints[b+1] = PressureBreakpoints[b]*pow(factor, Exp);
     } else {
       PressureBreakpoints[b+1] = PressureBreakpoints[b]*exp(-g0*deltaH/(Rdry*Tmb));
@@ -491,7 +491,7 @@ void FGStandardAtmosphere::CalculateStdDensityBreakpoints()
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::CalculateDensityAltitude(double density, double geometricAlt)
+Real FGStandardAtmosphere::CalculateDensityAltitude(Real density, Real geometricAlt)
 {
   // Work out which layer we're dealing with
   unsigned int b = 0;
@@ -501,19 +501,19 @@ double FGStandardAtmosphere::CalculateDensityAltitude(double density, double geo
   }
 
   // Get layer properties
-  double Tmb = StdAtmosTemperatureTable(b + 1, 1);
-  double Hb = StdAtmosTemperatureTable(b + 1, 0);
-  double Lmb = StdLapseRates[b];
-  double pb = StdDensityBreakpoints[b];
+  Real Tmb = StdAtmosTemperatureTable(b + 1, 1);
+  Real Hb = StdAtmosTemperatureTable(b + 1, 0);
+  Real Lmb = StdLapseRates[b];
+  Real pb = StdDensityBreakpoints[b];
 
-  double density_altitude = 0.0;
+  Real density_altitude = 0.0;
 
   // https://en.wikipedia.org/wiki/Barometric_formula for density solved for H
   if (Lmb != 0.0) {
-    double Exp = -1.0 / (1.0 + g0/(Rdry*Lmb));
+    Real Exp = -1.0 / (1.0 + g0/(Rdry*Lmb));
     density_altitude = Hb + (Tmb / Lmb) * (pow(density / pb, Exp) - 1);
   } else {
-    double Factor = -Rdry*Tmb / g0;
+    Real Factor = -Rdry*Tmb / g0;
     density_altitude = Hb + Factor * log(density / pb);
   }
 
@@ -522,7 +522,7 @@ double FGStandardAtmosphere::CalculateDensityAltitude(double density, double geo
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::CalculatePressureAltitude(double pressure, double geometricAlt)
+Real FGStandardAtmosphere::CalculatePressureAltitude(Real pressure, Real geometricAlt)
 {
   // Work out which layer we're dealing with
   unsigned int b = 0;
@@ -532,20 +532,20 @@ double FGStandardAtmosphere::CalculatePressureAltitude(double pressure, double g
   }
 
   // Get layer properties
-  double Tmb = StdAtmosTemperatureTable(b + 1, 1);
-  double Hb = StdAtmosTemperatureTable(b + 1, 0);
-  double Lmb = StdLapseRates[b];
-  double Pb = StdPressureBreakpoints[b];
+  Real Tmb = StdAtmosTemperatureTable(b + 1, 1);
+  Real Hb = StdAtmosTemperatureTable(b + 1, 0);
+  Real Lmb = StdLapseRates[b];
+  Real Pb = StdPressureBreakpoints[b];
 
-  double pressure_altitude = 0.0;
+  Real pressure_altitude = 0.0;
 
   if (Lmb != 0.00) {
     // Equation 33(a) from ISA document solved for H
-    double Exp = -Rdry*Lmb / g0;
+    Real Exp = -Rdry*Lmb / g0;
     pressure_altitude = Hb + (Tmb / Lmb) * (pow(pressure / Pb, Exp) - 1);
   } else {
     // Equation 33(b) from ISA document solved for H
-    double Factor = -Rdry*Tmb / g0;
+    Real Factor = -Rdry*Tmb / g0;
     pressure_altitude = Hb + Factor * log(pressure / Pb);
   }
 
@@ -554,24 +554,24 @@ double FGStandardAtmosphere::CalculatePressureAltitude(double pressure, double g
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::CalculateVaporPressure(double temperature)
+Real FGStandardAtmosphere::CalculateVaporPressure(Real temperature)
 {
-  double temperature_degC = RankineToCelsius(temperature);
+  Real temperature_degC = RankineToCelsius(temperature);
   return a*exp(b*temperature_degC/(c+temperature_degC));
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::ValidateVaporMassFraction(double h)
+void FGStandardAtmosphere::ValidateVaporMassFraction(Real h)
 {
   if (SaturatedVaporPressure < Pressure) {
-    double VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
+    Real VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
     if (VaporPressure > SaturatedVaporPressure)
       VaporMassFraction = Rdry * SaturatedVaporPressure / (Rwater * (Pressure - SaturatedVaporPressure));
   }
 
-  double GeoPotAlt = GeopotentialAltitude(h);
-  double maxFraction = 1E-6*MaxVaporMassFraction.GetValue(GeoPotAlt);
+  Real GeoPotAlt = GeopotentialAltitude(h);
+  Real maxFraction = 1E-6*MaxVaporMassFraction.GetValue(GeoPotAlt);
 
   if ((VaporMassFraction > maxFraction) || (VaporMassFraction < 0.0))
     VaporMassFraction = maxFraction;
@@ -582,25 +582,25 @@ void FGStandardAtmosphere::ValidateVaporMassFraction(double h)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::SetDewPoint(eTemperature unit, double dewpoint)
+void FGStandardAtmosphere::SetDewPoint(eTemperature unit, Real dewpoint)
 {
-  double altitude = CalculatePressureAltitude(Pressure, 0.0);
-  double VaporPressure = CalculateVaporPressure(ConvertToRankine(dewpoint, unit));
+  Real altitude = CalculatePressureAltitude(Pressure, 0.0);
+  Real VaporPressure = CalculateVaporPressure(ConvertToRankine(dewpoint, unit));
   VaporMassFraction = Rdry * VaporPressure / (Rwater * (Pressure - VaporPressure));
   ValidateVaporMassFraction(altitude);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::GetDewPoint(eTemperature to) const
+Real FGStandardAtmosphere::GetDewPoint(eTemperature to) const
 {
-  double dewpoint_degC;
-  double VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
+  Real dewpoint_degC;
+  Real VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
 
   if (VaporPressure <= 0.0)
     dewpoint_degC = -c;
   else {
-    double x = log(VaporPressure/a);
+    Real x = log(VaporPressure/a);
     dewpoint_degC = c*x / (b - x);
   }
 
@@ -609,59 +609,59 @@ double FGStandardAtmosphere::GetDewPoint(eTemperature to) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::SetVaporPressure(ePressure unit, double Pa)
+void FGStandardAtmosphere::SetVaporPressure(ePressure unit, Real Pa)
 {
-  double altitude = CalculatePressureAltitude(Pressure, 0.0);
-  double VaporPressure = ConvertToPSF(Pa, unit);
+  Real altitude = CalculatePressureAltitude(Pressure, 0.0);
+  Real VaporPressure = ConvertToPSF(Pa, unit);
   VaporMassFraction = Rdry * VaporPressure / (Rwater * (Pressure - VaporPressure));
   ValidateVaporMassFraction(altitude);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::GetVaporPressure(ePressure to) const
+Real FGStandardAtmosphere::GetVaporPressure(ePressure to) const
 {
-  double VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
+  Real VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
   return ConvertFromPSF(VaporPressure, to);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::GetSaturatedVaporPressure(ePressure to) const
+Real FGStandardAtmosphere::GetSaturatedVaporPressure(ePressure to) const
 {
   return ConvertFromPSF(SaturatedVaporPressure, to);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::GetRelativeHumidity(void) const
+Real FGStandardAtmosphere::GetRelativeHumidity(void) const
 {
-  double VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
+  Real VaporPressure = Pressure*VaporMassFraction / (VaporMassFraction+Rdry/Rwater);
   return 100.0*VaporPressure/SaturatedVaporPressure;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::SetRelativeHumidity(double RH)
+void FGStandardAtmosphere::SetRelativeHumidity(Real RH)
 {
-  double altitude = CalculatePressureAltitude(Pressure, 0.0);
-  double VaporPressure = 0.01*RH*SaturatedVaporPressure;
+  Real altitude = CalculatePressureAltitude(Pressure, 0.0);
+  Real VaporPressure = 0.01*RH*SaturatedVaporPressure;
   VaporMassFraction = Rdry * VaporPressure / (Rwater * (Pressure - VaporPressure));
   ValidateVaporMassFraction(altitude);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGStandardAtmosphere::GetVaporMassFractionPPM(void) const
+Real FGStandardAtmosphere::GetVaporMassFractionPPM(void) const
 {
   return VaporMassFraction*1E6;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGStandardAtmosphere::SetVaporMassFractionPPM(double frac)
+void FGStandardAtmosphere::SetVaporMassFractionPPM(Real frac)
 {
-  double altitude = CalculatePressureAltitude(Pressure, 0.0);
+  Real altitude = CalculatePressureAltitude(Pressure, 0.0);
   VaporMassFraction = frac*1E-6;
   ValidateVaporMassFraction(altitude);
 }
@@ -670,8 +670,8 @@ void FGStandardAtmosphere::SetVaporMassFractionPPM(double frac)
 
 void FGStandardAtmosphere::bind(void)
 {
-  typedef double (FGStandardAtmosphere::*PMFi)(int) const;
-  typedef void (FGStandardAtmosphere::*PMF)(int, double);
+  typedef Real (FGStandardAtmosphere::*PMFi)(int) const;
+  typedef void (FGStandardAtmosphere::*PMF)(int, Real);
   PropertyManager->Tie("atmosphere/delta-T", this, eRankine,
                                     (PMFi)&FGStandardAtmosphere::GetTemperatureBias,
                                     (PMF)&FGStandardAtmosphere::SetTemperatureBias);

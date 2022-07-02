@@ -84,7 +84,7 @@ public:
 
     for (unsigned int i=1; i <= 3; i++) {
       v = v1;
-      double x = v1(i) + 1.0;
+      Real x = v1(i) + 1.0;
       v(i) = x;
       for (unsigned int j=1; j <= 3; j++) {
         if (i != j) {

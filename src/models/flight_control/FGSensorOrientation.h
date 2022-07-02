@@ -104,7 +104,7 @@ protected:
   int axis;
   void CalculateTransformMatrix(void)
   {
-    double cp,sp,cr,sr,cy,sy;
+    Real cp,sp,cr,sr,cy,sy;
 
     cp=cos(vOrient(ePitch)); sp=sin(vOrient(ePitch));
     cr=cos(vOrient(eRoll));  sr=sin(vOrient(eRoll));

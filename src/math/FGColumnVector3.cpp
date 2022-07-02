@@ -79,26 +79,26 @@ ostream& operator<<(ostream& os, const FGColumnVector3& col)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FGColumnVector3 FGColumnVector3::operator/(const double scalar) const
+FGColumnVector3 FGColumnVector3::operator/(const Real scalar) const
 {
   if (scalar != 0.0)
     return operator*( 1.0/scalar );
 
   cerr << "Attempt to divide by zero in method \
-    FGColumnVector3::operator/(const double scalar), \
+    FGColumnVector3::operator/(const Real scalar), \
     object " << data[0] << " , " << data[1] << " , " << data[2] << endl;
   return FGColumnVector3();
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FGColumnVector3& FGColumnVector3::operator/=(const double scalar)
+FGColumnVector3& FGColumnVector3::operator/=(const Real scalar)
 {
   if (scalar != 0.0)
     operator*=( 1.0/scalar );
   else
     cerr << "Attempt to divide by zero in method \
-      FGColumnVector3::operator/=(const double scalar), \
+      FGColumnVector3::operator/=(const Real scalar), \
       object " << data[0] << " , " << data[1] << " , " << data[2] << endl;
 
   return *this;
@@ -106,7 +106,7 @@ FGColumnVector3& FGColumnVector3::operator/=(const double scalar)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGColumnVector3::Magnitude(void) const
+Real FGColumnVector3::Magnitude(void) const
 {
   return sqrt( data[0]*data[0] +  data[1]*data[1] +  data[2]*data[2] );
 }
@@ -115,7 +115,7 @@ double FGColumnVector3::Magnitude(void) const
 
 FGColumnVector3& FGColumnVector3::Normalize(void)
 {
-  double Mag = Magnitude();
+  Real Mag = Magnitude();
 
   if (Mag != 0.0)
     operator*=( 1.0/Mag );
@@ -125,7 +125,7 @@ FGColumnVector3& FGColumnVector3::Normalize(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGColumnVector3::Magnitude(const int idx1, const int idx2) const {
+Real FGColumnVector3::Magnitude(const int idx1, const int idx2) const {
   return sqrt( data[idx1-1]*data[idx1-1] +  data[idx2-1]*data[idx2-1] );
 }
 

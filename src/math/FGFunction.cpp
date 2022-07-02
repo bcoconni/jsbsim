@@ -50,7 +50,7 @@ namespace JSBSim {
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-const double invlog2val = 1.0/log10(2.0);
+const double invlog2val = 1.0/std::log10(2.0);
 constexpr unsigned int MaxArgs = 9999;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,7 +87,7 @@ public:
     CheckOddOrEvenArguments(el, odd_even);
   }
 
-  double GetValue(void) const override {
+  Real GetValue(void) const override {
     return cached ? cachedValue : f(Parameters);
   }
 
@@ -124,8 +124,8 @@ public:
     bind(el, Prefix);
   }
 
-  double GetValue(void) const override {
-    double result = cached ? cachedValue : f();
+  Real GetValue(void) const override {
+    Real result = cached ? cachedValue : f();
     if (pNode) pNode->setDoubleValue(result);
     return result;
   }
@@ -151,7 +151,7 @@ private:
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-bool GetBinary(double val, const string &ctxMsg)
+bool GetBinary(Real val, const string &ctxMsg)
 {
   val = fabs(val);
   if (val < 1E-9) return false;
@@ -168,10 +168,10 @@ bool GetBinary(double val, const string &ctxMsg)
 // Hides the machinery to create a class for functions from <math.h> such as
 // sin, cos, exp, etc.
 
-FGFunction* make_MathFn(double(*math_fn)(double), FGFDMExec* fdmex, Element* el,
+FGFunction* make_MathFn(Real(*math_fn)(Real), FGFDMExec* fdmex, Element* el,
                         const string& prefix, FGPropertyValue* v)
 {
-  auto f = [math_fn](const std::vector<FGParameter_ptr> &p)->double {
+  auto f = [math_fn](const std::vector<FGParameter_ptr> &p)->Real {
              return math_fn(p[0]->GetValue());
            };
   return new aFunc<decltype(f), 1>(f, fdmex, el, prefix, v);
@@ -313,8 +313,8 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
   Name = el->GetAttributeValue("name");
   Element* element = el->GetElement();
       
-  auto sum = [](const decltype(Parameters)& Parameters)->double {
-               double temp = 0.0;
+  auto sum = [](const decltype(Parameters)& Parameters)->Real {
+               Real temp = 0.0;
 
                for (auto p: Parameters)
                  temp += p->GetValue();
@@ -370,8 +370,8 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       Parameters.push_back(new FGTable(PropertyManager, element, Prefix));
       // operations
     } else if (operation == "product") {
-      auto f = [](const decltype(Parameters)& Parameters)->double {
-                 double temp = 1.0;
+      auto f = [](const decltype(Parameters)& Parameters)->Real {
+                 Real temp = 1.0;
 
                  for (auto p: Parameters)
                    temp *= p->GetValue();
@@ -382,13 +382,13 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
     } else if (operation == "sum") {
       Parameters.push_back(VarArgsFn<decltype(sum)>(sum, fdmex, element, Prefix, var));
     } else if (operation == "avg") {
-      auto avg = [&](const decltype(Parameters)& p)->double {
+      auto avg = [&](const decltype(Parameters)& p)->Real {
                    return sum(p) / p.size();
                  };
       Parameters.push_back(VarArgsFn<decltype(avg)>(avg, fdmex, element, Prefix, var));
     } else if (operation == "difference") {
-      auto f = [](const decltype(Parameters)& Parameters)->double {
-                 double temp = Parameters[0]->GetValue();
+      auto f = [](const decltype(Parameters)& Parameters)->Real {
+                 Real temp = Parameters[0]->GetValue();
 
                  for (auto p = Parameters.begin()+1; p != Parameters.end(); ++p)
                    temp -= (*p)->GetValue();
@@ -397,11 +397,11 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                };
       Parameters.push_back(VarArgsFn<decltype(f)>(f, fdmex, element, Prefix, var));
     } else if (operation == "min") {
-      auto f = [](const decltype(Parameters)& Parameters)->double {
-                 double _min = HUGE_VAL;
+      auto f = [](const decltype(Parameters)& Parameters)->Real {
+                 Real _min = HUGE_VAL;
 
                  for (auto p : Parameters) {
-                   double x = p->GetValue();
+                   Real x = p->GetValue();
                    if (x < _min)
                      _min = x;
                  }
@@ -410,11 +410,11 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                };
       Parameters.push_back(VarArgsFn<decltype(f)>(f, fdmex, element, Prefix, var));
     } else if (operation == "max") {
-      auto f = [](const decltype(Parameters)& Parameters)->double {
-                 double _max = -HUGE_VAL;
+      auto f = [](const decltype(Parameters)& Parameters)->Real {
+                 Real _max = -HUGE_VAL;
 
                  for (auto p : Parameters) {
-                   double x = p->GetValue();
+                   Real x = p->GetValue();
                    if (x > _max)
                      _max = x;
                  }
@@ -424,7 +424,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       Parameters.push_back(VarArgsFn<decltype(f)>(f, fdmex, element, Prefix, var));
     } else if (operation == "and") {
       string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& Parameters)->double {
+      auto f = [ctxMsg](const decltype(Parameters)& Parameters)->Real {
                  for (auto p : Parameters) {
                    if (!GetBinary(p->GetValue(), ctxMsg)) // As soon as one parameter is false, the expression is guaranteed to be false.
                      return 0.0;
@@ -436,7 +436,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                                                      var, MaxArgs));
     } else if (operation == "or") {
       string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& Parameters)->double {
+      auto f = [ctxMsg](const decltype(Parameters)& Parameters)->Real {
                  for (auto p : Parameters) {
                    if (GetBinary(p->GetValue(), ctxMsg)) // As soon as one parameter is true, the expression is guaranteed to be true.
                      return 1.0;
@@ -447,52 +447,52 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix,
                                                      var, MaxArgs));
     } else if (operation == "quotient") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double y = p[1]->GetValue();
-                 return y != 0.0 ? p[0]->GetValue()/y : HUGE_VAL;
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real y = p[1]->GetValue();
+                 return y != 0.0 ? p[0]->GetValue()/y : Real(HUGE_VAL);
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "pow") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return pow(p[0]->GetValue(), p[1]->GetValue());
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "toradians") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue()*M_PI/180.;
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "todegrees") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue()*180./M_PI;
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "sqrt") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double x = p[0]->GetValue();
-                 return x >= 0.0 ? sqrt(x) : -HUGE_VAL;
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real x = p[0]->GetValue();
+                 return x >= 0.0 ? sqrt(x) : Real(-HUGE_VAL);
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "log2") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double x = p[0]->GetValue();
-                 return x > 0.0 ? log10(x)*invlog2val : -HUGE_VAL;
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real x = p[0]->GetValue();
+                 return x > 0.0 ? log10(x)*invlog2val : Real(-HUGE_VAL);
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "ln") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double x = p[0]->GetValue();
-                 return x > 0.0 ? log(x) : -HUGE_VAL;
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real x = p[0]->GetValue();
+                 return x > 0.0 ? log(x) : Real(-HUGE_VAL);
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "log10") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double x = p[0]->GetValue();
-                 return x > 0.0 ? log10(x) : -HUGE_VAL;
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real x = p[0]->GetValue();
+                 return x > 0.0 ? log10(x) : Real(-HUGE_VAL);
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "sign") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue() < 0.0 ? -1 : 1; // 0.0 counts as positive.
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
@@ -517,73 +517,73 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
     } else if (operation == "ceil") {
       Parameters.push_back(make_MathFn(ceil, fdmex, element, Prefix, var));
     } else if (operation == "fmod") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double y = p[1]->GetValue();
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real y = p[1]->GetValue();
                  return y != 0.0 ? fmod(p[0]->GetValue(), y) : HUGE_VAL;
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "atan2") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return atan2(p[0]->GetValue(), p[1]->GetValue());
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "mod") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return static_cast<int>(p[0]->GetValue()) % static_cast<int>(p[1]->GetValue());
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "fraction") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double scratch;
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real scratch;
                  return modf(p[0]->GetValue(), &scratch);
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "integer") {
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double result;
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real result;
                  modf(p[0]->GetValue(), &result);
                  return result;
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "lt") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue() < p[1]->GetValue() ? 1.0 : 0.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "le") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue() <= p[1]->GetValue() ? 1.0 : 0.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "gt") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue() > p[1]->GetValue() ? 1.0 : 0.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "ge") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue() >= p[1]->GetValue() ? 1.0 : 0.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "eq") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue() == p[1]->GetValue() ? 1.0 : 0.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "nq") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  return p[0]->GetValue() != p[1]->GetValue() ? 1.0 : 0.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix, var));
     } else if (operation == "not") {
       string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
+      auto f = [ctxMsg](const decltype(Parameters)& p)->Real {
                  return GetBinary(p[0]->GetValue(), ctxMsg) ? 0.0 : 1.0;
                };
       Parameters.push_back(new aFunc<decltype(f), 1>(f, fdmex, element, Prefix, var));
     } else if (operation == "ifthen") {
       string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
+      auto f = [ctxMsg](const decltype(Parameters)& p)->Real {
                  if (GetBinary(p[0]->GetValue(), ctxMsg))
                    return p[1]->GetValue();
                  else
@@ -591,8 +591,8 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                };
       Parameters.push_back(new aFunc<decltype(f), 3>(f, fdmex, element, Prefix, var));
     } else if (operation == "random") {
-      double mean = 0.0;
-      double stddev = 1.0;
+      Real mean = 0.0;
+      Real stddev = 1.0;
       string mean_attr = element->GetAttributeValue("mean");
       string stddev_attr = element->GetAttributeValue("stddev");
       if (!mean_attr.empty())
@@ -601,14 +601,14 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
         stddev = atof(stddev_attr.c_str());
       auto distribution = make_shared<normal_distribution<double>>(mean, stddev);
       auto generator(makeRandomEngine(element, fdmex));
-      auto f = [generator, distribution]()->double {
+      auto f = [generator, distribution]()->Real {
                  return (*distribution.get())(*generator);
                };
       Parameters.push_back(new aFunc<decltype(f), 0>(f, PropertyManager, element,
                                                      Prefix));
     } else if (operation == "urandom") {
-      double lower = -1.0;
-      double upper = 1.0;
+      Real lower = -1.0;
+      Real upper = 1.0;
       string lower_attr = element->GetAttributeValue("lower");
       string upper_attr = element->GetAttributeValue("upper");
       if (!lower_attr.empty())
@@ -617,15 +617,15 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
         upper = atof(upper_attr.c_str());
       auto distribution = make_shared<uniform_real_distribution<double>>(lower, upper);
       auto generator(makeRandomEngine(element, fdmex));
-      auto f = [generator, distribution]()->double {
+      auto f = [generator, distribution]()->Real {
                  return (*distribution.get())(*generator);
                };
       Parameters.push_back(new aFunc<decltype(f), 0>(f, PropertyManager, element,
                                                      Prefix));
     } else if (operation == "switch") {
       string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
-                 double temp = p[0]->GetValue();
+      auto f = [ctxMsg](const decltype(Parameters)& p)->Real {
+                 Real temp = p[0]->GetValue();
                  if (temp < 0.0) {
                    cerr << ctxMsg << fgred << highint
                         << "The switch function index (" << temp
@@ -649,25 +649,25 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix,
                                                      var, MaxArgs));
     } else if (operation == "interpolate1d") {
-      auto f = [](const decltype(Parameters)& p)->double {
+      auto f = [](const decltype(Parameters)& p)->Real {
                  // This is using the bisection algorithm. Special care has been
                  // taken to evaluate each parameter only once.
                  size_t n = p.size();
-                 double x = p[0]->GetValue();
-                 double xmin = p[1]->GetValue();
-                 double ymin = p[2]->GetValue();
+                 Real x = p[0]->GetValue();
+                 Real xmin = p[1]->GetValue();
+                 Real ymin = p[2]->GetValue();
                  if (x <= xmin) return ymin;
 
-                 double xmax = p[n-2]->GetValue();
-                 double ymax = p[n-1]->GetValue();
+                 Real xmax = p[n-2]->GetValue();
+                 Real ymax = p[n-1]->GetValue();
                  if (x >= xmax) return ymax;
 
                  size_t nmin = 0;
                  size_t nmax = (n-3)/2;
                  while (nmax-nmin > 1) {
                    size_t m = (nmax-nmin)/2+nmin;
-                   double xm = p[2*m+1]->GetValue();
-                   double ym = p[2*m+2]->GetValue();
+                   Real xm = p[2*m+1]->GetValue();
+                   Real ym = p[2*m+2]->GetValue();
                    if (x < xm) {
                      xmax = xm;
                      ymax = ym;
@@ -689,15 +689,15 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       // Calculates local angle of attack for skydiver body component.
       // Euler angles from the intermediate body frame to the local body frame
       // must be from a z-y-x axis rotation order
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double alpha = p[0]->GetValue()*degtorad; //angle of attack of intermediate body frame
-                 double beta = p[1]->GetValue()*degtorad;  //sideslip angle of intermediate body frame
-                 double phi = p[3]->GetValue()*degtorad;   //x-axis Euler angle from the intermediate body frame to the local body frame
-                 double theta = p[4]->GetValue()*degtorad; //y-axis Euler angle from the intermediate body frame to the local body frame
-                 double psi = p[5]->GetValue()*degtorad;   //z-axis Euler angle from the intermediate body frame to the local body frame
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real alpha = p[0]->GetValue()*degtorad; //angle of attack of intermediate body frame
+                 Real beta = p[1]->GetValue()*degtorad;  //sideslip angle of intermediate body frame
+                 Real phi = p[3]->GetValue()*degtorad;   //x-axis Euler angle from the intermediate body frame to the local body frame
+                 Real theta = p[4]->GetValue()*degtorad; //y-axis Euler angle from the intermediate body frame to the local body frame
+                 Real psi = p[5]->GetValue()*degtorad;   //z-axis Euler angle from the intermediate body frame to the local body frame
 
                  FGQuaternion qTb2l(phi, theta, psi);
-                 double cos_beta = cos(beta);
+                 Real cos_beta = cos(beta);
                  FGColumnVector3 wind_body(cos(alpha)*cos_beta, sin(beta),
                                            sin(alpha)*cos_beta);
                  FGColumnVector3 wind_local = qTb2l.GetT()*wind_body;
@@ -712,14 +712,14 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       // Calculates local angle of sideslip for skydiver body component.
       // Euler angles from the intermediate body frame to the local body frame
       // must be from a z-y-x axis rotation order
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double alpha = p[0]->GetValue()*degtorad; //angle of attack of intermediate body frame
-                 double beta = p[1]->GetValue()*degtorad;  //sideslip angle of intermediate body frame
-                 double phi = p[3]->GetValue()*degtorad;   //x-axis Euler angle from the intermediate body frame to the local body frame
-                 double theta = p[4]->GetValue()*degtorad; //y-axis Euler angle from the intermediate body frame to the local body frame
-                 double psi = p[5]->GetValue()*degtorad;   //z-axis Euler angle from the intermediate body frame to the local body frame
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real alpha = p[0]->GetValue()*degtorad; //angle of attack of intermediate body frame
+                 Real beta = p[1]->GetValue()*degtorad;  //sideslip angle of intermediate body frame
+                 Real phi = p[3]->GetValue()*degtorad;   //x-axis Euler angle from the intermediate body frame to the local body frame
+                 Real theta = p[4]->GetValue()*degtorad; //y-axis Euler angle from the intermediate body frame to the local body frame
+                 Real psi = p[5]->GetValue()*degtorad;   //z-axis Euler angle from the intermediate body frame to the local body frame
                  FGQuaternion qTb2l(phi, theta, psi);
-                 double cos_beta = cos(beta);
+                 Real cos_beta = cos(beta);
                  FGColumnVector3 wind_body(cos(alpha)*cos_beta, sin(beta),
                                            sin(alpha)*cos_beta);
                  FGColumnVector3 wind_local = qTb2l.GetT()*wind_body;
@@ -727,10 +727,10 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                  if (fabs(fabs(wind_local(eY)) - 1.0) < 1E-9)
                    return wind_local(eY) > 0.0 ? 0.5*M_PI : -0.5*M_PI;
 
-                 double alpha_local = atan2(wind_local(eZ), wind_local(eX));
-                 double cosa = cos(alpha_local);
-                 double sina = sin(alpha_local);
-                 double cosb;
+                 Real alpha_local = atan2(wind_local(eZ), wind_local(eX));
+                 Real cosa = cos(alpha_local);
+                 Real sina = sin(alpha_local);
+                 Real cosb;
 
                  if (fabs(cosa) > fabs(sina)) 
                    cosb = wind_local(eX) / cosa;
@@ -744,16 +744,16 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       // Calculates local roll angle for skydiver body component.
       // Euler angles from the intermediate body frame to the local body frame
       // must be from a z-y-x axis rotation order
-      auto f = [](const decltype(Parameters)& p)->double {
-                 double alpha = p[0]->GetValue()*degtorad; //angle of attack of intermediate body frame
-                 double beta = p[1]->GetValue()*degtorad;  //sideslip angle of intermediate body frame
-                 double gamma = p[2]->GetValue()*degtorad; //roll angle of intermediate body frame
-                 double phi = p[3]->GetValue()*degtorad;   //x-axis Euler angle from the intermediate body frame to the local body frame
-                 double theta = p[4]->GetValue()*degtorad; //y-axis Euler angle from the intermediate body frame to the local body frame
-                 double psi = p[5]->GetValue()*degtorad;   //z-axis Euler angle from the intermediate body frame to the local body frame
-                 double cos_alpha = cos(alpha), sin_alpha = sin(alpha);
-                 double cos_beta = cos(beta),   sin_beta = sin(beta);
-                 double cos_gamma = cos(gamma), sin_gamma = sin(gamma);
+      auto f = [](const decltype(Parameters)& p)->Real {
+                 Real alpha = p[0]->GetValue()*degtorad; //angle of attack of intermediate body frame
+                 Real beta = p[1]->GetValue()*degtorad;  //sideslip angle of intermediate body frame
+                 Real gamma = p[2]->GetValue()*degtorad; //roll angle of intermediate body frame
+                 Real phi = p[3]->GetValue()*degtorad;   //x-axis Euler angle from the intermediate body frame to the local body frame
+                 Real theta = p[4]->GetValue()*degtorad; //y-axis Euler angle from the intermediate body frame to the local body frame
+                 Real psi = p[5]->GetValue()*degtorad;   //z-axis Euler angle from the intermediate body frame to the local body frame
+                 Real cos_alpha = cos(alpha), sin_alpha = sin(alpha);
+                 Real cos_beta = cos(beta),   sin_beta = sin(beta);
+                 Real cos_gamma = cos(gamma), sin_gamma = sin(gamma);
                  FGQuaternion qTb2l(phi, theta, psi);
                  FGColumnVector3 wind_body_X(cos_alpha*cos_beta, sin_beta,
                                              sin_alpha*cos_beta);
@@ -762,10 +762,10 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                                              -sin_alpha*sin_beta*cos_gamma+sin_gamma*cos_alpha);
                  FGColumnVector3 wind_local_X = qTb2l.GetT()*wind_body_X;
                  FGColumnVector3 wind_local_Y = qTb2l.GetT()*wind_body_Y;
-                 double cosacosb = wind_local_X(eX);
-                 double sinb = wind_local_X(eY);
-                 double sinacosb = wind_local_X(eZ);
-                 double sinc, cosc;
+                 Real cosacosb = wind_local_X(eX);
+                 Real sinb = wind_local_X(eY);
+                 Real sinacosb = wind_local_X(eZ);
+                 Real sinc, cosc;
 
                  if (fabs(sinb) < 1E-9) { // cos(beta_local) == 1.0
                    cosc = wind_local_Y(eY);
@@ -791,13 +791,13 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       // Transforms the input vector from a body frame to a wind frame. The
       // origin of the vector remains the same.
       string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
-                 double rx = p[0]->GetValue();             //x component of input vector
-                 double ry = p[1]->GetValue();             //y component of input vector
-                 double rz = p[2]->GetValue();             //z component of input vector
-                 double alpha = p[3]->GetValue()*degtorad; //angle of attack of the body frame
-                 double beta = p[4]->GetValue()*degtorad;  //sideslip angle of the body frame
-                 double gamma = p[5]->GetValue()*degtorad; //roll angle of the body frame
+      auto f = [ctxMsg](const decltype(Parameters)& p)->Real {
+                 Real rx = p[0]->GetValue();             //x component of input vector
+                 Real ry = p[1]->GetValue();             //y component of input vector
+                 Real rz = p[2]->GetValue();             //z component of input vector
+                 Real alpha = p[3]->GetValue()*degtorad; //angle of attack of the body frame
+                 Real beta = p[4]->GetValue()*degtorad;  //sideslip angle of the body frame
+                 Real gamma = p[5]->GetValue()*degtorad; //roll angle of the body frame
                  int idx = static_cast<int>(p[6]->GetValue());
 
                  if ((idx < 1) || (idx > 3)) {
@@ -819,13 +819,13 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       // Transforms the input vector from q wind frame to a body frame. The
       // origin of the vector remains the same.
       string ctxMsg = element->ReadFrom();
-      auto f = [ctxMsg](const decltype(Parameters)& p)->double {
-                 double rx = p[0]->GetValue();             //x component of input vector
-                 double ry = p[1]->GetValue();             //y component of input vector
-                 double rz = p[2]->GetValue();             //z component of input vector
-                 double alpha = p[3]->GetValue()*degtorad; //angle of attack of the body frame
-                 double beta = p[4]->GetValue()*degtorad;  //sideslip angle of the body frame
-                 double gamma = p[5]->GetValue()*degtorad; //roll angle of the body frame
+      auto f = [ctxMsg](const decltype(Parameters)& p)->Real {
+                 Real rx = p[0]->GetValue();             //x component of input vector
+                 Real ry = p[1]->GetValue();             //y component of input vector
+                 Real rz = p[2]->GetValue();             //z component of input vector
+                 Real alpha = p[3]->GetValue()*degtorad; //angle of attack of the body frame
+                 Real beta = p[4]->GetValue()*degtorad;  //sideslip angle of the body frame
+                 Real gamma = p[5]->GetValue()*degtorad; //roll angle of the body frame
                  int idx = static_cast<int>(p[6]->GetValue());
 
                  if ((idx < 1) || (idx > 3)) {
@@ -856,7 +856,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
       FGFunction* p = dynamic_cast<FGFunction*>(Parameters.back().ptr());
 
       if (p && p->IsConstant()) {
-        double constant = p->GetValue();
+        Real constant = p->GetValue();
         FGPropertyNode_ptr node = p->pNode;
         string pName = p->GetName();
 
@@ -924,11 +924,11 @@ void FGFunction::cacheValue(bool cache)
   
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGFunction::GetValue(void) const
+Real FGFunction::GetValue(void) const
 {
   if (cached) return cachedValue;
 
-  double val = Parameters[0]->GetValue();
+  Real val = Parameters[0]->GetValue();
 
   if (pCopyTo) pCopyTo->setDoubleValue(val);
 

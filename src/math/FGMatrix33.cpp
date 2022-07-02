@@ -107,7 +107,7 @@ FGQuaternion FGMatrix33::GetQuaternion(void) const
 {
   FGQuaternion Q;
 
-  double tempQ[4];
+  Real tempQ[4];
   int idx;
 
   tempQ[0] = 1.0 + data[0] + data[4] + data[8];
@@ -180,7 +180,7 @@ FGColumnVector3 FGMatrix33::GetEuler(void) const
   if (GimbalLock)
     mEulerAngles(3) = 0.0;
   else {
-    double psi = atan2(data[3], data[0]);
+    Real psi = atan2(data[3], data[0]);
     if (psi < 0.0)
       psi += 2*M_PI;
     mEulerAngles(3) = psi;
@@ -218,7 +218,7 @@ istream& operator>>(istream& is, FGMatrix33& M)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-double FGMatrix33::Determinant(void) const {
+Real FGMatrix33::Determinant(void) const {
   return data[0]*data[4]*data[8] + data[3]*data[7]*data[2]
        + data[6]*data[1]*data[5] - data[6]*data[4]*data[2]
        - data[3]*data[1]*data[8] - data[7]*data[5]*data[0];
@@ -232,17 +232,17 @@ FGMatrix33 FGMatrix33::Inverse(void) const {
   // for this. :)
 
   if (Determinant() != 0.0) {
-    double rdet = 1.0/Determinant();
+    Real rdet = 1.0/Determinant();
 
-    double i11 = rdet*(data[4]*data[8]-data[7]*data[5]);
-    double i21 = rdet*(data[7]*data[2]-data[1]*data[8]);
-    double i31 = rdet*(data[1]*data[5]-data[4]*data[2]);
-    double i12 = rdet*(data[6]*data[5]-data[3]*data[8]);
-    double i22 = rdet*(data[0]*data[8]-data[6]*data[2]);
-    double i32 = rdet*(data[3]*data[2]-data[0]*data[5]);
-    double i13 = rdet*(data[3]*data[7]-data[6]*data[4]);
-    double i23 = rdet*(data[6]*data[1]-data[0]*data[7]);
-    double i33 = rdet*(data[0]*data[4]-data[3]*data[1]);
+    Real i11 = rdet*(data[4]*data[8]-data[7]*data[5]);
+    Real i21 = rdet*(data[7]*data[2]-data[1]*data[8]);
+    Real i31 = rdet*(data[1]*data[5]-data[4]*data[2]);
+    Real i12 = rdet*(data[6]*data[5]-data[3]*data[8]);
+    Real i22 = rdet*(data[0]*data[8]-data[6]*data[2]);
+    Real i32 = rdet*(data[3]*data[2]-data[0]*data[5]);
+    Real i13 = rdet*(data[3]*data[7]-data[6]*data[4]);
+    Real i23 = rdet*(data[6]*data[1]-data[0]*data[7]);
+    Real i33 = rdet*(data[0]*data[4]-data[3]*data[1]);
 
     return FGMatrix33( i11, i12, i13,
                        i21, i22, i23,
@@ -330,7 +330,7 @@ FGMatrix33& FGMatrix33::operator+=(const FGMatrix33 &M)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FGMatrix33 FGMatrix33::operator*(const double scalar) const
+FGMatrix33 FGMatrix33::operator*(const Real scalar) const
 {
   return FGMatrix33( scalar * data[0],
                      scalar * data[3],
@@ -345,7 +345,7 @@ FGMatrix33 FGMatrix33::operator*(const double scalar) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 /*
-FGMatrix33 operator*(double scalar, FGMatrix33 &M)
+FGMatrix33 operator*(Real scalar, FGMatrix33 &M)
 {
   return FGMatrix33( scalar * M(1,1),
                      scalar * M(1,2),
@@ -360,7 +360,7 @@ FGMatrix33 operator*(double scalar, FGMatrix33 &M)
 */
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FGMatrix33& FGMatrix33::operator*=(const double scalar)
+FGMatrix33& FGMatrix33::operator*=(const Real scalar)
 {
   data[0] *= scalar;
   data[3] *= scalar;
@@ -399,7 +399,7 @@ FGMatrix33 FGMatrix33::operator*(const FGMatrix33& M) const
 FGMatrix33& FGMatrix33::operator*=(const FGMatrix33& M)
 {
   // FIXME: Make compiler friendlier
-  double a,b,c;
+  Real a,b,c;
 
   a = data[0]; b=data[3]; c=data[6];
   data[0] = a*M.data[0] + b*M.data[1] + c*M.data[2];
@@ -421,12 +421,12 @@ FGMatrix33& FGMatrix33::operator*=(const FGMatrix33& M)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FGMatrix33 FGMatrix33::operator/(const double scalar) const
+FGMatrix33 FGMatrix33::operator/(const Real scalar) const
 {
   FGMatrix33 Quot;
 
   if ( scalar != 0 ) {
-    double tmp = 1.0/scalar;
+    Real tmp = 1.0/scalar;
     Quot.data[0] = data[0] * tmp;
     Quot.data[3] = data[3] * tmp;
     Quot.data[6] = data[6] * tmp;
@@ -444,10 +444,10 @@ FGMatrix33 FGMatrix33::operator/(const double scalar) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FGMatrix33& FGMatrix33::operator/=(const double scalar)
+FGMatrix33& FGMatrix33::operator/=(const Real scalar)
 {
   if ( scalar != 0 ) {
-    double tmp = 1.0/scalar;
+    Real tmp = 1.0/scalar;
     data[0] *= tmp;
     data[3] *= tmp;
     data[6] *= tmp;
@@ -467,7 +467,7 @@ FGMatrix33& FGMatrix33::operator/=(const double scalar)
 
 void FGMatrix33::T(void)
 {
-  double tmp;
+  Real tmp;
 
   tmp = data[3];
   data[3] = data[1];
@@ -486,13 +486,13 @@ void FGMatrix33::T(void)
 
 FGColumnVector3 FGMatrix33::operator*(const FGColumnVector3& v) const
 {
-  double v1 = v(1);
-  double v2 = v(2);
-  double v3 = v(3);
+  Real v1 = v(1);
+  Real v2 = v(2);
+  Real v3 = v(3);
 
-  double tmp1 = v1*data[0];  //[(col-1)*eRows+row-1]
-  double tmp2 = v1*data[1];
-  double tmp3 = v1*data[2];
+  Real tmp1 = v1*data[0];  //[(col-1)*eRows+row-1]
+  Real tmp2 = v1*data[1];
+  Real tmp3 = v1*data[2];
 
   tmp1 += v2*data[3];
   tmp2 += v2*data[4];

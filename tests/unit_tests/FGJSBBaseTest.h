@@ -94,7 +94,7 @@ public:
   }
 
   void testCASConversion() {
-    double p = 2116.228;
+    Real p = 2116.228;
     TS_ASSERT_EQUALS(VcalibratedFromMach(-0.1, p), 0.0);
     TS_ASSERT_EQUALS(VcalibratedFromMach(0, p), 0.0);
     TS_ASSERT_DELTA(VcalibratedFromMach(0.5, p), 558.2243, 1E-4);
@@ -107,11 +107,13 @@ public:
   }
 
   void testNumericRoutines() {
+    Real rx = 1.0;
     double dx = 1.0;
     float  fx = 1.0;
+    Real ry = rx + std::numeric_limits<Real>::epsilon();
     double dy = dx + std::numeric_limits<double>::epsilon();
     float  fy = fx + std::numeric_limits<float>::epsilon();
-    TS_ASSERT(EqualToRoundoff(dx, dy));
+    TS_ASSERT(EqualToRoundoff(rx, ry));
     TS_ASSERT(EqualToRoundoff(dx, fy));
     TS_ASSERT(EqualToRoundoff(fx, fy));
     TS_ASSERT(EqualToRoundoff(fx, dy));
@@ -123,32 +125,32 @@ public:
     TS_ASSERT_EQUALS(Constrain(0.0, 10.0,1.0), 1.0);
     Filter f0;
     Filter f(1.0, 1E-5);
-    double x = f.execute(3.0);
+    Real x = f.execute(3.0);
     // Called twice for 100% coverage
     // Need to test that the numbers follow a Gaussian law ?
-    double ran0 = GaussianRandomNumber();
-    double ran1 = GaussianRandomNumber();
+    Real ran0 = GaussianRandomNumber();
+    Real ran1 = GaussianRandomNumber();
   }
 
   void testTemperatureConversion() {
-    TS_ASSERT(EqualToRoundoff(KelvinToFahrenheit(0.0), -459.4));
-    TS_ASSERT(EqualToRoundoff(KelvinToFahrenheit(288.15), 59.27));
-    TS_ASSERT(EqualToRoundoff(CelsiusToRankine(0.0), 491.67));
-    TS_ASSERT(EqualToRoundoff(CelsiusToRankine(15.0), 518.67));
-    TS_ASSERT(EqualToRoundoff(RankineToCelsius(491.67), 0.0));
+    TS_ASSERT(EqualToRoundoff(KelvinToFahrenheit(0.0), Real(-459.4)));
+    TS_ASSERT(EqualToRoundoff(KelvinToFahrenheit(288.15), Real(59.27)));
+    TS_ASSERT(EqualToRoundoff(CelsiusToRankine(0.0), Real(491.67)));
+    TS_ASSERT(EqualToRoundoff(CelsiusToRankine(15.0), Real(518.67)));
+    TS_ASSERT(EqualToRoundoff(RankineToCelsius(491.67), Real(0.0)));
     TS_ASSERT_DELTA(RankineToCelsius(518.67), 15.0, 1E-8);
-    TS_ASSERT(EqualToRoundoff(KelvinToRankine(0.0), 0.0));
-    TS_ASSERT(EqualToRoundoff(KelvinToRankine(288.15), 518.67));
-    TS_ASSERT(EqualToRoundoff(RankineToKelvin(0.0), 0.0));
+    TS_ASSERT(EqualToRoundoff(KelvinToRankine(0.0), Real(0.0)));
+    TS_ASSERT(EqualToRoundoff(KelvinToRankine(288.15), Real(518.67)));
+    TS_ASSERT(EqualToRoundoff(RankineToKelvin(0.0), Real(0.0)));
     TS_ASSERT_DELTA(RankineToKelvin(518.67), 288.15, 1E-8);
-    TS_ASSERT(EqualToRoundoff(CelsiusToFahrenheit(0.0), 32.0));
-    TS_ASSERT(EqualToRoundoff(CelsiusToFahrenheit(15.0), 59.0));
-    TS_ASSERT(EqualToRoundoff(FahrenheitToCelsius(32.0), 0.0));
+    TS_ASSERT(EqualToRoundoff(CelsiusToFahrenheit(0.0), Real(32.0)));
+    TS_ASSERT(EqualToRoundoff(CelsiusToFahrenheit(15.0), Real(59.0)));
+    TS_ASSERT(EqualToRoundoff(FahrenheitToCelsius(32.0), Real(0.0)));
     TS_ASSERT_DELTA(FahrenheitToCelsius(59.0), 15.0, 1E-8);
-    TS_ASSERT(EqualToRoundoff(KelvinToCelsius(0.0), -273.15));
-    TS_ASSERT(EqualToRoundoff(KelvinToCelsius(288.15), 15.0));
-    TS_ASSERT(EqualToRoundoff(CelsiusToKelvin(-273.15), 0.0));
-    TS_ASSERT(EqualToRoundoff(CelsiusToKelvin(15.0), 288.15));
+    TS_ASSERT(EqualToRoundoff(KelvinToCelsius(0.0), Real(-273.15)));
+    TS_ASSERT(EqualToRoundoff(KelvinToCelsius(288.15), Real(15.0)));
+    TS_ASSERT(EqualToRoundoff(CelsiusToKelvin(-273.15), Real(0.0)));
+    TS_ASSERT(EqualToRoundoff(CelsiusToKelvin(15.0), Real(288.15)));
   }
 
   void testMisc() {

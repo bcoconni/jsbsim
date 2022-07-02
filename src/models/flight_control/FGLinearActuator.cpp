@@ -112,7 +112,7 @@ FGLinearActuator::FGLinearActuator(FGFCS* fcs, Element* element)
   if (element->FindElement("lag")) {
     lag = element->FindElementValueAsNumber("lag");
     if (lag > 0.0) {
-      double denom = 2.00 + dt*lag;
+      Real denom = 2.00 + dt*lag;
       ca = dt * lag / denom;
       cb = (2.00 - dt * lag) / denom;
       previousLagInput = previousLagOutput = 0.0;
@@ -167,7 +167,7 @@ bool FGLinearActuator::Run(void )
   } else {
     if (set) {
       Input = InputNodes[0]->getDoubleValue() - inputLast;
-      double inputDelta = Input - inputMem;
+      Real inputDelta = Input - inputMem;
       if (abs(inputDelta) >= hysteresis) {
         if (ptrVersus && !ptrVersus->IsConstant()) {
           versus = ptrVersus->GetValue();
@@ -204,7 +204,7 @@ bool FGLinearActuator::Run(void )
   }
 
   if (lag > 0.0) {
-    double input = Output;
+    Real input = Output;
     Output = ca * (input + previousLagInput) + previousLagOutput * cb;
     previousLagInput = input;
     previousLagOutput = Output;
