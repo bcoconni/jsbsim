@@ -90,8 +90,10 @@ FGPropertyNode::GetNode(const string &path, bool create)
     node = getNode(path.c_str(), true);
     if (!node)
       cerr << "FGPropertyManager::GetNode() Cannot create a node for " << path << endl;
+    #ifdef AUTOMATIC_DIFFERENTIATION
     else
       node->tie(SGRawValueContainer<Real>(0.0), false);
+    #endif
   }
   return static_cast<FGPropertyNode*>(node);
 }
@@ -112,8 +114,10 @@ FGPropertyNode::GetNode(const string &relpath, int index, bool create)
     if (!node)
       cerr << "FGPropertyManager::GetNode() Cannot create node for " << relpath
            << "[" << index << "]" << endl;
+    #ifdef AUTOMATIC_DIFFERENTIATION
     else
       node->tie(SGRawValueContainer<Real>(0.0), false);
+    #endif
   }
   return static_cast<FGPropertyNode*>(node);
 }
