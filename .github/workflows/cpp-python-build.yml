@@ -650,7 +650,7 @@ jobs:
           path: ./wheelhouse/*.whl
 
   Codecov:
-    name: Code coverage (Codecov)
+    name: Code coverage
     needs: Linux
     runs-on: ubuntu-latest
     steps:
@@ -674,7 +674,7 @@ jobs:
         working-directory: build
         run: |
           make lcov
-          lcov --info lcov/data/capture/all_targets.info
+          lcov --list lcov/data/capture/all_targets.info
 
   Rolling-Release:
     needs: [Python-Wheels, Test-Build-PyPackage-From-Source, Windows-MinGW32, Windows-installer]
