@@ -678,8 +678,8 @@ jobs:
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
         with:
-          working-directory: lcov/data/capture
-          files: ./all_targets.info
+          working-directory: build/lcov/data/capture
+          files: all_targets.info
 
   Rolling-Release:
     needs: [Python-Wheels, Test-Build-PyPackage-From-Source, Windows-MinGW32, Windows-installer]
