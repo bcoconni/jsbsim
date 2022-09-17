@@ -762,6 +762,9 @@ public:
     : FGFunction()
     { PropertyManager = pm; }
 
+  FGFunction(FGFDMExec* fdmex, FGParameter_ptr param, Element* el,
+             const std::string& prefix);
+
   /** Constructor.
     When this constructor is called, the XML element pointed to in memory by the
     element argument is traversed. If other FGParameter-derived objects (values,
@@ -780,7 +783,7 @@ public:
                   property that represents this function (if given).
 */
   FGFunction(FGFDMExec* fdmex, Element* element, const std::string& prefix="",
-             FGPropertyValue* var=0L);
+             FGPropertyValue* var=nullptr);
 
   /** Destructor
       Make sure the function is untied before destruction.
@@ -833,6 +836,7 @@ private:
   std::string Name;
   FGPropertyNode_ptr pCopyTo; // Property node for CopyTo property string
 
+  void SetCopyToNode(Element* el, const string& prefix);
   void Debug(int from);
 };
 
