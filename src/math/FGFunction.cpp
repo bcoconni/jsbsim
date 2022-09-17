@@ -53,14 +53,14 @@ constexpr unsigned int MaxArgs = 9999;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-class WrongNumberOfArguments : public runtime_error
+class WrongNumberOfArguments : public BaseException
 {
 public:
   WrongNumberOfArguments(const string &msg, const vector<FGParameter_ptr> &p,
                          Element* el)
-    : runtime_error(msg), Parameters(p), element(el) {}
+    : BaseException(msg), Parameters(p), element(el) {}
   size_t NumberOfArguments(void) const { return Parameters.size(); }
-  FGParameter* FirstParameter(void) const { return *(Parameters.cbegin()); }
+  FGParameter_ptr FirstParameter(void) const { return Parameters[0]; }
   const Element* GetElement(void) const { return element; }
 
 private:
@@ -194,11 +194,23 @@ FGParameter_ptr VarArgsFn(const func_t& _f, FGFDMExec* fdmex, Element* el,
            << "> only has one argument which makes it a no-op." << endl
            << "Its argument will be evaluated but <" << el->GetName()
            << "> will not be applied to the result." << FGJSBBase::reset << endl;
-      return e.FirstParameter();
+      return new FGFunction(fdmex, e.FirstParameter(), el, prefix);
     }
     else
-      throw e.what();
+      throw BaseException(e.what());
   }
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+FGFunction::FGFunction(FGFDMExec* fdmex, FGParameter_ptr param, Element* el,
+                       const std::string& prefix)
+  : FGFunction(fdmex->GetPropertyManager())
+{
+  Name = el->GetAttributeValue("name");
+  Parameters.push_back(param);
+  SetCopyToNode(el, prefix);
+  bind(el, prefix);
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,7 +222,13 @@ FGFunction::FGFunction(FGFDMExec* fdmex, Element* el, const string& prefix,
   Load(el, var, fdmex, prefix);
   CheckMinArguments(el, 1);
   CheckMaxArguments(el, 1);
+  SetCopyToNode(el, prefix);
+}
 
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+void FGFunction::SetCopyToNode(Element* el, const string& prefix)
+{
   string sCopyTo = el->GetAttributeValue("copyto");
 
   if (!sCopyTo.empty()) {
@@ -310,7 +328,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
 {
   Name = el->GetAttributeValue("name");
   Element* element = el->GetElement();
-      
+
   auto sum = [](const decltype(Parameters)& Parameters)->double {
                double temp = 0.0;
 
@@ -319,7 +337,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
 
                return temp;
              };
-  
+
   while (element) {
     string operation = element->GetName();
 
@@ -767,10 +785,10 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                  double sina = sin(alpha_local);
                  double cosb;
 
-                 if (fabs(cosa) > fabs(sina)) 
+                 if (fabs(cosa) > fabs(sina))
                    cosb = wind_local(eX) / cosa;
                  else
-                   cosb = wind_local(eZ) / sina;  
+                   cosb = wind_local(eZ) / sina;
 
                  return atan2(wind_local(eY), cosb)*radtodeg;
                };
@@ -910,7 +928,8 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
             cout << " and the property " << pName
                  << " will be unbound and made read only.";
         }
-        cout << reset << endl << endl;
+        if (debug_lvl > 0)
+          cout << reset << endl << endl;
       }
     }
     element = el->GetNextElement();
@@ -954,12 +973,12 @@ void FGFunction::cacheValue(bool cache)
     cached = true;
   }
 }
-  
+
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 double FGFunction::GetValue(void) const
 {
-  if (cached) return cachedValue;
+  if (cached || Parameters.empty()) return cachedValue;
 
   double val = Parameters[0]->GetValue();
 
