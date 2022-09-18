@@ -111,6 +111,8 @@ public:
         const string& Prefix)
     : FGFunction(pm), f(_f)
   {
+    Name = el->GetAttributeValue("name");
+
     if (el->GetNumElements() != 0) {
       ostringstream buffer;
       buffer << el->ReadFrom() << fgred << highint
@@ -122,25 +124,38 @@ public:
     bind(el, Prefix);
   }
 
+  ~aFunc() {
+    // Restore the R/W status
+    if (pNode) pNode->setAttribute(SGPropertyNode::WRITE, true);
+  }
+
   double GetValue(void) const override {
     double result = cached ? cachedValue : f();
-    if (pNode) pNode->setDoubleValue(result);
+    if (pNode) {
+      pNode->setAttribute(SGPropertyNode::WRITE, true);
+      pNode->setDoubleValue(result);
+      pNode->setAttribute(SGPropertyNode::WRITE, false);
+    }
     return result;
   }
 
   // Functions without parameters are assumed to be non-const
-  bool IsConstant(void) const override {
-    return false;
-  }
+  bool IsConstant(void) const override { return false; }
 
 protected:
   // The method GetValue() is not bound for functions without parameters because
   // we do not want the property to return a different value each time it is
   // read.
+  // The bound property is set to READ ONLY to mimic the behavior of tied
+  // properties.
   void bind(Element* el, const string& Prefix) override {
     CreateOutputNode(el, Prefix);
     // Initialize the node to a sensible value.
-    if (pNode) pNode->setDoubleValue(f());
+    if (pNode) {
+      pNode->setAttribute(SGPropertyNode::WRITE, true);
+      pNode->setDoubleValue(f());
+      pNode->setAttribute(SGPropertyNode::WRITE, false);
+    }
   }
 
 private:

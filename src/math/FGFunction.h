@@ -820,6 +820,7 @@ public:
 protected:
   bool cached;
   double cachedValue;
+  std::string Name;
   std::vector <FGParameter_ptr> Parameters;
   std::shared_ptr<FGPropertyManager> PropertyManager;
   FGPropertyNode_ptr pNode;
@@ -833,7 +834,6 @@ protected:
   std::string CreateOutputNode(Element* el, const std::string& Prefix);
 
 private:
-  std::string Name;
   FGPropertyNode_ptr pCopyTo; // Property node for CopyTo property string
 
   void SetCopyToNode(Element* el, const string& prefix);
