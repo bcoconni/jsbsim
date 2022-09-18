@@ -751,7 +751,7 @@ DECLARATION: FGFunction
 
 // Todo: Does this class need a copy constructor, like FGLGear?
 
-class FGFunction : public FGParameter, public FGJSBBase
+class JSBSIM_API FGFunction : public FGParameter, public FGJSBBase
 {
 public:
   /// Default constructor.
