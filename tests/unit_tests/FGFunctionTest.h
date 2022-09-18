@@ -381,7 +381,8 @@ public:
 
   void testLogBase2() {
     verifyFunction("log2", [](const vector<FGPropertyNode_ptr>& v) -> double {
-      return log(v[0]->getDoubleValue())/log(2);
+      const double invlog2val = 1.0/log10(2.0);
+      return log10(v[0]->getDoubleValue())*invlog2val;
     }, 1, true);
   }
 
