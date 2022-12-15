@@ -127,7 +127,7 @@ FGFDMExec::FGFDMExec(FGPropertyManager* root, unsigned int* fdmctr)
   // Prepare FDMctr for the next child FDM id
   (*FDMctr)++;       // instance. "child" instances are loaded last.
 
-  FGPropertyNode* instanceRoot = Root->GetNode("/fdm/jsbsim",IdFDM,true);
+  FGPropertyNode* instanceRoot = Root->GetNode("fdm/jsbsim",IdFDM,true);
   instance = new FGPropertyManager(instanceRoot);
 
   try {

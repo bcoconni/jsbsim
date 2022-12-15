@@ -27,6 +27,8 @@
 
    @DoxMainPage"""
 
+from typing import Optional
+
 import enum
 import errno
 import os
@@ -111,21 +113,84 @@ cdef class FGPropagate:
         return _convertToNumpyVec(self.thisptr.GetUVW())
 
 
+cdef class FGPropertyNode:
+    """@Dox(JSBSim::FGPropertyNode)"""
+
+    cdef c_FGPropertyNode* thisptr
+
+    def __cinit__(self, *args, **kwargs):
+        self.thisptr = NULL
+
+    def __bool__(self) -> bool:
+        """Check if the object is initialized."""
+        return self.thisptr is not NULL
+
+    def __str__(self) -> str:
+        if self.thisptr is not NULL:
+            return f"Property '{self.get_fully_qualified_name()}' (value: {self.get_double_value()})"
+        return "Uninitialized property"
+
+    cdef __intercept_invalid_pointer(self):
+        if self.thisptr is NULL:
+            raise BaseError("Object is not initialized")
+
+    cdef __validate_node_pointer(self, create: bool):
+        if self.thisptr is not NULL:
+            return self
+        else:
+            if create:
+                raise MemoryError()
+            return None
+
+    def get_name(self) -> str:
+        """@Dox(JSBSim::FGPropertyManager::GetName)"""
+        self.__intercept_invalid_pointer()
+        return self.thisptr.GetName().decode()
+
+    def get_fully_qualified_name(self) -> str:
+        """@Dox(JSBSim::FGPropertyManager::GetFullyQualifiedName)"""
+        self.__intercept_invalid_pointer()
+        return self.thisptr.GetFullyQualifiedName().decode()
+
+    def get_node(self, path: str, create: bool = False) -> Optional[FGPropertyNode]:
+        self.__intercept_invalid_pointer()
+        node = FGPropertyNode()
+        node.thisptr = self.thisptr.GetNode(path.encode(), create)
+        return node.__validate_node_pointer(create)
+
+    def get_double_value(self) -> float:
+        self.__intercept_invalid_pointer()
+        return self.thisptr.getDoubleValue()
+
+    def set_double_value(self, value: float) -> None:
+        self.__intercept_invalid_pointer()
+        self.thisptr.setDoubleValue(value)
+
 cdef class FGPropertyManager:
     """@Dox(JSBSim::FGPropertyManager)"""
 
     cdef c_FGPropertyManager *thisptr
     cdef bool thisptr_owner
 
-    def __cinit__(self, new_instance=False, *args, **kwargs):
-        if new_instance:
-            self.thisptr = new c_FGPropertyManager()
+    def __cinit__(self, FGPropertyNode node = None, new_instance=True, *args, **kwargs):
+        if node is None:
+            if new_instance:
+                self.thisptr = new c_FGPropertyManager()
+                if self.thisptr is NULL:
+                    raise MemoryError()
+                self.thisptr_owner = True
+            else:
+                self.thisptr = NULL
+                self.thisptr_owner = False
+        else:
+            try:
+                node.__intercept_invalid_pointer()
+            except BaseError:
+                raise BaseError("Cannot instantiate FGPropertyManager with an uninitialized property node.")
+            self.thisptr = new c_FGPropertyManager(node.thisptr)
             if self.thisptr is NULL:
                 raise MemoryError()
             self.thisptr_owner = True
-        else:
-            self.thisptr = NULL
-            self.thisptr_owner = False
 
     def __dealloc__(self) -> None:
         if self.thisptr is not NULL and self.thisptr_owner:
@@ -140,6 +205,15 @@ cdef class FGPropertyManager:
     cdef __intercept_invalid_pointer(self):
         if self.thisptr is NULL:
             raise BaseError("Object is not initialized")
+
+    def get_node(self, path: Optional[str] = None, create: bool = False) -> Optional[FGPropertyNode]:
+        """@Dox(JSBSim::FGPropertyManager::GetNode)"""
+        node = FGPropertyNode()
+        if path is None:
+            node.thisptr = self.thisptr.GetNode()
+        else:
+            node.thisptr = self.thisptr.GetNode(path.encode(), create)
+        return node.__validate_node_pointer(create)
 
     def hasNode(self, path: str) -> bool:
         """@Dox(JSBSim::FGPropertyManager::HasNode)"""
@@ -469,6 +543,7 @@ cdef class FGFDMExec(FGJSBBase):
 
         if pm_root:
             root = pm_root.thisptr
+            pm_root.thisptr_owner = False
         else:
             root = NULL
 
@@ -745,7 +820,7 @@ cdef class FGFDMExec(FGJSBBase):
 
     def get_property_manager(self) -> FGPropertyManager:
         """@Dox(JSBSim::FGFDMExec::GetPropertyManager)"""
-        pm = FGPropertyManager()
+        pm = FGPropertyManager(None, new_instance=False)
         pm.thisptr = self.thisptr.GetPropertyManager()
         return pm
 
