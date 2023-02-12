@@ -42,32 +42,32 @@ public:
     TS_ASSERT_EQUALS(f.GetValueAsString(), "     -inf");
   }
 
-  void verifyValueParameter(FGFunction* f, Element* elm, FGPropertyNode* test,
+  void verifyValueParameter(FGFunction& f, Element* elm, FGPropertyNode* test,
                             const string& name, double value,
                             const string& value_str) {
-    TS_ASSERT(f->IsConstant());
+    TS_ASSERT(f.IsConstant());
     if (elm->HasAttribute("name")) {
-      TS_ASSERT_EQUALS(f->GetName(), name);
+      TS_ASSERT_EQUALS(f.GetName(), name);
       TS_ASSERT(!test->getAttribute(SGPropertyNode::WRITE));
     } else {
-      TS_ASSERT_EQUALS(f->GetName(), "");
+      TS_ASSERT_EQUALS(f.GetName(), "");
       TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
     }
-    TS_ASSERT_EQUALS(f->GetValue(), value);
+    TS_ASSERT_EQUALS(f.GetValue(), value);
     if (elm->HasAttribute("name")) {
       TS_ASSERT_EQUALS(test->getDoubleValue(), value);
     }
-    f->cacheValue(true);
-    TS_ASSERT_EQUALS(f->GetValue(), value);
+    f.cacheValue(true);
+    TS_ASSERT_EQUALS(f.GetValue(), value);
     if (elm->HasAttribute("name")) {
       TS_ASSERT_EQUALS(test->getDoubleValue(), value);
     }
-    f->cacheValue(false);
-    TS_ASSERT_EQUALS(f->GetValue(), value);
+    f.cacheValue(false);
+    TS_ASSERT_EQUALS(f.GetValue(), value);
     if (elm->HasAttribute("name")) {
       TS_ASSERT_EQUALS(test->getDoubleValue(), value);
     }
-    TS_ASSERT_EQUALS(f->GetValueAsString(), value_str);
+    TS_ASSERT_EQUALS(f.GetValueAsString(), value_str);
   }
 
   void testConstructorWithParameterValue() {
@@ -83,7 +83,7 @@ public:
       Element_ptr elm = readFromXML(line);
       FGFunction f(&fdmex, v, elm, "");
 
-      verifyValueParameter(&f, elm, test, "test", -1.2, "     -1.2");
+      verifyValueParameter(f, elm, test, "test", -1.2, "     -1.2");
     }
 
     TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
@@ -103,47 +103,47 @@ public:
       Element_ptr elm = readFromXML(line);
       FGFunction f(&fdmex, v, elm, "");
 
-      verifyPropertyParameter(&f, elm, x, test, "test");
+      verifyPropertyParameter(f, elm, x, test, "test");
     }
 
     TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
   }
 
-  void verifyPropertyParameter(FGFunction* f, Element* elm, FGPropertyNode* x,
+  void verifyPropertyParameter(FGFunction& f, Element* elm, FGPropertyNode* x,
                                FGPropertyNode* test, const string& name) {
     x->setDoubleValue(1.0);
-    TS_ASSERT(!f->IsConstant());
+    TS_ASSERT(!f.IsConstant());
     if (elm->HasAttribute("name")) {
-      TS_ASSERT_EQUALS(f->GetName(), name);
+      TS_ASSERT_EQUALS(f.GetName(), name);
       TS_ASSERT(!test->getAttribute(SGPropertyNode::WRITE));
     } else {
-      TS_ASSERT_EQUALS(f->GetName(), "");
+      TS_ASSERT_EQUALS(f.GetName(), "");
       TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
     }
-    TS_ASSERT_EQUALS(f->GetValue(), 1.0);
+    TS_ASSERT_EQUALS(f.GetValue(), 1.0);
     if (elm->HasAttribute("name")) {
       TS_ASSERT_EQUALS(test->getDoubleValue(), 1.0);
     }
     x->setDoubleValue(2.0);
-    TS_ASSERT_EQUALS(f->GetValue(), 2.0);
+    TS_ASSERT_EQUALS(f.GetValue(), 2.0);
     if (elm->HasAttribute("name")) {
       TS_ASSERT_EQUALS(test->getDoubleValue(), 2.0);
     }
-    f->cacheValue(true);
+    f.cacheValue(true);
     x->setDoubleValue(-1.0);
-    TS_ASSERT_EQUALS(f->GetValue(), 2.0);
+    TS_ASSERT_EQUALS(f.GetValue(), 2.0);
     if (elm->HasAttribute("name")) {
       TS_ASSERT_EQUALS(test->getDoubleValue(), 2.0);
     }
-    f->cacheValue(false);
-    TS_ASSERT_EQUALS(f->GetValue(), -1.0);
+    f.cacheValue(false);
+    TS_ASSERT_EQUALS(f.GetValue(), -1.0);
     if (elm->HasAttribute("name")) {
       TS_ASSERT_EQUALS(test->getDoubleValue(), -1.0);
     }
-    TS_ASSERT_EQUALS(f->GetValueAsString(), "       -1");
+    TS_ASSERT_EQUALS(f.GetValueAsString(), "       -1");
     // Check that read only properties are making the function constant.
     x->setAttribute(SGPropertyNode::WRITE, false);
-    TS_ASSERT(f->IsConstant());
+    TS_ASSERT(f.IsConstant());
     x->setAttribute(SGPropertyNode::WRITE, true);
   }
 
@@ -163,10 +163,152 @@ public:
       Element_ptr elm = readFromXML(line);
       FGFunction f(&fdmex, elm);
 
-      verifyPropertyParameter(&f, elm, x, test, "test");
+      verifyPropertyParameter(f, elm, x, test, "test");
     }
 
     TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
+  }
+
+  void verifyTableParameter(FGFunction& f, Element* elm, FGPropertyNode* x,
+                            FGPropertyNode* test, const string& name) {
+    TS_ASSERT(!f.IsConstant());
+    if (elm->HasAttribute("name")) {
+      TS_ASSERT_EQUALS(f.GetName(), name);
+      TS_ASSERT(!test->getAttribute(SGPropertyNode::WRITE));
+    } else {
+      TS_ASSERT_EQUALS(f.GetName(), "");
+      TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
+    }
+    x->setDoubleValue(0.0);
+    TS_ASSERT_EQUALS(f.GetValue(), -1.0);
+    if (elm->HasAttribute("name")) {
+      TS_ASSERT_EQUALS(test->getDoubleValue(), -1.0);
+    }
+    x->setDoubleValue(1.0);
+    TS_ASSERT_EQUALS(f.GetValue(), -1.0);
+    if (elm->HasAttribute("name")) {
+      TS_ASSERT_EQUALS(test->getDoubleValue(), -1.0);
+    }
+    x->setDoubleValue(1.5);
+    TS_ASSERT_EQUALS(f.GetValue(), 0.25);
+    if (elm->HasAttribute("name")) {
+      TS_ASSERT_EQUALS(test->getDoubleValue(), 0.25);
+    }
+    f.cacheValue(true);
+    x->setDoubleValue(2.0);
+    TS_ASSERT_EQUALS(f.GetValue(), 0.25);
+    if (elm->HasAttribute("name")) {
+      TS_ASSERT_EQUALS(test->getDoubleValue(), 0.25);
+    }
+    f.cacheValue(false);
+    TS_ASSERT_EQUALS(f.GetValue(), 1.5);
+    if (elm->HasAttribute("name")) {
+      TS_ASSERT_EQUALS(test->getDoubleValue(), 1.5);
+    }
+    x->setDoubleValue(3.0);
+    TS_ASSERT_EQUALS(f.GetValue(), 1.5);
+    if (elm->HasAttribute("name")) {
+      TS_ASSERT_EQUALS(test->getDoubleValue(), 1.5);
+    }
+    TS_ASSERT_EQUALS(f.GetValueAsString(), "      1.5");
+  }
+
+  void testTable() {
+    FGFDMExec fdmex;
+    auto pm = fdmex.GetPropertyManager();
+    auto x = pm->GetNode("x", true);
+    auto test = pm->GetNode("test", true);
+    const array<string, 4> XML {"<dummy>"
+                                "  <table>"
+                                "    <independentVar>x</independentVar>"
+                                "    <tableData>"
+                                "      1.0 -1.0\n"
+                                "      2.0  1.5\n"
+                                "    </tableData>"
+                                "  </table>"
+                                "</dummy>",
+                                "<dummy>"
+                                "  <t>"
+                                "    <independentVar>x</independentVar>"
+                                "    <tableData>"
+                                "      1.0 -1.0\n"
+                                "      2.0  1.5\n"
+                                "    </tableData>"
+                                "  </t>"
+                                "</dummy>",
+                                "<dummy name=\"test\">"
+                                "  <table>"
+                                "    <independentVar>x</independentVar>"
+                                "    <tableData>"
+                                "      1.0 -1.0\n"
+                                "      2.0  1.5\n"
+                                "    </tableData>"
+                                "  </table>"
+                                "</dummy>",
+                                "<dummy name=\"test\">"
+                                "  <t>"
+                                "    <independentVar>x</independentVar>"
+                                "    <tableData>"
+                                "      1.0 -1.0\n"
+                                "      2.0  1.5\n"
+                                "    </tableData>"
+                                "  </t>"
+                                "</dummy>"};
+
+    for (const string& line : XML) {
+      Element_ptr elm = readFromXML(line);
+      FGFunction f(&fdmex, elm);
+
+      verifyTableParameter(f, elm, x, test, "test");
+    }
+    TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
+  }
+
+  void testTableWithPrefix() {
+    FGFDMExec fdmex;
+    auto pm = fdmex.GetPropertyManager();
+    FGPropertyNode_ptr test[] {pm->GetNode("test", true), pm->GetNode("test[1]", true)};
+    FGPropertyNode_ptr x[] {pm->GetNode("x", true), pm->GetNode("x[1]", true)};
+    const array<string, 2> XML {"<dummy name=\"test[#]\">"
+                                "  <table>"
+                                "    <independentVar>x[#]</independentVar>"
+                                "    <tableData>"
+                                "      1.0 -1.0\n"
+                                "      2.0  1.5\n"
+                                "    </tableData>"
+                                "  </table>"
+                                "</dummy>",
+                                "<dummy name=\"test[#]\">"
+                                "  <t>"
+                                "    <independentVar>x[#]</independentVar>"
+                                "    <tableData>"
+                                "      1.0 -1.0\n"
+                                "      2.0  1.5\n"
+                                "    </tableData>"
+                                "  </t>"
+                                "</dummy>"};
+
+    for (const string& line : XML) {
+      Element_ptr elm = readFromXML(line);
+      for (unsigned int i=0; i<2; ++i) {
+        FGFunction f(&fdmex, elm, to_string(i));
+
+        for(unsigned int j=0; j<2; ++j) {
+          if (i == j) {
+            TS_ASSERT(!test[j]->getAttribute(SGPropertyNode::WRITE));
+          } else {
+            TS_ASSERT(test[j]->getAttribute(SGPropertyNode::WRITE));
+          }
+        }
+
+        verifyTableParameter(f, elm, x[i], test[i],
+                            replace("test[#]", "#", to_string(i)));
+      }
+    }
+
+    for(unsigned int i=0; i<2; ++i) {
+      TS_ASSERT(test[i]->getAttribute(SGPropertyNode::WRITE));
+    }
   }
 
   void testPropertyWithPrefix() {
@@ -194,7 +336,7 @@ public:
           }
         }
 
-        verifyPropertyParameter(&f, elm, x[i], test[i],
+        verifyPropertyParameter(f, elm, x[i], test[i],
                                 replace("test[#]", "#", to_string(i)));
       }
     }
@@ -219,7 +361,7 @@ public:
       Element_ptr elm = readFromXML(line);
       FGFunction f(&fdmex, elm);
 
-      verifyValueParameter(&f, elm, test, "test", -1.2, "     -1.2");
+      verifyValueParameter(f, elm, test, "test", -1.2, "     -1.2");
     }
 
     TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
@@ -238,7 +380,7 @@ public:
       Element_ptr elm = readFromXML(line);
       FGFunction f(&fdmex, elm);
 
-      verifyValueParameter(&f, elm, out, "pi_const", M_PI, "  3.14159");
+      verifyValueParameter(f, elm, out, "pi_const", M_PI, "  3.14159");
     }
 
     TS_ASSERT(out->getAttribute(SGPropertyNode::WRITE));
@@ -248,7 +390,8 @@ public:
   // <property> supplied to it with a maximum of `max_nparams`.
   template<typename func_t>
   void verifyFunction(const string& func_name, const func_t& func,
-                      const unsigned int max_nparams, const bool positive=false) {
+                      const unsigned int max_nparams, const bool positive=false,
+                      const double scale=1.0) {
     FGFDMExec fdmex;
     auto pm = fdmex.GetPropertyManager();
     std::vector<FGPropertyNode_ptr> x{ pm->GetNode("x", true) };
@@ -266,7 +409,7 @@ public:
         double x0 = positive ? 0.5 : -0.5;
         for(unsigned int j=0; j<x.size(); ++j) {
           x[j]->setAttribute(SGPropertyNode::WRITE, true);
-          x[j]->setDoubleValue(x0+2.0*j);
+          x[j]->setDoubleValue((x0+2.0*j)*scale);
           x[j]->setAttribute(SGPropertyNode::WRITE, (i >> j) & 1);
           if (x[j]->getAttribute(SGPropertyNode::WRITE))
             XML.append(replace("<p>x[#]</p>", "#", to_string(j)));
@@ -293,7 +436,7 @@ public:
           for (auto& _x: x) {
             double value = uniform_random(generator);
             if (positive) value -= uniform_random.min();
-            _x->setDoubleValue(value);
+            _x->setDoubleValue(value*scale);
           }
         }
       }
@@ -476,6 +619,12 @@ public:
     }, 2);
   }
 
+  void testMod() {
+    verifyFunction("mod", [](const vector<FGPropertyNode_ptr>& v) -> double {
+      return static_cast<int>(v[0]->getDoubleValue()) % static_cast<int>(v[1]->getDoubleValue());
+    }, 2, true, 100.);
+  }
+
   void testFraction() {
     verifyFunction("fraction", [](const vector<FGPropertyNode_ptr>& v) -> double {
       double dummy;
@@ -491,7 +640,7 @@ public:
     }, 1);
   }
 
-  void testRandom() {
+  void testGaussianRandom() {
     FGFDMExec fdmex;
     auto pm = fdmex.GetPropertyManager();
     auto test = pm->GetNode("test", true);
@@ -565,6 +714,91 @@ public:
       }
       if (elm->HasAttribute("name")) {
         value = random_generator.GetNormalRandomNumber();
+        TS_ASSERT_EQUALS(test->getDoubleValue(), value);
+      }
+      if (random_el->HasAttribute("name")) {
+        TS_ASSERT_EQUALS(out->getDoubleValue(), value);
+      }
+    }
+
+    TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
+    TS_ASSERT(out->getAttribute(SGPropertyNode::WRITE));
+  }
+
+  void testUniformRandom() {
+    FGFDMExec fdmex;
+    auto pm = fdmex.GetPropertyManager();
+    auto test = pm->GetNode("test", true);
+    auto out = pm->GetNode("out", true);
+    const array<string, 8> XML {"<dummy><urandom/></dummy>",
+                                "<dummy><urandom name=\"out\"/></dummy>",
+                                "<dummy><urandom seed=\"17\"/></dummy>",
+                                "<dummy><urandom name=\"out\" seed=\"23\"/></dummy>",
+                                "<dummy name=\"test\"><urandom/></dummy>",
+                                "<dummy name=\"test\"><urandom name=\"out\"/></dummy>",
+                                "<dummy name=\"test\"><urandom seed=\"11\"/></dummy>",
+                                "<dummy name=\"test\"><urandom name=\"out\" seed=\"7\"/></dummy>"};
+    auto random_generator = RandomNumberGenerator(0);
+
+    TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
+    TS_ASSERT(out->getAttribute(SGPropertyNode::WRITE));
+
+    for(const string& line: XML) {
+      Element_ptr elm = readFromXML(line);
+      Element* random_el = elm->GetElement();
+
+      if (random_el->HasAttribute("seed")) {
+        unsigned int seed = atoi(random_el->GetAttributeValue("seed").c_str());
+        random_generator.seed(seed);
+      } else {
+        pm->GetNode("simulation/randomseed", false)->setDoubleValue(0.0);
+        random_generator.seed(0);
+      }
+
+      FGFunction f(&fdmex, elm);
+      if (random_el->HasAttribute("name")) {
+        TS_ASSERT(!out->getAttribute(SGPropertyNode::WRITE));
+        TS_ASSERT_EQUALS(out->getDoubleValue(), random_generator.GetUniformRandomNumber());
+      }
+
+      TS_ASSERT(!f.IsConstant());
+      if (elm->HasAttribute("name")) {
+        TS_ASSERT_EQUALS(f.GetName(), "test");
+        TS_ASSERT(!test->getAttribute(SGPropertyNode::WRITE));
+        TS_ASSERT_EQUALS(test->getDoubleValue(), random_generator.GetUniformRandomNumber());
+      } else {
+        TS_ASSERT_EQUALS(f.GetName(), "");
+        TS_ASSERT(test->getAttribute(SGPropertyNode::WRITE));
+      }
+      double value = random_generator.GetUniformRandomNumber();
+      TS_ASSERT_EQUALS(f.GetValue(), value);
+      if (random_el->HasAttribute("name")) {
+        TS_ASSERT_EQUALS(out->getDoubleValue(), value);
+      }
+      if (elm->HasAttribute("name")) {
+        value = random_generator.GetUniformRandomNumber();
+        TS_ASSERT_EQUALS(test->getDoubleValue(), value);
+      }
+      if (random_el->HasAttribute("name")) {
+        TS_ASSERT_EQUALS(out->getDoubleValue(), value);
+      }
+      double cached = random_generator.GetUniformRandomNumber();
+      f.cacheValue(true);
+      TS_ASSERT_EQUALS(f.GetValue(), cached);
+      if (random_el->HasAttribute("name")) {
+        TS_ASSERT_EQUALS(out->getDoubleValue(), cached);
+      }
+      if (elm->HasAttribute("name")) {
+        TS_ASSERT_EQUALS(test->getDoubleValue(), cached);
+      }
+      f.cacheValue(false);
+      value = random_generator.GetUniformRandomNumber();
+      TS_ASSERT_EQUALS(f.GetValue(), value);
+      if (random_el->HasAttribute("name")) {
+        TS_ASSERT_EQUALS(out->getDoubleValue(), value);
+      }
+      if (elm->HasAttribute("name")) {
+        value = random_generator.GetUniformRandomNumber();
         TS_ASSERT_EQUALS(test->getDoubleValue(), value);
       }
       if (random_el->HasAttribute("name")) {
