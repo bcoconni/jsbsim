@@ -46,7 +46,7 @@ jobs:
       - name: Configure the MSIS test program
         run: |
           mkdir build && cd build
-          cmake ..
+          cmake ../src/models/atmosphere/MSIS
       - name: Build the JSBSim test program
         working-directory: build
         run: make -j2
