@@ -1,11 +1,11 @@
 !##############################################################################
-! MSIS® (NRL-SOF-014-1) SOFTWARE
+! MSISï¿½ (NRL-SOF-014-1) SOFTWARE
 !
-! MSIS® is a registered trademark of the Government of the United States of 
+! MSISï¿½ is a registered trademark of the Government of the United States of 
 ! America, as represented by the Secretary of the Navy. Unauthorized use of 
 ! the trademark is prohibited. 
 !
-! The MSIS® Software (hereinafter Software) is property of the United States 
+! The MSISï¿½ Software (hereinafter Software) is property of the United States 
 ! Government, as represented by the Secretary of the Navy. Methods performed
 ! by this software are covered by U.S. Patent Number 10,641,925. The Government
 ! of the United States of America, as represented by the Secretary of the Navy, 
@@ -16,12 +16,12 @@
 ! Software or any supporting data to any other person or entity who will use 
 ! the Software for any non-academic, commercial purposes, or (iv) copy the 
 ! Software or any documentation related thereto except for (a) distribution 
-! among the user’s personal computer systems, archival, or emergency repair 
+! among the userï¿½s personal computer systems, archival, or emergency repair 
 ! purposes, or (b) distribution for non-commercial, academic purposes, without 
 ! first obtaining the written consent of IP Counsel for the Naval Research 
 ! Laboratory. 
 !
-! As the owner of MSIS®, the United States, the United States Department of 
+! As the owner of MSISï¿½, the United States, the United States Department of 
 ! Defense, and their employees: (1) Disclaim any warranties, express, or 
 ! implied, including but not limited to any implied warranties of 
 ! merchantability, fitness for a particular purpose, title or non-infringement, 
@@ -108,7 +108,7 @@ module msis_constants
   ! CODATA Internationally recommended 2018 values of the fundamental physical constants.
   !   https://pml.nist.gov/cuu/Constants/; https://pml.nist.gov/cuu/pdf/wallet_2018.pdf
   ! Picard, A., Davis, R. S., Glaeser, M., and Fujii, K. (2007). Revised formula for the density of
-  !   air (CIPM 2007). Metrologia 45, 149–155. doi:10.1088/0026-1394/45/2/004
+  !   air (CIPM 2007). Metrologia 45, 149ï¿½155. doi:10.1088/0026-1394/45/2/004
   ! World Meteorological Organization (2014). WMO guide to meteorological instruments and methods of observation
   !   (the CIMO Guide). Part I, Chapter 12. https://www.wmo.int/pages/prog/www/IMOP/CIMO-Guide.html
 
@@ -124,10 +124,10 @@ module msis_constants
   real(kind=rp), parameter   :: zetaA = 85.0_rp  ! Default reference height for active minor species
   real(kind=rp), parameter   :: zetagamma = 100.0_rp  ! Reference height of tanh taper of chemical/dynamical correction scale height
   real(kind=rp), parameter   :: Hgamma = 1.0_rp/30.0_rp  ! Inverse scale height of tanh taper of chemical/dynamical correction scale height
-  real(kind=rp), parameter   :: nodesTN(0:nd+2) = &  !Nodes for temperature profile splines
+  real(kind=rp), parameter   :: nodesTN(0:nd+3) = &  !Nodes for temperature profile splines
       (/ -15., -10.,  -5.,   0.,   5., 10., 15., 20.,  25.,  30.,  35.,  40., 45., 50., &
           55.,  60.,  65.,  70.,  75., 80., 85., 92.5, 102.5, 112.5, 122.5, 132.5, 142.5, &
-          152.5, 162.5, 172.5/)
+          152.5, 162.5, 172.5, 182.5/)
   integer, parameter         :: izfmx = 13       ! fully mixed below this spline index
   integer, parameter         :: izfx = 14        ! Spline index at zetaF
   integer, parameter         :: izax = 17        ! Spline index at zetaA

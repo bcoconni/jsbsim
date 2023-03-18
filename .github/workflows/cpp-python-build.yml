@@ -37,6 +37,28 @@ jobs:
               xmllint --noout --schema JSBSimSystem.xsd $filename
           done
 
+  MSIS-validation:
+    name: MSIS code validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout JSBSim
+        uses: actions/checkout@v3
+      - name: Configure the MSIS test program
+        run: |
+          mkdir build && cd build
+          cmake ..
+      - name: Build the JSBSim test program
+        working-directory: build
+        run: make -j2
+      - name: Run the MSIS program
+        working-directory: src/models/atmosphere/MSIS
+        run: |
+          ../../../../build/msis2.0_test
+          if [[ $(diff msis2.0_test_out.txt msis2.0_test_ref_dp.txt | wc -c) -ne 0 ]]; then
+            echo "Failed."
+            exit 1
+          fi
+
   Linux:
     name: C/C++ build (Linux)
     needs: XML-validation

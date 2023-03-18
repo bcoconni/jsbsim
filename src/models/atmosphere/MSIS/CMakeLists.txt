@@ -15,3 +15,4 @@ set(SOURCES alt2gph.F90
             msis2.0_test.F90)
 
 add_executable(msis2.0_test ${SOURCES})
+target_compile_definitions(msis2.0_test PUBLIC DBLE)
