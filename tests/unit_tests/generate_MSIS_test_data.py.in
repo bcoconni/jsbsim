@@ -93,6 +93,6 @@ with open("${CMAKE_CURRENT_BINARY_DIR}/${TEST_DATA_HEADER}", "w") as f:
     f.write(s+'\n')
     s = create_c_array("rho", rho, "double")
     f.write(s+'\n')
-    mair = list(map(str, mair))
+    mair = list(map("{:.5g}".format, mair))
     s = create_c_array("mair", mair, "double")
     f.write(s+'\n')

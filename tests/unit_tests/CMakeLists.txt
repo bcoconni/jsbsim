@@ -25,6 +25,8 @@ if(USE_FORTRAN_MSIS)
 
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/generate_MSIS_test_data.py.in
                   ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
+  configure_file(${PROJECT_SOURCE_DIR}/src/models/atmosphere/MSIS/msis20.parm
+                  ${CMAKE_CURRENT_BINARY_DIR}/msis2.0.parm COPYONLY)
 
   execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
 

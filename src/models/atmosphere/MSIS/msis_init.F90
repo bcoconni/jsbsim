@@ -1,37 +1,37 @@
 !##############################################################################
-! MSIS® (NRL-SOF-014-1) SOFTWARE
+! MSISï¿½ (NRL-SOF-014-1) SOFTWARE
 !
-! MSIS® is a registered trademark of the Government of the United States of 
-! America, as represented by the Secretary of the Navy. Unauthorized use of 
-! the trademark is prohibited. 
+! MSISï¿½ is a registered trademark of the Government of the United States of
+! America, as represented by the Secretary of the Navy. Unauthorized use of
+! the trademark is prohibited.
 !
-! The MSIS® Software (hereinafter Software) is property of the United States 
+! The MSISï¿½ Software (hereinafter Software) is property of the United States
 ! Government, as represented by the Secretary of the Navy. Methods performed
 ! by this software are covered by U.S. Patent Number 10,641,925. The Government
-! of the United States of America, as represented by the Secretary of the Navy, 
-! herein grants a non-exclusive, non-transferable license to the Software for 
-! academic, non-commercial, purposes only. A user of the Software shall not: 
-! (i) use the Software for any non-academic, commercial purposes, (ii) make 
-! any modification or improvement to the Software, (iii) disseminate the 
-! Software or any supporting data to any other person or entity who will use 
-! the Software for any non-academic, commercial purposes, or (iv) copy the 
-! Software or any documentation related thereto except for (a) distribution 
-! among the user’s personal computer systems, archival, or emergency repair 
-! purposes, or (b) distribution for non-commercial, academic purposes, without 
-! first obtaining the written consent of IP Counsel for the Naval Research 
-! Laboratory. 
+! of the United States of America, as represented by the Secretary of the Navy,
+! herein grants a non-exclusive, non-transferable license to the Software for
+! academic, non-commercial, purposes only. A user of the Software shall not:
+! (i) use the Software for any non-academic, commercial purposes, (ii) make
+! any modification or improvement to the Software, (iii) disseminate the
+! Software or any supporting data to any other person or entity who will use
+! the Software for any non-academic, commercial purposes, or (iv) copy the
+! Software or any documentation related thereto except for (a) distribution
+! among the userï¿½s personal computer systems, archival, or emergency repair
+! purposes, or (b) distribution for non-commercial, academic purposes, without
+! first obtaining the written consent of IP Counsel for the Naval Research
+! Laboratory.
 !
-! As the owner of MSIS®, the United States, the United States Department of 
-! Defense, and their employees: (1) Disclaim any warranties, express, or 
-! implied, including but not limited to any implied warranties of 
-! merchantability, fitness for a particular purpose, title or non-infringement, 
-! (2) Do not assume any legal liability or responsibility for the accuracy, 
-! completeness, or usefulness of the software, (3) Do not represent that use of 
-! the software would not infringe privately owned rights, (4) Do not warrant 
-! that the software will function uninterrupted, that is error-free or that any 
+! As the owner of MSISï¿½, the United States, the United States Department of
+! Defense, and their employees: (1) Disclaim any warranties, express, or
+! implied, including but not limited to any implied warranties of
+! merchantability, fitness for a particular purpose, title or non-infringement,
+! (2) Do not assume any legal liability or responsibility for the accuracy,
+! completeness, or usefulness of the software, (3) Do not represent that use of
+! the software would not infringe privately owned rights, (4) Do not warrant
+! that the software will function uninterrupted, that is error-free or that any
 ! errors will be corrected.
 !
-! BY USING THIS SOFTWARE YOU ARE AGREEING TO THE ABOVE TERMS AND CONDITIONS.  
+! BY USING THIS SOFTWARE YOU ARE AGREEING TO THE ABOVE TERMS AND CONDITIONS.
 !##############################################################################
 
 !!! ===========================================================================
@@ -48,7 +48,7 @@
 !
 !     CALLING SEQUENCE:
 !       CALL MSISINIT([OPTIONAL ARGUMENTS])
-!  
+!
 !     OPTIONAL ARGUMENTS:
 !       parmpath        File path pointing to the MSIS parameter file.
 !                         Default: Null string (current directory)
@@ -87,7 +87,7 @@
 !                         True = Geodetic altitude (km)
 !                         False = Geopotential height (km)
 !                         Default: True (Geodetic altitude)
-!       lspec_select    Logical array (1:10) flagging which densities to 
+!       lspec_select    Logical array (1:10) flagging which densities to
 !                         calculate.
 !                         True = Calculate, False = Do not calculate
 !                            1 - Mass density
@@ -102,14 +102,14 @@
 !                           10 - Not used in NRLMSIS 2.0
 !                         Default values: True
 !       lmass_include   Logical array (1:10) flagging which species to include
-!                         in mass density calculation. Same ordering as 
+!                         in mass density calculation. Same ordering as
 !                         lspec_select.
 !                         Default values: True
 !       lN2_msis00      Logical flag for retrieving NRLMSISE-00 upper
 !                         thermospheric N2 variation. See paper for details.
 !                           False: Thermospheric N2 determined entirely by
 !                             temperature profile and the constant mixing ratio
-!                             of N2 in the lower atmosphere. 
+!                             of N2 in the lower atmosphere.
 !                           True: Upper thermospheric N2 relaxes to NRLMSISE-00
 !                             Values.
 !                         Default: False
@@ -132,7 +132,7 @@ module msis_init
   use msis_constants, only    : rp, nspec, nl, maxnbf, mbf
 
   implicit none
-  
+
   !Model flags
   logical       :: initflag = .false.           !Flags whether model has been initialized
   logical       :: haveparmspace = .false.      !Flags whether parameter space has been initialized and allocated
@@ -169,7 +169,7 @@ module msis_init
   type (basissubset)     :: OA   !Anomalous O
   type (basissubset)     :: NO
   integer                :: nvertparm
-  
+
   ! Reciprocal node difference arrays (constant values needed for B-spline calculations)
   real(kind=rp)          :: etaTN(0:30,2:6) = 0.0_rp
   real(kind=rp)          :: etaO1(0:30,2:6) = 0.0_rp
@@ -186,7 +186,7 @@ contains
   subroutine msisinit(parmpath,parmfile,iun,switch_gfn,switch_legacy, &
                       lzalt_type,lspec_select,lmass_include,lN2_msis00)
 
-    use msis_constants, only : specmass, nspec, maxnbf 
+    use msis_constants, only : specmass, nspec, maxnbf
 
     implicit none
 
@@ -327,7 +327,7 @@ contains
     ! F2, solar sflux modulation of the tides
     tsfx(ctide:cspw-1) = .true.
     ! F3, solar sflux modulation of stationary planetary wave 1
-    psfx(cspw:cspw+59) = .true. 
+    psfx(cspw:cspw+59) = .true.
 
     ! Calculate reciprocal node difference arrays
     do k = 2, 6
@@ -385,7 +385,7 @@ contains
         subset%beta = 0.0_rp
         !subset%active = .false.
         !subset%fitb = 0
-        
+
         ! Increment vertical parameter counter except for pressure
         if (name .ne. 'PR') nvertparm = nvertparm + nl - bl + 1
 
@@ -417,7 +417,7 @@ contains
        open(unit=iun,file=trim(name),status='old',access='stream',convert='little_endian')
     else
        print *,"MSIS parameter set ",trim(name)," not found. Stopping."
-       stop
+       stop 1
     endif
 
     ! Read in parameter values into temporary double-precision array
@@ -509,7 +509,7 @@ contains
   ! TSELEC: Legacy switches and mapping to new switches
   !==================================================================================================
   subroutine tselec(sv)
-  
+
     use msis_constants, only  : nsfx, nsfxmod, nut, cspw, csfx, csfxmod, cmag, cut
 
     implicit none
@@ -517,7 +517,7 @@ contains
     real(4), intent(in)  :: sv(1:25)
 
     integer              :: i
-    
+
     !Set cross-terms flags
     do i = 1, 25
       sav(i) = sv(i)
@@ -528,7 +528,7 @@ contains
         swc(i) = 0.0
       endif
     enddo
-    
+
     !Main effects
     swg(0)                           = .true.                !Global term must be on
     swg(csfx:csfx+nsfx-1)            = (swleg(1) .eq. 1.0)   !Solar flux
@@ -638,7 +638,7 @@ contains
       swg(411:414) = .false.                                   !Mixed UT/Lon/Geomag (Daily mode terms)
       swg(439:440) = .false.                                   !Mixed UT/Lon/Geomag (Storm-time mode terms)
     endif
-    
+
   end subroutine tselec
 
   !==================================================================================================
@@ -655,7 +655,7 @@ contains
     do i = 1, 25
       svv(i) = sav(i)
     enddo
-  
+
   end subroutine tretrv
 
 end module msis_init
