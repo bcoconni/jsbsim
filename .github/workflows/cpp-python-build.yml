@@ -39,11 +39,7 @@ jobs:
 
   MSIS-validation:
     name: MSIS code validation
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout JSBSim
         uses: actions/checkout@v3
@@ -77,12 +73,14 @@ jobs:
         shared_libs: [ON, OFF]
         build_julia: [OFF]
         display_stack_trace: [ON]
+        use_fortran_MSIS: [OFF]
         include:
           - os: ubuntu-20.04
             expat: OFF
             shared_libs: OFF
             build_julia: ON
             display_stack_trace: OFF
+            use_fortran_MSIS: ON
     env:
       static_link: ${{ matrix.expat == 'OFF' && matrix.shared_libs == 'OFF' }}
     runs-on: ${{ matrix.os }}
@@ -119,7 +117,7 @@ jobs:
       - name: Configure JSBSim
         run: |
           mkdir build && cd build
-          cmake -DCPACK_GENERATOR=DEB -DINSTALL_JSBSIM_PYTHON_MODULE=ON -DCMAKE_C_FLAGS_DEBUG="-g -O2" -DCMAKE_CXX_FLAGS_DEBUG="-g -O2" -DCMAKE_BUILD_TYPE=Debug -DSYSTEM_EXPAT=${{matrix.expat}} -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DBUILD_JULIA_PACKAGE=${{matrix.build_julia}} -DFPECTL_DISPLAY_STACK_TRACE=${{matrix.display_stack_trace}} -DCMAKE_PREFIX_PATH=$JSBSIM_PREFIX_PATH -DCMAKE_INSTALL_PREFIX=/usr ..
+          cmake -DCPACK_GENERATOR=DEB -DINSTALL_JSBSIM_PYTHON_MODULE=ON -DCMAKE_C_FLAGS_DEBUG="-g -O2" -DCMAKE_CXX_FLAGS_DEBUG="-g -O2" -DCMAKE_BUILD_TYPE=Debug -DSYSTEM_EXPAT=${{matrix.expat}} -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DBUILD_JULIA_PACKAGE=${{matrix.build_julia}} -DFPECTL_DISPLAY_STACK_TRACE=${{matrix.display_stack_trace}} -DUSE_FORTRAN_MSIS=${{matrix.use_fortran_MSIS}} -DCMAKE_PREFIX_PATH=$JSBSIM_PREFIX_PATH -DCMAKE_INSTALL_PREFIX=/usr ..
       - name: Cache CTest cost data
         # This file is used by CTest to optimize the distribution of the tests
         # between the cores and reduce execution time.

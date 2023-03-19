@@ -46,6 +46,9 @@ INCLUDES
 
 #include "FGFDMExec.h"
 #include "models/atmosphere/FGStandardAtmosphere.h"
+#ifdef USE_FORTRAN_MSIS
+#include "models/atmosphere/FGMSIS.h"
+#endif
 #include "models/atmosphere/FGWinds.h"
 #include "models/FGFCS.h"
 #include "models/FGPropulsion.h"
@@ -451,7 +454,9 @@ void FGFDMExec::LoadInputs(unsigned int idx)
     Inertial->in.Position      = Propagate->GetLocation();
     break;
   case eAtmosphere:
-    Atmosphere->in.altitudeASL = Propagate->GetAltitudeASL();
+    Atmosphere->in.altitudeASL     = Propagate->GetAltitudeASL();
+    Atmosphere->in.GeodLatitudeDeg = Propagate->GetGeodLatitudeDeg();
+    Atmosphere->in.LongitudeDeg    = Propagate->GetLongitudeDeg();
     break;
   case eWinds:
     Winds->in.AltitudeASL      = Propagate->GetAltitudeASL();
@@ -786,6 +791,22 @@ bool FGFDMExec::LoadPlanet(Element* element)
     LoadPlanetConstants();
     IC->InitializeIC();
     InitializeModels();
+
+#ifdef USE_FORTRAN_MSIS
+    Element* atm_element = element->FindElement("atmosphere");
+    if (atm_element) {
+      if (atm_element->HasAttribute("model")) {
+        string model = atm_element->GetAttributeValue("model");
+        if (model == "MSIS") {
+          Models[eAtmosphere] = nullptr;
+          Models[eAtmosphere] = std::make_shared<MSIS>(this);
+          Atmosphere = static_cast<FGAtmosphere*>(Models[eAtmosphere].get());
+          Atmosphere->InitModel();
+          Atmosphere->Load(element);
+        }
+      }
+    }
+#endif
   }
 
   return result;
