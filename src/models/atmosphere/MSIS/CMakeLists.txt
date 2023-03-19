@@ -20,13 +20,13 @@ set(SOURCES alt2gph.F90
             msis_gtd8d.F90)
 
 add_library(NRLMSIS ${SOURCES})
-target_compile_definitions(NRLMSIS PUBLIC DBLE)
+target_compile_definitions(NRLMSIS PRIVATE DBLE)
 
 # FORTRAN test program
 add_executable(msis2.0_test msis2.0_test.F90)
 target_link_libraries(msis2.0_test NRLMSIS)
 
 # C++ test program
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_executable(FGMSIS FGMSIS.cpp)
 target_link_libraries(FGMSIS NRLMSIS)
+target_include_directories(FGMSIS PUBLIC ${CMAKE_CURRENT_BINARY_DIR})

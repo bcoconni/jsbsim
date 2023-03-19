@@ -39,7 +39,11 @@ jobs:
 
   MSIS-validation:
     name: MSIS code validation
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout JSBSim
         uses: actions/checkout@v3
@@ -64,7 +68,7 @@ jobs:
 
   Linux:
     name: C/C++ build (Linux)
-    needs: XML-validation
+    needs: [XML-validation, MSIS-validation]
     strategy:
       fail-fast: false
       matrix:
