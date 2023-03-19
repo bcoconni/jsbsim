@@ -1,0 +1,98 @@
+import numpy as np
+
+with open(
+    "${PROJECT_SOURCE_DIR}/src/models/atmosphere/MSIS/msis2.0_test_ref_dp.txt", "r"
+) as f:
+    lines = f.readlines()
+
+nlines = len(lines) - 1
+
+iyd = [""] * nlines
+sec = [""] * nlines
+alt = [""] * nlines
+glat = [""] * nlines
+glon = [""] * nlines
+f107a = [""] * nlines
+f107 = [""] * nlines
+ap = [""] * nlines
+rho = [""] * nlines
+T = [""] * nlines
+mair = []
+
+mmol = np.array([28.013, 31.999, 15.999, 4.003, 1.008, 39.948, 14.007])
+
+for i, line in enumerate(lines[1:]):
+    (
+        iyd[i],
+        sec[i],
+        alt[i],
+        glat[i],
+        glon[i],
+        stl,
+        f107a[i],
+        f107[i],
+        ap[i],
+        nHe,
+        nO,
+        nN2,
+        nO2,
+        nAr,
+        rho[i],
+        nH,
+        nN,
+        nOA,
+        T[i],
+    ) = line.split()
+
+    iyd[i] = int(iyd[i]) % 1000
+
+    n = np.array(
+        [
+            float(nN2),
+            float(nO2),
+            float(nO) + float(nOA),
+            float(nHe),
+            float(nH),
+            float(nAr),
+            float(nN),
+        ]
+    )
+
+    mair.append(np.sum(n * mmol) / np.sum(n))
+
+
+def create_c_array(name, array, c_type):
+    s = f"const {c_type} MSIS_{name}[{len(array)}] {{{array[0]}"
+
+    for item in array[1:]:
+        s += ", " + item
+
+    s += "};"
+    return s
+
+
+with open("${CMAKE_CURRENT_BINARY_DIR}/${TEST_DATA_HEADER}", "w") as f:
+    iyd = list(map(str, iyd))
+    s = create_c_array("iyd", iyd, "unsigned int")
+    f.write(s+'\n')
+    s = create_c_array("sec", sec, "unsigned int")
+    f.write(s+'\n')
+    s = create_c_array("alt", alt, "double")
+    f.write(s+'\n')
+    s = create_c_array("glat", glat, "double")
+    f.write(s+'\n')
+    s = create_c_array("glon", glon, "double")
+    f.write(s+'\n')
+    s = create_c_array("f107a", f107a, "double")
+    f.write(s+'\n')
+    s = create_c_array("f107", f107, "double")
+    f.write(s+'\n')
+    s = create_c_array("ap", ap, "double")
+    f.write(s+'\n')
+    s = create_c_array("T", T, "double")
+    f.write(s+'\n')
+    s = create_c_array("rho", rho, "double")
+    f.write(s+'\n')
+    mair = list(map(str, mair))
+    s = create_c_array("mair", mair, "double")
+    f.write(s+'\n')

@@ -108,6 +108,8 @@ bool MSIS::InitModel(void)
   msis_init_msisinit(nullptr, "msis20.parm", nullptr, nullptr, nullptr, nullptr,
                       nullptr, nullptr, nullptr);
 
+  Calculate(0.0);
+
   return true;
 }
 
@@ -134,8 +136,8 @@ void MSIS::Calculate(double altitude)
   Compute(0.0, SLpressure, SLtemperature, SLdensity, SLRair);
   Compute(altitude, Pressure, Temperature, Density, Reng);
 
-  Soundspeed  = sqrt(SHRatio*Reng*Temperature);
   SLsoundspeed  = sqrt(SHRatio*SLRair*SLtemperature);
+  Soundspeed  = sqrt(SHRatio*Reng*Temperature);
   PressureAltitude = CalculatePressureAltitude(Pressure, altitude);
   DensityAltitude = CalculateDensityAltitude(Density, altitude);
 
@@ -189,7 +191,7 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
   Rair = Rstar / mair;
 
   density = dn[0] * kgm3_to_slugft3;
-  pressure = Density * Reng * Temperature;
+  pressure = density * Rair * temperature;
 }
 
 } // namespace JSBSim

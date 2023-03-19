@@ -1,4 +1,3 @@
-include_directories(${CXXTEST_INCLUDE_DIR})
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -21,9 +20,25 @@ set(UNIT_TESTS FGColumnVector3Test
                FGAtmosphereTest
                FGAuxiliaryTest)
 
+if(USE_FORTRAN_MSIS)
+  set(TEST_DATA_HEADER MSIS_test_data.h)
+
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/generate_MSIS_test_data.py.in
+                  ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
+
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
+
+  cxxtest_add_test(FGMSISTest1 FGMSISTest.cpp ${CMAKE_CURRENT_SOURCE_DIR}/FGMSISTest.h)
+  target_link_libraries(FGMSISTest1 libJSBSim)
+  target_include_directories(FGMSISTest1  PUBLIC ${CXXTEST_INCLUDE_DIR}
+                                          PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+  add_coverage(FGMSISTest1)
+endif(USE_FORTRAN_MSIS)
+
 foreach(test ${UNIT_TESTS})
   cxxtest_add_test(${test}1 ${test}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${test}.h)
   target_link_libraries(${test}1 libJSBSim)
+  target_include_directories(${test}1 PUBLIC ${CXXTEST_INCLUDE_DIR})
   add_coverage(${test}1)
 endforeach()
 
