@@ -28,7 +28,7 @@ if(USE_FORTRAN_MSIS)
   configure_file(${PROJECT_SOURCE_DIR}/src/models/atmosphere/MSIS/msis20.parm
                   ${CMAKE_CURRENT_BINARY_DIR}/msis2.0.parm COPYONLY)
 
-  execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
+  execute_process(COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
 
   cxxtest_add_test(FGMSISTest1 FGMSISTest.cpp ${CMAKE_CURRENT_SOURCE_DIR}/FGMSISTest.h)
   target_link_libraries(FGMSISTest1 libJSBSim)
