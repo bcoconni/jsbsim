@@ -26,14 +26,14 @@ if(USE_FORTRAN_MSIS)
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/generate_MSIS_test_data.py.in
                   ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
   configure_file(${PROJECT_SOURCE_DIR}/src/models/atmosphere/MSIS/msis20.parm
-                  ${CMAKE_CURRENT_BINARY_DIR}/msis2.0.parm COPYONLY)
+                  ${CMAKE_CURRENT_BINARY_DIR}/msis20.parm COPYONLY)
 
   execute_process(COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
 
   cxxtest_add_test(FGMSISTest1 FGMSISTest.cpp ${CMAKE_CURRENT_SOURCE_DIR}/FGMSISTest.h)
   target_link_libraries(FGMSISTest1 libJSBSim)
-  target_include_directories(FGMSISTest1  PUBLIC ${CXXTEST_INCLUDE_DIR}
-                                          PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+  target_include_directories(FGMSISTest1 PUBLIC ${CXXTEST_INCLUDE_DIR}
+                                         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
   add_coverage(FGMSISTest1)
 endif(USE_FORTRAN_MSIS)
 

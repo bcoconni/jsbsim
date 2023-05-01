@@ -86,6 +86,9 @@ MSIS::MSIS(FGFDMExec* fdmex) : FGStandardAtmosphere(fdmex)
 {
   Name = "MSIS";
 
+  msis_init_msisinit(nullptr, "msis20.parm", nullptr, nullptr, nullptr, nullptr,
+                      nullptr, nullptr, nullptr);
+
   Debug(0);
 }
 
@@ -104,9 +107,6 @@ bool MSIS::InitModel(void)
 
   day_of_year = 1.0;
   seconds_in_day = 0.0;
-
-  msis_init_msisinit(nullptr, "msis20.parm", nullptr, nullptr, nullptr, nullptr,
-                      nullptr, nullptr, nullptr);
 
   Calculate(0.0);
 
@@ -157,8 +157,8 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
   constexpr double gtoslug = kgtoslug / 1000.;
   // Molecular weight (g/mol)
   // N2 O2 O He H Ar N OA
-  const double species_mmol[8] {28.013, 31.999, 15.999, 4.003, 1.008, 39.948,
-                                14.007, 15.999};
+  const double species_mmol[8] {28.0134, 31.9988, 31.9988/2.0, 4.0, 1.0, 39.948,
+                                28.0134/2.0, 31.9988/2.0};
 
   double dn[10] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
   double tex = 1.0;
@@ -195,4 +195,3 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
 }
 
 } // namespace JSBSim
-

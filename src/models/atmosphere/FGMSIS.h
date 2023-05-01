@@ -92,28 +92,50 @@ public:
   bool InitModel(void) override;
   bool Load(Element* el) override;
 
+  using FGAtmosphere::GetTemperature;  // Prevent C++ from hiding GetTemperature(void)
   double GetTemperature(double altitude) const override {
     double t, p, rho, R;
     Compute(altitude, p, t, rho, R);
     return t;
   }
+
+  using FGAtmosphere::GetPressure;  // Prevent C++ from hiding GetPressure(void)
   double GetPressure(double altitude) const override {
     double t, p, rho, R;
     Compute(altitude, p, t, rho, R);
     return p;
   }
 
+  using FGAtmosphere::GetDensity;  // Prevent C++ from hiding GetDensity(void)
+  double GetDensity(double altitude) const override {
+    double t, p, rho, R;
+    Compute(altitude, p, t, rho, R);
+    return rho;
+  }
+
+  using FGAtmosphere::GetSoundSpeed;  // Prevent C++ from hiding GetSoundSpeed(void)
+  double GetSoundSpeed(double altitude) const override {
+    double t, p, rho, R;
+    Compute(altitude, p, t, rho, R);
+    return sqrt(FGAtmosphere::SHRatio*R*t);
+  }
+
 protected:
   void Calculate(double altitude) override;
   void Compute(double altitude, double& pression, double& temperature,
                 double& density, double &Rair) const;
-  void SetTemperature(double t, double h, eTemperature unit) override {};
 
   double day_of_year = 1.0;
   double seconds_in_day = 0.0;
   double f107a = 150.0;
   double f107 = 150.0;
   double ap[7] {4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+private:
+  // Setting temperature & pressure is not allowed in this model.
+  void SetTemperature(double t, double h, eTemperature unit) override {};
+  void SetTemperatureSL(double t, eTemperature unit) override {};
+  void SetPressureSL(ePressure unit, double pressure) override {};
 };
 
 } // namespace JSBSim

@@ -13,7 +13,6 @@ if(USE_FORTRAN_MSIS)
                         MSIS/msis_tfn.F90
                         MSIS/msis_dfn.F90
                         MSIS/msis_calc.F90
-                        MSIS/msis_gtd8d.F90
                         FGMSIS.h
                         FGMSIS.cpp)
 
