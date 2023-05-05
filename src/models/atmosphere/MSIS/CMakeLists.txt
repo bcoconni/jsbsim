@@ -8,7 +8,7 @@ include(FortranCInterface)
 
 FortranCInterface_VERIFY(CXX)
 
-FortranCInterface_HEADER(FC_MSIS.h MACRO_NAMESPACE "FC_" SYMBOLS gtd8d msis_init:msisinit)
+FortranCInterface_HEADER(FC_MSIS.h MACRO_NAMESPACE "FC_" SYMBOLS gtd8d)
 
 set(SOURCES alt2gph.F90
             msis_constants.F90
@@ -17,7 +17,8 @@ set(SOURCES alt2gph.F90
             msis_tfn.F90
             msis_dfn.F90
             msis_calc.F90
-            msis_gtd8d.F90)
+            msis_gtd8d.F90
+            JSBSim_interface.F90)
 
 add_library(NRLMSIS ${SOURCES})
 target_compile_definitions(NRLMSIS PRIVATE DBLE)
@@ -29,4 +30,4 @@ target_link_libraries(msis2.0_test NRLMSIS)
 # C++ test program
 add_executable(FGMSIS FGMSIS.cpp)
 target_link_libraries(FGMSIS NRLMSIS)
-target_include_directories(FGMSIS PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(FGMSIS PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

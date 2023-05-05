@@ -58,6 +58,11 @@ jobs:
             echo "Failed."
             exit 1
           fi
+      - name: Run the C++ program
+        working-directory: build
+        run: |
+          cp ../src/models/atmosphere/MSIS/msis20.parm msis21.parm
+          ./FGMSIS
 
   Linux:
     name: C/C++ build (Linux)

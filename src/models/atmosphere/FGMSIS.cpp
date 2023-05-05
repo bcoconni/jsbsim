@@ -66,9 +66,7 @@ INTERFACE WITH HTE FORTRAN CODE
 #include "FORTRAN_MSIS.h"
 
 extern "C" {
-  void msis_init_msisinit(const char* parmpath, const char* parmfile, int* iun,
-    bool* switch_gfn, float* switch_legacy, bool* lzalt_type, bool* lspec_select,
-    bool* lmass_include, bool* lN2_msis00);
+  void init(const char* parmpath, const char* parmfile);
 
   void msis_calc_msiscalc(double* day, double* utsec, double* z, double* lat,
     double* lon, const double* sfluxavg, const double* sflux, const double* ap,
@@ -86,8 +84,7 @@ MSIS::MSIS(FGFDMExec* fdmex) : FGStandardAtmosphere(fdmex)
 {
   Name = "MSIS";
 
-  msis_init_msisinit(nullptr, "msis20.parm", nullptr, nullptr, nullptr, nullptr,
-                      nullptr, nullptr, nullptr);
+  init(nullptr, "msis21.parm");
 
   Debug(0);
 }

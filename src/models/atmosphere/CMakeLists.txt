@@ -4,7 +4,7 @@ if(USE_FORTRAN_MSIS)
     FortranCInterface_VERIFY(CXX)
 
     FortranCInterface_HEADER(FORTRAN_MSIS.h MACRO_NAMESPACE "FORTRAN_"
-                            SYMBOLS msis_calc:msiscalc msis_init:msisinit)
+                            SYMBOLS msis_calc:msiscalc)
 
     set(NRLMSIS_SOURCES MSIS/alt2gph.F90
                         MSIS/msis_constants.F90
@@ -13,6 +13,7 @@ if(USE_FORTRAN_MSIS)
                         MSIS/msis_tfn.F90
                         MSIS/msis_dfn.F90
                         MSIS/msis_calc.F90
+                        MSIS/JSBSim_interface.F90
                         FGMSIS.h
                         FGMSIS.cpp)
 
