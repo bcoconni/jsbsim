@@ -84,7 +84,7 @@ MSIS::MSIS(FGFDMExec* fdmex) : FGStandardAtmosphere(fdmex)
 {
   Name = "MSIS";
 
-  init(nullptr, "msis21.parm");
+  init(nullptr, "msis20.parm");
 
   Debug(0);
 }
