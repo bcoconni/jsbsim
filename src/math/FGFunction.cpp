@@ -126,7 +126,7 @@ public:
 
   ~aFunc() {
     // Restore the R/W status
-    if (pNode) pNode->setAttribute(SGPropertyNode::WRITE, true);
+    if (pNode) pNode->setAttribute(SGPropertyNode::WRITE, WriteStatus);
   }
 
   double GetValue(void) const override {
@@ -152,6 +152,7 @@ protected:
     CreateOutputNode(el, Prefix);
     // Initialize the node to a sensible value.
     if (pNode) {
+      WriteStatus = pNode->getAttribute(SGPropertyNode::WRITE);
       pNode->setAttribute(SGPropertyNode::WRITE, true);
       pNode->setDoubleValue(f());
       pNode->setAttribute(SGPropertyNode::WRITE, false);
@@ -160,6 +161,7 @@ protected:
 
 private:
   const func_t f;
+  bool WriteStatus = true;
 };
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,7 +175,7 @@ bool GetBinary(double val, const string &ctxMsg)
     cerr << ctxMsg << FGJSBBase::fgred << FGJSBBase::highint
          << "Malformed conditional check in function definition."
          << FGJSBBase::reset << endl;
-    throw("Fatal Error.");
+    throw BaseException("Fatal Error.");
   }
 }
 
@@ -212,7 +214,7 @@ FGParameter_ptr VarArgsFn(const func_t& _f, FGFDMExec* fdmex, Element* el,
       return new FGFunction(fdmex, e.FirstParameter(), el, prefix);
     }
     else
-      throw BaseException(e.what());
+      throw e;
   }
 }
 
@@ -305,7 +307,7 @@ void FGFunction::CheckOddOrEvenArguments(Element* el, OddEven odd_even)
       cerr << el->ReadFrom() << fgred << highint
            << "<" << el->GetName() << "> must have an even number of arguments."
            << reset << endl;
-      throw("Fatal Error");
+      throw BaseException("Fatal Error");
     }
     break;
   case OddEven::Odd:
@@ -313,7 +315,7 @@ void FGFunction::CheckOddOrEvenArguments(Element* el, OddEven odd_even)
       cerr << el->ReadFrom() << fgred << highint
            << "<" << el->GetName() << "> must have an odd number of arguments."
            << reset << endl;
-      throw("Fatal Error");
+      throw BaseException("Fatal Error");
     }
     break;
   default:
@@ -371,7 +373,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
             cerr << element->ReadFrom()
                  << fgred << "Illegal use of the special character '#'"
                  << reset << endl;
-            throw("Fatal Error.");
+            throw BaseException("Fatal Error.");
           }
         }
 
@@ -698,7 +700,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                    cerr << ctxMsg << fgred << highint
                         << "The switch function index (" << temp
                         << ") is negative." << reset << endl;
-                   throw("Fatal error");
+                   throw BaseException("Fatal error");
                  }
                  size_t n = p.size()-1;
                  size_t i = static_cast<size_t>(temp+0.5);
@@ -711,7 +713,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                         << ") selected a value above the range of supplied values"
                         << "[0:" << n-1 << "]"
                         << " - not enough values were supplied." << reset << endl;
-                   throw("Fatal error");
+                   throw BaseException("Fatal error");
                  }
                };
       Parameters.push_back(new aFunc<decltype(f), 2>(f, fdmex, element, Prefix,
@@ -872,7 +874,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                    cerr << ctxMsg << fgred << highint
                         << "The index must be one of the integer value 1, 2 or 3."
                         << reset << endl;
-                   throw("Fatal error");
+                   throw BaseException("Fatal error");
                  }
 
                  FGQuaternion qa(eY, -alpha), qb(eZ, beta), qc(eX, -gamma);
@@ -900,7 +902,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
                    cerr << ctxMsg << fgred << highint
                         << "The index must be one of the integer value 1, 2 or 3."
                         << reset << endl;
-                   throw("Fatal error");
+                   throw BaseException("Fatal error");
                  }
 
                  FGQuaternion qa(eY, -alpha), qb(eZ, beta), qc(eX, -gamma);
@@ -938,7 +940,7 @@ void FGFunction::Load(Element* el, FGPropertyValue* var, FGFDMExec* fdmex,
 
         if (node) {
           node->setDoubleValue(constant);
-          node->setAttribute(SGPropertyNode::WRITE, false);
+          // node->setAttribute(SGPropertyNode::WRITE, false);
           if (debug_lvl > 0)
             cout << " and the property " << pName
                  << " will be unbound and made read only.";
@@ -1041,7 +1043,7 @@ string FGFunction::CreateOutputNode(Element* el, const string& Prefix)
     if (pNode->isTied()) {
       cerr << el->ReadFrom()
            << "Property " << nName << " has already been successfully bound (late)." << endl;
-      throw("Failed to bind the property to an existing already tied node.");
+      throw BaseException("Failed to bind the property to an existing already tied node.");
     }
   }
 
