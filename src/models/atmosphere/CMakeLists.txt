@@ -1,10 +1,12 @@
-set(SOURCES FGStandardAtmosphere.cpp
-            FGWinds.cpp
-            FGMSIS.cpp)
+set(SOURCES FGMSIS.cpp
+            FGMars.cpp
+            FGStandardAtmosphere.cpp
+            FGWinds.cpp)
 
-set(HEADERS FGStandardAtmosphere.h
-            FGWinds.h
-            FGMSIS.h)
+set(HEADERS FGMSIS.h
+            FGMars.h
+            FGStandardAtmosphere.h
+            FGWinds.h)
 
 add_library(Atmosphere OBJECT ${HEADERS} ${SOURCES})
 set_target_properties(Atmosphere PROPERTIES TARGET_DIRECTORY

@@ -5,12 +5,6 @@ cmake_minimum_required (VERSION 3.15)
 ################################################################################
 project(JSBSim)
 
-option(USE_FORTRAN_MSIS "Set to ON to use NRL original FORTRAN code for the NRLMSIS 2.0 atmosphere model" OFF)
-
-if(USE_FORTRAN_MSIS)
-  enable_language(CXX Fortran)
-endif()
-
 set(PROJECT_VERSION_MAJOR "1")
 set(PROJECT_VERSION_MINOR "2")
 set(PROJECT_VERSION_PATCH "0.dev1")
@@ -39,6 +33,12 @@ find_package(PkgConfig)
 ################################################################################
 # Build JSBSim libs and exec                                                   #
 ################################################################################
+
+option(USE_FORTRAN_MSIS "Set to ON to use NRL original FORTRAN code for the NRLMSIS 2.0 atmosphere model" OFF)
+
+if(USE_FORTRAN_MSIS)
+  enable_language(CXX Fortran)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tests/unit_tests/CMakeModules)
 find_package(codecov)
