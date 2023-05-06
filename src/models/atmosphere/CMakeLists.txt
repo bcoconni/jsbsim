@@ -1,8 +1,10 @@
 set(SOURCES FGStandardAtmosphere.cpp
-            FGWinds.cpp)
+            FGWinds.cpp
+            FGMSIS.cpp)
 
 set(HEADERS FGStandardAtmosphere.h
-            FGWinds.h)
+            FGWinds.h
+            FGMSIS.h)
 
 add_library(Atmosphere OBJECT ${HEADERS} ${SOURCES})
 set_target_properties(Atmosphere PROPERTIES TARGET_DIRECTORY
@@ -23,13 +25,12 @@ if(USE_FORTRAN_MSIS)
                         MSIS/msis_tfn.F90
                         MSIS/msis_dfn.F90
                         MSIS/msis_calc.F90
-                        MSIS/JSBSim_interface.F90
-                        FGMSIS.h
-                        FGMSIS.cpp)
+                        MSIS/JSBSim_interface.F90)
 
     add_library(NRLMSIS OBJECT ${NRLMSIS_SOURCES})
     target_compile_definitions(NRLMSIS PRIVATE DBLE)
-    target_include_directories(NRLMSIS PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(Atmosphere PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_compile_definitions(Atmosphere PRIVATE USE_FORTRAN_MSIS)
 else(USE_FORTRAN_MSIS)
     set(NRLMSIS_SOURCES MSIS/nrlmsise-00.h
                         MSIS/nrlmsise-00.c

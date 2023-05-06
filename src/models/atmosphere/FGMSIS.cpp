@@ -60,9 +60,10 @@ INCLUDES
 using namespace std;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-INTERFACE WITH HTE FORTRAN CODE
+INTERFACE WITH THE FORTRAN CODE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
+#ifdef USE_FORTRAN_MSIS
 #include "FORTRAN_MSIS.h"
 
 extern "C" {
@@ -72,6 +73,7 @@ extern "C" {
     double* lon, const double* sfluxavg, const double* sflux, const double* ap,
     double* tn, double*  dn, double* tex);
 }
+#endif
 
 namespace JSBSim {
 
@@ -84,7 +86,18 @@ MSIS::MSIS(FGFDMExec* fdmex) : FGStandardAtmosphere(fdmex)
 {
   Name = "MSIS";
 
+#ifdef USE_FORTRAN_MSIS
   init(nullptr, "msis20.parm");
+#else
+  flags.switches[0] = 0;
+  for(unsigned int i=1; i<24; ++i)
+    flags.switches[i] = 1;
+  input.year = 0;  // Ignored by NRLMSIS
+  input.f107A = f107a;
+  input.f107 = f107;
+  input.ap = ap[0];
+  input.ap_a = nullptr;
+#endif
 
   Debug(0);
 }
@@ -158,11 +171,9 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
                                 28.0134/2.0, 31.9988/2.0};
 
   double dn[10] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-  double tex = 1.0;
   double h = altitude*fttokm;
   double lat = in.GeodLatitudeDeg;
   double lon = in.LongitudeDeg;
-  double t_K = 1.0;
 
   // Compute epoch
   double utc_seconds = seconds_in_day + FDMExec->GetSimTime();
@@ -172,9 +183,40 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
   unsigned int year = today / 365.;
   today -= year * 365.;
 
+#ifdef USE_FORTRAN_MSIS
+  double t_K = 1.0;
+  double tex = 1.0;
+
   msis_calc_msiscalc(&today, &utc_seconds, &h, &lat, &lon, &f107a, &f107, ap, &t_K, dn, &tex);
 
   temperature = KelvinToRankine(t_K);
+  density = dn[0] * kgm3_to_slugft3;
+#else
+  struct nrlmsise_output output;
+
+  input.doy = today;
+  input.sec = utc_seconds;
+  input.alt = h;
+  input.g_lat = lat;
+  input.g_long = lon;
+  input.lst = utc_seconds/3600 + lon/15;
+  assert(flags.switches[9] != -1);
+
+  gtd7(&input, &flags, &output);
+
+  temperature = KelvinToRankine(output.t[1]);
+  density = output.d[5] * kgm3_to_slugft3;
+  dn[1] = output.d[2];  // N2
+  dn[2] = output.d[3];  // O2
+  dn[3] = output.d[1];  // O
+  dn[4] = output.d[0];  // He
+  dn[5] = output.d[6];  // H
+  dn[6] = output.d[4];  // Ar
+  dn[7] = output.d[7];  // N
+  // SUBROUTINE GTD7 does NOT include anomalour oxygen so we drop it from
+  // the molar mass computation as well for consistency.
+  dn[8] = 0.0;          // OA
+#endif
 
   // Compute specific gas constant for air
   double mmol = 0.0;
@@ -187,7 +229,6 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
   double mair = mmol * gtoslug / qty_mol;
   Rair = Rstar / mair;
 
-  density = dn[0] * kgm3_to_slugft3;
   pressure = density * Rair * temperature;
 }
 

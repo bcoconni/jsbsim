@@ -47,6 +47,12 @@ INCLUDES
 FORWARD DECLARATIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
+#ifndef USE_FORTRAN_MSIS
+extern "C" {
+#include "MSIS/nrlmsise-00.h"
+}
+#endif
+
 namespace JSBSim {
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,6 +136,11 @@ protected:
   double f107a = 150.0;
   double f107 = 150.0;
   double ap[7] {4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+#ifndef USE_FORTRAN_MSIS
+  mutable struct nrlmsise_flags flags;
+  mutable struct nrlmsise_input input;
+#endif
 
 private:
   // Setting temperature & pressure is not allowed in this model.

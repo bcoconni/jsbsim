@@ -110,13 +110,6 @@ if(WIN32)
   list(APPEND COMPILE_DEFINITIONS ${MSVC_COMPILE_DEFINITIONS})
 endif(WIN32)
 
-if(USE_FORTRAN_MSIS)
-  target_compile_definitions(libJSBSim PRIVATE USE_FORTRAN_MSIS)
-  foreach(TARGET_OBJECT ${TARGET_OBJECTS_LIST})
-    target_compile_definitions(${TARGET_OBJECT} PRIVATE USE_FORTRAN_MSIS)
-  endforeach(TARGET_OBJECT)
-endif(USE_FORTRAN_MSIS)
-
 # Apply the compilation definitions to all target objects and make them PUBLIC
 # so they propagate to other targets.
 foreach(COMPILE_DEF ${COMPILE_DEFINITIONS})

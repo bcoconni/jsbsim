@@ -46,9 +46,7 @@ INCLUDES
 
 #include "FGFDMExec.h"
 #include "models/atmosphere/FGStandardAtmosphere.h"
-#ifdef USE_FORTRAN_MSIS
 #include "models/atmosphere/FGMSIS.h"
-#endif
 #include "models/atmosphere/FGWinds.h"
 #include "models/FGFCS.h"
 #include "models/FGPropulsion.h"
@@ -792,7 +790,6 @@ bool FGFDMExec::LoadPlanet(Element* element)
     IC->InitializeIC();
     InitializeModels();
 
-#ifdef USE_FORTRAN_MSIS
     Element* atm_element = element->FindElement("atmosphere");
     if (atm_element) {
       if (atm_element->HasAttribute("model")) {
@@ -807,7 +804,6 @@ bool FGFDMExec::LoadPlanet(Element* element)
         }
       }
     }
-#endif
   }
 
   return result;
