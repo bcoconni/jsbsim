@@ -20,7 +20,7 @@ if(USE_FORTRAN_MSIS)
     # add_library(NRLMSIS OBJECT ${NRLMSIS_SOURCES})
     # target_compile_definitions(NRLMSIS PRIVATE DBLE)
     # set_target_properties(NRLMSIS PROPERTIES TARGET_DIRECTORY
-    #                                 ${CMAKE_CURRENT_SOURCE_DIR})
+    #                                 ${CMAKE_CURRENT_SOURCE_DIR}/MSIS)
 endif(USE_FORTRAN_MSIS)
 
 set(SOURCES FGStandardAtmosphere.cpp

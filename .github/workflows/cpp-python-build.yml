@@ -63,6 +63,13 @@ jobs:
         run: |
           cp ../src/models/atmosphere/MSIS/msis20.parm msis21.parm
           ./FGMSIS
+      - name: Run the NRLMSIS-00 C package 
+        working-directory: src/models/atmosphere/MSIS
+        run: |
+          if [[ $(head -261 DOCUMENTATION | tail -104 | diff -urN <(../../../../build/nrlmsise-test) - | wc -c) -ne 0 ]]; then
+            echo "Failed."
+            exit 1
+          fi
 
   Linux:
     name: C/C++ build (Linux)

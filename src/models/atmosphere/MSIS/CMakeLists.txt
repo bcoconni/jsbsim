@@ -31,3 +31,7 @@ target_link_libraries(msis2.0_test NRLMSIS)
 add_executable(FGMSIS FGMSIS.cpp)
 target_link_libraries(FGMSIS NRLMSIS)
 target_include_directories(FGMSIS PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+# NRLMSIS-00 C package
+add_executable(nrlmsise-test nrlmsise-00.c nrlmsise-00_data.c nrlmsise-00_test.c)
+target_link_libraries(nrlmsise-test m)
