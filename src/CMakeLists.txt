@@ -50,7 +50,7 @@ set(SOURCES FGFDMExec.cpp
 add_library(libJSBSim ${HEADERS} ${SOURCES}
   $<TARGET_OBJECTS:Init>
   $<TARGET_OBJECTS:Atmosphere>
-  # $<TARGET_OBJECTS:NRLMSIS>
+  $<TARGET_OBJECTS:NRLMSIS>
   $<TARGET_OBJECTS:FlightControl>
   $<TARGET_OBJECTS:Propulsion>
   $<TARGET_OBJECTS:Models>

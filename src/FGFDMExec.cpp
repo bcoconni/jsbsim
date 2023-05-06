@@ -798,7 +798,8 @@ bool FGFDMExec::LoadPlanet(Element* element)
       if (atm_element->HasAttribute("model")) {
         string model = atm_element->GetAttributeValue("model");
         if (model == "MSIS") {
-          Models[eAtmosphere] = nullptr;
+          // Models[eAtmosphere] = nullptr;
+          instance->Unbind(Models[eAtmosphere]);
           Models[eAtmosphere] = std::make_shared<MSIS>(this);
           Atmosphere = static_cast<FGAtmosphere*>(Models[eAtmosphere].get());
           Atmosphere->InitModel();

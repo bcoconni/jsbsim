@@ -17,8 +17,7 @@ set(SOURCES alt2gph.F90
             msis_tfn.F90
             msis_dfn.F90
             msis_calc.F90
-            msis_gtd8d.F90
-            JSBSim_interface.F90)
+            msis_gtd8d.F90)
 
 add_library(NRLMSIS ${SOURCES})
 target_compile_definitions(NRLMSIS PRIVATE DBLE)
@@ -28,7 +27,7 @@ add_executable(msis2.0_test msis2.0_test.F90)
 target_link_libraries(msis2.0_test NRLMSIS)
 
 # C++ test program
-add_executable(FGMSIS FGMSIS.cpp)
+add_executable(FGMSIS FGMSIS.cpp JSBSim_interface.F90)
 target_link_libraries(FGMSIS NRLMSIS)
 target_include_directories(FGMSIS PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 

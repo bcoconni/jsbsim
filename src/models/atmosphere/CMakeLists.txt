@@ -1,3 +1,13 @@
+set(SOURCES FGStandardAtmosphere.cpp
+            FGWinds.cpp)
+
+set(HEADERS FGStandardAtmosphere.h
+            FGWinds.h)
+
+add_library(Atmosphere OBJECT ${HEADERS} ${SOURCES})
+set_target_properties(Atmosphere PROPERTIES TARGET_DIRECTORY
+                                 ${CMAKE_CURRENT_SOURCE_DIR})
+
 if(USE_FORTRAN_MSIS)
     include(FortranCInterface)
 
@@ -17,23 +27,19 @@ if(USE_FORTRAN_MSIS)
                         FGMSIS.h
                         FGMSIS.cpp)
 
-    # add_library(NRLMSIS OBJECT ${NRLMSIS_SOURCES})
-    # target_compile_definitions(NRLMSIS PRIVATE DBLE)
-    # set_target_properties(NRLMSIS PROPERTIES TARGET_DIRECTORY
-    #                                 ${CMAKE_CURRENT_SOURCE_DIR}/MSIS)
+    add_library(NRLMSIS OBJECT ${NRLMSIS_SOURCES})
+    target_compile_definitions(NRLMSIS PRIVATE DBLE)
+    target_include_directories(NRLMSIS PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+else(USE_FORTRAN_MSIS)
+    set(NRLMSIS_SOURCES MSIS/nrlmsise-00.h
+                        MSIS/nrlmsise-00.c
+                        MSIS/nrlmsise-00_data.c)
+    add_library(NRLMSIS OBJECT ${NRLMSIS_SOURCES})
 endif(USE_FORTRAN_MSIS)
 
-set(SOURCES FGStandardAtmosphere.cpp
-            FGWinds.cpp)
+set_target_properties(NRLMSIS PROPERTIES TARGET_DIRECTORY
+                    ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(HEADERS FGStandardAtmosphere.h
-            FGWinds.h)
-
-add_library(Atmosphere OBJECT ${HEADERS} ${SOURCES} ${NRLMSIS_SOURCES})
-set_target_properties(Atmosphere PROPERTIES TARGET_DIRECTORY
-                                 ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(Atmosphere PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_compile_definitions(Atmosphere PRIVATE DBLE)
 add_coverage(Atmosphere)
 
 install(FILES ${HEADERS} DESTINATION include/JSBSim/models/atmosphere
