@@ -1,9 +1,12 @@
+#include <fstream>
+#include <string>
+#include <vector>
+
 #include <cxxtest/TestSuite.h>
 
 #include <FGFDMExec.h>
 #include <models/atmosphere/FGMSIS.h>
-
-#include "MSIS_test_data.h"
+#include <input_output/string_utilities.h>
 
 using namespace JSBSim;
 
@@ -49,10 +52,58 @@ public:
   static constexpr double gtoslug = kgtoslug / 1000.;
 
   FGFDMExec fdmex;
+  vector<unsigned int> MSIS_iyd, MSIS_sec;
+  vector<double> MSIS_alt, MSIS_glat, MSIS_glon, MSIS_f107a, MSIS_f107, MSIS_ap,
+                 MSIS_T, MSIS_rho, MSIS_mair;
 
   FGMSISTest() {
     auto atm = fdmex.GetAtmosphere();
     fdmex.GetPropertyManager()->Unbind(atm);
+
+    ifstream datafile("msis2.0_test_ref_dp.txt");
+
+    if (datafile.is_open()) {
+      string line;
+      const double species_mmol[8] {28.0134, 31.9988, 31.9988/2.0, 4.0, 1.0, 39.948,
+                                    28.0134/2.0, 31.9988/2.0};
+      double n[8];
+      enum {N2=0, O2, O, He, H, Ar, N, OA};
+
+      // Ignore the header line
+      getline(datafile, line);
+
+      while(getline(datafile, line)) {
+        auto words = split(line, ' ');
+        double mol = 0.0;
+        double mmol = 0.0;
+
+        MSIS_iyd.push_back(stoi(words[0]) % 1000);
+        MSIS_sec.push_back(stoi(words[1]));
+        MSIS_alt.push_back(stod(words[2]));
+        MSIS_glat.push_back(stod(words[3]));
+        MSIS_glon.push_back(stod(words[4]));
+        MSIS_f107a.push_back(stod(words[6]));
+        MSIS_f107.push_back(stod(words[7]));
+        MSIS_ap.push_back(stod(words[8]));
+        n[He] = stod(words[9]);
+        n[O] = stod(words[10]);
+        n[N2] = stod(words[11]);
+        n[O2] = stod(words[12]);
+        n[Ar] = stod(words[13]);
+        MSIS_rho.push_back(stod(words[14]));
+        n[H] = stod(words[15]);
+        n[N] = stod(words[16]);
+        n[OA] = stod(words[17]);
+        MSIS_T.push_back(stod(words[18]));
+
+        for(unsigned j=N2; j<=OA; ++j) {
+          mmol += n[j]*species_mmol[j];
+          mol += n[j];
+        }
+        MSIS_mair.push_back(mmol/mol);
+      }
+    }
+
   }
 
   void testConstructor()
@@ -114,7 +165,7 @@ public:
     auto atm = DummyMSIS(&fdmex);
     TS_ASSERT(atm.InitModel());
 
-    for (unsigned int i=0; i<200; ++i) {
+    for (unsigned int i=0; i<MSIS_iyd.size(); ++i) {
       double h = MSIS_alt[i]*kmtoft;
 
       atm.SetDay(MSIS_iyd[i]);
@@ -169,7 +220,7 @@ public:
     auto atm = DummyMSIS(&fdmex);
     TS_ASSERT(atm.InitModel());
 
-    for (unsigned int i=0; i<200; ++i) {
+    for (unsigned int i=0; i<MSIS_iyd.size(); ++i) {
       double h = MSIS_alt[i]*kmtoft;
 
       atm.SetDay(MSIS_iyd[i]);

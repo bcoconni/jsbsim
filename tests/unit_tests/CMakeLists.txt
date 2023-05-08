@@ -21,20 +21,11 @@ set(UNIT_TESTS FGColumnVector3Test
                FGAuxiliaryTest)
 
 if(USE_FORTRAN_MSIS)
-  set(TEST_DATA_HEADER MSIS_test_data.h)
-
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/generate_MSIS_test_data.py.in
-                  ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
   configure_file(${PROJECT_SOURCE_DIR}/src/models/atmosphere/MSIS/msis20.parm
                   ${CMAKE_CURRENT_BINARY_DIR}/msis20.parm COPYONLY)
-
-  execute_process(COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/generate_MSIS_test_data.py)
-
-  cxxtest_add_test(FGMSISTest1 FGMSISTest.cpp ${CMAKE_CURRENT_SOURCE_DIR}/FGMSISTest.h)
-  target_link_libraries(FGMSISTest1 libJSBSim)
-  target_include_directories(FGMSISTest1 PUBLIC ${CXXTEST_INCLUDE_DIR}
-                                         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-  add_coverage(FGMSISTest1)
+  configure_file(${PROJECT_SOURCE_DIR}/src/models/atmosphere/MSIS/msis2.0_test_ref_dp.txt
+                  ${CMAKE_CURRENT_BINARY_DIR}/msis2.0_test_ref_dp.txt COPYONLY)
+  list(APPEND UNIT_TESTS FGMSISTest)
 endif(USE_FORTRAN_MSIS)
 
 foreach(test ${UNIT_TESTS})
