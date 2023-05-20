@@ -213,7 +213,7 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
   dn[5] = output.d[6];  // H
   dn[6] = output.d[4];  // Ar
   dn[7] = output.d[7];  // N
-  // SUBROUTINE GTD7 does NOT include anomalour oxygen so we drop it from
+  // SUBROUTINE GTD7 does NOT include anomalous oxygen so we drop it from
   // the molar mass computation as well for consistency.
   dn[8] = 0.0;          // OA
 #endif

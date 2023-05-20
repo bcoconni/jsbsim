@@ -31,9 +31,15 @@ public:
   // Setters for the protected members
   void SetDay(double day) { day_of_year = day; }
   void SetSeconds(double seconds) { seconds_in_day = seconds; }
+#ifdef USE_FORTRAN_MSIS
   void SetF107A(double value) { f107a = value; }
   void SetF107(double value) { f107 = value; }
   void SetAP(double value) { ap[0] = value; }
+#else
+  void SetF107A(double value) { input.f107A = value; }
+  void SetF107(double value) { input.f107 = value; }
+  void SetAP(double value) { input.ap = value; }
+#endif
 };
 
 constexpr double Rstar = DummyMSIS::GetRstar();
@@ -50,6 +56,7 @@ public:
   static constexpr double kmtoft = 1000. / fttom;
   static constexpr double gcm3_to_slugft3 = 1000. * kgtoslug / m3toft3;
   static constexpr double gtoslug = kgtoslug / 1000.;
+  static constexpr double kgm3_to_gcm3 = 0.001;
 
   FGFDMExec fdmex;
   vector<unsigned int> MSIS_iyd, MSIS_sec;
@@ -60,14 +67,15 @@ public:
     auto atm = fdmex.GetAtmosphere();
     fdmex.GetPropertyManager()->Unbind(atm);
 
+    const double species_mmol[8] {28.0134, 31.9988, 31.9988/2.0, 4.0, 1.0, 39.948,
+                                  28.0134/2.0, 31.9988/2.0};
+    double n[8];
+    enum {N2=0, O2, O, He, H, Ar, N, OA};
+#ifdef USE_FORTRAN_MSIS
     ifstream datafile("msis2.0_test_ref_dp.txt");
 
     if (datafile.is_open()) {
       string line;
-      const double species_mmol[8] {28.0134, 31.9988, 31.9988/2.0, 4.0, 1.0, 39.948,
-                                    28.0134/2.0, 31.9988/2.0};
-      double n[8];
-      enum {N2=0, O2, O, He, H, Ar, N, OA};
 
       // Ignore the header line
       getline(datafile, line);
@@ -103,7 +111,76 @@ public:
         MSIS_mair.push_back(mmol/mol);
       }
     }
+#else
+    struct nrlmsise_output output;
+	  struct nrlmsise_input input[15];
+  	struct nrlmsise_flags flags;
+    int i;
+    /* input values */
+  	flags.switches[0]=0;
+  	for (i=1;i<24;i++)
+  		flags.switches[i]=1;
+    for (i=0;i<15;i++) {
+      input[i].doy=172;
+      input[i].year=0; /* without effect */
+      input[i].sec=29000;
+      input[i].alt=400;
+      input[i].g_lat=60;
+      input[i].g_long=-70;
+      input[i].lst=16;
+      input[i].f107A=150;
+      input[i].f107=150;
+      input[i].ap=4;
+    }
+    input[1].doy=81;
+    input[2].sec=75000;
+    input[2].alt=1000;
+    input[3].alt=100;
+    input[10].alt=0;
+    input[11].alt=10;
+    input[12].alt=30;
+    input[13].alt=50;
+    input[14].alt=70;
+    input[6].alt=100;
+    input[4].g_lat=0;
+    input[5].g_long=0;
+    // input[6].lst=4;
+    input[7].f107A=70;
+    input[8].f107=180;
+    input[9].ap=40;
+    /* evaluate 0 to 14 */
+    for (i=0;i<15;i++) {
+      double mol = 0.0;
+      double mmol = 0.0;
 
+      input[i].lst = input[i].sec/3600.+input[i].g_long/15.;
+      MSIS_iyd.push_back(input[i].doy);
+      MSIS_sec.push_back(input[i].sec);
+      MSIS_alt.push_back(input[i].alt);
+      MSIS_glat.push_back(input[i].g_lat);
+      MSIS_glon.push_back(input[i].g_long);
+      MSIS_f107a.push_back(input[i].f107A);
+      MSIS_f107.push_back(input[i].f107);
+      MSIS_ap.push_back(input[i].ap);
+      gtd7(&input[i], &flags, &output);
+      MSIS_T.push_back(output.t[1]);
+      MSIS_rho.push_back(output.d[5]*kgm3_to_gcm3);
+      n[He] = output.d[0];
+      n[O] = output.d[1];
+      n[N2] = output.d[2];
+      n[O2] = output.d[3];
+      n[Ar] = output.d[4];
+      n[H] = output.d[6];
+      n[N] = output.d[7];
+      n[OA] = 0.0;
+
+      for(unsigned j=N2; j<=OA; ++j) {
+        mmol += n[j]*species_mmol[j];
+        mol += n[j];
+      }
+      MSIS_mair.push_back(mmol/mol);
+    }
+#endif
   }
 
   void testConstructor()

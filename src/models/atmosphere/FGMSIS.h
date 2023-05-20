@@ -79,7 +79,7 @@ CLASS DOCUMENTATION
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-class MSIS : public FGStandardAtmosphere
+class JSBSIM_API MSIS : public FGStandardAtmosphere
 {
 public:
 
