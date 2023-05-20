@@ -247,6 +247,7 @@ jobs:
       fail-fast: false
       matrix:
         shared_libs: [ON, OFF]
+        use_fortran_MSIS: [ON, OFF]
     steps:
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -270,7 +271,7 @@ jobs:
           mkdir build && cd build
           julia -e 'import Pkg;Pkg.add(\"CxxWrap\")'
           $CXXWRAP_PREFIX_PATH=julia -e 'using CxxWrap;print(CxxWrap.prefix_path())'
-          cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DBUILD_JULIA_PACKAGE=ON -DCMAKE_INCLUDE_PATH="$(get-location)\..\cxxtest" -DBUILD_PYTHON_MODULE=OFF -DBUILD_DOCS=OFF -DCMAKE_PREFIX_PATH="$CXXWRAP_PREFIX_PATH" ..
+          cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DUSE_FORTRAN_MSIS=${{matrix.use_fortran_MSIS}} -DBUILD_JULIA_PACKAGE=ON -DCMAKE_INCLUDE_PATH="$(get-location)\..\cxxtest" -DBUILD_PYTHON_MODULE=OFF -DBUILD_DOCS=OFF -DCMAKE_PREFIX_PATH="$CXXWRAP_PREFIX_PATH" ..
       - name: Build JSBSim
         working-directory: build
         run: mingw32-make -j2
