@@ -1,6 +1,6 @@
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 !
-! Interface between JSBSim C code and NRLMSIS2.0 FORTRAN code
+! Interface between JSBSim C++ code and NRLMSIS2.0 FORTRAN code
 !
 ! -------------- Copyright (C) 2023 Bertrand Coconnier --------------
 !

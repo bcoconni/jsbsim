@@ -56,7 +56,6 @@ public:
   static constexpr double kmtoft = 1000. / fttom;
   static constexpr double gcm3_to_slugft3 = 1000. * kgtoslug / m3toft3;
   static constexpr double gtoslug = kgtoslug / 1000.;
-  static constexpr double kgm3_to_gcm3 = 0.001;
 
   FGFDMExec fdmex;
   vector<unsigned int> MSIS_iyd, MSIS_sec;
@@ -164,7 +163,7 @@ public:
       MSIS_ap.push_back(input[i].ap);
       gtd7(&input[i], &flags, &output);
       MSIS_T.push_back(output.t[1]);
-      MSIS_rho.push_back(output.d[5]*kgm3_to_gcm3);
+      MSIS_rho.push_back(output.d[5]);
       n[He] = output.d[0];
       n[O] = output.d[1];
       n[N2] = output.d[2];

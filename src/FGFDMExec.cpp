@@ -765,7 +765,7 @@ bool FGFDMExec::LoadPlanet(const SGPath& PlanetPath, bool useAircraftPath)
 
   if (document->GetName() != "planet") {
     stringstream s;
-    s << "File: " << PlanetFileName << " is not a reset file.";
+    s << "File: " << PlanetFileName << " is not a planet file.";
     cerr << s.str() << endl;
     throw BaseException(s.str());
   }
@@ -790,17 +790,26 @@ bool FGFDMExec::LoadPlanet(Element* element)
     IC->InitializeIC();
     InitializeModels();
 
+    // Process the atmosphere element. This element is OPTIONAL.
     Element* atm_element = element->FindElement("atmosphere");
     if (atm_element) {
       if (atm_element->HasAttribute("model")) {
         string model = atm_element->GetAttributeValue("model");
         if (model == "MSIS") {
-          // Models[eAtmosphere] = nullptr;
+          // Replace the existing atmosphere model
           instance->Unbind(Models[eAtmosphere]);
           Models[eAtmosphere] = std::make_shared<MSIS>(this);
           Atmosphere = static_cast<FGAtmosphere*>(Models[eAtmosphere].get());
+
+          // Model initialization sequence
+          LoadInputs(eAtmosphere);
           Atmosphere->InitModel();
-          Atmosphere->Load(element);
+          result = Atmosphere->Load(atm_element);
+          if (!result) {
+            cerr << endl << "Incorrect definition of <atmosphere>." << endl;
+            return result;
+          }
+          InitializeModels();
         }
       }
     }

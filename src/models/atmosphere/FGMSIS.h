@@ -147,6 +147,7 @@ private:
   void SetTemperature(double t, double h, eTemperature unit) override {};
   void SetTemperatureSL(double t, eTemperature unit) override {};
   void SetPressureSL(ePressure unit, double pressure) override {};
+  void Debug(int from) override;
 };
 
 } // namespace JSBSim

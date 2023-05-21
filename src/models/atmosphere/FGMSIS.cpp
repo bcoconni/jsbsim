@@ -89,8 +89,7 @@ MSIS::MSIS(FGFDMExec* fdmex) : FGStandardAtmosphere(fdmex)
 #ifdef USE_FORTRAN_MSIS
   init(nullptr, "msis20.parm");
 #else
-  flags.switches[0] = 0;
-  for(unsigned int i=1; i<24; ++i)
+  for(unsigned int i=0; i<24; ++i)
     flags.switches[i] = 1;
   input.year = 0;  // Ignored by NRLMSIS
   input.f107A = f107a;
@@ -115,9 +114,6 @@ bool MSIS::InitModel(void)
 {
   FGStandardAtmosphere::InitModel();
 
-  day_of_year = 1.0;
-  seconds_in_day = 0.0;
-
   Calculate(0.0);
 
   return true;
@@ -133,6 +129,8 @@ bool MSIS::Load(Element* el)
     day_of_year = el->FindElementValueAsNumber("day");
   if (el->FindElement("utc"))
     seconds_in_day = el->FindElementValueAsNumber("utc");
+
+  Debug(3);
 
   return true;
 }
@@ -199,8 +197,8 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
   input.alt = h;
   input.g_lat = lat;
   input.g_long = lon;
-  input.lst = utc_seconds/3600 + lon/15;
-  assert(flags.switches[9] != -1);
+  input.lst = utc_seconds/3600 + lon/15;  // Local Solar Time (hours)
+  assert(flags.switches[9] != -1);        // Make sure that input.ap is used.
 
   gtd7(&input, &flags, &output);
 
@@ -230,6 +228,55 @@ void MSIS::Compute(double altitude, double& pressure, double& temperature,
   Rair = Rstar / mair;
 
   pressure = density * Rair * temperature;
+}
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//    The bitmasked value choices are as follows:
+//    unset: In this case (the default) JSBSim would only print
+//       out the normally expected messages, essentially echoing
+//       the config files as they are read. If the environment
+//       variable is not set, debug_lvl is set to 1 internally
+//    0: This requests JSBSim not to output any messages
+//       whatsoever.
+//    1: This value explicity requests the normal JSBSim
+//       startup messages
+//    2: This value asks for a message to be printed out when
+//       a class is instantiated
+//    4: When this value is set, a message is displayed when a
+//       FGModel object executes its Run() method
+//    8: When this value is set, various runtime state variables
+//       are printed out periodically
+//    16: When set various parameters are sanity checked and
+//       a message is printed out when they go out of bounds
+
+void MSIS::Debug(int from)
+{
+  if (debug_lvl <= 0) return;
+
+  if (debug_lvl & 1) { // Standard console startup message output
+    if (from == 0) {} // Constructor
+    if (from == 3) { // Loading
+      cout << "    NRLMSIS atmosphere model" << endl;
+      cout << "      day: " << day_of_year << endl;
+      cout << "      UTC: " << seconds_in_day << endl << endl;
+    }
+  }
+  if (debug_lvl & 2 ) { // Instantiation/Destruction notification
+    if (from == 0) std::cout << "Instantiated: MSIS" << std::endl;
+    if (from == 1) std::cout << "Destroyed:    MSIS" << std::endl;
+  }
+  if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
+  }
+  if (debug_lvl & 8 ) { // Runtime state variables
+  }
+  if (debug_lvl & 16) { // Sanity checking
+  }
+  if (debug_lvl & 128) { //
+  }
+  if (debug_lvl & 64) {
+    if (from == 0) { // Constructor
+    }
+  }
 }
 
 } // namespace JSBSim
