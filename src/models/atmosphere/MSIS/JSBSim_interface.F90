@@ -29,7 +29,7 @@ module JSBSim_interface
 
 contains
 
-  subroutine init(parmpath, parmfile) bind (C)
+  subroutine init(parmpath, parmfile, filefound) bind (C)
 
     use, intrinsic :: iso_c_binding, only: c_char, c_null_char
     use msis_init, only: msisinit
@@ -38,9 +38,12 @@ contains
 
     character(kind=c_char), dimension(*), intent(in), optional :: parmpath
     character(kind=c_char), dimension(*), intent(in) :: parmfile
-    character(len=128)           :: parmpath1
-    character(len=128)           :: parmfile1
-    integer                      :: i
+    logical, intent(out)                             :: filefound
+
+    character(len=128) :: parmpath1
+    character(len=128) :: parmfile1
+    character(len=256) :: filename
+    integer            :: i
 
     parmpath1= ''
     if (present(parmpath)) then
@@ -56,7 +59,11 @@ contains
       parmfile1(i:i) = parmfile(i)
     end do
 
-    call msisinit(parmpath1, parmfile1)
+    filename = trim(parmpath1)//trim(parmfile1)
+    inquire(file=trim(filename), exist=filefound)
+    if (filefound) then
+      call msisinit(parmpath1, parmfile1)
+    endif
 
   end subroutine init
 

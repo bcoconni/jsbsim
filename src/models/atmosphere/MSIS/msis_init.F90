@@ -417,7 +417,7 @@ contains
        open(unit=iun,file=trim(name),status='old',access='stream',convert='little_endian')
     else
        print *,"MSIS parameter set ",trim(name)," not found. Stopping."
-       stop 1
+       stop
     endif
 
     ! Read in parameter values into temporary double-precision array

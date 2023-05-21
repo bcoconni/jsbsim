@@ -67,7 +67,7 @@ INTERFACE WITH THE FORTRAN CODE
 #include "FORTRAN_MSIS.h"
 
 extern "C" {
-  void init(const char* parmpath, const char* parmfile);
+  void init(const char* parmpath, const char* parmfile, bool* filefound);
 
   void msis_calc_msiscalc(double* day, double* utsec, double* z, double* lat,
     double* lon, const double* sfluxavg, const double* sflux, const double* ap,
@@ -87,7 +87,11 @@ MSIS::MSIS(FGFDMExec* fdmex) : FGStandardAtmosphere(fdmex)
   Name = "MSIS";
 
 #ifdef USE_FORTRAN_MSIS
-  init(nullptr, "msis20.parm");
+  bool filefound = true;
+
+  init(nullptr, "msis20.parm", &filefound);
+  if (!filefound)
+    throw BaseException("Could not find msis20.parm");
 #else
   for(unsigned int i=0; i<24; ++i)
     flags.switches[i] = 1;
