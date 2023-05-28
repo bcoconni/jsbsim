@@ -22,6 +22,13 @@
 import tkinter as tk
 from tkinter import ttk
 
+import matplotlib
+import numpy as np
+
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from matplotlib.figure import Figure
+
 
 class PropertyList(ttk.Treeview):
     def __init__(self, master, properties, get_property_value):
@@ -99,12 +106,46 @@ class WatchList(ttk.Treeview):
             self.delete((selected_item,))
 
 
+class Graph:
+    def __init__(self, master):
+        figure = Figure(figsize=(8, 4), dpi=100)
+        self.axes = figure.add_subplot()
+        self.lines = {}
+        self.axes.set_xlabel("time [s]")
+        self.axes.grid()
+
+        self.canvas = FigureCanvasTkAgg(figure, master)
+        NavigationToolbar2Tk(self.canvas, master, pack_toolbar=True)
+
+        self.canvas.get_tk_widget().pack()
+
+    def update(self, time, history):
+        for name in history.keys():
+            data = history[name]
+
+            if name in self.lines:
+                line = self.lines[name]
+                line.set_data(time, data)
+                line.set_label(name)
+            else:
+                (self.lines[name],) = self.axes.plot(time, data, label=name)
+        self.axes.legend()
+        self.axes.relim()
+        self.axes.autoscale_view()
+        self.canvas.draw()
+
+
 class App(tk.Tk):
     def __init__(self, fdm):
         super().__init__()
         aircraft_name = fdm.get_aircraft().get_aircraft_name()
         self.title(f"JSBSim [{aircraft_name}]")
         self.fdm = fdm
+
+        frame = ttk.Frame(self)
+        frame.pack()
+
+        self.graph = Graph(frame)
 
         frame = ttk.Frame(self)
         frame.pack()
@@ -127,7 +168,7 @@ class App(tk.Tk):
         self.watch_list.grid(column=1, row=1)
 
         btn = ttk.Button(frame, text="Watch")
-        btn.bind("<Button>", self.watch_properties)
+        btn.bind("<Button>", self.watch_selected_properties)
         btn.grid(column=0, row=2)
 
         btn = ttk.Button(frame, text="Unwatch")
@@ -152,13 +193,28 @@ class App(tk.Tk):
 
         ttk.Button(self, text="Quit", command=lambda: self.quit()).pack()
 
-    def watch_properties(self, event):
+        self.time = []
+        self.prop_history = {}
+
+    def watch_selected_properties(self, event):
         for item in self.property_list.get_selected_properties():
             self.watch_list.add_property(item[0], item[1])
+            self.prop_history[item[0]] = np.zeros((len(self.time),))
 
     def step(self, event):
         self.fdm.run()
         self.watch_list.update(self.fdm.get_property_value)
+        self.update_graph()
+
+    def update_graph(self):
+        self.time.append(self.fdm.get_sim_time())
+
+        if self.prop_history:
+            for prop in self.prop_history:
+                self.prop_history[prop] = np.append(
+                    self.prop_history[prop], self.fdm.get_property_value(prop)
+                )
+            self.graph.update(self.time, self.prop_history)
 
     def run(self, event):
         self.update_id = self.watch_list.after(250, self.update)
@@ -167,7 +223,8 @@ class App(tk.Tk):
         self.watch_list.after_cancel(self.update_id)
 
     def update(self):
-        for i in range(1000):
+        for i in range(50):
             self.fdm.run()
         self.watch_list.update(self.fdm.get_property_value)
+        self.update_graph()
         self.update_id = self.watch_list.after(250, self.update)
