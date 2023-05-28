@@ -134,9 +134,21 @@ class App(tk.Tk):
         btn.bind("<Button>", lambda event: self.watch_list.remove_selected_properties())
         btn.grid(column=1, row=2)
 
+        frame = ttk.Frame(self)
+
         btn = ttk.Button(frame, text="Step")
         btn.bind("<Button>", self.step)
-        btn.grid(column=0, row=3)
+        btn.grid(column=0, row=0)
+
+        btn = ttk.Button(frame, text="Run")
+        btn.bind("<Button>", self.run)
+        btn.grid(column=1, row=0)
+
+        btn = ttk.Button(frame, text="Pause")
+        btn.bind("<Button>", self.pause)
+        btn.grid(column=2, row=0)
+
+        frame.pack()
 
         ttk.Button(self, text="Quit", command=lambda: self.quit()).pack()
 
@@ -147,3 +159,15 @@ class App(tk.Tk):
     def step(self, event):
         self.fdm.run()
         self.watch_list.update(self.fdm.get_property_value)
+
+    def run(self, event):
+        self.update_id = self.watch_list.after(250, self.update)
+
+    def pause(self, event):
+        self.watch_list.after_cancel(self.update_id)
+
+    def update(self):
+        for i in range(1000):
+            self.fdm.run()
+        self.watch_list.update(self.fdm.get_property_value)
+        self.update_id = self.watch_list.after(250, self.update)
