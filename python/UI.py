@@ -1,5 +1,102 @@
+# A Graphical User Interface to JSBSim
+#
+# Copyright (c) 2023 Bertrand Coconnier
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option) any
+# later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc., 59
+# Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+# Further information about the GNU Lesser General Public License can also be
+# found on the world wide web at http://www.gnu.org.
+
 import tkinter as tk
 from tkinter import ttk
+
+
+class PropertyList(ttk.Treeview):
+    def __init__(self, master, properties, get_property_value):
+        super().__init__(master, columns=("prop", "val"))
+
+        self.heading("prop", text="Name", anchor=tk.W)
+        self.heading("val", text="Values", anchor=tk.W)
+        self.column("#0", width=60)
+
+        leafs = {}
+
+        for p in sorted(properties):
+            node = ""
+            for name in p.split("/"):
+                parent = node
+                node = "/".join((parent, name))
+                if node in leafs:
+                    continue
+
+                display_name = "  " * parent.count("/") + name
+                if parent:
+                    piid = leafs[parent]
+                else:
+                    piid = ""
+                leafs[node] = self.insert(
+                    piid, tk.END, values=(display_name, ""), open=False
+                )
+
+            self.set(leafs["/" + p], "val", get_property_value(p))
+
+    def get_selected_properties(self):
+        selected_prop = []
+        for selected_item in self.selection():
+            item = self.item(selected_item)
+            record = item["values"]
+            name = record[0].strip()
+
+            parent = self.parent(selected_item)
+            while parent:
+                item = self.item(parent)
+                name = item["values"][0].strip() + "/" + name
+                parent = self.parent(parent)
+
+            if not self.get_children([selected_item]):
+                selected_prop.append((name, record[1]))
+
+        return selected_prop
+
+
+class WatchList(ttk.Treeview):
+    def __init__(self, master):
+        super().__init__(master, columns=("prop", "val"), show="headings")
+
+        self.heading("prop", text="Name", anchor=tk.W)
+        self.heading("val", text="Values", anchor=tk.W)
+
+    def add_property(self, name, value):
+        # Avoid duplicating properties that are already in the watch list.
+        for child in self.get_children():
+            item = self.item(child)
+            child_name = item["values"][0]
+            if child_name == name:
+                return
+
+        self.insert("", tk.END, values=(name, value))
+
+    def update(self, get_property_value):
+        for child in self.get_children():
+            item = self.item(child)
+            record = item["values"]
+            self.set(child, "val", get_property_value(record[0]))
+
+    def remove_selected_properties(self):
+        for selected_item in self.selection():
+            self.delete((selected_item,))
 
 
 class App(tk.Tk):
@@ -23,39 +120,10 @@ class App(tk.Tk):
             if len(p) != 0
         ]
 
-        self.property_list = ttk.Treeview(frame, columns=("prop", "val"))
-        self.property_list.heading("prop", text="Name", anchor=tk.W)
-        self.property_list.heading("val", text="Values", anchor=tk.W)
-
-        leafs = {}
-        count = 0
-
-        for p in sorted(properties):
-            node = ""
-            for name in p.split("/"):
-                parent = node
-                node = "/".join((parent, name))
-                if node in leafs:
-                    continue
-
-                display_name = "  " * parent.count("/") + name
-                iid = self.property_list.insert(
-                    "", tk.END, values=(display_name, ""), open=False
-                )
-                leafs[node] = iid
-                count += 1
-                if parent:
-                    piid = leafs[parent]
-                    children = self.property_list.get_children([piid])
-                    self.property_list.move(iid, piid, len(children))
-
-            self.property_list.set(leafs["/" + p], "val", fdm.get_property_value(p))
-
+        self.property_list = PropertyList(frame, properties, fdm.get_property_value)
         self.property_list.grid(column=0, row=1)
 
-        self.watch_list = ttk.Treeview(frame, columns=("prop", "val"), show="headings")
-        self.watch_list.heading("prop", text="Name", anchor=tk.W)
-        self.watch_list.heading("val", text="Values", anchor=tk.W)
+        self.watch_list = WatchList(frame)
         self.watch_list.grid(column=1, row=1)
 
         btn = ttk.Button(frame, text="Watch")
@@ -63,7 +131,7 @@ class App(tk.Tk):
         btn.grid(column=0, row=2)
 
         btn = ttk.Button(frame, text="Unwatch")
-        btn.bind("<Button>", self.unwatch_properties)
+        btn.bind("<Button>", lambda event: self.watch_list.remove_selected_properties())
         btn.grid(column=1, row=2)
 
         btn = ttk.Button(frame, text="Step")
@@ -73,71 +141,9 @@ class App(tk.Tk):
         ttk.Button(self, text="Quit", command=lambda: self.quit()).pack()
 
     def watch_properties(self, event):
-        for selected_item in self.property_list.selection():
-            item = self.property_list.item(selected_item)
-            record = item["values"]
-            name = record[0].strip()
-
-            parent = self.property_list.parent(selected_item)
-            while parent:
-                item = self.property_list.item(parent)
-                name = item["values"][0].strip() + "/" + name
-                parent = self.property_list.parent(parent)
-
-            if not self.property_list.get_children([selected_item]):
-                # Avoid duplicating properties that are laredy in the watch list.
-                for child in self.watch_list.get_children():
-                    item = self.watch_list.item(child)
-                    child_name = item["values"][0]
-                    if child_name == name:
-                        break
-                else:
-                    self.watch_list.insert("", tk.END, values=(name, record[1]))
-
-    def unwatch_properties(self, event):
-        for selected_item in self.watch_list.selection():
-            self.watch_list.delete((selected_item,))
+        for item in self.property_list.get_selected_properties():
+            self.watch_list.add_property(item[0], item[1])
 
     def step(self, event):
         self.fdm.run()
-        for child in self.watch_list.get_children():
-            item = self.watch_list.item(child)
-            record = item["values"]
-            self.watch_list.set(child, "val", self.fdm.get_property_value(record[0]))
-
-
-if __name__ == "__main__":
-
-    class dummyAircraft:
-        def __init__(self, name):
-            self.name = name
-
-        def get_aircraft_name(self):
-            return self.name
-
-    class dummyFDM:
-        def __init__(self):
-            self.properties = {
-                "a/c": 2.0,
-                "a/b": 0.0,
-                "c/d/e": 4.0,
-                "b/c": 1.0,
-                "c/d/a": 3.0,
-            }
-
-        def query_property_catalog(self, _):
-            prop_names = list(self.properties.keys()) + [""]
-            return " (RW)\n".join(prop_names)
-
-        def get_property_value(self, name):
-            return self.properties[name]
-
-        def get_aircraft(self):
-            return dummyAircraft("Test")
-
-        def run(self):
-            self.properties["a/b"] += 0.25
-            self.properties["c/d/e"] -= 0.1
-
-    app = App(dummyFDM())
-    app.mainloop()
+        self.watch_list.update(self.fdm.get_property_value)
