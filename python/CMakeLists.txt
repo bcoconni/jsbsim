@@ -36,12 +36,14 @@ set(JSBSIM_PACKAGE_DIR ${CMAKE_CURRENT_BINARY_DIR}/jsbsim)
 file(MAKE_DIRECTORY ${JSBSIM_PACKAGE_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${JSBSIM_PACKAGE_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jsbsim.pxd ${JSBSIM_PACKAGE_DIR}/_jsbsim.pxd COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/UI.py ${JSBSIM_PACKAGE_DIR} COPYONLY)
 
 # Build the package directory in the test folder
 set(JSBSIM_TEST_DIR ${CMAKE_BINARY_DIR}/tests)
 set(JSBSIM_TEST_PACKAGE_DIR ${JSBSIM_TEST_DIR}/jsbsim)
 file(MAKE_DIRECTORY ${JSBSIM_TEST_PACKAGE_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${JSBSIM_TEST_PACKAGE_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/UI.py ${JSBSIM_TEST_PACKAGE_DIR} COPYONLY)
 
 # Duplicate the files for the source distribution of JSBSim
 cmake_policy(SET CMP0051 NEW)
