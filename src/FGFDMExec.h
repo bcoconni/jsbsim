@@ -349,6 +349,16 @@ public:
     return true;
   }
 
+  /** Set the directory where data files are stored.
+      Relative paths are taken from the root directory.
+      @param path path to the directory where data files are located.
+      @see SetRootDir
+      @see GetDataPath */
+  bool SetDataPath(const SGPath& path) {
+    DataPath = GetFullPath(path);
+    return true;
+  }
+
   /// @name Top-level executive State and Model retrieval mechanism
   ///@{
   /// Returns the FGAtmosphere pointer.
@@ -401,6 +411,8 @@ public:
   const SGPath& GetFullAircraftPath(void) { return FullAircraftPath; }
   /// Retrieves the path to the output files.
   const SGPath& GetOutputPath(void) { return OutputPath; }
+  /// Retrieves the path to data files.
+  const SGPath& GetDataPath(void) { return DataPath; }
 
   /** Retrieves the value of a property.
       @param property the name of the property
@@ -640,6 +652,7 @@ private:
   SGPath EnginePath;
   SGPath SystemsPath;
   SGPath OutputPath;
+  SGPath DataPath;
   std::string CFGVersion;
   std::string Release;
   SGPath RootDir;

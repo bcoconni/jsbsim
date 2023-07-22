@@ -30,9 +30,15 @@ public:
   // Setters for the protected members
   void SetDay(double day) { day_of_year = day; }
   void SetSeconds(double seconds) { seconds_in_day = seconds; }
+#ifdef USE_FORTRAN_MSIS
+  void SetF107A(double value) { f107a = value; }
+  void SetF107(double value) { f107 = value; }
+  void SetAP(double value) { ap[0] = value; }
+#else
   void SetF107A(double value) { input.f107A = value; }
   void SetF107(double value) { input.f107 = value; }
   void SetAP(double value) { input.ap = value; }
+#endif
 };
 
 constexpr double Rstar = DummyMSIS::GetRstar();
@@ -58,12 +64,53 @@ public:
 
   FGMSISTest() {
     std_atm = fdmex.GetAtmosphere();
-    fdmex.GetPropertyManager()->Unbind(std_atm.get());
+    fdmex.GetPropertyManager()->Unbind(std_atm);
 
     const double species_mmol[8] {28.0134, 31.9988, 31.9988/2.0, 4.0, 1.0, 39.948,
                                   28.0134/2.0, 31.9988/2.0};
     double n[8];
     enum {N2=0, O2, O, He, H, Ar, N, OA};
+#ifdef USE_FORTRAN_MSIS
+    ifstream datafile("msis2.0_test_ref_dp.txt");
+
+    if (datafile.is_open()) {
+      string line;
+
+      // Ignore the header line
+      getline(datafile, line);
+
+      while(getline(datafile, line)) {
+        auto words = split(line, ' ');
+        double mol = 0.0;
+        double mmol = 0.0;
+
+        MSIS_iyd.push_back(stoi(words[0]) % 1000);
+        MSIS_sec.push_back(stoi(words[1]));
+        MSIS_alt.push_back(stod(words[2]));
+        MSIS_glat.push_back(stod(words[3]));
+        MSIS_glon.push_back(stod(words[4]));
+        MSIS_f107a.push_back(stod(words[6]));
+        MSIS_f107.push_back(stod(words[7]));
+        MSIS_ap.push_back(stod(words[8]));
+        n[He] = stod(words[9]);
+        n[O] = stod(words[10]);
+        n[N2] = stod(words[11]);
+        n[O2] = stod(words[12]);
+        n[Ar] = stod(words[13]);
+        MSIS_rho.push_back(stod(words[14]));
+        n[H] = stod(words[15]);
+        n[N] = stod(words[16]);
+        n[OA] = stod(words[17]);
+        MSIS_T.push_back(stod(words[18]));
+
+        for(unsigned j=N2; j<=OA; ++j) {
+          mmol += n[j]*species_mmol[j];
+          mol += n[j];
+        }
+        MSIS_mair.push_back(mmol/mol);
+      }
+    }
+#else
     struct nrlmsise_output output;
 	  struct nrlmsise_input input[15];
   	struct nrlmsise_flags flags;
@@ -132,6 +179,7 @@ public:
       }
       MSIS_mair.push_back(mmol/mol);
     }
+#endif
   }
 
   void testConstructor()
@@ -378,10 +426,10 @@ public:
 
 
       double p_alt = atm.GetPressureAltitude();
-      TS_ASSERT_DELTA(std_atm->GetPressure(p_alt), P, 1E-8);
+      TS_ASSERT_DELTA(std_atm->GetPressure(p_alt), atm.GetPressure(), 1E-8);
       TS_ASSERT_EQUALS(pressure_altitude_node->getDoubleValue(), p_alt);
       double rho_alt = atm.GetDensityAltitude();
-      TS_ASSERT_DELTA(std_atm->GetDensity(rho_alt)/rho, 1.0, 1E-8);
+      TS_ASSERT_DELTA(std_atm->GetDensity(rho_alt), atm.GetDensity(), 1E-8);
       TS_ASSERT_EQUALS(density_altitude_node->getDoubleValue(), rho_alt);
     }
   }

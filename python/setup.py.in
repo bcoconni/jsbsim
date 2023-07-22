@@ -150,6 +150,9 @@ package_data_files = ['_jsbsim.pxd', 'engine/*.xml', 'scripts/*.xml', 'systems/*
                       'aircraft/*.xml', 'LICENSE.txt', 'libexpat-LICENSE.txt',
                       'GeographicLib-LICENSE.txt', 'py.typed', '*.pyi']
 
+if os.path.exists('jsbsim/msis20.parm'):
+    package_data_files.append('msis20.parm')
+
 # Iterate over the aircraft folders
 for d in os.scandir('jsbsim/aircraft'):
     if d.is_dir():

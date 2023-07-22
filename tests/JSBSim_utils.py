@@ -62,6 +62,7 @@ def CreateFDM(sandbox, pm=None):
     _fdm.set_aircraft_path(os.path.join(path, 'aircraft'))
     _fdm.set_engine_path(os.path.join(path, 'engine'))
     _fdm.set_systems_path(os.path.join(path, 'systems'))
+    _fdm.set_data_path(os.path.join('..', '..', 'python', 'jsbsim'))
     return _fdm
 
 

@@ -2,7 +2,6 @@
 
  Module:       FGMSIS.cpp
  Author:       David Culp
-               (incorporated into C++ JSBSim class hierarchy, see model authors below)
  Date started: 12/14/03
  Purpose:      Models the MSIS-00 atmosphere
 
@@ -27,31 +26,29 @@
 
 FUNCTIONAL DESCRIPTION
 --------------------------------------------------------------------------------
-Models the MSIS-00 atmosphere. Provides temperature and density to FGAtmosphere,
-given day-of-year, time-of-day, altitude, latitude, longitude and local time.
+Models the NRLMSIS 2.0 atmosphere. Provides temperature and density to FGAtmosphere,
+given day-of-year, time-of-day, altitude, latitude, and longitude.
 
 HISTORY
 --------------------------------------------------------------------------------
 12/14/03   DPC   Created
 01/11/04   DPC   Derived from FGAtmosphere
 03/18/23   BC    Refactored
+07/21/23   BC    Update to NRLMSIS 2.0 and use F90 original code
 
  --------------------------------------------------------------------
- ---------  N R L M S I S E - 0 0    M O D E L    2 0 0 1  ----------
+ ---------  N R L M S I S E  2. 0    M O D E L    2 0 2 0  ----------
  --------------------------------------------------------------------
 
- This file is part of the NRLMSISE-00  C source code package - release
- 20020503
+    The NRLMSISE 2.0 model was developed by Mike Picone, Alan Hedin, and
+    Doug Drob. They also wrote a NRLMSISE-00 distribution package in
+    FORTRAN which is available at
+    https://ccmc.gsfc.nasa.gov/models/NRLMSIS~v2.0/
 
- The NRLMSISE-00 model was developed by Mike Picone, Alan Hedin, and
- Doug Drob. They also wrote a NRLMSISE-00 distribution package in
- FORTRAN which is available at
- http://uap-www.nrl.navy.mil/models_web/msis/msis_home.htm
-
- Dominik Brodowski implemented and maintains this C version. You can
- reach him at devel@brodo.de. See the file "DOCUMENTATION" for details,
- and check http://www.brodo.de/english/pub/nrlmsise/index.html for
- updated releases of this package.
+    Dominik Brodowski implemented and maintains this C version. You can
+    reach him at devel@brodo.de. See the file "DOCUMENTATION" for details,
+    and check http://www.brodo.de/english/pub/nrlmsise/index.html for
+    updated releases of this package.
 */
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,6 +59,22 @@ INCLUDES
 #include "FGMSIS.h"
 
 using namespace std;
+
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+INTERFACE WITH THE FORTRAN CODE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+#ifdef USE_FORTRAN_MSIS
+#include "FORTRAN_MSIS.h"
+
+extern "C" {
+  void init(const char* parmpath, const char* parmfile, bool* filefound);
+
+  void msis_calc_msiscalc(double* day, double* utsec, double* z, double* lat,
+    double* lon, const double* sfluxavg, const double* sflux, const double* ap,
+    double* tn, double*  dn, double* tex);
+}
+#endif
 
 namespace JSBSim {
 
@@ -74,13 +87,28 @@ FGMSIS::FGMSIS(FGFDMExec* fdmex) : FGStandardAtmosphere(fdmex)
 {
   Name = "MSIS";
 
+#ifdef USE_FORTRAN_MSIS
+  bool filefound = true;
+  SGPath datapath = fdmex->GetDataPath();
+  string filepath = "msis20.parm";
+
+  if (!datapath.isNull())
+    filepath = (datapath/filepath).str();
+
+  const char* filename = filepath.c_str();
+
+  init(nullptr, filename, &filefound);
+  if (!filefound)
+    throw BaseException("Could not find " + filepath);
+#else
   for(unsigned int i=0; i<24; ++i)
     flags.switches[i] = 1;
   input.year = 0;  // Ignored by NRLMSIS
-  input.f107A = 150.;
-  input.f107 = 150.;
-  input.ap = 4.;
+  input.f107A = f107a;
+  input.f107 = f107;
+  input.ap = ap[0];
   input.ap_a = nullptr;
+#endif
 
   Debug(0);
 }
@@ -165,6 +193,15 @@ void FGMSIS::Compute(double altitude, double& pressure, double& temperature,
   unsigned int year = today / 365.;
   today -= year * 365.;
 
+#ifdef USE_FORTRAN_MSIS
+  double t_K = 1.0;
+  double tex = 1.0;
+
+  msis_calc_msiscalc(&today, &utc_seconds, &h, &lat, &lon, &f107a, &f107, ap, &t_K, dn, &tex);
+
+  temperature = KelvinToRankine(t_K);
+  density = dn[0] * kgm3_to_slugft3;
+#else
   struct nrlmsise_output output;
 
   input.doy = today;
@@ -189,6 +226,7 @@ void FGMSIS::Compute(double altitude, double& pressure, double& temperature,
   // SUBROUTINE GTD7 does NOT include anomalous oxygen so we drop it from
   // the molar mass computation as well for consistency.
   dn[8] = 0.0;          // OA
+#endif
 
   // Compute specific gas constant for air
   double mmol = 0.0;

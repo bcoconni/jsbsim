@@ -697,6 +697,11 @@ cdef class FGFDMExec(FGJSBBase):
             self.set_root_dir(get_default_root_dir())
             self.set_output_path(os.getcwd())
 
+        try:
+            self.set_data_path(get_default_root_dir())
+        except IOError:
+            pass  # Keep the default data path if the default root dir is undefined.
+
         self.set_engine_path("engine")
         self.set_aircraft_path("aircraft")
         self.set_systems_path("systems")
@@ -787,6 +792,10 @@ cdef class FGFDMExec(FGJSBBase):
         """@Dox(JSBSim::FGFDMExec::SetOutputPath) """
         return self.thisptr.SetOutputPath(c_SGPath(path.encode(), NULL))
 
+    def set_data_path(self, path: str) -> bool:
+        """@Dox(JSBSim::FGFDMExec::SetDataPath) """
+        return self.thisptr.SetDataPath(c_SGPath(path.encode(), NULL))
+
     def set_root_dir(self, path: str) -> None:
         """@Dox(JSBSim::FGFDMExec::SetRootDir)"""
         self.thisptr.SetRootDir(c_SGPath(path.encode(), NULL))
@@ -806,6 +815,10 @@ cdef class FGFDMExec(FGJSBBase):
     def get_output_path(self) -> str:
         """@Dox(JSBSim::FGFDMExec::GetOutputPath)"""
         return self.thisptr.GetOutputPath().utf8Str().decode('utf-8')
+
+    def get_data_path(self) -> str:
+        """@Dox(JSBSim::FGFDMExec::GetDataPath)"""
+        return self.thisptr.GetDataPath().utf8Str().decode('utf-8')
 
     def get_full_aircraft_path(self) -> str:
         """@Dox(JSBSim::FGFDMExec::GetFullAircraftPath)"""

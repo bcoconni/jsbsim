@@ -71,9 +71,14 @@ class TestPlanet(JSBSimTestCase):
         self.fdm['ic/lat-geod-deg'] = 60.0
         self.fdm.run_ic()
 
-        self.assertAlmostEqual(self.fdm['atmosphere/T-R']*5/9, 281.46476, delta=1E-5)
-        self.assertAlmostEqual(self.fdm['atmosphere/rho-slugs_ft3']/0.001940318, 1.263428, delta=1E-6)
-        self.assertAlmostEqual(self.fdm['atmosphere/P-psf'], 2132.294, delta=1E-3)
+        if self.fdm.get_data_path():  # Using FORTRAN MSIS ?
+            self.assertAlmostEqual(self.fdm['atmosphere/T-R']*5/9, 278.59479, delta=1E-5)
+            self.assertAlmostEqual(self.fdm['atmosphere/rho-slugs_ft3']/0.001940318, 1.253048, delta=1E-6)
+            self.assertAlmostEqual(self.fdm['atmosphere/P-psf'], 2093.237, delta=1E-3)
+        else:
+            self.assertAlmostEqual(self.fdm['atmosphere/T-R']*5/9, 281.46476, delta=1E-5)
+            self.assertAlmostEqual(self.fdm['atmosphere/rho-slugs_ft3']/0.001940318, 1.263428, delta=1E-6)
+            self.assertAlmostEqual(self.fdm['atmosphere/P-psf'], 2132.294, delta=1E-3)
 
     def test_planet_geographic_error1(self):
         # Check that a negative equatorial radius raises an exception

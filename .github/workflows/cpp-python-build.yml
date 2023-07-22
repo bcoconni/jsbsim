@@ -54,6 +54,19 @@ jobs:
       - name: Build the JSBSim test program
         working-directory: build
         run: make -j2
+      - name: Run the MSIS program
+        working-directory: src/models/atmosphere/MSIS
+        run: |
+          ../../../../build/msis2.0_test
+          if [[ $(diff msis2.0_test_out.txt msis2.0_test_ref_dp.txt | wc -c) -ne 0 ]]; then
+            echo "Failed."
+            exit 1
+          fi
+      - name: Run the C++ program
+        working-directory: build
+        run: |
+          cp ../src/models/atmosphere/MSIS/msis20.parm msis21.parm
+          ./FGMSIS
       - name: Run the NRLMSIS-00 C package
         working-directory: src/models/atmosphere/MSIS
         run: |
@@ -73,12 +86,14 @@ jobs:
         shared_libs: [ON, OFF]
         build_julia: [OFF]
         display_stack_trace: [ON]
+        use_fortran_MSIS: [OFF]
         include:
           - os: ubuntu-20.04
             expat: OFF
             shared_libs: OFF
             build_julia: ON
             display_stack_trace: OFF
+            use_fortran_MSIS: ON
     env:
       static_link: ${{ matrix.expat == 'OFF' && matrix.shared_libs == 'OFF' }}
     runs-on: ${{ matrix.os }}
@@ -115,7 +130,7 @@ jobs:
       - name: Configure JSBSim
         run: |
           mkdir build && cd build
-          cmake -DCPACK_GENERATOR=DEB -DINSTALL_JSBSIM_PYTHON_MODULE=ON -DCMAKE_C_FLAGS_DEBUG="-g -O2" -DCMAKE_CXX_FLAGS_DEBUG="-g -O2" -DCMAKE_BUILD_TYPE=Debug -DSYSTEM_EXPAT=${{matrix.expat}} -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DBUILD_JULIA_PACKAGE=${{matrix.build_julia}} -DFPECTL_DISPLAY_STACK_TRACE=${{matrix.display_stack_trace}} -DCMAKE_PREFIX_PATH=$JSBSIM_PREFIX_PATH -DCMAKE_INSTALL_PREFIX=/usr ..
+          cmake -DCPACK_GENERATOR=DEB -DINSTALL_JSBSIM_PYTHON_MODULE=ON -DCMAKE_C_FLAGS_DEBUG="-g -O2" -DCMAKE_CXX_FLAGS_DEBUG="-g -O2" -DCMAKE_BUILD_TYPE=Debug -DSYSTEM_EXPAT=${{matrix.expat}} -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DBUILD_JULIA_PACKAGE=${{matrix.build_julia}} -DFPECTL_DISPLAY_STACK_TRACE=${{matrix.display_stack_trace}} -DUSE_FORTRAN_MSIS=${{matrix.use_fortran_MSIS}} -DCMAKE_PREFIX_PATH=$JSBSIM_PREFIX_PATH -DCMAKE_INSTALL_PREFIX=/usr ..
       - name: Cache CTest cost data
         # This file is used by CTest to optimize the distribution of the tests
         # between the cores and reduce execution time.
@@ -236,6 +251,7 @@ jobs:
       fail-fast: false
       matrix:
         shared_libs: [ON, OFF]
+        use_fortran_MSIS: [ON, OFF]
     steps:
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -259,7 +275,7 @@ jobs:
           mkdir build && cd build
           julia -e 'import Pkg;Pkg.add(\"CxxWrap\")'
           $CXXWRAP_PREFIX_PATH=julia -e 'using CxxWrap;print(CxxWrap.prefix_path())'
-          cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DBUILD_JULIA_PACKAGE=ON -DCMAKE_INCLUDE_PATH="$(get-location)\..\cxxtest" -DBUILD_PYTHON_MODULE=OFF -DBUILD_DOCS=OFF -DCMAKE_PREFIX_PATH="$CXXWRAP_PREFIX_PATH" ..
+          cmake -G "MinGW Makefiles" -DBUILD_SHARED_LIBS=${{matrix.shared_libs}} -DUSE_FORTRAN_MSIS=${{matrix.use_fortran_MSIS}} -DBUILD_JULIA_PACKAGE=ON -DCMAKE_INCLUDE_PATH="$(get-location)\..\cxxtest" -DBUILD_PYTHON_MODULE=OFF -DBUILD_DOCS=OFF -DCMAKE_PREFIX_PATH="$CXXWRAP_PREFIX_PATH" ..
       - name: Build JSBSim
         working-directory: build
         run: mingw32-make -j2
