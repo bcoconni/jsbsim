@@ -71,7 +71,7 @@ class TestPlanet(JSBSimTestCase):
         self.fdm['ic/lat-geod-deg'] = 60.0
         self.fdm.run_ic()
 
-        if self.fdm.get_data_path():  # Using FORTRAN MSIS ?
+        if tripod.use_NRLMSIS_2_0():
             self.assertAlmostEqual(self.fdm['atmosphere/T-R']*5/9, 278.59479, delta=1E-5)
             self.assertAlmostEqual(self.fdm['atmosphere/rho-slugs_ft3']/0.001940318, 1.253048, delta=1E-6)
             self.assertAlmostEqual(self.fdm['atmosphere/P-psf'], 2093.237, delta=1E-3)

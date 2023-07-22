@@ -229,6 +229,9 @@ class FlightModel:
         system_tag = et.SubElement(self.root, 'planet')
         system_tag.attrib['file'] = file_name
 
+    def use_NRLMSIS_2_0(self):
+        return os.path.exists(os.path.join(self.fdm.get_data_path(), "msis20.parm"))
+
     def before_loading(self):
         pass
 
