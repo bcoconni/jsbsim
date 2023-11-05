@@ -21,7 +21,10 @@
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog as fd
+from tkinter.messagebox import showinfo
 
+import os
 import matplotlib
 import numpy as np
 
@@ -135,12 +138,39 @@ class Graph:
         self.canvas.draw()
 
 
+class MenuBar(tk.Menu):
+    def __init__(self, root, root_dir):
+        super().__init__(root)
+        self.root_dir = root_dir
+
+        file_menu = tk.Menu(self, tearoff=False)
+        file_menu.add_command(label="Open...", command=self.select_script_file)
+        file_menu.add_command(label="Exit", command=root.destroy)
+        self.add_cascade(label="File", menu=file_menu)
+
+    def select_script_file(self):
+        filename = fd.askopenfilename(
+            title="Open a script",
+            initialdir=os.path.join(self.root_dir, "scripts"),
+            filetypes=(("script files", "*.xml"),),
+        )
+        if filename:
+            showinfo(
+                title="Selected script",
+                message=os.path.relpath(filename, self.root_dir),
+            )
+
+
 class App(tk.Tk):
-    def __init__(self, fdm):
+    def __init__(self, fdm, root_dir="."):
         super().__init__()
+        self.root_dir = root_dir
         aircraft_name = fdm.get_aircraft().get_aircraft_name()
         self.title(f"JSBSim [{aircraft_name}]")
         self.fdm = fdm
+
+        menubar = MenuBar(self, root_dir)
+        self.config(menu=menubar)
 
         frame = ttk.Frame(self)
         frame.pack()
@@ -191,17 +221,15 @@ class App(tk.Tk):
 
         frame.pack()
 
-        ttk.Button(self, text="Quit", command=lambda: self.quit()).pack()
-
         self.time = []
         self.prop_history = {}
 
-    def watch_selected_properties(self, event):
+    def watch_selected_properties(self, _):
         for item in self.property_list.get_selected_properties():
             self.watch_list.add_property(item[0], item[1])
             self.prop_history[item[0]] = np.zeros((len(self.time),))
 
-    def step(self, event):
+    def step(self, _):
         self.fdm.run()
         self.watch_list.update(self.fdm.get_property_value)
         self.update_graph()
@@ -216,14 +244,14 @@ class App(tk.Tk):
                 )
             self.graph.update(self.time, self.prop_history)
 
-    def run(self, event):
+    def run(self, _):
         self.update_id = self.watch_list.after(250, self.update)
 
-    def pause(self, event):
+    def pause(self, _):
         self.watch_list.after_cancel(self.update_id)
 
     def update(self):
-        for i in range(50):
+        for _ in range(50):
             self.fdm.run()
         self.watch_list.update(self.fdm.get_property_value)
         self.update_graph()
