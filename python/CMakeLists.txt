@@ -129,6 +129,7 @@ if(WIN32)
 endif(WIN32)
 
 add_subdirectory(fpectl)
+add_subdirectory(UI)
 
 # Install the JSBSim Python module
 if (INSTALL_JSBSIM_PYTHON_MODULE)
