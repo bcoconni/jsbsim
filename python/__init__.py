@@ -20,5 +20,6 @@ from ._jsbsim import (
     TrimFailureError,
     ePressure,
     eTemperature,
+    Attribute,
     get_default_root_dir,
 )
