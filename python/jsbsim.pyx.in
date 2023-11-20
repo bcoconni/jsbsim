@@ -197,7 +197,7 @@ cdef class FGPropertyNode:
 
     def get_attribute(self, attr: Attribute) -> bool:
         self.__intercept_invalid_pointer()
-        return self.thisptr.ptr().getAttribute(attr)
+        return self.thisptr.ptr().getAttribute(attr.value)
 
 
 cdef class FGPropertyManager:
