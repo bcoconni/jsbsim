@@ -71,12 +71,19 @@ cdef extern from "simgear/structure/SGSharedPtr.hxx":
         T* ptr() const
 
 cdef extern from "input_output/FGPropertyManager.h" namespace "JSBSim":
+    cdef enum c_Attribute "SGPropertyNode::Attribute":
+        NO_ATTR = 0,
+        READ = 1,
+        WRITE = 2
+
     cdef cppclass c_FGPropertyNode "JSBSim::FGPropertyNode":
         c_FGPropertyNode* GetNode(const string& path, bool create)
         const string& GetName() const
         const string& GetFullyQualifiedName() const
+        string GetRelativeName(const string &path) const
         double getDoubleValue() const
         void setDoubleValue(double value)
+        bool getAttribute (c_Attribute attr) const
 
 cdef extern from "input_output/FGPropertyManager.h" namespace "JSBSim":
     cdef cppclass c_FGPropertyManager "JSBSim::FGPropertyManager":

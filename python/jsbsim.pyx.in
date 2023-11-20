@@ -126,6 +126,12 @@ cdef class FGPropagate:
         return _convertToNumpyVec(deref(self.thisptr).GetUVW())
 
 
+class Attribute(enum.Enum):
+    NO_ATTR = 0
+    READ = 1
+    WRITE = 2
+
+
 cdef class FGPropertyNode:
     """@Dox(JSBSim::FGPropertyNode)"""
 
@@ -162,6 +168,11 @@ cdef class FGPropertyNode:
         self.__intercept_invalid_pointer()
         return self.thisptr.ptr().GetFullyQualifiedName().decode()
 
+    def get_relative_name(self, path: str = "/fdm/jsbsim/") -> str:
+        """@Dox(JSBSim::FGPropertyManager::GetRelativeName)"""
+        self.__intercept_invalid_pointer()
+        return self.thisptr.GetRelativeName(path.encode()).decode()
+
     def get_node(self, path: str, create: bool = False) -> Optional[FGPropertyNode]:
         """@Dox(JSBSim::FGPropertyNode::GetNode)"""
         self.__intercept_invalid_pointer()
@@ -178,6 +189,11 @@ cdef class FGPropertyNode:
         """@Dox(SGPropertyNode::setDoubleValue)"""
         self.__intercept_invalid_pointer()
         self.thisptr.ptr().setDoubleValue(value)
+
+    def get_attribute(self, attr: Attribute) -> bool:
+        self.__intercept_invalid_pointer()
+        return self.thisptr.getAttribute(attr)
+
 
 cdef class FGPropertyManager:
     """@Dox(JSBSim::FGPropertyManager)"""
