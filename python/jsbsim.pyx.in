@@ -169,9 +169,9 @@ cdef class FGPropertyNode:
         return self.thisptr.ptr().GetFullyQualifiedName().decode()
 
     def get_relative_name(self, path: str = "/fdm/jsbsim/") -> str:
-        """@Dox(JSBSim::FGPropertyManager::GetRelativeName)"""
+        """@Dox(JSBSim::FGPropertyNode::GetRelativeName)"""
         self.__intercept_invalid_pointer()
-        return self.thisptr.GetRelativeName(path.encode()).decode()
+        return self.thisptr.ptr().GetRelativeName(path.encode()).decode()
 
     def get_node(self, path: str, create: bool = False) -> Optional[FGPropertyNode]:
         """@Dox(JSBSim::FGPropertyNode::GetNode)"""
@@ -191,8 +191,9 @@ cdef class FGPropertyNode:
         self.thisptr.ptr().setDoubleValue(value)
 
     def get_attribute(self, attr: Attribute) -> bool:
+        """@Dox(SGPropertyNode::getAttribute)"""
         self.__intercept_invalid_pointer()
-        return self.thisptr.getAttribute(attr.value)
+        return self.thisptr.ptr().getAttribute(attr.value)
 
 
 cdef class FGPropertyManager:
