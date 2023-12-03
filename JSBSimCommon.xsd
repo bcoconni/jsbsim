@@ -105,18 +105,21 @@
     <xs:sequence>
       <xs:group ref="func_group"/>
     </xs:sequence>
+    <xs:attribute name="name" use="optional" type="xs:string"/>
   </xs:complexType>
 
   <xs:complexType name="two-arguments">
     <xs:sequence>
       <xs:group ref="func_group" minOccurs="2" maxOccurs="2"/>
     </xs:sequence>
+    <xs:attribute name="name" use="optional" type="xs:string"/>
   </xs:complexType>
 
   <xs:complexType name="multiple-arguments">
     <xs:sequence>
       <xs:group ref="func_group" minOccurs="2" maxOccurs="unbounded"/>
     </xs:sequence>
+    <xs:attribute name="name" use="optional" type="xs:string"/>
   </xs:complexType>
 
   <xs:simpleType name="numbers-list">
@@ -282,6 +285,7 @@
           attribute is not supplied, the channel always executes.
         </xs:documentation></xs:annotation>
       </xs:attribute>
+      <xs:attribute name="execrate" type="xs:integer" default="1"/>
     </xs:complexType>
   </xs:element>
 
@@ -918,5 +922,55 @@
     </xs:sequence>
     <xs:attribute name="name" use="optional" type="xs:token"/>
     <xs:attribute name="file" use="optional" type="xs:token"/>
+  </xs:complexType>
+
+  <!--Output-->
+
+  <xs:complexType name="property-with-caption">
+    <xs:simpleContent>
+      <xs:extension base="property">
+        <xs:attribute name="caption" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="output">
+    <xs:sequence>
+      <xs:element name="rates" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="velocities" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="position" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="atmosphere" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="fcs" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="ground_reactions" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="propulsion" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="simulation" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="massprops" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="forces" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="moments" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="aerosurfaces" type="ON-OFF" minOccurs="0"/>
+      <xs:element name="coefficients" type="ON-OFF" minOccurs="0"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="property" type="property-with-caption"/>
+        <xs:element name="function" type="model-function"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:token" use="required"/>
+    <xs:attribute name="type" use="required">
+      <xs:annotation><xs:documentation>
+        The format in which the data output will be issued.
+      </xs:documentation></xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="CSV"/>
+          <xs:enumeration value="TABULAR"/>
+          <xs:enumeration value="SOCKET"/>
+          <xs:enumeration value="FLIGHTGEAR"/>
+          <xs:enumeration value="TERMINAL"/>
+          <xs:enumeration value="NONE"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="rate" type="positive-number" use="required"/>
+    <xs:attribute name="file" type="xs:token" use="optional"/>
   </xs:complexType>
 </xs:schema>
