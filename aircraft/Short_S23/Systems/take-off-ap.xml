@@ -9,30 +9,30 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-  
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-  
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
+
 -->
 <system name="take-off-ap">
 
- <documentation>
+ <description>
   This system provides autopilot components for scripting
   take-offs in JSBSim/standalone.
- </documentation>
+ </description>
 
  <property value="0.0">take-off-ap/enabled</property>
  <property value="0.0">take-off-ap/landing</property>
 
  <channel name="Take-off aileron">
 
-  <pid name="take-off-ap/aileron-cmd-norm"> 
+  <pid name="take-off-ap/aileron-cmd-norm">
    <input> hydro/roll-deg </input>
    <kp>   -3.000 </kp>
    <ki>    0.000 </ki>
@@ -56,10 +56,10 @@
  <channel name="Take-off elevator">
 
   <fcs_function name="take-off-ap/pitch-error-deg">
-   <documentation>
+   <description>
     Deviation from target pitch angles during take-off run.
     Based on the real aircraft.
-   </documentation>
+   </description>
    <function>
     <difference>
      <table>
@@ -71,7 +71,7 @@
         0.0     4.2    4.0
         15.0    7.0    6.0
         25.0    9.0    9.0
-        30.0   11.0   12.0 
+        30.0   11.0   12.0
         60.0   10.0   11.0
         70.0    9.5    7.0
         80.0    7.0    6.0
@@ -101,7 +101,7 @@
    </test>
   </switch>
 
-  <pid name="take-off-ap/elevator-cmd-norm"> 
+  <pid name="take-off-ap/elevator-cmd-norm">
    <input>-take-off-ap/pitch-error-deg</input>
    <kp>    0.400 </kp>
    <ki>    0.500 </ki>
@@ -130,7 +130,7 @@
 
  <channel name="Take-off Rudder">
 
-  <pid name="take-off-ap/rudder-cmd-norm"> 
+  <pid name="take-off-ap/rudder-cmd-norm">
    <input> hydro/beta-deg </input>
    <kp>   -1.000 </kp>
    <ki>    0.000 </ki>
@@ -176,14 +176,14 @@
      <product>
       <property>auto-boost/enabled-norm</property>
       <difference>
-       <property>auto-boost/target-psi</property> 
+       <property>auto-boost/target-psi</property>
        <property>propulsion/engine[0]/boost-psi</property>
       </difference>
      </product>
      <product>
       <property>auto-boost/disabled-norm</property>
       <difference>
-       <property>fcs/throttle-pos-norm[0]</property> 
+       <property>fcs/throttle-pos-norm[0]</property>
        <property>auto-boost/throttle-cmd[0]</property>
       </difference>
      </product>
@@ -201,14 +201,14 @@
      <product>
       <property>auto-boost/enabled-norm</property>
       <difference>
-       <property>auto-boost/target-psi</property> 
+       <property>auto-boost/target-psi</property>
        <property>propulsion/engine[1]/boost-psi</property>
       </difference>
      </product>
      <product>
       <property>auto-boost/disabled-norm</property>
       <difference>
-       <property>fcs/throttle-pos-norm[1]</property> 
+       <property>fcs/throttle-pos-norm[1]</property>
        <property>auto-boost/throttle-cmd[1]</property>
       </difference>
      </product>
@@ -226,14 +226,14 @@
      <product>
       <property>auto-boost/enabled-norm</property>
       <difference>
-       <property>auto-boost/target-psi</property> 
+       <property>auto-boost/target-psi</property>
        <property>propulsion/engine[2]/boost-psi</property>
       </difference>
      </product>
      <product>
       <property>auto-boost/disabled-norm</property>
       <difference>
-       <property>fcs/throttle-pos-norm[2]</property> 
+       <property>fcs/throttle-pos-norm[2]</property>
        <property>auto-boost/throttle-cmd[2]</property>
       </difference>
      </product>
@@ -251,14 +251,14 @@
      <product>
       <property>auto-boost/enabled-norm</property>
       <difference>
-       <property>auto-boost/target-psi</property> 
+       <property>auto-boost/target-psi</property>
        <property>propulsion/engine[3]/boost-psi</property>
       </difference>
      </product>
      <product>
       <property>auto-boost/disabled-norm</property>
       <difference>
-       <property>fcs/throttle-pos-norm[3]</property> 
+       <property>fcs/throttle-pos-norm[3]</property>
        <property>auto-boost/throttle-cmd[3]</property>
       </difference>
      </product>

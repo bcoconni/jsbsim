@@ -356,11 +356,11 @@
             -->
             <aerosurface_scale name="fcs/elevator-control">
                 <input>fcs/pitch-trim-sum</input>
+                <gain>0.01745</gain>
                 <range>
                     <min>-28</min>
                     <max> 23</max>
                 </range>
-                <gain>0.01745</gain>
             </aerosurface_scale>
 
             <actuator name="fcs/elevator-actuator">

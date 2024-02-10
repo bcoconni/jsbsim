@@ -9,29 +9,27 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-  
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-  
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
+
 -->
 <system name="engine-control-jsbsim">
 
- <documentation>
+ <description>
   Controls according to [FAA:2008:AS1CE]:
     Vectored Thrust Movements
       Side Engines            0 (forward horizontal) to 120 degrees up.
       Aft Engine              0 (aft horizontal) to 90 degrees down.
   Avoid sustained operation with forward swivel angles between
   43 and 57 degrees during normal operation.
- </documentation>
 
- <documentation>
   Engine controls (from pictures of the engine panel and other sources)
   - RPM SEL levers
     - LH AFT RH: IDLE - ?  (to 1250RPM - max according to [FAA:2008:E8-6600])
@@ -43,12 +41,12 @@
   - Thrust (prop pitch) levers (direct propeller pitch [FAA:2008:E8-6600])
     - LH RH AFT: REV - ZERO - T/O - CRUISE
     - fcs/thrust-cmd-norm[0|1|2] range [0, 1].
-  - Swivel levers 
+  - Swivel levers
     - LH RH: 0 - 120 degrees
     - AFT:   0 - (-)90 degrees (only 0 or -90 according to [FAA:2008:E8-6600])
     - fcs/side-engine-swivel-cmd-norm[0|1], fcs/rear-engine-swivel-cmd-norm
       range [0, 1].
- </documentation>
+ </description>
 
  <property value="0.0">fcs/propeller-speed-cmd-norm[0]</property>
  <property value="0.0">fcs/propeller-speed-cmd-norm[1]</property>
@@ -66,16 +64,16 @@
  <property value="0.0">fcs/side-engine-swivel-cmd-norm[1]</property>
  <property value="0.0">fcs/rear-engine-swivel-cmd-norm</property>
 
- <documentation>
-  I have not seen any controls for the auxilliary rear side propeller
-  so I assume that it is controlled by the FCS in response to yaw
-  requests.
- </documentation>
-
  <!--
  === Engine throttle control ================================
  -->
  <channel name="Engine 1 throttle control">
+
+  <description>
+    I have not seen any controls for the auxilliary rear side propeller
+    so I assume that it is controlled by the FCS in response to yaw
+    requests.
+  </description>
 
   <aerosurface_scale name="fcs/etc/propeller-speed-cmd-rpm[0]">
    <input>fcs/propeller-speed-cmd-norm[0]</input>

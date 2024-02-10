@@ -22,7 +22,7 @@
 -->
 <system name="air-and-gas-control-jsbsim">
 
- <documentation>
+ <description>
    "Two ballonets are provided, one forward and one aft, the capacity
    of each being 6,375 cubic feet.  The supply of air for filling
    these is taken from the propeller draught by a slanting aluminium
@@ -47,11 +47,10 @@
    "One ripping panel is fitted, which is situated on the top of the
    envelope towards the nose.  It has a length of 14 feet 5 inches and
    a breadth of about 8 inches."  [Whale:1919:BA] on the S.S.B.E. 2C.
- </documentation>
- <limitation>
+
    The slip stream pressure calculation does not take the direction of the
    relative wind into account.
- </limitation>
+ </description>
 
  <!-- Pilot inputs. -->
  <property value="0.0">fcs/gas-valve-cmd-norm[0]</property>
@@ -72,11 +71,10 @@
  <property value="5.1204036">ballonets/automatic-valve-threshold-psf[0]</property>
  <property value="5.1204036">ballonets/automatic-valve-threshold-psf[1]</property>
 
- <documentation>
-  Range [0, 1].
- </documentation>
-
  <channel name="Gas valves">
+  <description>
+    Range [0, 1].
+  </description>
 
   <switch name="gas/ripped-sample-hold">
    <default value="fcs/rip-cord-cmd-norm"/>

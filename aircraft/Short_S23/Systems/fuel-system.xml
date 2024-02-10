@@ -9,23 +9,23 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-  
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-  
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
+
 -->
 <system name="fuel-system">
 
- <documentation>
+ <description>
    The S.23 'boats as delivered (with a few exceptions) came with one of
    3 different fuel system types. [Cassidy:2004:FE]
-    
+
     Mk.I (1D) standard:
       one 326 gallon tank in each wing.
     Mk.II (1A/1C) Cavalier, Centarus:
@@ -33,12 +33,7 @@
     Mk.III (1B) Cambria, Caledonia:
       one 179, one 326 and one 380 gallon tank in each wing.
       two 280 gallon tanks between the spar frames in the hull.
- </documentation>
 
- <property value="1.0">fcs/fuel-system/mark</property>
- <!-- 1, 2 or 3 for Mark I, Mark II or Mark III. -->
-
- <documentation>
    - Fuel cocks for feeding into the common supply.
      - Mark I fuel system:
        - One for the left tank, one for the right tank and one for balancing.
@@ -51,7 +46,7 @@
        - Two for the outboard left and right tanks.
        - fcs/fuel-system/left-tank-cock-cmd-norm[1]
        - fcs/fuel-system/right-tank-cock-cmd-norm[1]
-    
+
      - Mark III adds (over Mark II):
        - Two for the inboard left and right tanks and two for the fuselage
          tanks.
@@ -64,7 +59,10 @@
      - fcs/fuel-system/left-test-cock-cmd-norm
      - fcs/fuel-system/right-test-cock-cmd-norm
      - fcs/fuel-system/center-test-cock-cmd-norm
- </documentation>
+ </description>
+
+ <property value="1.0">fcs/fuel-system/mark</property>
+ <!-- 1, 2 or 3 for Mark I, Mark II or Mark III. -->
 
  <!-- All marks. -->
  <property value="1.0">fcs/fuel-system/left-tank-cock-cmd-norm</property>
@@ -1134,7 +1132,7 @@
        <property>fcs/fuel-system/feed-line/left-wing-available-pps</property>
        <value>2.0</value>
       </quotient>
-      <!-- Left wing + center. --> 
+      <!-- Left wing + center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/left-center-available-pps</property>
        <value>3.0</value>
@@ -1162,17 +1160,17 @@
        <property>fcs/fuel-system/feed-line/left-wing-available-pps</property>
        <value>2.0</value>
       </quotient>
-      <!-- Center. --> 
+      <!-- Center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/center-available-pps</property>
        <value>2.0</value>
       </quotient>
-      <!-- Left wing + center. --> 
+      <!-- Left wing + center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/left-center-available-pps</property>
        <value>3.0</value>
       </quotient>
-      <!-- Right wing + center. --> 
+      <!-- Right wing + center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/right-center-available-pps</property>
        <value>3.0</value>
@@ -1200,17 +1198,17 @@
        <property>fcs/fuel-system/feed-line/right-wing-available-pps</property>
        <value>2.0</value>
       </quotient>
-      <!-- Center. --> 
+      <!-- Center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/center-available-pps</property>
        <value>2.0</value>
       </quotient>
-      <!-- Left wing + center. --> 
+      <!-- Left wing + center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/left-center-available-pps</property>
        <value>3.0</value>
       </quotient>
-      <!-- Right wing + center. --> 
+      <!-- Right wing + center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/right-center-available-pps</property>
        <value>3.0</value>
@@ -1238,7 +1236,7 @@
        <property>fcs/fuel-system/feed-line/right-wing-available-pps</property>
        <value>2.0</value>
       </quotient>
-      <!-- Right wing + center. --> 
+      <!-- Right wing + center. -->
       <quotient>
        <property>fcs/fuel-system/feed-line/right-center-available-pps</property>
        <value>3.0</value>
@@ -1503,7 +1501,7 @@
     </sum>
    </function>
   </fcs_function>
-  
+
   <integrator name="fcs/fuel-system/debug/total-engine-fuel-consumed-lbs">
    <input>fcs/fuel-system/debug/total-engine-fuel-consumption-pps</input>
    <c1>1.00</c1>

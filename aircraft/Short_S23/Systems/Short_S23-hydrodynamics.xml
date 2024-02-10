@@ -9,24 +9,24 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-  
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-  
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
+
 -->
 <system name="Short S.23 hydrodynamics">
 
- <documentation>
+ <description>
   This system computes forces and moments due to the hull's interaction
   with water, both hydrostatic and hydrodynamic, with respect to the
   hydrodynamic reference point (HRP).
-  
+
   The coordinate system for the forces and moments is similar to the
   wind system but is always aligned with the water surface (which is
   assumed to be horizontal).
@@ -39,7 +39,7 @@
   - Pitch
   - Yaw
   - Roll
- </documentation>
+ </description>
 
  <!-- HRP location -->
  <property value="341.73">metrics/hydro-rp-x-in</property>
@@ -50,11 +50,11 @@
  <property value="56.0">metrics/hydro-length-ft</property>
 
  <!-- Model parameters -->
- <documentation>
+ <!--
   The hydrodynamic coefficients are assumed to be defined as in
   [Dawson:1934:Clipper], that is the hull beam is used as the
   reference length and to define both reference area and volume.
- </documentation>
+ -->
  <property value="10.0">hydro/hull-beam-ft</property>
  <property value="100.0">hydro/hull-beam-ft2</property>
  <property value="1000.0">hydro/hull-beam-ft3</property>
@@ -189,10 +189,10 @@
  <channel name ="Hydrodynamic coefficients">
 
   <fcs_function name="hydro/coefficients/C_Delta">
-   <documentation>
+   <description>
     Unitless load on water coefficient. [Dawson:1934:Clipper]
     Will lag one time-step behind the true value.
-   </documentation>
+   </description>
    <function>
     <product>
      <value>0.60</value> <!-- Tweak. The S-40 seems to have a lower load. -->
@@ -205,12 +205,12 @@
      </quotient>
     </product>
    </function>
-  </fcs_function> 
+  </fcs_function>
 
   <fcs_function name="hydro/coefficients/C_V">
-   <documentation>
+   <description>
     Unitless speed coefficient. [Dawson:1934:Clipper]
-   </documentation>
+   </description>
    <function>
     <quotient>
      <property> hydro/v-fps </property>
@@ -223,10 +223,10 @@
      </pow>
     </quotient>
    </function>
-  </fcs_function> 
+  </fcs_function>
 
   <fcs_function name="hydro/s40-pitch-deg">
-   <documentation>
+   <description>
     Some of the hydrodynamic coefficients are based on
     data from the Sikorsky S-40 'boat [Dawson:1934:Clipper].
     As it's hull has a different datum line and behaviour
@@ -243,14 +243,14 @@
     Note: "Arthur Gouge quoted a minimum 9 deg. positive angle from
     datum as the trim angle of an Empire 'boat as it was about to
     leave the water rather than the 12 deg. angle of the tank tests" ([Cassidy:2004:FE], page 29)
-   </documentation>
+   </description>
    <function>
     <table>
      <independentVar lookup="row">hydro/coefficients/C_V</independentVar>
      <independentVar lookup="column">hydro/hull/pitch-deg</independentVar>
      <tableData>
               -10.0  4.08  6.50  8.00  10.0  11.0  20.0
-       0.0    -10.0   3.0   6.5   8.0  10.0  11.0  20.0 
+       0.0    -10.0   3.0   6.5   8.0  10.0  11.0  20.0
        1.41   -10.0   3.0   6.5   8.0   9.0  11.0  20.0
        2.35   -10.0   3.0   6.0   7.1   8.0  10.0  20.0
        2.82   -10.0   2.0   4.0   5.0   6.0   6.2  20.0
@@ -261,14 +261,14 @@
   </fcs_function>
 
   <fcs_function name="hydro/coefficients/C_M">
-   <documentation>
+   <description>
     Unitless moment coefficient based on [Dawson:1934:Clipper].
     Modelled as a function of trim angle, speed coefficient and
     load coefficient.
     The curve for C_M as a function of C_V was interpolated from
     the experimental data in [Dawson:1934:Clipper] for each trim
     angle and load. The data is for the hull of a Sikorsky S-40 'boat.
-   </documentation>
+   </description>
    <function>
     <table>
      <independentVar lookup="row">hydro/s40-pitch-deg</independentVar>
@@ -311,14 +311,14 @@
   </fcs_function>
 
   <fcs_function name="hydro/coefficients/C_R">
-   <documentation>
+   <description>
     Unitless resistance coefficient based on [Dawson:1934:Clipper].
     Modelled as a function of trim angle, speed coefficient and
     load coefficient.
     The curve for C_R as a function of C_V was interpolated from
     the experimental data in [Dawson:1934:Clipper] for each trim
     angle and load. The data is for the hull of a Sikorsky S-40 'boat.
-   </documentation>
+   </description>
    <function>
     <table>
      <independentVar lookup="row">hydro/s40-pitch-deg</independentVar>
@@ -649,10 +649,10 @@
  <channel name="Force Z (up)">
 
   <fcs_function name="hydro/buoyancy-lbs">
-   <documentation>
+   <description>
     Lift due to buoyancy.
     This data was computed in Gerris using the S.23 3d model.
-   </documentation>
+   </description>
    <function>
     <product>
      <value> 0.22480894 </value>
@@ -781,7 +781,7 @@
         4   0.0      0.0      0.0      0.0      0.0
         8   0.0      0.0      0.0      0.0      0.0
        12   0.0      0.0      0.0      0.0      0.0
-      </tableData>      
+      </tableData>
      </table>
     </product>
    </function>
@@ -1080,10 +1080,10 @@
  <channel name="Pitch">
 
   <fcs_function name="hydro/buoyancy-pitch-moment-lbsft">
-   <documentation>
+   <description>
     Pitch moment due to buoyancy.
     This data was computed in Gerris using the S.23 3d model.
-   </documentation>
+   </description>
    <function>
     <product>
      <value> 0.73756215 </value>
@@ -1283,10 +1283,10 @@
  <channel name="Yaw">
 
   <fcs_function name="hydro/hull-yaw-moment-lbsft">
-   <documentation>
+   <description>
     Guess based on the shape of the hull (essentially length of water line
     forward and aft of CoG guesstimated in blender).
-   </documentation>
+   </description>
    <function>
     <description>Hydrodynamic yaw moment due to hull (per deg beta)</description>
     <product>
@@ -1297,7 +1297,7 @@
      <table>
       <independentVar lookup="row">hydro/hull/pitch-deg</independentVar>
       <independentVar lookup="column">hydro/hull/height-agl-ft</independentVar>
-      <tableData breakpoint="">
+      <tableData>
                0.0    3.0    4.0    6.0    7.0
         0.0   -0.10   0.10   0.10   0.10   0.0
         1.0   -0.105  0.075  0.30  -0.05   0.0
@@ -1313,9 +1313,9 @@
 
 
   <fcs_function name="hydro/damping-yaw-moment-lbsft">
-   <documentation>
+   <description>
     Dampen yaw movements while in the water. Guessed.
-   </documentation>
+   </description>
    <function>
     <product>
      <property>hydro/yaw-tweak-factor</property>
@@ -1335,10 +1335,10 @@
   </fcs_function>
 
   <fcs_function name="hydro/floats-yaw-moment-lbsft">
-   <documentation>
+   <description>
     Yaw moment due to drag from the floats.
     Assumption: the longitudal position of the floats coincide with the HRP.
-   </documentation>
+   </description>
    <function>
     <product>
      <property>hydro/float-arm-y-ft[1]</property>
@@ -1364,10 +1364,10 @@
  <channel name="Roll">
 
   <fcs_function name="hydro/buoyancy-roll-moment-lbsft">
-   <documentation>
+   <description>
     Roll moment due to buoyancy.
     This data was computed in Gerris using the S.23 3d model.
-   </documentation>
+   </description>
    <function>
     <product>
      <value> 0.73756215 </value>
@@ -1481,10 +1481,10 @@
   </fcs_function>
 
   <fcs_function name="hydro/floats-roll-moment-lbsft">
-   <documentation>
+   <description>
     Roll moment due to lift from the floats.
     Assumption: the longitudal position of the floats coincide with the HRP.
-   </documentation>
+   </description>
    <function>
     <product>
      <property>hydro/float-arm-y-ft[1]</property>

@@ -9,16 +9,16 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-  
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-  
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
+
 -->
 <system name="air-and-gas-control-jsbsim">
 
@@ -26,7 +26,7 @@
  === Ballonet control system ===============================================
  -->
 
- <documentation>
+ <description>
   Gas and ballonet valve controls (from pictures and other sources):
 
   - Air valve 1
@@ -48,7 +48,7 @@
 
   The control panel for the ballonet blowers seems to be on the left side of
   the overhead panel just behind the ballonet valve levers.
- </documentation>
+ </description>
 
  <property>fcs/ballonet-valve-cmd-norm[0]</property>
  <property>fcs/ballonet-valve-cmd-norm[1]</property>
@@ -64,13 +64,13 @@
  <property>fcs/ballonet-inflation-cmd-norm[0]</property>
  <property>fcs/ballonet-inflation-cmd-norm[1]</property>
 
- <documentation>
-  Range [-1, 1].
-  Positive values maps to blower inflow percentage and
-  negative values maps to valve open percentage.
- </documentation>
-
  <channel name="Ballonet control">
+
+  <description>
+    Range [-1, 1].
+    Positive values maps to blower inflow percentage and
+    negative values maps to valve open percentage.
+  </description>
 
   <fcs_function name="fcs/blower-cmd-norm[0]">
    <function>

@@ -28,22 +28,31 @@ jobs:
             [ "$filename" != "scripts/kml_output.xml" ] || continue
             [ "$filename" != "scripts/plotfile.xml" ] || continue
             [ "$filename" != "scripts/unitconversions.xml" ] || continue
-            xmllint --noout --schema JSBSimScript.xsd $filename
+            xmllint --noout --schema JSBSimScript.xsd "$filename"
           done
       - name: Validate systems files
         run: |
           for filename in systems/*.xml; do
-              [ -e "$filename" ] || continue
-              xmllint --noout --schema JSBSimSystem.xsd $filename
+              if [ -f "$filename" ]; then
+                xmllint --noout --schema JSBSimSystem.xsd "$filename"
+              fi
           done
-      - name: Valide aircraft files
+      - name: Valide aircraft files and their systems
         run: |
           for dir in $(ls -d aircraft/*); do
-            base=$(basename $dir)
+            base=$(basename "$dir")
             [ "$base" != "blank" ] || continue
             filename="${dir}/${base}.xml"
             if [ -f "$filename" ]; then
-                xmllint --noout --schema JSBSim.xsd $filename
+              xmllint --noout --schema JSBSim.xsd "$filename"
+            fi
+
+            if [ -d "${dir}/Systems" ]; then
+              for filename in "${dir}/Systems"/*.xml; do
+                if [[ $filename != *_aero.xml ]]; then
+                  xmllint --noout --schema JSBSimSystem.xsd "$filename"
+                fi
+              done
             fi
           done
 

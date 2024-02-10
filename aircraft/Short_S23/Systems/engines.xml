@@ -9,20 +9,20 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
-  
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-  
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  
+
 -->
 <system name="engines">
 
- <documentation>
+ <description>
   Engine controls (from pictures of the engine control box and other sources)
   - Throttle levers
     - Sets auto boost datum.
@@ -41,7 +41,7 @@
       Has the positions ON and OFF.
     - fcs/inner-engines-cutoff-cmd-norm
     - fcs/outer-engines-cutoff-cmd-norm
- </documentation>
+ </description>
 
  <property value="0.0">fcs/throttle-cmd-norm[0]</property>
  <property value="0.0">fcs/throttle-cmd-norm[1]</property>
@@ -86,45 +86,41 @@
  <property value="1.0">propulsion/engine[2]/vacuum-pump-serviceable</property>
  <property value="1.0">propulsion/engine[3]/vacuum-pump-serviceable</property>
 
- <documentation>
-   According to [Cassidy:2004:FE] the Pegasus engines had automatic
-   boost and mixture controls. I think take-off boost (boost override) was only
-   available with the mixture levers moved through a gate past the
-   RICH position.
-
-   [Cassidy:2004:FE] pp 152:
-   "The mixture control check was normally done by the First
-    Officer. For each engine in turn, he moved the mixture control
-    lever back from NORMAL to RICH -. + 1 lb. sq. in, then through the
-    gate to +3 lb. sq. in. and back to NORMAL."
-
-   [Cassidy:2004:FE]: Fuel consumption for "normal" operation varied
-   between 107.5 gal. per hour and 118.8 gal. per hour. A good average
-   was 115 gal. per hour. Over 141 gal. per hour was considered excessive.
-   [Cassidy:2004:FE]: Oil consumption normally varied between
-   8 pints to 3 1/2 gallons per hour for a Pegasus engine.
- </documentation>
-
- <documentation>
-  "The two engine cut-out control levers were mounted either side of
-  the throttle box. The two inner engines were controlled by the
-  port side lever, while the starboard lever controlled the two
-  outer engines.", [Cassidy:2004:FE]
- </documentation>
-
- <documentation>
-  Engine automatic mixture system.
-  The Pegasus X.C. used a Claudel-Hobson A.V.T. 85E type carburetter with
-  variable datum boost control and automatic mixture control.
-
-  See [CAB:1943].
-
-  "The corresponding fuel:air ratios over the range are: Take-off, 1:10;
-  Rated, 1:11; Normal Cruising, 1:12; and Economical Cruising, 1:16."
-  [CAB:1943]
- </documentation>
  <property value="0.50">fcs/mixture/manual-control-factor</property>
  <channel name="Mixture">
+  <description>
+    According to [Cassidy:2004:FE] the Pegasus engines had automatic
+    boost and mixture controls. I think take-off boost (boost override) was only
+    available with the mixture levers moved through a gate past the
+    RICH position.
+
+    [Cassidy:2004:FE] pp 152:
+    "The mixture control check was normally done by the First
+      Officer. For each engine in turn, he moved the mixture control
+      lever back from NORMAL to RICH -. + 1 lb. sq. in, then through the
+      gate to +3 lb. sq. in. and back to NORMAL."
+
+    [Cassidy:2004:FE]: Fuel consumption for "normal" operation varied
+    between 107.5 gal. per hour and 118.8 gal. per hour. A good average
+    was 115 gal. per hour. Over 141 gal. per hour was considered excessive.
+    [Cassidy:2004:FE]: Oil consumption normally varied between
+    8 pints to 3 1/2 gallons per hour for a Pegasus engine.
+
+    "The two engine cut-out control levers were mounted either side of
+    the throttle box. The two inner engines were controlled by the
+    port side lever, while the starboard lever controlled the two
+    outer engines.", [Cassidy:2004:FE]
+
+    Engine automatic mixture system.
+    The Pegasus X.C. used a Claudel-Hobson A.V.T. 85E type carburetter with
+    variable datum boost control and automatic mixture control.
+
+    See [CAB:1943].
+
+    "The corresponding fuel:air ratios over the range are: Take-off, 1:10;
+    Rated, 1:11; Normal Cruising, 1:12; and Economical Cruising, 1:16."
+    [CAB:1943]
+  </description>
 
   <fcs_function name="fcs/mixture/altitude-standard-pos">
    <function>
@@ -252,11 +248,11 @@
 
  </channel>
 
- <documentation>
-  Compute MAP boost in PSI for the boost gauges.
-  Boost is measured in PSI with normal sealevel pressure as 0.
- </documentation>
  <channel name="Boost">
+  <description>
+    Compute MAP boost in PSI for the boost gauges.
+    Boost is measured in PSI with normal sealevel pressure as 0.
+  </description>
 
   <fcs_function name="propulsion/engine[0]/boost-psi">
    <function>
@@ -305,16 +301,16 @@
 
  </channel>
 
- <documentation>
-  Engine autmatic boost control system.
-  The Pegasus X.C. used a Claudel-Hobson A.V.T. 85E type carburetter with
-  variable datum boost control.
-
-  See [CAB:1943].
- </documentation>
  <property value="0.050">fcs/boost/control-rate-factor</property>
  <property value="0.500">fcs/boost/control-range-norm</property>
  <channel name="Variable datum boost control">
+  <description>
+    Engine autmatic boost control system.
+    The Pegasus X.C. used a Claudel-Hobson A.V.T. 85E type carburetter with
+    variable datum boost control.
+
+    See [CAB:1943].
+  </description>
 
   <switch name="fcs/boost/override-norm[0]">
    <default value="0.0"/>
@@ -351,7 +347,7 @@
      <independentVar lookup="row">fcs/throttle-cmd-norm[0]</independentVar>
      <independentVar lookup="column">fcs/boost/override-norm[0]</independentVar>
      <tableData>
-             0.0      1.0 
+             0.0      1.0
         0.0  -11.00   -11.00
         1.0    2.50     4.25
      </tableData>
@@ -368,7 +364,7 @@
      <independentVar lookup="row">fcs/throttle-cmd-norm[1]</independentVar>
      <independentVar lookup="column">fcs/boost/override-norm[1]</independentVar>
      <tableData>
-             0.0      1.0 
+             0.0      1.0
         0.0  -11.00   -11.00
         1.0    2.50     4.25
      </tableData>
@@ -385,7 +381,7 @@
      <independentVar lookup="row">fcs/throttle-cmd-norm[2]</independentVar>
      <independentVar lookup="column">fcs/boost/override-norm[2]</independentVar>
      <tableData>
-             0.0      1.0 
+             0.0      1.0
         0.0  -11.00   -11.00
         1.0    2.50     4.25
      </tableData>
@@ -402,7 +398,7 @@
      <independentVar lookup="row">fcs/throttle-cmd-norm[3]</independentVar>
      <independentVar lookup="column">fcs/boost/override-norm[3]</independentVar>
      <tableData>
-             0.0      1.0 
+             0.0      1.0
         0.0  -11.00   -11.00
         1.0    2.50     4.25
      </tableData>
@@ -756,10 +752,10 @@
 
  </channel>
 
- <documentation>
-   The propeller pitch control only had the settings FINE and COARSE.
- </documentation>
  <channel name="Propeller pitch">
+  <description>
+    The propeller pitch control only had the settings FINE and COARSE.
+  </description>
 
   <switch name="fcs/propeller/blade-angle-deg[0]">
    <default value="20.0"/>
@@ -795,12 +791,12 @@
 
  </channel>
 
- <documentation>
-  The definition inside the engine file cannot write to the starter-norm
-  property. Hence, it has to be done here.
-  See also Engines/eng_PegasusXc.xml and Systems/electrical.xml.
- </documentation>
  <channel name="Engine starters">
+  <description>
+    The definition inside the engine file cannot write to the starter-norm
+    property. Hence, it has to be done here.
+    See also Engines/eng_PegasusXc.xml and Systems/electrical.xml.
+  </description>
 
   <fcs_function name="tmp/sn[0]">
    <function>
@@ -829,11 +825,11 @@
 
  </channel>
 
- <documentation>
-  "The fuel pumps were Bristol vane-type Duplex pumps, driven at engine
-  speed.", [Cassidy:2004:FE].
- </documentation>
  <channel name="Fuel pumps">
+  <description>
+    "The fuel pumps were Bristol vane-type Duplex pumps, driven at engine
+    speed.", [Cassidy:2004:FE].
+  </description>
 
   <fcs_function name="propulsion/engine[0]/fuel-pump-running-norm">
    <function>
@@ -885,24 +881,24 @@
 
  </channel>
 
- <documentation>
-  Engine auxiliaries (from [Short:RN-3-1-37] and [Cassidy:2004:FE])
-  - Port Outer
-  - Port Inner
-    - Rotax generator Dynamo N2 BW, 1000W at 24V
-    - Northern oil pump (for the autopilot)
-  - Starboard Inner
-    - Rotax generator Dynamo N2 BW, 1000W at 24V
-    - Romeo vacuum pump
-  - Starboard Outer
-    - Romeo vaccum pump
- </documentation>
  <property value="41.67">propulsion/engine[1]/generator-max-current-A</property>
  <property value="41.67">propulsion/engine[2]/generator-max-current-A</property>
  <!-- Input from the electrical system. -->
  <property>propulsion/engine[1]/generator-current-A</property>
  <property>propulsion/engine[2]/generator-current-A</property>
  <channel name="Generators">
+  <description>
+    Engine auxiliaries (from [Short:RN-3-1-37] and [Cassidy:2004:FE])
+    - Port Outer
+    - Port Inner
+      - Rotax generator Dynamo N2 BW, 1000W at 24V
+      - Northern oil pump (for the autopilot)
+    - Starboard Inner
+      - Rotax generator Dynamo N2 BW, 1000W at 24V
+      - Romeo vacuum pump
+    - Starboard Outer
+      - Romeo vaccum pump
+  </description>
 
   <fcs_function name="propulsion/engine[1]/generator-voltage-V">
    <function>

@@ -43,7 +43,7 @@
 
       <switch name="/controls/gear/safe-light-on">
          <default value="0"/>
-         <test login="AND" value ="1">
+         <test logic="AND" value ="1">
              /controls/engines/engine[0]/throttle LT 0.25
              gear/unit/pos-norm GT 0.99
          </test>
@@ -54,7 +54,7 @@
 
       <switch name="/controls/gear/unsafe-light-on">
          <default value="0"/>
-         <test login="AND" value ="1">
+         <test logic="AND" value ="1">
              /controls/engines/engine[0]/throttle LT 0.25
              gear/unit/pos-norm LT 0.99
          </test>
@@ -260,7 +260,7 @@
               /ai/submodels/submodel[17]/count GT 0
            </test>
        </switch>
-              
+
 
         <switch name="systems/armament/outer-pylons">
            <default value="0"/>
