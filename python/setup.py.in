@@ -195,7 +195,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
     scripts=['JSBSim.py'],
-    install_requires=['numpy>=1.20'],
+    install_requires=['numpy>=1.20', 'matplotlib>=3.7'],
     ext_modules=[Extension('jsbsim._jsbsim', language='c++', **ext_kwargs)],
     python_requires=">=3.8",
     packages=['jsbsim'],
