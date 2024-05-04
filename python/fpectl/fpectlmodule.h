@@ -1,24 +1,27 @@
 /* Python module to control floating point exceptions
  *
- * Copyright (c) 2016 Bertrand Coconnier
+ * Copyright (c) 2016-2024 Bertrand Coconnier
  *
  * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 3 of the License, or (at your option) any later
- * version.
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any
+ * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * FOR A PARTICULAR PURPOSE.  See the GNU GNU Lesser General Public License for
+ * more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, see <http://www.gnu.org/licenses/>
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this program; if not, see <http://www.gnu.org/licenses/>
  */
 
-#include "Python.h"
+#include <Python.h>
 #include <exception>
 #include <string>
+
+#ifndef FPECTLMODULE_H
+#define FPECTLMODULE_H
 
 namespace JSBSim {
 class FloatingPointException: public std::exception
@@ -35,3 +38,4 @@ private:
   std::string msg;
 };
 }
+#endif // FPECTLMODULE_H

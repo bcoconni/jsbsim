@@ -29,11 +29,25 @@ from libcpp.memory cimport shared_ptr
 from libcpp.vector cimport vector
 from cpython.ref cimport PyObject
 
-cdef extern from "ExceptionManagement.h":
+cdef extern from "ExceptionManagement.h" namespace "JSBSim":
     cdef PyObject* base_error
     cdef PyObject* trimfailure_error
     cdef PyObject* geographic_error
     cdef void convertJSBSimToPyExc()
+
+cdef extern from "input_output/FGGroundCallback.h" namespace "JSBSim":
+    cdef cppclass c_FGGroundCallback "JSBSim::FGGroundCallback":
+        c_FGGroundCallback()
+
+cdef extern from "PyGroundCallback.h" namespace "JSBSim":
+    cdef PyObject* FGGroundCallbackClass
+    cdef cppclass c_PyGroundCallback "JSBSim::PyGroundCallback" (c_FGGroundCallback):
+        c_PyGroundCallback(PyObject* callback_pyclass)
+
+cdef extern from "models/FGInertial.h" namespace "JSBSim":
+    cdef cppclass c_FGInertial "JSBSim::FGInertial":
+        c_FGInertial(c_FGFDMExec* fdmex) except +
+        void SetGroundCallback(c_FGGroundCallback* gc)
 
 cdef extern from "initialization/FGInitialCondition.h" namespace "JSBSim":
     cdef cppclass c_FGInitialCondition "JSBSim::FGInitialCondition":
@@ -261,3 +275,4 @@ cdef extern from "FGFDMExec.h" namespace "JSBSim":
         shared_ptr[c_FGAircraft] GetAircraft()
         shared_ptr[c_FGAtmosphere] GetAtmosphere()
         shared_ptr[c_FGMassBalance] GetMassBalance()
+        shared_ptr[c_FGInertial] GetInertial()

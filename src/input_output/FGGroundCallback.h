@@ -112,7 +112,7 @@ public:
       rotation or the movement of objects.
       @param _time elapsed time in seconds since the simulation started.
    */
-  void SetTime(double _time) { time = _time; }
+  virtual void SetTime(double _time) { time = _time; }
 
 protected:
   double time;
