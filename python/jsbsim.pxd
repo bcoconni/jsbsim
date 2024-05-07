@@ -39,6 +39,14 @@ cdef extern from "input_output/FGGroundCallback.h" namespace "JSBSim":
     cdef cppclass c_FGGroundCallback "JSBSim::FGGroundCallback":
         c_FGGroundCallback()
 
+cdef extern from "math/FGLocation.h" namespace "JSBSim":
+    cdef cppclass c_FGLocation "JSBSim::FGLocation":
+        c_FGLocation()
+        double GetLatitude() const
+        double GetLongitude() const
+        double GetGeodLatitudeRad() const
+        double GetGeodAltitude() const
+
 cdef extern from "PyGroundCallback.h" namespace "JSBSim":
     cdef PyObject* FGGroundCallbackClass
     cdef cppclass c_PyGroundCallback "JSBSim::PyGroundCallback" (c_FGGroundCallback):

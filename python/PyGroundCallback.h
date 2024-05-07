@@ -17,58 +17,29 @@
   */
 
 
-#include "ExceptionManagement.h"
 #include "input_output/FGGroundCallback.h"
 
+#ifndef PYGROUNDCALLBACK_H
+#define PYGROUNDCALLBACK_H
 
 namespace JSBSim {
 
-PyObject* FGGroundCallbackClass;
+extern PyObject* FGGroundCallbackClass;
 
 class PyGroundCallback : public FGGroundCallback
 {
 public:
-  explicit PyGroundCallback(PyObject* callback_pyclass)
-    : groundcallback_pyclass(nullptr)
-  {
-    if (PyObject_IsInstance(callback_pyclass, FGGroundCallbackClass)) {
-      groundcallback_pyclass = callback_pyclass;
-      Py_INCREF(groundcallback_pyclass);
-    }
-    else {
-      PyErr_SetString(PyExc_TypeError, "Expected a FGGroundCallback instance");
-    }
-  }
-
+  explicit PyGroundCallback(PyObject* callback_pyclass);
   ~PyGroundCallback() override { Py_XDECREF(groundcallback_pyclass); }
 
   double GetAGLevel (double t, const FGLocation& location,
                             FGLocation& contact,
                             FGColumnVector3& normal, FGColumnVector3& v,
-                            FGColumnVector3& w) const override
-  {
-    PyObject* pyresult = PyObject_CallMethod(groundcallback_pyclass, "get_agl_level", "d", t);
-    if (pyresult) {
-      double result = PyFloat_AsDouble(pyresult);
-      Py_DECREF(pyresult);
-      if (!PyErr_Occurred())
-        return result;
-    }
-    return 0.0;
-  }
+                            FGColumnVector3& w) const override;
 
-  void SetTime(double t) override
-  {
-    PyObject* pyresult = PyObject_CallMethod(groundcallback_pyclass, "set_time", "d", t);
-    if (pyresult)
-      time = t;
-    else {
-      PyErr_Print();
-      PyErr_Clear();
-    }
-    Py_XDECREF(pyresult);
-  }
+  void SetTime(double t) override;
 private:
   PyObject* groundcallback_pyclass;
 };
 } // namespace JSBSim
+#endif // PYGROUNDCALLBACK_H

@@ -90,13 +90,31 @@ cdef _convertToNumpyVec(const c_FGColumnVector3& v):
     return numpy.mat([v.Entry(1), v.Entry(2), v.Entry(3)]).T
 
 
+cdef public class FGLocation[object PyFGLocation, type PyFGLocation_t]:
+    """@Dox(JSBSim::FGLocation)"""
+
+    cdef shared_ptr[c_FGLocation] thisptr
+
+    def __cinit__(self, *args, **kwargs):
+        self.thisptr.reset(new c_FGLocation())
+        if not self.thisptr:
+            raise MemoryError()
+
+    def get_latitude(self) -> float:
+        """@Dox(JSBSim::FGLocation::GetLatitude)"""
+        return deref(self.thisptr).GetLatitude()
+
+    def get_longitude(self) -> float:
+        """@Dox(JSBSim::FGLocation::GetLongitude)"""
+        return deref(self.thisptr).GetLongitude()
+
 
 class FGGroundCallback(abc.ABC):
     time = 0.0
     def set_time(self, t: float) -> None:
         time = t
     @abc.abstractmethod
-    def get_agl_level(self, t:float) -> float:
+    def get_agl_level(self, t:float, location:FGLocation) -> float:
         pass
 
 
