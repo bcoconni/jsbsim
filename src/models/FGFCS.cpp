@@ -96,20 +96,6 @@ FGFCS::FGFCS(FGFDMExec* fdm) : FGModel(fdm), ChannelRate(1)
 
 FGFCS::~FGFCS()
 {
-  ThrottleCmd.clear();
-  ThrottlePos.clear();
-  MixtureCmd.clear();
-  MixturePos.clear();
-  PropAdvanceCmd.clear();
-  PropAdvance.clear();
-  PropFeatherCmd.clear();
-  PropFeather.clear();
-
-  unsigned int i;
-
-  for (i=0;i<SystemChannels.size();i++) delete SystemChannels[i];
-  SystemChannels.clear();
-
   Debug(1);
 }
 
@@ -119,26 +105,26 @@ bool FGFCS::InitModel(void)
 {
   if (!FGModel::InitModel()) return false;
 
-  unsigned int i;
-
-  for (i=0; i<ThrottlePos.size(); i++) ThrottlePos[i] = 0.0;
-  for (i=0; i<MixturePos.size(); i++) MixturePos[i] = 0.0;
-  for (i=0; i<ThrottleCmd.size(); i++) ThrottleCmd[i] = 0.0;
-  for (i=0; i<MixtureCmd.size(); i++) MixtureCmd[i] = 0.0;
-  for (i=0; i<PropAdvance.size(); i++) PropAdvance[i] = 0.0;
-  for (i=0; i<PropFeather.size(); i++) PropFeather[i] = 0.0;
+  std::fill(ThrottlePos.begin(), ThrottlePos.end(), 0.0);
+  std::fill(ThrottleCmd.begin(), ThrottleCmd.end(), 0.0);
+  std::fill(MixturePos.begin(), MixturePos.end(), 0.0);
+  std::fill(MixtureCmd.begin(), MixtureCmd.end(), 0.0);
+  std::fill(PropAdvance.begin(), PropAdvance.end(), 0.0);
+  std::fill(PropAdvanceCmd.begin(), PropAdvanceCmd.end(), 0.0);
+  std::fill(PropFeather.begin(), PropFeather.end(), false);
+  std::fill(PropFeatherCmd.begin(), PropFeatherCmd.end(), false);
 
   DaCmd = DeCmd = DrCmd = DfCmd = DsbCmd = DspCmd = 0;
   PTrimCmd = YTrimCmd = RTrimCmd = 0.0;
   TailhookPos = WingFoldPos = 0.0;
 
-  for (i=0;i<NForms;i++) {
+  for (unsigned int i=0;i<NForms;i++) {
     DePos[i] = DaLPos[i] = DaRPos[i] = DrPos[i] = 0.0;
     DfPos[i] = DsbPos[i] = DspPos[i] = 0.0;
   }
 
   // Reset the channels components.
-  for (unsigned int i=0; i<SystemChannels.size(); i++) SystemChannels[i]->Reset();
+  for (auto& channel: SystemChannels) channel->Reset();
 
   return true;
 }
@@ -153,26 +139,24 @@ bool FGFCS::InitModel(void)
 
 bool FGFCS::Run(bool Holding)
 {
-  unsigned int i;
-
   if (FGModel::Run(Holding)) return true; // fast exit if nothing to do
   if (Holding) return false;
 
   RunPreFunctions();
 
-  for (i=0; i<ThrottlePos.size(); i++) ThrottlePos[i] = ThrottleCmd[i];
-  for (i=0; i<MixturePos.size(); i++) MixturePos[i] = MixtureCmd[i];
-  for (i=0; i<PropAdvance.size(); i++) PropAdvance[i] = PropAdvanceCmd[i];
-  for (i=0; i<PropFeather.size(); i++) PropFeather[i] = PropFeatherCmd[i];
+  std::copy(ThrottleCmd.begin(), ThrottleCmd.end(), ThrottlePos.begin());
+  std::copy(MixtureCmd.begin(), MixtureCmd.end(), MixturePos.begin());
+  std::copy(PropAdvanceCmd.begin(), PropAdvanceCmd.end(), PropAdvance.begin());
+  std::copy(PropFeatherCmd.begin(), PropFeatherCmd.end(), PropFeather.begin());
 
   // Execute system channels in order
-  for (i=0; i<SystemChannels.size(); i++) {
+  for (auto& channel: SystemChannels) {
     if (debug_lvl & 4) {
       FGLogging log(FDMExec->GetLogger(), LogLevel::DEBUG);
-      log << "    Executing System Channel: " << SystemChannels[i]->GetName() << endl;
+      log << "    Executing System Channel: " << channel->GetName() << endl;
     }
-    ChannelRate = SystemChannels[i]->GetRate();
-    SystemChannels[i]->Execute();
+    ChannelRate = channel->GetRate();
+    channel->Execute();
   }
   ChannelRate = 1;
 
@@ -320,8 +304,7 @@ void FGFCS::SetThrottleCmd(int engineNum, double setting)
 {
   if (engineNum < (int)ThrottleCmd.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<ThrottleCmd.size(); ctr++)
-        ThrottleCmd[ctr] = setting;
+      std::fill(ThrottleCmd.begin(), ThrottleCmd.end(), setting);
     } else {
       ThrottleCmd[engineNum] = setting;
     }
@@ -339,8 +322,7 @@ void FGFCS::SetThrottlePos(int engineNum, double setting)
 {
   if (engineNum < (int)ThrottlePos.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<ThrottlePos.size(); ctr++)
-        ThrottlePos[ctr] = setting;
+      std::fill(ThrottlePos.begin(), ThrottlePos.end(), setting);
     } else {
       ThrottlePos[engineNum] = setting;
     }
@@ -398,8 +380,7 @@ void FGFCS::SetMixtureCmd(int engineNum, double setting)
 {
   if (engineNum < (int)MixtureCmd.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<MixtureCmd.size(); ctr++)
-        MixtureCmd[ctr] = setting;
+      std::fill(MixtureCmd.begin(), MixtureCmd.end(), setting);
     } else {
       MixtureCmd[engineNum] = setting;
     }
@@ -412,8 +393,7 @@ void FGFCS::SetMixturePos(int engineNum, double setting)
 {
   if (engineNum < (int)MixturePos.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<MixtureCmd.size(); ctr++)
-        MixturePos[ctr] = MixtureCmd[ctr];
+      std::copy(MixtureCmd.begin(), MixtureCmd.end(), MixturePos.begin());
     } else {
       MixturePos[engineNum] = setting;
     }
@@ -426,8 +406,7 @@ void FGFCS::SetPropAdvanceCmd(int engineNum, double setting)
 {
   if (engineNum < (int)PropAdvanceCmd.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<PropAdvanceCmd.size(); ctr++)
-        PropAdvanceCmd[ctr] = setting;
+      std::fill(PropAdvanceCmd.begin(), PropAdvanceCmd.end(), setting);
     } else {
       PropAdvanceCmd[engineNum] = setting;
     }
@@ -440,8 +419,7 @@ void FGFCS::SetPropAdvance(int engineNum, double setting)
 {
   if (engineNum < (int)PropAdvance.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<PropAdvanceCmd.size(); ctr++)
-        PropAdvance[ctr] = PropAdvanceCmd[ctr];
+      std::copy(PropAdvanceCmd.begin(), PropAdvanceCmd.end(), PropAdvance.begin());
     } else {
       PropAdvance[engineNum] = setting;
     }
@@ -454,8 +432,7 @@ void FGFCS::SetFeatherCmd(int engineNum, bool setting)
 {
   if (engineNum < (int)PropFeatherCmd.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<PropFeatherCmd.size(); ctr++)
-        PropFeatherCmd[ctr] = setting;
+      std::fill(PropFeatherCmd.begin(), PropFeatherCmd.end(), setting);
     } else {
       PropFeatherCmd[engineNum] = setting;
     }
@@ -468,8 +445,7 @@ void FGFCS::SetPropFeather(int engineNum, bool setting)
 {
   if (engineNum < (int)PropFeather.size()) {
     if (engineNum < 0) {
-      for (unsigned int ctr=0; ctr<PropFeatherCmd.size(); ctr++)
-        PropFeather[ctr] = PropFeatherCmd[ctr];
+      std::copy(PropFeatherCmd.begin(), PropFeatherCmd.end(), PropFeather.begin());
     } else {
       PropFeather[engineNum] = setting;
     }
@@ -502,9 +478,6 @@ bool FGFCS::Load(Element* document)
   Element* channel_element = document->FindElement("channel");
 
   while (channel_element) {
-
-    FGFCSChannel* newChannel = 0;
-
     string sOnOffProperty = channel_element->GetAttributeValue("execute");
     string sChannelName = channel_element->GetAttributeValue("name");
 
@@ -523,12 +496,12 @@ bool FGFCS::Load(Element* document)
             << "understood. The simulation will abort" << LogFormat::RESET << endl;
         throw err;
       } else
-        newChannel = new FGFCSChannel(this, sChannelName, ChannelRate,
-                                      OnOffPropertyNode);
+        SystemChannels.push_back(make_unique<FGFCSChannel>(this, sChannelName, ChannelRate,
+                                                                OnOffPropertyNode));
     } else
-      newChannel = new FGFCSChannel(this, sChannelName, ChannelRate);
+      SystemChannels.push_back(make_unique<FGFCSChannel>(this, sChannelName, ChannelRate));
 
-    SystemChannels.push_back(newChannel);
+    auto& newChannel = SystemChannels.back();
 
     if (debug_lvl > 0) {
       FGLogging log(FDMExec->GetLogger(), LogLevel::DEBUG);
@@ -648,19 +621,15 @@ SGPath FGFCS::FindFullPathName(const SGPath& path) const
 
 string FGFCS::GetComponentStrings(const string& delimiter) const
 {
-  string CompStrings = "";
+  string CompStrings;
   bool firstime = true;
-  int total_count=0;
 
-  for (unsigned int i=0; i<SystemChannels.size(); i++)
-  {
-    for (unsigned int c=0; c<SystemChannels[i]->GetNumComponents(); c++)
-    {
+  for (auto& channel: SystemChannels) {
+    for (unsigned int c=0; c<channel->GetNumComponents(); ++c) {
       if (firstime) firstime = false;
       else          CompStrings += delimiter;
 
-      CompStrings += SystemChannels[i]->GetComponent(c)->GetName();
-      total_count++;
+      CompStrings += channel->GetComponent(c)->GetName();
     }
   }
 
@@ -671,20 +640,15 @@ string FGFCS::GetComponentStrings(const string& delimiter) const
 
 string FGFCS::GetComponentValues(const string& delimiter) const
 {
-  std::ostringstream buf;
-
+  ostringstream buf;
   bool firstime = true;
-  int total_count=0;
 
-  for (unsigned int i=0; i<SystemChannels.size(); i++)
-  {
-    for (unsigned int c=0; c<SystemChannels[i]->GetNumComponents(); c++)
-    {
+  for (auto& channel: SystemChannels) {
+    for (unsigned int c=0; c<channel->GetNumComponents(); ++c) {
       if (firstime) firstime = false;
       else          buf << delimiter;
 
-      buf << setprecision(9) << SystemChannels[i]->GetComponent(c)->GetOutput();
-      total_count++;
+      buf << setprecision(9) << channel->GetComponent(c)->GetOutput();
     }
   }
 
