@@ -38,13 +38,7 @@ SENTRY
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#include <iosfwd>
-#include <vector>
-#include <string>
-
 #include "FGFDMExec.h"
-#include "models/FGModel.h"
-#include "models/FGLGear.h"
 #include "models/FGGroundReactions.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -187,7 +181,6 @@ CLASS DECLARATION
 
 class JSBSIM_API FGFCS : public FGModel
 {
-
 public:
   /** Constructor
       @param Executive a pointer to the parent executive object */
@@ -588,8 +581,7 @@ private:
   SystemType systype;
   int ChannelRate;
 
-  typedef std::vector <FGFCSChannel*> Channels;
-  Channels SystemChannels;
+  std::vector<std::unique_ptr<FGFCSChannel>> SystemChannels;
   void bind(void);
   void bindThrottle(unsigned int);
   void Debug(int from) override;
