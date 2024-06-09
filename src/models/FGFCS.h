@@ -188,6 +188,15 @@ public:
   /// Destructor
   ~FGFCS() override;
 
+  // When building JSBSim as a DLL, MSVC tries to build default copy
+  // constructors and copy assignment operators of exported classes. This would
+  // fail here as we are using a std::vector<std::unique_ptr<T>> which is non
+  // copyable. To prevent MSVC from complaining, we explicitly delete the copy
+  // constructor and copy assignment operator which effectively makes the class
+  // FGFCS non copyable.
+  FGFCS(const FGFCS&) = delete;
+  FGFCS& operator=(const FGFCS&) = delete;
+
   bool InitModel(void) override;
 
   /** Runs the Flight Controls model; called by the Executive
@@ -351,7 +360,7 @@ public:
 
   /** Gets the prop feather position.
       @param engine engine ID number
-      @return prop fether for the given engine (on / off)*/
+      @return prop feather for the given engine (on / off)*/
   bool GetPropFeather(int engine) const { return PropFeather[engine]; }
 
   const std::vector<bool>& GetPropFeather() const { return PropFeather; }
@@ -505,7 +514,7 @@ public:
 
   /** Sets the actual prop feather setting for the specified engine
       @param engine engine ID number
-      @param cmd prop fether setting (bool)*/
+      @param cmd prop feather setting (bool)*/
   void SetPropFeather(int engine, bool cmd);
   //@}
 
@@ -548,7 +557,7 @@ public:
   /** Loads the Flight Control System.
       Load() is called from FGFDMExec.
       @param el pointer to the Element instance
-      @return true if succesful */
+      @return true if successful */
   bool Load(Element* el) override;
 
   SGPath FindFullPathName(const SGPath& path) const override;
