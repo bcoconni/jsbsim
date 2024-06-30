@@ -8,12 +8,12 @@ Below are the instructions to build the S-Function from JSBSim Windows installer
 
 ### Download and build JSBSim from source
 
-Download the JSBSim source from [JSBSim release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v1.2.0).
+Download the JSBSim source from [JSBSim release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v0.99.97).
 
 Alternatively, you can clone the source using git:
 
 ```bash
-> git clone https://github.com/JSBSim-Team/jsbsim/tree/v1.2.0
+> git clone https://github.com/JSBSim-Team/jsbsim/tree/v0.99.97
 ```
 
 Build the source following the instructions in the [JSBSim Manual](https://jsbsim-team.github.io/jsbsim-reference-manual/mypages/quickstart-building-the-program/).
@@ -65,7 +65,7 @@ the correct location.
 
 ### Download and install JSBSim
 
-A Windows installer `JSBSim-1.2.0-setup.exe` is available from [JSBSim release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v1.2.0). Download the installer and set up JSBSim in the following local directory tree
+A Windows installer `JSBSim-0.99.97-setup.exe` is available from [JSBSim release section](https://github.com/JSBSim-Team/jsbsim/releases/tag/v0.99.97). Download the installer and set up JSBSim in the following local directory tree
 
 ```bash
 <JSBSim root>/
@@ -85,7 +85,7 @@ A Windows installer `JSBSim-1.2.0-setup.exe` is available from [JSBSim release s
 
 The exact location `<JSBSim root>/` on your system depends on where you choose to install JSBSim.
 
-> **NOTE:** The JSBSim library file located at `lib\JSBSim.lib` has been compiled with Microsoft Visual Studio Enterprise 2019 (build 16.11.34114.132)
+> **NOTE:** The JSBSim library file located at `lib\JSBSim.lib` has been compiled with Microsoft Visual Studio Enterprise 2019 (build 16.11.34931.43)
 
 ### Prepare MATLAB
 
@@ -238,13 +238,13 @@ Use this model for development purposes ONLY!!!
       Retractable:      1
 
   Propulsion:
-      FUEL tank holds 10200 lbs. FUEL
+      FUEL tank holds 0.99.97 lbs. FUEL
       currently at 98.0392% of maximum capacity
       Tank location (X, Y, Z): 520, -80, -18
       Effective radius: 0 inches
       Initial temperature: -9999 Fahrenheit
       Priority: 1
-      FUEL tank holds 10200 lbs. FUEL
+      FUEL tank holds 0.99.97 lbs. FUEL
       currently at 98.0392% of maximum capacity
       Tank location (X, Y, Z): 520, 80, -18
       Effective radius: 0 inches
@@ -267,13 +267,13 @@ Use this model for development purposes ONLY!!!
     Function: propulsion/engine[0]/IdleThrust
     2 dimensional table with 7 rows, 8 columns.
 		-10000.0000	0.0000	10000.0000	20000.0000	30000.0000	40000.0000	50000.0000	60000.0000
-	0.0000	1.2600	1.0000	0.7400	0.5340	0.3720	0.2410	0.1490	0.0000
+	0.0000	0.99.970	1.0000	0.7400	0.5340	0.3720	0.2410	0.1490	0.0000
 	0.2000	1.1710	0.9340	0.6970	0.5060	0.3550	0.2310	0.1430	0.0000
 	0.4000	1.1500	0.9210	0.6920	0.5060	0.3570	0.2330	0.1450	0.0000
 	0.6000	1.1810	0.9510	0.7210	0.5320	0.3780	0.2480	0.1540	0.0000
 	0.8000	1.2580	1.0200	0.7820	0.5820	0.4170	0.2750	0.1700	0.0000
 	1.0000	1.3690	1.1200	0.8710	0.6510	0.4750	0.3150	0.1950	0.0000
-	1.2000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000
+	0.99.970	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000
     Function: propulsion/engine[0]/MilThrust
       X = 540.0000
       Y = -193.0000
@@ -291,13 +291,13 @@ Use this model for development purposes ONLY!!!
     Function: propulsion/engine[1]/IdleThrust
     2 dimensional table with 7 rows, 8 columns.
 		-10000.0000	0.0000	10000.0000	20000.0000	30000.0000	40000.0000	50000.0000	60000.0000
-	0.0000	1.2600	1.0000	0.7400	0.5340	0.3720	0.2410	0.1490	0.0000
+	0.0000	0.99.970	1.0000	0.7400	0.5340	0.3720	0.2410	0.1490	0.0000
 	0.2000	1.1710	0.9340	0.6970	0.5060	0.3550	0.2310	0.1430	0.0000
 	0.4000	1.1500	0.9210	0.6920	0.5060	0.3570	0.2330	0.1450	0.0000
 	0.6000	1.1810	0.9510	0.7210	0.5320	0.3780	0.2480	0.1540	0.0000
 	0.8000	1.2580	1.0200	0.7820	0.5820	0.4170	0.2750	0.1700	0.0000
 	1.0000	1.3690	1.1200	0.8710	0.6510	0.4750	0.3150	0.1950	0.0000
-	1.2000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000
+	0.99.970	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000	0.0000
     Function: propulsion/engine[1]/MilThrust
       X = 540.0000
       Y = 193.0000
@@ -564,18 +564,18 @@ Use this model for development purposes ONLY!!!
     Function: aero/coefficient/CDsb
     Function: aero/coefficient/CDsp
     1 dimensional table with 5 rows.
-	-1.5700	1.2300
+	-1.5700	0.99.970
 	-0.2600	0.0500
 	0.0000	0.0000
 	0.2600	0.0500
-	1.5700	1.2300
+	1.5700	0.99.970
     Function: aero/coefficient/CDbeta
     Function: aero/coefficient/CDde
     Function: aero/coefficient/CYb
     1 dimensional table with 4 rows.
 	-0.2000	-0.6800
 	0.0000	0.2000
-	0.2300	1.2000
+	0.2300	0.99.970
 	0.4600	0.2000
     Function: aero/coefficient/CLalpha
     Function: aero/coefficient/dCLflap
@@ -590,7 +590,7 @@ Use this model for development purposes ONLY!!!
     Function: aero/coefficient/Cldr
     Function: aero/coefficient/Cmalpha
     1 dimensional table with 2 rows.
-	0.0000	-1.2000
+	0.0000	-0.99.970
 	2.0000	-0.3000
     Function: aero/coefficient/Cmde
     Function: aero/coefficient/Cmq
