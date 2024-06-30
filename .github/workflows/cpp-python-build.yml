@@ -801,7 +801,7 @@ jobs:
         run: |
           pip install -U 'numpy>=1.20'
           pip install jsbsim --no-index -f dist
-          export VERSION=`pip show jsbsim | grep -i version | awk '{ print $2 }' | sed 's/\./\\./g'`
+          export VERSION=`pip show jsbsim | grep -i version | awk '{ print $2 }'`
           echo "VERSION=$VERSION" >> $GITHUB_ENV
       - name: Get MSVC version
         run : |
@@ -845,7 +845,7 @@ jobs:
           export FUTURE_VERSION=`cmake . | grep JSBSIM_VERSION | awk -F':' '{print $2}'`
           echo "FUTURE_VERSION=$FUTURE_VERSION" >> $GITHUB_ENV
           # Extract the project old version number
-          export OLD_VERSION=`egrep 'JSBSim-([0-9]+\.)+[0-9]+-setup.exe' README.md | awk -F'JSBSim-' '{ print $2}' | awk -F'-setup.exe' '{ print $1}'`
+          export OLD_VERSION=`egrep 'JSBSim-([0-9]+\.)+[0-9]+-setup.exe' README.md | awk -F'JSBSim-' '{ print $2}' | awk -F'-setup.exe' '{ print $1}' | sed 's/\./\\./g'`
           echo "OLD_VERSION=$OLD_VERSION" >> $GITHUB_ENV
           # Update references to the current stable version in README.md
           sed -ri 's/_'"$OLD_VERSION"'-[0-9]+.amd64.deb/_'"$VERSION"'-'"$GITHUB_RUN_NUMBER"'.amd64.deb/g' README.md
