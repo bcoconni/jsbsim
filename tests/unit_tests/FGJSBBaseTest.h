@@ -81,4 +81,47 @@ public:
     TS_ASSERT_EQUALS(x1, y1);
     TS_ASSERT_EQUALS(x2, y2);
   }
+
+  void testBaseException() {
+    try {
+      throw JSBSim::BaseException("Test exception");
+    } catch (JSBSim::BaseException& e) {
+      TS_ASSERT_EQUALS(e.what(), "Test exception");
+    }
+
+    JSBSim::BaseException empty("");
+    TS_ASSERT_EQUALS(empty.what(), "");
+    JSBSim::BaseException whitespace(" ");
+    TS_ASSERT_EQUALS(whitespace.what(), "");
+    JSBSim::BaseException whitespace2("  ");
+    TS_ASSERT_EQUALS(whitespace2.what(), "");
+    JSBSim::BaseException cr("\n");
+    TS_ASSERT_EQUALS(cr.what(), "");
+    JSBSim::BaseException cr2("\n\n");
+    TS_ASSERT_EQUALS(cr2.what(), "");
+    JSBSim::BaseException tab("\t");
+    TS_ASSERT_EQUALS(tab.what(), "");
+    JSBSim::BaseException tab2("\t\t");
+    TS_ASSERT_EQUALS(tab2.what(), "");
+    JSBSim::BaseException whitespace3("\n \t");
+    TS_ASSERT_EQUALS(whitespace3.what(), "");
+    JSBSim::BaseException e1("  a");
+    TS_ASSERT_EQUALS(e1.what(), "a");
+    JSBSim::BaseException e2("z  ");
+    TS_ASSERT_EQUALS(e2.what(), "z");
+    JSBSim::BaseException e3("  Test exception  ");
+    TS_ASSERT_EQUALS(e3.what(), "Test exception");
+    JSBSim::BaseException e4("\ta");
+    TS_ASSERT_EQUALS(e4.what(), "a");
+    JSBSim::BaseException e5("z\t");
+    TS_ASSERT_EQUALS(e5.what(), "z");
+    JSBSim::BaseException e6("\tTest exception\t");
+    TS_ASSERT_EQUALS(e6.what(), "Test exception");
+    JSBSim::BaseException e7("\n\nTest\texception\n\n");
+    TS_ASSERT_EQUALS(e7.what(), "Test\texception");
+    JSBSim::BaseException e8("\t\nTest\nexception\t\n");
+    TS_ASSERT_EQUALS(e8.what(), "Test\nexception");
+    JSBSim::BaseException e9("\t \nTest\n  exception \t\n");
+    TS_ASSERT_EQUALS(e9.what(), "Test\n  exception");
+  }
 };

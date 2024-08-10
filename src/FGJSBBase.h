@@ -61,6 +61,9 @@ namespace JSBSim {
 class JSBSIM_API BaseException : public std::runtime_error {
   public:
     using std::runtime_error::runtime_error;
+    const char* what() const noexcept override;
+  private:
+    mutable std::string message;
 };
 
 /**
