@@ -846,6 +846,8 @@ private:
   void Debug(int from);
 };
 
+typedef SGSharedPtr<FGFunction> FGFunction_ptr;
+
 } // namespace JSBSim
 
 #endif
