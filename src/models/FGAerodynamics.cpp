@@ -64,7 +64,6 @@ FGAerodynamics::FGAerodynamics(FGFDMExec* FDMExec) : FGModel(FDMExec)
   clsq = lod = 0.0;
   alphaw = 0.0;
   bi2vel = ci2vel = 0.0;
-  AeroRPShift = 0;
   vDeltaRP.InitMatrix();
 
   bind();
@@ -92,7 +91,7 @@ bool FGAerodynamics::InitModel(void)
   clsq = lod = 0.0;
   alphaw = 0.0;
   bi2vel = ci2vel = 0.0;
-  AeroRPShift = 0;
+  AeroRPShift = nullptr;
   vDeltaRP.InitMatrix();
   vForces.InitMatrix();
   vMoments.InitMatrix();
@@ -154,22 +153,18 @@ bool FGAerodynamics::Run(bool Holding)
   BuildStabilityTransformMatrices();
 
   for (axis_ctr = 0; axis_ctr < 3; ++axis_ctr) {
-    AeroFunctionArray::iterator f;
-
-    AeroFunctionArray* array = &AeroFunctions[axis_ctr];
-    for (f=array->begin(); f != array->end(); ++f) {
+    for (auto& aero_func: AeroFunctions[axis_ctr]) {
       // Tell the Functions to cache values, so when the function values are
       // being requested for output, the functions do not get calculated again
       // in a context that might have changed, but instead use the values that
       // have already been calculated for this frame.
-      (*f)->cacheValue(true);
-      vFnative(axis_ctr+1) += (*f)->GetValue();
+      aero_func->cacheValue(true);
+      vFnative(axis_ctr+1) += aero_func->GetValue();
     }
 
-    array = &AeroFunctionsAtCG[axis_ctr];
-    for (f=array->begin(); f != array->end(); ++f) {
-      (*f)->cacheValue(true); // Same as above
-      vFnativeAtCG(axis_ctr+1) += (*f)->GetValue();
+    for (auto& aero_func: AeroFunctionsAtCG[axis_ctr]) {
+      aero_func->cacheValue(true); // Same as above
+      vFnativeAtCG(axis_ctr+1) += aero_func->GetValue();
     }
   }
 
@@ -208,7 +203,7 @@ bool FGAerodynamics::Run(bool Holding)
     }
   }
   // Calculate aerodynamic reference point shift, if any. The shift takes place
-  // in the structual axis. That is, if the shift is positive, it is towards the
+  // in the structural axis. That is, if the shift is positive, it is towards the
   // back (tail) of the vehicle. The AeroRPShift function should be
   // non-dimensionalized by the wing chord. The calculated vDeltaRP will be in
   // feet.
@@ -221,14 +216,13 @@ bool FGAerodynamics::Run(bool Holding)
   vMomentsMRC.InitMatrix();
 
   for (axis_ctr = 0; axis_ctr < 3; axis_ctr++) {
-    AeroFunctionArray* array = &AeroFunctions[axis_ctr+3];
-    for (AeroFunctionArray::iterator f=array->begin(); f != array->end(); ++f) {
+    for (auto& aero_func: AeroFunctions[axis_ctr+3]) {
       // Tell the Functions to cache values, so when the function values are
       // being requested for output, the functions do not get calculated again
       // in a context that might have changed, but instead use the values that
       // have already been calculated for this frame.
-      (*f)->cacheValue(true);
-      vMomentsMRC(axis_ctr+1) += (*f)->GetValue();
+      aero_func->cacheValue(true);
+      vMomentsMRC(axis_ctr+1) += aero_func->GetValue();
     }
   }
 
@@ -299,10 +293,8 @@ FGColumnVector3 FGAerodynamics::GetForcesInStabilityAxes(void) const
 
 bool FGAerodynamics::Load(Element *document)
 {
-  string axis;
-  string scratch_unit="";
-  Element *temp_element, *axis_element, *function_element;
-  std::map<std::string,int> AxisIdx;
+  Element *temp_element;
+  std::map<std::string, int> AxisIdx;
 
   AxisIdx["DRAG"]   = 0;
   AxisIdx["SIDE"]   = 1;
@@ -329,7 +321,7 @@ bool FGAerodynamics::Load(Element *document)
   Debug(2);
 
   if ((temp_element = document->FindElement("alphalimits"))) {
-    scratch_unit = temp_element->GetAttributeValue("unit");
+    string scratch_unit = temp_element->GetAttributeValue("unit");
     if (scratch_unit.empty()) scratch_unit = "RAD";
     alphaclmin0 = temp_element->FindElementValueAsNumberConvertFromTo("min", scratch_unit, "RAD");
     alphaclmax0 = temp_element->FindElementValueAsNumberConvertFromTo("max", scratch_unit, "RAD");
@@ -338,23 +330,23 @@ bool FGAerodynamics::Load(Element *document)
   }
 
   if ((temp_element = document->FindElement("hysteresis_limits"))) {
-    scratch_unit = temp_element->GetAttributeValue("unit");
+    string scratch_unit = temp_element->GetAttributeValue("unit");
     if (scratch_unit.empty()) scratch_unit = "RAD";
     alphahystmin = temp_element->FindElementValueAsNumberConvertFromTo("min", scratch_unit, "RAD");
     alphahystmax = temp_element->FindElementValueAsNumberConvertFromTo("max", scratch_unit, "RAD");
   }
 
   if ((temp_element = document->FindElement("aero_ref_pt_shift_x"))) {
-    function_element = temp_element->FindElement("function");
+    Element* function_element = temp_element->FindElement("function");
     AeroRPShift = new FGFunction(FDMExec, function_element);
   }
 
-  axis_element = document->FindElement("axis");
+  Element* axis_element = document->FindElement("axis");
   while (axis_element) {
     AeroFunctionArray ca;
     AeroFunctionArray ca_atCG;
-    axis = axis_element->GetAttributeValue("name");
-    function_element = axis_element->FindElement("function");
+    string axis = axis_element->GetAttributeValue("name");
+    Element* function_element = axis_element->FindElement("function");
     while (function_element) {
       try {
         if (function_element->HasAttribute("apply_at_cg") &&
@@ -518,29 +510,22 @@ void FGAerodynamics::ProcessAxesNameAndFrame(eAxisType& axisType, const string& 
 
 string FGAerodynamics::GetAeroFunctionStrings(const string& delimeter) const
 {
-  string AeroFunctionStrings = "";
-  bool firstime = true;
-  unsigned int axis, sd;
+  string AeroFunctionStrings;
 
-  for (axis = 0; axis < 6; axis++) {
-    for (sd = 0; sd < AeroFunctions[axis].size(); sd++) {
-      if (firstime) {
-        firstime = false;
-      } else {
-        AeroFunctionStrings += delimeter;
-      }
-      AeroFunctionStrings += AeroFunctions[axis][sd]->GetName();
+  for (unsigned int axis = 0; axis < 6; axis++) {
+    for (auto& aero_func: AeroFunctions[axis]) {
+      if (!AeroFunctionStrings.empty()) AeroFunctionStrings += delimeter;
+
+      AeroFunctionStrings += aero_func->GetName();
     }
   }
 
   string FunctionStrings = FGModelFunctions::GetFunctionStrings(delimeter);
 
   if (!FunctionStrings.empty()) {
-    if (!AeroFunctionStrings.empty()) {
-      AeroFunctionStrings += delimeter + FunctionStrings;
-    } else {
-      AeroFunctionStrings = FunctionStrings;
-    }
+    if (!AeroFunctionStrings.empty()) AeroFunctionStrings += delimeter;
+
+    AeroFunctionStrings += FunctionStrings;
   }
 
   return AeroFunctionStrings;
@@ -553,20 +538,17 @@ string FGAerodynamics::GetAeroFunctionValues(const string& delimeter) const
   ostringstream buf;
 
   for (unsigned int axis = 0; axis < 6; axis++) {
-    for (unsigned int sd = 0; sd < AeroFunctions[axis].size(); sd++) {
+    for (auto& aero_func: AeroFunctions[axis]) {
       if (buf.tellp() > 0) buf << delimeter;
-      buf << AeroFunctions[axis][sd]->GetValue();
+      buf << aero_func->GetValue();
     }
   }
 
   string FunctionValues = FGModelFunctions::GetFunctionValues(delimeter);
 
   if (!FunctionValues.empty()) {
-    if (!buf.str().empty()) {
-      buf << delimeter << FunctionValues;
-    } else {
-      buf << FunctionValues;
-    }
+    if (buf.tellp() > 0) buf << delimeter;
+    buf << FunctionValues;
   }
 
   return buf.str();
@@ -654,7 +636,7 @@ void FGAerodynamics::BuildStabilityTransformMatrices(void)
 //       variable is not set, debug_lvl is set to 1 internally
 //    0: This requests JSBSim not to output any messages
 //       whatsoever.
-//    1: This value explicity requests the normal JSBSim
+//    1: This value explicitly requests the normal JSBSim
 //       startup messages
 //    2: This value asks for a message to be printed out when
 //       a class is instantiated
