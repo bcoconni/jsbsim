@@ -74,11 +74,11 @@ CLASS DOCUMENTATION
          <min> {number} </min>
          <max> {number} </max>
        </hysteresis_limits>
-       <aero_ref_pt_shift_x>  
+       <aero_ref_pt_shift_x>
          <function>
            {function contents}
-         </function> 
-       </aero_ref_pt_shift_x>  
+         </function>
+       </aero_ref_pt_shift_x>
        <function>
          {function contents}
        </function>
@@ -124,7 +124,7 @@ public:
 
   /** Runs the Aerodynamics model; called by the Executive
       Can pass in a value indicating if the executive is directing the simulation to Hold.
-      @param Holding if true, the executive has been directed to hold the sim from 
+      @param Holding if true, the executive has been directed to hold the sim from
                      advancing time. Some models may ignore this flag, such as the Input
                      model, which may need to be active to listen on a socket for the
                      "Resume" command to be given.
@@ -233,7 +233,7 @@ public:
       aero functions */
   std::string GetAeroFunctionValues(const std::string& delimeter) const;
 
-  std::vector <FGFunction*> * GetAeroFunctions(void) const { return AeroFunctions; }
+  const std::vector <FGFunction_ptr>* GetAeroFunctions(void) const { return AeroFunctions; }
 
   struct Inputs {
     double Alpha;
@@ -253,14 +253,14 @@ private:
   enum eAxisType {atNone, atWind, atBodyAxialNormal, atBodyXYZ, atStability} forceAxisType, momentAxisType;
   typedef std::map<std::string,int> AxisIndex;
   AxisIndex AxisIdx;
-  FGFunction* AeroRPShift;
-  typedef std::vector <FGFunction*> AeroFunctionArray;
-  AeroFunctionArray* AeroFunctions;
+  FGFunction_ptr AeroRPShift;
+  typedef std::vector <FGFunction_ptr> AeroFunctionArray;
+  AeroFunctionArray AeroFunctions[6];
+  AeroFunctionArray AeroFunctionsAtCG[6];
   FGMatrix33 Ts2b, Tb2s;
   FGColumnVector3 vFnative;
   FGColumnVector3 vFw;
   FGColumnVector3 vForces;
-  AeroFunctionArray* AeroFunctionsAtCG;
   FGColumnVector3 vFnativeAtCG;
   FGColumnVector3 vForcesAtCG;
   FGColumnVector3 vMoments;
@@ -275,7 +275,6 @@ private:
   double bi2vel, ci2vel,alphaw;
   double clsq, lod, qbar_area;
 
-  typedef double (FGAerodynamics::*PMF)(int) const;
   void DetermineAxisSystem(Element* document);
   void ProcessAxesNameAndFrame(FGAerodynamics::eAxisType& axisType,
                                const std::string& name, const std::string& frame,

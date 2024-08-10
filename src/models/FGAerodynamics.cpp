@@ -71,9 +71,6 @@ FGAerodynamics::FGAerodynamics(FGFDMExec* FDMExec) : FGModel(FDMExec)
   forceAxisType = atNone;
   momentAxisType = atNone;
 
-  AeroFunctions = new AeroFunctionArray[6];
-  AeroFunctionsAtCG = new AeroFunctionArray[6];
-
   impending_stall = stall_hyst = 0.0;
   alphaclmin = alphaclmax = 0.0;
   alphaclmin0 = alphaclmax0 = 0.0;
@@ -93,20 +90,6 @@ FGAerodynamics::FGAerodynamics(FGFDMExec* FDMExec) : FGModel(FDMExec)
 
 FGAerodynamics::~FGAerodynamics()
 {
-  unsigned int i,j;
-
-  for (i=0; i<6; i++)
-    for (j=0; j<AeroFunctions[i].size(); j++)
-      delete AeroFunctions[i][j];
-  for (i=0; i<6; i++)
-    for (j=0; j<AeroFunctionsAtCG[i].size(); j++)
-      delete AeroFunctionsAtCG[i][j];
-
-  delete[] AeroFunctions;
-  delete[] AeroFunctionsAtCG;
-
-  delete AeroRPShift;
-
   Debug(1);
 }
 
