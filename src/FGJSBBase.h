@@ -58,9 +58,12 @@ FORWARD DECLARATIONS
 
 namespace JSBSim {
 
-class JSBSIM_API BaseException : public std::runtime_error {
+class JSBSIM_API BaseException : public std::exception {
   public:
-    BaseException(const std::string& msg) : std::runtime_error(msg) {}
+    BaseException(const std::string& msg);
+    const char* what() const noexcept override { return message.c_str(); }
+  private:
+    std::string message;
 };
 
 /**

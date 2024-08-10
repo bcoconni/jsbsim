@@ -90,5 +90,21 @@ string FGJSBBase::CreateIndexedPropertyName(const string& Property, int index)
 }
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-} // namespace JSBSim
+BaseException::BaseException(const string& msg)
+ : message(msg)
+{
+  const string whitespaceCharacters = " \t\n";
+  // Remove all occurrences of white spaces at the beginning of the message
+  while (!message.empty() && message.find_first_of(whitespaceCharacters) == 0) {
+    message = message.erase(0, 1);
+  }
 
+  if (!message.empty()) {
+    // Remove all occurrences of white spaces at the end of the message
+    size_t ns = message.size()-1;
+    while (ns && message.find_last_of(whitespaceCharacters) == ns) {
+      message = message.erase(ns--, 1);
+    }
+  }
+}
+} // namespace JSBSim

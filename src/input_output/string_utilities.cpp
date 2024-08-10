@@ -125,8 +125,11 @@ std::string& trim_left(std::string& str)
 
 std::string& trim_right(std::string& str)
 {
-  while (!str.empty() && isspace((unsigned char)str[str.size()-1])) {
-    str = str.erase(str.size()-1,1);
+  if (!str.empty()) {
+    size_t ns = str.size() - 1;
+    while (!str.empty() && isspace((unsigned char)str[ns])) {
+      str = str.erase(ns--, 1);
+    }
   }
   return str;
 }
