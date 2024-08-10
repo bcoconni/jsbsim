@@ -67,8 +67,6 @@ CLASS DOCUMENTATION
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-typedef std::vector <FGFCSComponent*> FCSCompVec;
-
 class FGFCSChannel {
 public:
   /// Constructor
@@ -76,39 +74,36 @@ public:
                SGPropertyNode* node=nullptr)
     : fcs(FCS), OnOffNode(node), Name(name)
   {
-    ExecRate = execRate < 1 ? 1 : execRate;
+    ExecRate = std::max(1, execRate);
     // Set ExecFrameCountSinceLastRun so that each components are initialized
     ExecFrameCountSinceLastRun = ExecRate;
   }
 
-  /// Destructor
-  ~FGFCSChannel() {
-    for (unsigned int i=0; i<FCSComponents.size(); i++) delete FCSComponents[i];
-    FCSComponents.clear();
-  }
   /// Retrieves the name of the channel
-  std::string GetName() {return Name;}
+  std::string GetName() { return Name; }
 
   /// Adds a component to a channel
   void Add(FGFCSComponent* comp) {
-    FCSComponents.push_back(comp);
+    FCSComponents.push_back(std::unique_ptr<FGFCSComponent>(comp));
   }
+
   /// Returns the number of components in the channel.
-  size_t GetNumComponents() {return FCSComponents.size();}
+  size_t GetNumComponents() { return FCSComponents.size(); }
+
   /// Retrieves a specific component.
   FGFCSComponent* GetComponent(unsigned int i) {
     if (i < GetNumComponents()) {
-      return FCSComponents[i];
+      return FCSComponents[i].get();
     } else {
       FGLogging log(fcs->GetExec()->GetLogger(), LogLevel::ERROR);
       log << "Tried to get nonexistent component\n";
       return nullptr;
     }
   }
+
   /// Reset the components that can be reset
   void Reset() {
-    for (unsigned int i=0; i<FCSComponents.size(); i++)
-      FCSComponents[i]->ResetPastStates();
+    for (auto& comp: FCSComponents) comp->ResetPastStates();
 
     // Set ExecFrameCountSinceLastRun so that each components are initialized
     // after a reset.
@@ -132,8 +127,7 @@ public:
     // channel will be run at rate 1 if trimming, or when the next execrate
     // frame is reached
     if (fcs->GetTrimStatus() || ExecFrameCountSinceLastRun >= ExecRate) {
-      for (unsigned int i=0; i<FCSComponents.size(); i++)
-        FCSComponents[i]->Run();
+      for (auto& comp: FCSComponents) comp->Run();
     }
   }
   /// Get the channel rate
@@ -141,7 +135,7 @@ public:
 
   private:
     FGFCS* fcs;
-    FCSCompVec FCSComponents;
+    std::vector<std::unique_ptr<FGFCSComponent>> FCSComponents;
     SGConstPropertyNode_ptr OnOffNode;
     std::string Name;
 
