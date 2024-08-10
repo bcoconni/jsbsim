@@ -54,20 +54,6 @@ FGAerodynamics::FGAerodynamics(FGFDMExec* FDMExec) : FGModel(FDMExec)
 {
   Name = "FGAerodynamics";
 
-  AxisIdx["DRAG"]   = 0;
-  AxisIdx["SIDE"]   = 1;
-  AxisIdx["LIFT"]   = 2;
-  AxisIdx["ROLL"]   = 3;
-  AxisIdx["PITCH"]  = 4;
-  AxisIdx["YAW"]    = 5;
-
-  AxisIdx["AXIAL"]  = 0;
-  AxisIdx["NORMAL"] = 2;
-
-  AxisIdx["X"] = 0;
-  AxisIdx["Y"] = 1;
-  AxisIdx["Z"] = 2;
-
   forceAxisType = atNone;
   momentAxisType = atNone;
 
@@ -316,6 +302,21 @@ bool FGAerodynamics::Load(Element *document)
   string axis;
   string scratch_unit="";
   Element *temp_element, *axis_element, *function_element;
+  std::map<std::string,int> AxisIdx;
+
+  AxisIdx["DRAG"]   = 0;
+  AxisIdx["SIDE"]   = 1;
+  AxisIdx["LIFT"]   = 2;
+  AxisIdx["ROLL"]   = 3;
+  AxisIdx["PITCH"]  = 4;
+  AxisIdx["YAW"]    = 5;
+
+  AxisIdx["AXIAL"]  = 0;
+  AxisIdx["NORMAL"] = 2;
+
+  AxisIdx["X"] = 0;
+  AxisIdx["Y"] = 1;
+  AxisIdx["Z"] = 2;
 
   Name = "Aerodynamics Model: " + document->GetAttributeValue("name");
 

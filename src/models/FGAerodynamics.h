@@ -251,8 +251,6 @@ public:
 
 private:
   enum eAxisType {atNone, atWind, atBodyAxialNormal, atBodyXYZ, atStability} forceAxisType, momentAxisType;
-  typedef std::map<std::string,int> AxisIndex;
-  AxisIndex AxisIdx;
   FGFunction_ptr AeroRPShift;
   typedef std::vector <FGFunction_ptr> AeroFunctionArray;
   AeroFunctionArray AeroFunctions[6];
