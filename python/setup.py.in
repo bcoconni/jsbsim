@@ -123,7 +123,7 @@ if 'sdist' not in dist.commands and compiler.find_library_file([library_path],
     else:
         source_file = '_jsbsim.pyx'
 
-    ext_kwargs = { 'sources': [source_file],
+    ext_kwargs = { 'sources': [source_file, 'PyLogger.cxx'],
                    'include_dirs': ['src'],
                    'libraries': ['JSBSim'] + link_libraries,
                    'library_dirs': [library_path],
@@ -139,7 +139,7 @@ else:
     else:
         compile_flags = ['-D'+flag for flag in convert_CMake_list_to_Python_list('${JSBSIM_COMPILE_DEFINITIONS};NDEBUG')]
 
-    ext_kwargs = { 'sources': convert_CMake_list_to_Python_list('_jsbsim.pyx;${JSBSIM_SOURCE_FILES}'),
+    ext_kwargs = { 'sources': convert_CMake_list_to_Python_list('_jsbsim.pyx;PyLogger.cxx;${JSBSIM_SOURCE_FILES}'),
                    'libraries': link_libraries,
                    'include_dirs': ['src', 'src/simgear/xml'],
                    'extra_compile_args': compile_flags }
