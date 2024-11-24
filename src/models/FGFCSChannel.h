@@ -74,7 +74,7 @@ public:
                FGPropertyNode* node=nullptr)
     : fcs(FCS), OnOffNode(node), Name(name)
   {
-    ExecRate = max(1, execRate);
+    ExecRate = std::max(1, execRate);
     // Set ExecFrameCountSinceLastRun so that each components are initialized
     ExecFrameCountSinceLastRun = ExecRate;
   }
