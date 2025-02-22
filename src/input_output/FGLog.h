@@ -156,7 +156,7 @@ public:
     buffer << message;
   }
 
-private:
+protected:
   std::ostringstream buffer;
   LogLevel min_level = LogLevel::BULK;
 };
