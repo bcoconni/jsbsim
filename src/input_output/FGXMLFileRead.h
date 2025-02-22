@@ -37,6 +37,7 @@ INCLUDES
 
 #include "FGXMLParse.h"
 #include "simgear/misc/sg_path.hxx"
+#include "FGLog.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -46,7 +47,8 @@ namespace JSBSim {
 
 class JSBSIM_API FGXMLFileRead {
 public:
-  FGXMLFileRead(void) {}
+  FGXMLFileRead(std::shared_ptr<FGLogger> logger)
+    : file_parser(logger), Logger(logger) {}
   ~FGXMLFileRead(void) {}
 
   Element* LoadXMLDocument(const SGPath& XML_filename, bool verbose=true)
@@ -61,6 +63,7 @@ public:
 
 private:
   FGXMLParse file_parser;
+  std::shared_ptr<FGLogger> Logger;
 };
 }
 #endif
