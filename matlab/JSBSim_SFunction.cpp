@@ -214,6 +214,40 @@ std::string getMxArrayString(const mxArray* mxArrayStr) {
  * See matlabroot/simulink/src/sfuntmpl_doc.c for more details.
  */
 
+class LogMatlab : public FGLogConsole
+{
+public:
+    LogMatlab(SimStruct *s) : S(s) {}
+    void Format(LogFormat format) override {} // Ignore text formatting.
+    void Flush(void) override {
+        static char error_msg[1024];
+        std::string message = buffer.str();
+        switch (log_level) {
+            case LogLevel::BULK:
+            case LogLevel::DEBUG:
+            case LogLevel::INFO:
+                mexPrintf("JSBSim: %s", message.c_str());
+                break;
+            case LogLevel::WARN:
+                mexWarnMsgIdAndTxt("JSBSim:Warning", message.c_str());
+                break;
+            case LogLevel::ERROR:
+            case LogLevel::FATAL:
+            {
+                snprintf(error_msg, sizeof(error_msg), "%s", message.c_str());
+                ssSetErrorStatus(S, error_msg);
+                break;
+            }
+            default:
+                break;
+        }
+        buffer.str("");
+    }
+private:
+    SimStruct *S;
+};
+
+
 /*====================*
  * S-function methods *
  *====================*/
@@ -271,7 +305,7 @@ static void mdlProcessParameters(SimStruct *S)
     std::string io_config_file = getMxArrayString(io_config_file_name);
     mexPrintf("I/O config input: %s \n", io_config_file.c_str());
 
-    auto logger = std::make_shared<FGLogConsole>();
+    auto logger = std::make_shared<LogMatlab>(S);
     FGXMLFileRead XMLFileRead(logger);
     Element* document = XMLFileRead.LoadXMLDocument(SGPath(io_config_file));
 
@@ -454,7 +488,7 @@ static void mdlInitializeConditions(SimStruct *S)
     // Get the user provided input/output config.
     std::string io_config_file = getMxArrayString(io_config_file_name);
 
-    auto logger = std::make_shared<FGLogConsole>();
+    auto logger = std::make_shared<LogMatlab>(S);
     FGXMLFileRead XMLFileRead(logger);
     Element* document = XMLFileRead.LoadXMLDocument(SGPath(io_config_file));
 
