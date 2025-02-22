@@ -155,7 +155,7 @@ bool FGInput::Run(bool Holding)
 
 bool FGInput::SetDirectivesFile(const SGPath& fname)
 {
-  FGXMLFileRead XMLFile;
+  FGXMLFileRead XMLFile(FDMExec->GetLogger());
   Element* document = XMLFile.LoadXMLDocument(fname);
   if (!document) {
     FGLogging log(FDMExec->GetLogger(), LogLevel::FATAL);

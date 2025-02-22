@@ -173,7 +173,7 @@ string FGOutput::GetOutputName(unsigned int idx) const
 
 bool FGOutput::SetDirectivesFile(const SGPath& fname)
 {
-  FGXMLFileRead XMLFile;
+  FGXMLFileRead XMLFile(FDMExec->GetLogger());
   Element* document = XMLFile.LoadXMLDocument(fname);
   if (!document) {
     stringstream s;

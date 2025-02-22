@@ -101,16 +101,18 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
   double dt = 0.0, value = 0.0;
   FGCondition *newCondition;
 
-  FGXMLFileRead XMLFileRead;
+  FGXMLFileRead XMLFileRead(FDMExec->GetLogger());
   Element* document = XMLFileRead.LoadXMLDocument(script);
 
   if (!document) {
-    cerr << "File: " << script << " could not be loaded." << endl;
+    FGLogging log(FDMExec->GetLogger(), LogLevel::ERROR);
+    log << "File: " << script << " could not be loaded.\n";
     return false;
   }
 
   if (document->GetName() != string("runscript")) {
-    cerr << "File: " << script << " is not a script file" << endl;
+    FGLogging log(FDMExec->GetLogger(), LogLevel::ERROR);
+    log << "File: " << script << " is not a script file\n";
     return false;
   }
 
@@ -121,7 +123,8 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
   run_element = document->FindElement("run");
 
   if (!run_element) {
-    cerr << "No \"run\" element found in script." << endl;
+    FGXMLLogging log(FDMExec->GetLogger(), document, LogLevel::ERROR);
+    log << "No \"run\" element found in script.\n";
     return false;
   }
 
@@ -135,7 +138,8 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
   if (run_element->HasAttribute("end")) {
     EndTime   = run_element->GetAttributeValueAsNumber("end");
   } else {
-    cerr << "An end time (duration) for the script must be specified in the script <run> element." << endl;
+    FGXMLLogging log(FDMExec->GetLogger(), run_element, LogLevel::ERROR);
+    log << "An end time (duration) for the script must be specified in the script <run> element.\n";
     return false;
   }
 
@@ -143,8 +147,9 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
     dt = run_element->GetAttributeValueAsNumber("dt");
   else {
     dt = default_dT;
-    cout << endl << "Overriding simulation step size from the command line. New step size is: "
-         << default_dT << " seconds (" << 1/default_dT << " Hz)" << endl << endl;
+    FGXMLLogging log(FDMExec->GetLogger(), run_element, LogLevel::INFO);
+    log << "\nOverriding simulation step size from the command line. New step size is: "
+        << default_dT << " seconds (" << 1/default_dT << " Hz)\n\n";
   }
 
   FDMExec->Setdt(dt);
@@ -161,31 +166,36 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
       if (!FDMExec->LoadModel(aircraft))
         return false;
     } else {
-      cerr << "Aircraft must be specified in use element." << endl;
+      FGXMLLogging log(FDMExec->GetLogger(), element, LogLevel::ERROR);
+      log << "Aircraft must be specified in use element.\n";
       return false;
     }
 
     initialize = SGPath::fromLocal8Bit(element->GetAttributeValue("initialize").c_str());
     if (initfile.isNull()) {
       if (initialize.isNull()) {
-        cerr << "Initialization file must be specified in use element." << endl;
+        FGXMLLogging log(FDMExec->GetLogger(), element, LogLevel::ERROR);
+        log << "Initialization file must be specified in use element.\n";
         return false;
       }
     } else {
-      cout << endl << "The initialization file specified in the script file ("
+      FGXMLLogging log(FDMExec->GetLogger(), element, LogLevel::INFO);
+      log << "\nThe initialization file specified in the script file ("
            << initialize << ") has been overridden with a specified file ("
-           << initfile << ")." << endl;
+           << initfile << ").\n";
       initialize = initfile;
     }
 
   } else {
-    cerr << "No \"use\" directives in the script file." << endl;
+    FGXMLLogging log(FDMExec->GetLogger(), document, LogLevel::ERROR);
+    log << "No \"use\" directives in the script file.\n";
     return false;
   }
 
   auto IC = FDMExec->GetIC();
   if ( ! IC->Load( initialize )) {
-    cerr << "Initialization unsuccessful" << endl;
+    FGLogging log(FDMExec->GetLogger(), LogLevel::ERROR);
+    log << "Initialization unsuccessful\n";
     return false;
   }
 
@@ -245,14 +255,16 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
       try {
         newCondition = new FGCondition(condition_element, PropertyManager);
       } catch(string& str) {
-        cout << endl << fgred << str << reset << endl << endl;
+        FGXMLLogging log(FDMExec->GetLogger(), condition_element, LogLevel::ERROR);
+        log << "\n" << LogFormat::RED << str << LogFormat::RESET << "\n\n";
         delete newEvent;
         return false;
       }
       newEvent->Condition = newCondition;
     } else {
-      cerr << "No condition specified in script event " << newEvent->Name
-           << endl;
+      FGXMLLogging log(FDMExec->GetLogger(), event_element, LogLevel::ERROR);
+      log << "No condition specified in script event " << newEvent->Name
+          << "\n";
       delete newEvent;
       return false;
     }
@@ -288,11 +300,11 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
             newEvent->NotifyProperties.push_back(new FGFunctionValue(notifyPropertyName, PropertyManager, f,
                                                                      notify_property_element));
           else {
-            cerr << notify_property_element->ReadFrom()
-              << fgred << highint << "  No function by the name "
-              << function_str << " has been defined. This property will "
-              << "not be logged. You should check your configuration file."
-              << reset << endl;
+            FGXMLLogging log(FDMExec->GetLogger(), notify_property_element, LogLevel::ERROR);
+            log << LogFormat::RED << LogFormat::BOLD << "  No function by the name "
+                << function_str << " has been defined. This property will "
+                << "not be logged. You should check your configuration file.\n"
+                << LogFormat::RESET;
           }
         }
         else
@@ -417,7 +429,8 @@ bool FGScript::RunScript(void)
             try {
               thisEvent.SetValue[i] = thisEvent.Functions[i]->GetValue();
             } catch (string& msg) {
-              std::cerr << std::endl << "A problem occurred in the execution of the script. " << msg << endl;
+              FGLogging log(FDMExec->GetLogger(), LogLevel::FATAL);
+              log << "\nA problem occurred in the execution of the script. " << msg << "\n";
               throw;
             }
           }
@@ -430,8 +443,11 @@ bool FGScript::RunScript(void)
             thisEvent.newValue[i] = thisEvent.OriginalValue[i] + thisEvent.SetValue[i];
             break;
           default:
-            cerr << "Invalid Type specified" << endl;
-            break;
+            {
+              FGLogging log(FDMExec->GetLogger(), LogLevel::ERROR);
+              log << "Invalid Type specified\n";
+              break;
+            }
           }
           thisEvent.StartTime = currentTime + thisEvent.Delay;
           thisEvent.ValueSpan[i] = thisEvent.newValue[i] - thisEvent.OriginalValue[i];
@@ -479,8 +495,11 @@ bool FGScript::RunScript(void)
             newSetValue = (1 - exp( -thisEvent.TimeSpan/thisEvent.TC[i] )) * thisEvent.ValueSpan[i] + thisEvent.OriginalValue[i];
             break;
           default:
-            cerr << "Invalid Action specified" << endl;
-            break;
+            {
+              FGLogging log(FDMExec->GetLogger(), LogLevel::ERROR);
+              log << "Invalid Action specified\n";
+              break;
+            }
           }
           thisEvent.SetParam[i]->setDoubleValue(newSetValue);
         }
@@ -488,45 +507,45 @@ bool FGScript::RunScript(void)
 
       // Print notification values after setting them
       if (thisEvent.Notify && !thisEvent.Notified) {
+        FGLogging log(FDMExec->GetLogger(), LogLevel::INFO);
         if (thisEvent.NotifyKML) {
-          cout << endl << "<Placemark>" << endl;
-          cout << "  <name> " << currentTime << " seconds" << " </name>"
-               << endl;
-          cout << "  <description>" << endl;
-          cout << "  <![CDATA[" << endl;
-          cout << "  <b>" << thisEvent.Name << " (Event " << event_ctr << ")"
-               << " executed at time: " << currentTime << "</b><br/>" << endl;
+          log << "\n<Placemark>\n";
+          log << "  <name> " << currentTime << " seconds" << " </name>\n";
+          log << "  <description>\n";
+          log << "  <![CDATA[\n";
+          log << "  <b>" << thisEvent.Name << " (Event " << event_ctr << ")"
+               << " executed at time: " << currentTime << "</b><br/>\n";
         } else  {
-          cout << endl << underon
-               << highint << thisEvent.Name << normint << underoff
-               << " (Event " << event_ctr << ")"
-               << " executed at time: " << highint << currentTime << normint
-               << endl;
+          log << "\n" << LogFormat::UNDERLINE_ON
+              << LogFormat::BOLD << thisEvent.Name << LogFormat::NORMAL << LogFormat::UNDERLINE_OFF
+              << " (Event " << event_ctr << ")"
+              << " executed at time: " << LogFormat::BOLD << currentTime << LogFormat::NORMAL
+              << "\n";
         }
         if (!thisEvent.Description.empty()) {
-          cout << "    " << thisEvent.Description << endl;
+          log << "    " << thisEvent.Description << "\n";
         }
         for (j=0; j<thisEvent.NotifyProperties.size();j++) {
-          cout << "    " << thisEvent.DisplayString[j] << " = "
-               << thisEvent.NotifyProperties[j]->getDoubleValue();
-          if (thisEvent.NotifyKML) cout << " <br/>";
-          cout << endl;
+          log << "    " << thisEvent.DisplayString[j] << " = "
+              << thisEvent.NotifyProperties[j]->getDoubleValue();
+          if (thisEvent.NotifyKML) log << " <br/>";
+          log << "\n";
         }
         if (thisEvent.NotifyKML) {
-          cout << "  ]]>" << endl;
-          cout << "  </description>" << endl;
-          cout << "  <Point>" << endl;
-          cout << "    <altitudeMode> absolute </altitudeMode>" << endl;
-          cout << "    <extrude> 1 </extrude>" << endl;
-          cout << "    <coordinates>"
-               << FDMExec->GetPropagate()->GetLongitudeDeg() << ","
-               << FDMExec->GetPropagate()->GetGeodLatitudeDeg() << ","
-               << FDMExec->GetPropagate()->GetAltitudeASLmeters()
-               << "</coordinates>" << endl;
-          cout << "  </Point>" << endl;
-          cout << "</Placemark>" << endl;
+          log << "  ]]>\n";
+          log << "  </description>\n";
+          log << "  <Point>\n";
+          log << "    <altitudeMode> absolute </altitudeMode>\n";
+          log << "    <extrude> 1 </extrude>\n";
+          log << "    <coordinates>"
+              << FDMExec->GetPropagate()->GetLongitudeDeg() << ","
+              << FDMExec->GetPropagate()->GetGeodLatitudeDeg() << ","
+              << FDMExec->GetPropagate()->GetAltitudeASLmeters()
+              << "</coordinates>\n";
+          log << "  </Point>\n";
+          log << "</Placemark>\n";
         }
-        cout << endl;
+        log << "\n";
         thisEvent.Notified = true;
       }
 
@@ -564,131 +583,132 @@ void FGScript::Debug(int from)
     if (from == 0) { // Constructor
     } else if (from == 3) {
     } else if (from == 4)  { // print out script data
-      cout << endl;
-      cout << "Script: \"" << ScriptName << "\"" << endl;
-      cout << "  begins at " << StartTime << " seconds and runs to " << EndTime
-           << " seconds with dt = " << setprecision(6) << FDMExec->GetDeltaT()
-           << " (" << ceil(1.0/FDMExec->GetDeltaT()) << " Hz)" << endl;
-      cout << endl;
+      FGLogging log(FDMExec->GetLogger(), LogLevel::DEBUG);
+      log << "\nScript: \"" << ScriptName << "\"\n";
+      log << "  begins at " << StartTime << " seconds and runs to " << EndTime
+          << " seconds with dt = " << setprecision(6) << FDMExec->GetDeltaT()
+          << " (" << ceil(1.0/FDMExec->GetDeltaT()) << " Hz)\n\n";
 
       for (auto node: LocalProperties) {
-        cout << "Local property: " << node->GetName()
-             << " = " << node->getDoubleValue()
-             << endl;
+        log << "Local property: " << node->GetName()
+            << " = " << node->getDoubleValue()
+            << "\n";
       }
 
-      if (LocalProperties.empty()) cout << endl;
+      if (LocalProperties.empty()) log << "\n";
 
       for (unsigned i=0; i<Events.size(); i++) {
-        cout << "Event " << i;
-        if (!Events[i].Name.empty()) cout << " (" << Events[i].Name << ")";
-        cout << ":" << endl;
+        log << "Event " << i;
+        if (!Events[i].Name.empty()) log << " (" << Events[i].Name << ")";
+        log << ":\n";
 
         if (Events[i].Persistent)
-          cout << "  " << "Whenever triggered, executes once";
+          log << "  " << "Whenever triggered, executes once";
         else if (Events[i].Continuous)
-          cout << "  " << "While true, always executes";
+          log << "  " << "While true, always executes";
         else
-          cout << "  " << "When first triggered, executes once";
+          log << "  " << "When first triggered, executes once";
 
         Events[i].Condition->PrintCondition();
 
-        cout << endl << "  Actions taken";
+        log << "\n  Actions taken";
         if (Events[i].Delay > 0.0)
-          cout << " (after a delay of " << Events[i].Delay << " secs)";
-        cout << ":" << endl << "    {";
+          log << " (after a delay of " << Events[i].Delay << " secs)";
+        log << ":\n    {";
         for (unsigned j=0; j<Events[i].SetValue.size(); j++) {
           if (Events[i].SetValue[j] == 0.0 && Events[i].Functions[j] != 0L) {
             if (Events[i].SetParam[j] == 0) {
               if (Events[i].SetParamName[j].empty()) {
-                stringstream s;
-                s << "  An attempt has been made to access a non-existent property" << endl
-                  << "  in this event. Please check the property names used, spelling, etc.";
-                cerr << fgred << highint << endl << s.str() << reset << endl;
-                throw BaseException(s.str());
+                FGLogging log(FDMExec->GetLogger(), LogLevel::FATAL);
+                log << LogFormat::RED << LogFormat::BOLD << "\n"
+                    << "  An attempt has been made to access a non-existent property\n"
+                    << "  in this event. Please check the property names used, spelling, etc.\n"
+                    << LogFormat::RESET;
+                throw BaseException(log.str());
               } else {
-                cout << endl << "      set " << Events[i].SetParamName[j]
-                     << " to function value (Late Bound)";
+                log << "\n      set " << Events[i].SetParamName[j]
+                    << " to function value (Late Bound)";
               }
             } else {
-              cout << endl << "      set "
-                   << Events[i].SetParam[j]->GetRelativeName("/fdm/jsbsim/")
-                   << " to function value";
+              log << "\n      set "
+                  << Events[i].SetParam[j]->GetRelativeName("/fdm/jsbsim/")
+                  << " to function value";
             }
           } else {
             if (Events[i].SetParam[j] == 0) {
               if (Events[i].SetParamName[j].empty()) {
-                stringstream s;
-                s << "  An attempt has been made to access a non-existent property" << endl
-                  << "  in this event. Please check the property names used, spelling, etc.";
-                cerr << fgred << highint << endl << s.str() << reset << endl;
-                throw BaseException(s.str());
+                FGLogging log(FDMExec->GetLogger(), LogLevel::FATAL);
+                log << LogFormat::RED << LogFormat::BOLD << "\n"
+                    << "  An attempt has been made to access a non-existent property\n"
+                    << "  in this event. Please check the property names used, spelling, etc.\n"
+                    << LogFormat::RESET;
+                throw BaseException(log.str());
               } else {
-                cout << endl << "      set " << Events[i].SetParamName[j]
-                     << " to function value (Late Bound)";
+                log << "\n      set " << Events[i].SetParamName[j]
+                    << " to function value (Late Bound)";
               }
             } else {
-              cout << endl << "      set "
-                   << Events[i].SetParam[j]->GetRelativeName("/fdm/jsbsim/")
-                   << " to " << Events[i].SetValue[j];
+              log << "\n      set "
+                  << Events[i].SetParam[j]->GetRelativeName("/fdm/jsbsim/")
+                  << " to " << Events[i].SetValue[j];
             }
           }
 
           switch (Events[i].Type[j]) {
           case FG_VALUE:
           case FG_BOOL:
-            cout << " (constant";
+            log << " (constant";
             break;
           case FG_DELTA:
-            cout << " (delta";
+            log << " (delta";
             break;
           default:
-            cout << " (unspecified type";
+            log << " (unspecified type";
           }
 
           switch (Events[i].Action[j]) {
           case FG_RAMP:
-            cout << " via ramp";
+            log << " via ramp";
             break;
           case FG_STEP:
-            cout << " via step)";
+            log << " via step)";
             break;
           case FG_EXP:
-            cout << " via exponential approach";
+            log << " via exponential approach";
             break;
           default:
-            cout << " via unspecified action)";
+            log << " via unspecified action)";
           }
 
           if (Events[i].Action[j] == FG_RAMP || Events[i].Action[j] == FG_EXP)
-            cout << " with time constant " << Events[i].TC[j] << ")";
+            log << " with time constant " << Events[i].TC[j] << ")";
         }
-        cout << endl << "    }" << endl;
+        log << "\n    }\n";
 
         // Print notifications
         if (Events[i].Notify) {
           if (!Events[i].NotifyProperties.empty()) {
             if (Events[i].NotifyKML) {
-              cout << "  Notifications (KML Format):" << endl << "    {"
-                   << endl;
+              log << "  Notifications (KML Format):\n    {\n";
             } else {
-              cout << "  Notifications:" << endl << "    {" << endl;
+              log << "  Notifications:\n    {\n";
             }
             for (unsigned j=0; j<Events[i].NotifyProperties.size();j++) {
-              cout << "      "
-                   << Events[i].NotifyProperties[j]->GetPrintableName()
-                    << endl;
+              log << "      "
+                  << Events[i].NotifyProperties[j]->GetPrintableName()
+                  << "\n";
             }
-            cout << "    }" << endl;
+            log << "    }\n";
           }
         }
-        cout << endl;
+        log << "\n";
       }
     }
   }
   if (debug_lvl & 2 ) { // Instantiation/Destruction notification
-    if (from == 0) cout << "Instantiated: FGScript" << endl;
-    if (from == 1) cout << "Destroyed:    FGScript" << endl;
+    FGLogging log(FDMExec->GetLogger(), LogLevel::DEBUG);
+    if (from == 0) log << "Instantiated: FGScript\n";
+    if (from == 1) log << "Destroyed:    FGScript\n";
   }
   if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
   }
