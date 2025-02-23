@@ -52,20 +52,12 @@ namespace JSBSim {
 CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-FGColumnVector3::FGColumnVector3(void)
-{
-  data[0] = data[1] = data[2] = 0.0;
-  // Debug(0);
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 string FGColumnVector3::Dump(const string& delimiter) const
 {
   ostringstream buffer;
-  buffer << std::setprecision(16) << data[0] << delimiter;
   buffer << std::setprecision(16) << data[1] << delimiter;
-  buffer << std::setprecision(16) << data[2];
+  buffer << std::setprecision(16) << data[2] << delimiter;
+  buffer << std::setprecision(16) << data[3];
   return buffer.str();
 }
 
@@ -86,7 +78,7 @@ FGColumnVector3 FGColumnVector3::operator/(const double scalar) const
 
   cerr << "Attempt to divide by zero in method \
     FGColumnVector3::operator/(const double scalar), \
-    object " << data[0] << " , " << data[1] << " , " << data[2] << endl;
+    object " << data[1] << " , " << data[2] << " , " << data[3] << endl;
   return FGColumnVector3();
 }
 
@@ -99,7 +91,7 @@ FGColumnVector3& FGColumnVector3::operator/=(const double scalar)
   else
     cerr << "Attempt to divide by zero in method \
       FGColumnVector3::operator/=(const double scalar), \
-      object " << data[0] << " , " << data[1] << " , " << data[2] << endl;
+      object " << data[1] << " , " << data[2] << " , " << data[3] << endl;
 
   return *this;
 }
@@ -108,7 +100,7 @@ FGColumnVector3& FGColumnVector3::operator/=(const double scalar)
 
 double FGColumnVector3::Magnitude(void) const
 {
-  return sqrt( data[0]*data[0] +  data[1]*data[1] +  data[2]*data[2] );
+  return sqrt( data[1]*data[1] +  data[2]*data[2] +  data[3]*data[3] );
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,7 +118,7 @@ FGColumnVector3& FGColumnVector3::Normalize(void)
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 double FGColumnVector3::Magnitude(const int idx1, const int idx2) const {
-  return sqrt( data[idx1-1]*data[idx1-1] +  data[idx2-1]*data[idx2-1] );
+  return sqrt( data[idx1]*data[idx1] +  data[idx2]*data[idx2] );
 }
 
 

@@ -41,6 +41,7 @@ INCLUDES
 
 #include <iosfwd>
 #include <string>
+#include <string.h>
 
 #include "JSBSim_API.h"
 
@@ -67,44 +68,41 @@ class JSBSIM_API FGColumnVector3
 public:
   /** Default initializer.
       Create a zero vector.   */
-  FGColumnVector3(void);
+  FGColumnVector3(void) noexcept {
+    memset(data, 0, sizeof(data));
+  }
 
   /** Initialization by given values.
       @param X value of the x-conponent.
       @param Y value of the y-conponent.
       @param Z value of the z-conponent.
       Create a vector from the doubles given in the arguments.   */
-  FGColumnVector3(const double X, const double Y, const double Z) {
-    data[0] = X;
-    data[1] = Y;
-    data[2] = Z;
+  FGColumnVector3(const double X, const double Y, const double Z) noexcept {
+    data[1] = X;
+    data[2] = Y;
+    data[3] = Z;
   }
 
   /** Copy constructor.
       @param v Vector which is used for initialization.
       Create copy of the vector given in the argument.   */
-  FGColumnVector3(const FGColumnVector3& v) {
-    data[0] = v.data[0];
-    data[1] = v.data[1];
-    data[2] = v.data[2];
+  FGColumnVector3(const FGColumnVector3& v) noexcept {
+    memcpy(data, v.data, sizeof(data));
   }
-
-  /// Destructor.
-  ~FGColumnVector3(void) { }
 
   /** Read access the entries of the vector.
       @param idx the component index.
       Return the value of the matrix entry at the given index.
       Indices are counted starting with 1.
       Note that the index given in the argument is unchecked.   */
-  double operator()(const unsigned int idx) const { return data[idx-1]; }
+  double operator()(const unsigned int idx) const noexcept { return data[idx]; }
 
   /** Write access the entries of the vector.
       @param idx the component index.
       Return a reference to the vector entry at the given index.
       Indices are counted starting with 1.
       Note that the index given in the argument is unchecked.   */
-  double& operator()(const unsigned int idx) { return data[idx-1]; }
+  double& operator()(const unsigned int idx) noexcept { return data[idx]; }
 
   /** Read access the entries of the vector.
       @param idx the component index.
@@ -114,7 +112,7 @@ public:
       operator()(unsigned int idx) const</tt> function. It is
       used internally to access the elements in a more convenient way.
       Note that the index given in the argument is unchecked.   */
-  double Entry(const unsigned int idx) const { return data[idx-1]; }
+  double Entry(const unsigned int idx) const noexcept { return data[idx]; }
 
   /** Write access the entries of the vector.
       @param idx the component index.
@@ -124,7 +122,7 @@ public:
       operator()(unsigned int idx)</tt> function. It is
       used internally to access the elements in a more convenient way.
       Note that the index given in the argument is unchecked.   */
-  double& Entry(const unsigned int idx) { return data[idx-1]; }
+  double& Entry(const unsigned int idx) noexcept { return data[idx]; }
 
   /** Prints the contents of the vector
       @param delimeter the item separator (tab or comma)
@@ -134,20 +132,18 @@ public:
   /** Assignment operator.
       @param b source vector.
       Copy the content of the vector given in the argument into *this.   */
-  FGColumnVector3& operator=(const FGColumnVector3& b) {
-    data[0] = b.data[0];
-    data[1] = b.data[1];
-    data[2] = b.data[2];
+  FGColumnVector3& operator=(const FGColumnVector3& v) noexcept {
+    memcpy(data, v.data, sizeof(data));
     return *this;
   }
 
   /** Assignment operator.
       @param lv initializer list of at most 3 values (i.e. {x, y, Z})
       Copy the content of the list into *this. */
-  FGColumnVector3& operator=(std::initializer_list<double> lv) {
+  FGColumnVector3& operator=(std::initializer_list<double> lv) noexcept {
     double *v = data;
     for(auto &x : lv)
-      *(v++) = x;
+      *(++v) = x;
 
     return *this;
   }
@@ -155,21 +151,21 @@ public:
   /**  Comparison operator.
       @param b other vector.
       Returns true if both vectors are exactly the same.   */
-  bool operator==(const FGColumnVector3& b) const {
-    return data[0] == b.data[0] && data[1] == b.data[1] && data[2] == b.data[2];
+  bool operator==(const FGColumnVector3& b) const noexcept {
+    return data[1] == b.data[1] && data[2] == b.data[2] && data[3] == b.data[3];
   }
 
   /** Comparison operator.
       @param b other vector.
       Returns false if both vectors are exactly the same.   */
-  bool operator!=(const FGColumnVector3& b) const { return ! operator==(b); }
+  bool operator!=(const FGColumnVector3& b) const noexcept { return ! operator==(b); }
 
   /** Multiplication by a scalar.
       @param scalar scalar value to multiply the vector with.
       @return The resulting vector from the multiplication with that scalar.
       Multiply the vector with the scalar given in the argument.   */
-  FGColumnVector3 operator*(const double scalar) const {
-    return FGColumnVector3(scalar*data[0], scalar*data[1], scalar*data[2]);
+  FGColumnVector3 operator*(const double scalar) const noexcept {
+    return FGColumnVector3(scalar*data[1], scalar*data[2], scalar*data[3]);
   }
 
   /** Multiply by 1/scalar.
@@ -183,55 +179,55 @@ public:
       @return The resulting vector from the cross product multiplication.
       Compute and return the cross product of the current vector with
       the given argument.   */
-  FGColumnVector3 operator*(const FGColumnVector3& V) const {
-    return FGColumnVector3( data[1] * V.data[2] - data[2] * V.data[1],
-                            data[2] * V.data[0] - data[0] * V.data[2],
-                            data[0] * V.data[1] - data[1] * V.data[0] );
+  FGColumnVector3 operator*(const FGColumnVector3& V) const noexcept {
+    return FGColumnVector3( data[2] * V.data[3] - data[3] * V.data[2],
+                            data[3] * V.data[1] - data[1] * V.data[3],
+                            data[1] * V.data[2] - data[2] * V.data[1] );
   }
 
   /// Addition operator.
-  FGColumnVector3 operator+(const FGColumnVector3& B) const {
-    return FGColumnVector3( data[0] + B.data[0], data[1] + B.data[1],
-                            data[2] + B.data[2] );
+  FGColumnVector3 operator+(const FGColumnVector3& B) const noexcept {
+    return FGColumnVector3( data[1] + B.data[1], data[2] + B.data[2],
+                            data[3] + B.data[3] );
   }
 
   /// Subtraction operator.
-  FGColumnVector3 operator-(const FGColumnVector3& B) const {
-    return FGColumnVector3( data[0] - B.data[0], data[1] - B.data[1],
-                            data[2] - B.data[2] );
+  FGColumnVector3 operator-(const FGColumnVector3& B) const noexcept {
+    return FGColumnVector3( data[1] - B.data[1], data[2] - B.data[2],
+                            data[3] - B.data[3] );
   }
 
   /// Subtract an other vector.
-  FGColumnVector3& operator-=(const FGColumnVector3 &B) {
-    data[0] -= B.data[0];
+  FGColumnVector3& operator-=(const FGColumnVector3 &B) noexcept {
     data[1] -= B.data[1];
     data[2] -= B.data[2];
+    data[3] -= B.data[3];
     return *this;
   }
 
   /// Add an other vector.
-  FGColumnVector3& operator+=(const FGColumnVector3 &B) {
-    data[0] += B.data[0];
+  FGColumnVector3& operator+=(const FGColumnVector3 &B) noexcept {
     data[1] += B.data[1];
     data[2] += B.data[2];
+    data[3] += B.data[3];
     return *this;
   }
 
   /// Scale by a scalar.
-  FGColumnVector3& operator*=(const double scalar) {
-    data[0] *= scalar;
+  FGColumnVector3& operator*=(const double scalar) noexcept {
     data[1] *= scalar;
     data[2] *= scalar;
+    data[3] *= scalar;
     return *this;
   }
 
   /// Scale by a 1/scalar.
   FGColumnVector3& operator/=(const double scalar);
 
-  void InitMatrix(void) { data[0] = data[1] = data[2] = 0.0; }
-  void InitMatrix(const double a) { data[0] = data[1] = data[2] = a; }
-  void InitMatrix(const double a, const double b, const double c) {
-    data[0]=a; data[1]=b; data[2]=c;
+  void InitMatrix(void) noexcept { memset(data, 0, sizeof(data)); }
+  void InitMatrix(const double a) noexcept { data[1] = data[2] = data[3] = a; }
+  void InitMatrix(const double a, const double b, const double c) noexcept {
+    data[1]=a; data[2]=b; data[3]=c;
   }
 
   /** Length of the vector.
@@ -249,13 +245,13 @@ public:
   FGColumnVector3& Normalize(void);
 
 private:
-  double data[3];
+  double data[4];
 };
 
 /** Dot product of two vectors
     Compute and return the euclidean dot (or scalar) product of two vectors
     v1 and v2 */
-inline double DotProduct(const FGColumnVector3& v1, const FGColumnVector3& v2) {
+inline double DotProduct(const FGColumnVector3& v1, const FGColumnVector3& v2) noexcept {
   return v1(1)*v2(1) + v1(2)*v2(2) + v1(3)*v2(3);
 }
 
@@ -264,7 +260,7 @@ inline double DotProduct(const FGColumnVector3& v1, const FGColumnVector3& v2) {
     @param A Vector to multiply.
     Multiply the Vector with a scalar value. Note: At this time, this
     operator MUST be inlined, or a multiple definition link error will occur.*/
-inline FGColumnVector3 operator*(double scalar, const FGColumnVector3& A) {
+inline FGColumnVector3 operator*(double scalar, const FGColumnVector3& A) noexcept {
   // use already defined operation.
   return A*scalar;
 }
