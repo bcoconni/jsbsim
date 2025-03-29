@@ -60,9 +60,9 @@ FGFCSFunction::FGFCSFunction(FGFCS* fcs, Element* element)
   if (function_element)
     function = new FGFunction(fcs->GetExec(), function_element);
   else {
-    FGXMLLogging log(fcs->GetExec()->GetLogger(), element, LogLevel::FATAL);
+    XMLLogException log(fcs->GetExec()->GetLogger(), element);
     log << "FCS Function should contain a \"function\" element\n";
-    throw BaseException(log.str());
+    throw log;
   }
 
   bind(element, fcs->GetPropertyManager().get());

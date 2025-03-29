@@ -71,10 +71,10 @@ FGKinemat::FGKinemat(FGFCS* fcs, Element* element)
   }
 
   if (Detents.size() <= 1) {
-    FGXMLLogging log(fcs->GetExec()->GetLogger(), element, LogLevel::FATAL);
+    XMLLogException log(fcs->GetExec()->GetLogger(), element);
     log << "\nKinematic component " << Name
         << " must have more than 1 setting element\n";
-    throw BaseException(log.str());
+    throw log;
   }
 
   bind(element, fcs->GetPropertyManager().get());

@@ -173,6 +173,7 @@ class JSBSIM_API XMLLogException : public LogException
 {
 public:
   XMLLogException(std::shared_ptr<FGLogger> logger, Element* el);
+  XMLLogException(LogException& exception, Element* el);
 };
 } // namespace JSBSim
 #endif

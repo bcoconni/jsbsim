@@ -158,9 +158,9 @@ bool FGInput::SetDirectivesFile(const SGPath& fname)
   FGXMLFileRead XMLFile;
   Element* document = XMLFile.LoadXMLDocument(fname);
   if (!document) {
-    FGLogging log(FDMExec->GetLogger(), LogLevel::FATAL);
+    LogException log(FDMExec->GetLogger());
     log << "Could not read directive file: " << fname << endl;
-    throw BaseException(log.str());
+    throw log;
   }
   bool result = Load(document);
 

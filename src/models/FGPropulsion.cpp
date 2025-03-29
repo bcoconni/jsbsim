@@ -318,7 +318,7 @@ void FGPropulsion::InitRunning(int n)
   if (n >= 0) { // A specific engine is supposed to be initialized
 
     if (n >= (int)GetNumEngines() ) {
-      throw(string("Tried to initialize a non-existent engine!"));
+      throw BaseException("Tried to initialize a non-existent engine!");
     }
 
     in.ThrottleCmd[n] = in.ThrottlePos[n] = 1; // Set the throttle command and position
@@ -385,7 +385,7 @@ bool FGPropulsion::Load(Element* el)
       // Locate the thruster definition
       Element* thruster_element = engine_element->FindElement("thruster");
       if (!thruster_element || !ModelLoader.Open(thruster_element))
-        throw("No thruster definition supplied with engine definition.");
+        throw BaseException("No thruster definition supplied with engine definition.");
 
       if (engine_element->FindElement("piston_engine")) {
         Element *element = engine_element->FindElement("piston_engine");
@@ -411,9 +411,17 @@ bool FGPropulsion::Load(Element* el)
         log << " Unknown engine type\n";
         return false;
       }
-    } catch (std::string& str) {
+    } catch (XMLLogException& log) {
+      log << "Cannot load " << Name << "\n";
+      return false;
+    } catch (LogException& e) {
+      XMLLogException log(e, engine_element);
+      log << "Cannot load " << Name << "\n";
+      return false;
+    } catch (const BaseException& e) {
       FGXMLLogging log(FDMExec->GetLogger(), engine_element, LogLevel::ERROR);
-      log << "\n" << LogFormat::RED << str << LogFormat::RESET << "\n";
+      log << "\n" << LogFormat::RED << e.what() << LogFormat::RESET
+          << "\nCannot load " << Name << "\n";
       return false;
     }
 

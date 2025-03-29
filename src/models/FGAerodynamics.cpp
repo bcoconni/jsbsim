@@ -232,10 +232,10 @@ bool FGAerodynamics::Run(bool Holding)
     break;
   default:
     {
-      FGLogging log(FDMExec->GetLogger(), LogLevel::DEBUG);
+      LogException log(FDMExec->GetLogger());
       log << "\n  A proper axis type has NOT been selected. Check "
           << "your aerodynamics definition.\n";
-      throw BaseException(log.str());
+      throw log;
     }
   }
   // Calculate aerodynamic reference point shift, if any. The shift takes place
@@ -278,10 +278,10 @@ bool FGAerodynamics::Run(bool Holding)
     break;
   default:
     {
-      FGLogging log(FDMExec->GetLogger(), LogLevel::DEBUG);
+      LogException log(FDMExec->GetLogger());
       log << "\n  A proper axis type has NOT been selected. Check "
           << "your aerodynamics definition.\n";
-      throw BaseException(log.str());
+      throw log;
     }
   }
 
@@ -471,10 +471,10 @@ void FGAerodynamics::DetermineAxisSystem(Element* document)
             << " aircraft config file. (NORMAL AXIAL)\n";
       }
     } else { // error
-      FGXMLLogging log(FDMExec->GetLogger(), axis_element, LogLevel::FATAL);
+      XMLLogException log(FDMExec->GetLogger(), axis_element);
       log << "\n  An unknown axis type, " << axis << " has been specified"
           << " in the aircraft configuration file.\n";
-      throw BaseException(log.str());
+      throw log;
     }
     axis_element = document->FindNextElement("axis");
   }
@@ -524,9 +524,9 @@ void FGAerodynamics::ProcessAxesNameAndFrame(eAxisType& axisType, const string& 
     }
   }
   else {
-    FGXMLLogging log(FDMExec->GetLogger(), el, LogLevel::FATAL);
+    XMLLogException log(FDMExec->GetLogger(), el);
     log << "\n Unknown axis frame type of - " << frame << "\n";
-    throw BaseException(log.str());
+    throw log;
   }
 }
 

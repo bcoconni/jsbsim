@@ -707,4 +707,34 @@ void testWithMessage() {
   TS_ASSERT_EQUALS(logger->buffer, "file.xml:42" + message);
   TS_ASSERT_EQUALS(logger->GetLogLevel(), JSBSim::LogLevel::FATAL);
 }
+
+void testPromoteLogException() {
+  auto logger = std::make_shared<DummyLogger>();
+  JSBSim::Element el("element");
+  el.SetFileName("file.xml");
+  el.SetLineNumber(42);
+  try {
+    try {
+      JSBSim::LogException logException(logger);
+      logException << "Hello, World!";
+      TS_ASSERT(!logger->flushed);
+      TS_ASSERT(logger->buffer.empty());
+      TS_ASSERT_EQUALS(logger->GetLogLevel(), JSBSim::LogLevel::BULK);
+      throw logException;
+    } catch (JSBSim::LogException& e) {
+      JSBSim::XMLLogException logException(e, &el);
+      TS_ASSERT(!logger->flushed);
+      TS_ASSERT(logger->buffer.empty());
+      TS_ASSERT_EQUALS(logger->GetLogLevel(), JSBSim::LogLevel::BULK);
+      throw logException;
+    }
+  } catch (JSBSim::LogException&) {
+    TS_ASSERT(!logger->flushed);
+    TS_ASSERT(logger->buffer.empty());
+    TS_ASSERT_EQUALS(logger->GetLogLevel(), JSBSim::LogLevel::BULK);
+  }
+  TS_ASSERT(logger->flushed);
+  TS_ASSERT_EQUALS(logger->buffer, "file.xml:42Hello, World!");
+  TS_ASSERT_EQUALS(logger->GetLogLevel(), JSBSim::LogLevel::FATAL);
+}
 };

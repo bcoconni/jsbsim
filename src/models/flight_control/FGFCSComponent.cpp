@@ -132,9 +132,9 @@ FGFCSComponent::FGFCSComponent(FGFCS* _fcs, Element* element) : fcs(_fcs)
     bool node_exists = PropertyManager->HasNode(output_node_name);
     FGPropertyNode* OutputNode = PropertyManager->GetNode( output_node_name, true );
     if (!OutputNode) {
-      FGXMLLogging log(fcs->GetExec()->GetLogger(), out_elem, LogLevel::FATAL);
+      XMLLogException log(fcs->GetExec()->GetLogger(), out_elem);
       log << "  Unable to process property: " << output_node_name << "\n";
-      throw BaseException(log.str());
+      throw log;
     }
     OutputNodes.push_back(OutputNode);
     // If the node has just been created then it must be initialized to a
@@ -221,11 +221,11 @@ void FGFCSComponent::CheckInputNodes(size_t MinNodes, size_t MaxNodes, Element* 
   size_t num = InputNodes.size();
 
   if (num < MinNodes) {
-    FGXMLLogging log(fcs->GetExec()->GetLogger(), el, LogLevel::FATAL);
+    XMLLogException log(fcs->GetExec()->GetLogger(), el);
     log << "    Not enough <input> nodes are provided\n"
         << "    Expecting " << MinNodes << " while " << num
         << " are provided.\n";
-    throw BaseException(log.str());
+    throw log;
   }
 
   if (num > MaxNodes) {

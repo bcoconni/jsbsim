@@ -231,4 +231,12 @@ XMLLogException::XMLLogException(std::shared_ptr<FGLogger> logger, Element* el)
 {
   this->logger->FileLocation(el->GetFileName(), el->GetLineNumber());
 }
+
+//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+XMLLogException::XMLLogException(LogException& exception, Element* el)
+  : LogException(exception)
+{
+  logger->FileLocation(el->GetFileName(), el->GetLineNumber());
+}
 };

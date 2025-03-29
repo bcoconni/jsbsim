@@ -176,9 +176,9 @@ bool FGOutput::SetDirectivesFile(const SGPath& fname)
   FGXMLFileRead XMLFile;
   Element* document = XMLFile.LoadXMLDocument(fname);
   if (!document) {
-    stringstream s;
-    s << "Could not read directive file: " << fname;
-    throw BaseException(s.str());
+    LogException log(FDMExec->GetLogger());
+    log << "Could not read directive file: " << fname;
+    throw log;
   }
 
   bool result = Load(document);
