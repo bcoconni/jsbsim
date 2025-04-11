@@ -267,20 +267,18 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path)
   while (!input.eof()) {
 
     if (!input.good()) {
-      std::stringstream s;
+      std::ostringstream s;
       s << "Problem reading input file " << path << endl;
       visitor.setParser(0);
       XML_ParserFree(parser);
-      cerr << endl << s.str() << endl;
       throw JSBSim::BaseException(s.str());
     }
 
     input.read(buf,16384);
     if (!XML_Parse(parser, buf, input.gcount(), false)) {
-      std::stringstream s;
+      std::ostringstream s;
       s << "In file " << path << ": line " << XML_GetCurrentLineNumber(parser) << endl
         << "XML parse error: " << XML_ErrorString(XML_GetErrorCode(parser));
-      cerr << endl << s.str() << endl;
       visitor.setParser(0);
       XML_ParserFree(parser);
       throw JSBSim::BaseException(s.str());
@@ -288,12 +286,11 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path)
 
   }
 
-// Verify end of document.
+  // Verify end of document.
   if (!XML_Parse(parser, buf, 0, true)) {
-    std::stringstream s;
+    std::ostringstream s;
     s << "In file " << path << ": line " << XML_GetCurrentLineNumber(parser) << endl
       << "XML parse error: " << XML_ErrorString(XML_GetErrorCode(parser));
-    cerr << endl << s.str() << endl;
     visitor.setParser(0);
     XML_ParserFree(parser);
     throw JSBSim::BaseException(s.str());
@@ -310,19 +307,13 @@ void readXML(const string &path, XMLVisitor &visitor)
 {
   ifstream input(path.c_str());
   if (input.good()) {
-    try {
-      readXML(input, visitor, path);
-    } catch (...) {
-      input.close();
-      cerr << "Failed to open file " << path << endl;
-      throw;
-    }
-  } else {
-    std::stringstream s;
-    s << "Failed to open file " << path;
-    throw JSBSim::BaseException(s.str());
+    readXML(input, visitor, path);
+    return;
   }
-  input.close();
+
+  std::ostringstream s;
+  s << "Failed to open file " << path << endl;
+  throw JSBSim::BaseException(s.str());
 }
 
 // end of easyxml.cxx
