@@ -509,8 +509,8 @@ public:
   /// Sets the debug level.
   void SetDebugLevel(int level) {debug_lvl = level;}
 
-  void SetLogger(std::shared_ptr<FGLogger> logger) {Log = logger;}
-  std::shared_ptr<FGLogger> GetLogger(void) const {return Log;}
+  void SetLogger(std::shared_ptr<FGLogger> logger) {Logger = logger;}
+  std::shared_ptr<FGLogger> GetLogger(void) const {return Logger;}
 
   struct PropertyCatalogStructure {
     /// Name of the property.
@@ -634,7 +634,7 @@ public:
 private:
   // Declare Log first so that it's destroyed last: the logger may be used by
   // some FGFDMExec members to log data during their destruction.
-  std::shared_ptr<FGLogger> Log;
+  std::shared_ptr<FGLogger> Logger;
 
   unsigned int Frame;
   unsigned int IdFDM;

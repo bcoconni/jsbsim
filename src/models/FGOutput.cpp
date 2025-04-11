@@ -173,17 +173,18 @@ string FGOutput::GetOutputName(unsigned int idx) const
 
 bool FGOutput::SetDirectivesFile(const SGPath& fname)
 {
-  FGXMLFileRead XMLFile;
+  auto logger = FDMExec->GetLogger();
+  FGXMLFileRead XMLFile(logger);
   Element* document = XMLFile.LoadXMLDocument(fname);
   if (!document) {
-    LogException err(FDMExec->GetLogger());
+    LogException err(logger);
     err << "Could not read directive file: " << fname;
     throw err;
   }
 
   bool result = Load(document);
   if (!result) {
-    FGLogging log(FDMExec->GetLogger(), LogLevel::ERROR);
+    FGLogging log(logger, LogLevel::ERROR);
     log << "\nAircraft output element has problems in file " << fname << "\n";
   }
 

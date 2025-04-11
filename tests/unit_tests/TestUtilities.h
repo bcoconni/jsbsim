@@ -2,7 +2,8 @@
 
 JSBSim::Element_ptr readFromXML(const std::string& XML) {
   std::istringstream data(XML);
-  JSBSim::FGXMLParse parser;
+  auto Logger = std::make_shared<JSBSim::FGLogConsole>();
+  JSBSim::FGXMLParse parser(Logger);
   readXML(data, parser);
   return parser.GetDocument();
 }

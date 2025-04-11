@@ -101,7 +101,7 @@ bool FGScript::LoadScript(const SGPath& script, double default_dT,
   double dt = 0.0, value = 0.0;
   FGCondition *newCondition;
 
-  FGXMLFileRead XMLFileRead;
+  FGXMLFileRead XMLFileRead(FDMExec->GetLogger());
   Element* document = XMLFileRead.LoadXMLDocument(script);
 
   if (!document) {
