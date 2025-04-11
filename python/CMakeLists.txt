@@ -63,10 +63,10 @@ configure_file(${SIMGEAR_XML_SOURCE_DIR}/xmltok_impl.c
 configure_file(${SIMGEAR_XML_SOURCE_DIR}/xmltok_ns.c
                ${CMAKE_CURRENT_BINARY_DIR}/src/simgear/xml/xmltok_ns.c COPYONLY)
 
-foreach(_FILE "MANIFEST.in" "ExceptionManagement.h" "PyLogger.h" "PyLogger.cxx" "fpectl/fpectlmodule.h" "pyproject.toml")
+foreach(_FILE "MANIFEST.in" "src/ExceptionManagement.h" "src/PyLogger.h" "src/PyLogger.cxx" "JSBSim.py" "pyproject.toml")
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_FILE} COPYONLY)
 endforeach()
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/JSBSim.py ${CMAKE_CURRENT_BINARY_DIR}/JSBSim.py COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fpectl/fpectlmodule.h ${CMAKE_CURRENT_BINARY_DIR}/src/fpectlmodule.h COPYONLY)
 
 # Duplicate data files (i.e. aircraft, engines, etc.)
 file(COPY ${PROJECT_SOURCE_DIR}/aircraft DESTINATION ${JSBSIM_PACKAGE_DIR} FILES_MATCHING PATTERN "*.xml")
@@ -106,8 +106,10 @@ file(RELATIVE_PATH BUILD_ROOT_PATH ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DI
 configure_file(setup.py.in ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 
 python3_add_library(_jsbsim MODULE ${JSBSIM_CXX}
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/PyLogger.cxx)
-target_include_directories(_jsbsim PRIVATE ${PROJECT_SOURCE_DIR}/src)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/src/PyLogger.cxx)
+target_include_directories(_jsbsim PRIVATE ${PROJECT_SOURCE_DIR}/src
+                                           ${CMAKE_CURRENT_SOURCE_DIR}/fpectl
+                                           ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(_jsbsim PRIVATE libJSBSim)
 set_target_properties(_jsbsim PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${JSBSIM_TEST_PACKAGE_DIR})
 
