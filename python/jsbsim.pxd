@@ -29,7 +29,7 @@ from libcpp.memory cimport shared_ptr
 from libcpp.vector cimport vector
 from cpython.ref cimport PyObject
 
-cdef extern from "ExceptionManagement.h" namespace "JSBSim":
+cdef extern from "src/ExceptionManagement.h" namespace "JSBSim":
     cdef PyObject* base_error
     cdef PyObject* trimfailure_error
     cdef PyObject* geographic_error
