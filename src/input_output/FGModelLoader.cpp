@@ -57,7 +57,8 @@ Element_ptr FGModelLoader::Open(Element *el)
   string fname = el->GetAttributeValue("file");
 
   if (!fname.empty()) {
-    FGXMLFileRead XMLFileRead;
+    auto logger = model->GetExec()->GetLogger();
+    FGXMLFileRead XMLFileRead(logger);
     SGPath path(SGPath::fromUtf8(fname.c_str()));
 
     if (path.isRelative())
@@ -67,10 +68,10 @@ Element_ptr FGModelLoader::Open(Element *el)
       document = CachedFiles[path.utf8Str()];
     else {
       document = XMLFileRead.LoadXMLDocument(path);
-      if (document == 0L) {
-        FGXMLLogging log(model->GetExec()->GetLogger(), el, LogLevel::ERROR);
+      if (!document) {
+        FGXMLLogging log(logger, el, LogLevel::ERROR);
         log << "Could not open file: " << fname << endl;
-        return NULL;
+        return nullptr;
       }
       CachedFiles[path.utf8Str()] = document;
     }

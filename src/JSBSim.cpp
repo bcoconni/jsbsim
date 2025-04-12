@@ -44,6 +44,7 @@ INCLUDES
 #include "FGFDMExec.h"
 #include "input_output/FGXMLFileRead.h"
 #include "input_output/string_utilities.h"
+#include "input_output/FGLog.h"
 
 #if !defined(__GNUC__) && !defined(sgi) && !defined(_MSC_VER)
 #  include <time>
@@ -154,6 +155,8 @@ void PrintHelp(void);
     of file is given on the command line */
 class XMLFile : public FGXMLFileRead {
 public:
+  using FGXMLFileRead::FGXMLFileRead;
+
   bool IsScriptFile(const SGPath& filename) {
     bool result=false;
     Element *document = LoadXMLDocument(filename, false);
@@ -791,7 +794,8 @@ bool options(int count, char **arg)
     } else if (keyword.substr(0,2) != "--" && value.empty() ) {
       // See what kind of files we are specifying on the command line
 
-      XMLFile xmlFile;
+      auto logger = make_shared<JSBSim::FGLogConsole>();
+      XMLFile xmlFile(logger);
       SGPath path = SGPath::fromLocal8Bit(keyword.c_str());
 
       if (xmlFile.IsScriptFile(path)) ScriptName = path;
