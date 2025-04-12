@@ -137,7 +137,7 @@ bool FGOutputSocket::InitModel(void)
 {
   if (FGOutputType::InitModel()) {
     delete socket;
-    socket = new FGfdmSocket(SockName, SockPort, SockProtocol, precision);
+    socket = new FGfdmSocket(SockName, SockPort, SockProtocol, FDMExec->GetLogger(), precision);
 
     if (socket == 0) return false;
     if (!socket->GetConnectStatus()) return false;

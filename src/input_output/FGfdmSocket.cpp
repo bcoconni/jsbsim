@@ -50,19 +50,16 @@ INCLUDES
 #include <fcntl.h>
 #include <unistd.h>
 #endif
-#include <iomanip>
-#include <iostream>
 #include <sstream>
 #include <cstring>
 #include <assert.h>
+#include <memory>
 
 #include "FGfdmSocket.h"
-#include "input_output/string_utilities.h"
+#include "string_utilities.h"
+#include "FGLog.h"
 
-using std::cout;
-using std::cerr;
-using std::endl;
-using std::string;
+using namespace std;
 
 // Defines that make BSD/Unix sockets and Windows sockets syntax look alike.
 #ifndef _WIN32
@@ -79,31 +76,35 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 #ifdef _WIN32
-static bool LoadWinSockDLL(int debug_lvl)
+static bool LoadWinSockDLL(int debug_lvl, shared_ptr<FGLogger> logger)
 {
   WSADATA wsaData;
   if (WSAStartup(MAKEWORD(1, 1), &wsaData)) {
-    cerr << "Winsock DLL not initialized ..." << endl;
+    FGLogging log(logger, LogLevel::ERROR);
+    log << "Winsock DLL not initialized ...\n";
     return false;
   }
 
-  if (debug_lvl > 0)
-    cout << "Winsock DLL loaded ..." << endl;
+  if (debug_lvl > 0) {
+    FGLogging log(logger, LogLevel::DEBUG);
+    log << "Winsock DLL loaded ...\n";
+  }
 
   return true;
 }
 #endif
 
-FGfdmSocket::FGfdmSocket(const string& address, int port, int protocol, int precision)
+FGfdmSocket::FGfdmSocket(const string& address, int port, ProtocolType protocol,
+                         shared_ptr<FGLogger> logger, int precision)
+  : Protocol(protocol), Logger(std::move(logger))
 {
   sckt = sckt_in = INVALID_SOCKET;
-  Protocol = (ProtocolType)protocol;
   connected = false;
   struct addrinfo *addr = nullptr;
   this->precision = precision;
 
 #ifdef _WIN32
-  if (!LoadWinSockDLL(debug_lvl)) return;
+  if (!LoadWinSockDLL(debug_lvl, Logger)) return;
 #endif
 
   struct addrinfo hints;
@@ -121,14 +122,15 @@ FGfdmSocket::FGfdmSocket(const string& address, int port, int protocol, int prec
 
   int failure = getaddrinfo(address.c_str(), NULL, &hints, &addr);
   if (failure || !addr) {
-    cerr << "Could not get host net address " << address;
+    FGLogging log(Logger, LogLevel::ERROR);
+    log << "Could not get host net address " << address;
 
     if (hints.ai_flags == AI_NUMERICHOST)
-       cerr << " by number..." << endl;
+       log << " by number...\n";
     else
-      cerr << " by name..." << endl;
+      log << " by name...\n";
 
-    cerr  << gai_strerror(failure) << endl;
+    log  << gai_strerror(failure) << "\n";
 
     freeaddrinfo(addr);
     return;
@@ -137,10 +139,11 @@ FGfdmSocket::FGfdmSocket(const string& address, int port, int protocol, int prec
   sckt = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
 
   if (debug_lvl > 0) {
+    FGLogging log(Logger, LogLevel::DEBUG);
     if (protocol == ptUDP)  //use udp protocol
-      cout << "Creating UDP socket on port " << port << endl;
+      log << "Creating UDP socket on port " << port << "\n";
     else //use tcp protocol
-      cout << "Creating TCP socket on port " << port << endl;
+      log << "Creating TCP socket on port " << port << "\n";
   }
 
   if (sckt != INVALID_SOCKET) {  // successful
@@ -149,13 +152,19 @@ FGfdmSocket::FGfdmSocket(const string& address, int port, int protocol, int prec
     scktName.sin_port = htons(port);
 
     if (connect(sckt, (struct sockaddr*)&scktName, len) == 0) {   // successful
-      if (debug_lvl > 0)
-        cout << "Successfully connected to socket for output ..." << endl;
+      if (debug_lvl > 0) {
+        FGLogging log(Logger, LogLevel::DEBUG);
+        log << "Successfully connected to socket for output ...\n";
+      }
       connected = true;
-    } else                // unsuccessful
-      cerr << "Could not connect to socket for output ..." << endl;
-  } else          // unsuccessful
-    cerr << "Could not create socket for FDM output, error = " << errno << endl;
+    } else {  // unsuccessful
+      FGLogging log(Logger, LogLevel::ERROR);
+      log << "Could not connect to socket for output ...\n";
+    }
+  } else {  // unsuccessful
+    FGLogging log(Logger, LogLevel::ERROR);
+    log << "Could not create socket for FDM output, error = " << errno << "\n";
+  }
 
   freeaddrinfo(addr);
 
@@ -164,16 +173,17 @@ FGfdmSocket::FGfdmSocket(const string& address, int port, int protocol, int prec
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // assumes TCP or UDP socket on localhost, for inbound datagrams
-FGfdmSocket::FGfdmSocket(int port, int protocol, int precision)
+FGfdmSocket::FGfdmSocket(int port, ProtocolType protocol, shared_ptr<FGLogger> logger,
+                         int precision)
+  : Protocol(protocol), Logger(std::move(logger))
 {
   sckt = INVALID_SOCKET;
   connected = false;
-  Protocol = (ProtocolType)protocol;
   string ProtocolName;
   this->precision = precision;
 
 #ifdef _WIN32
-  if (!LoadWinSockDLL(debug_lvl)) return;
+  if (!LoadWinSockDLL(debug_lvl, Logger)) return;
 #endif
 
   if (Protocol == ptUDP) {  //use udp protocol
@@ -192,9 +202,10 @@ FGfdmSocket::FGfdmSocket(int port, int protocol, int precision)
     sckt = socket(AF_INET, SOCK_STREAM, 0);
   }
 
-  if (debug_lvl > 0)
-    cout << "Creating input " << ProtocolName << " socket on port " << port
-         << endl;
+  if (debug_lvl > 0) {
+    FGLogging log(Logger, LogLevel::DEBUG);
+    log << "Creating input " << ProtocolName << " socket on port " << port << "\n";
+  }
 
   if (sckt != INVALID_SOCKET) {
     memset(&scktName, 0, sizeof(struct sockaddr_in));
@@ -205,10 +216,12 @@ FGfdmSocket::FGfdmSocket(int port, int protocol, int precision)
       scktName.sin_addr.s_addr = htonl(INADDR_ANY);
 
     socklen_t len = sizeof(struct sockaddr_in);
-    if (bind(sckt, (struct sockaddr*)&scktName, len) != SOCKET_ERROR) {
-      if (debug_lvl > 0)
-        cout << "Successfully bound to " << ProtocolName
-             << " input socket on port " << port << endl << endl;
+    if (bind(sckt, reinterpret_cast<const struct sockaddr*>(&scktName), len) != SOCKET_ERROR) {
+      if (debug_lvl > 0) {
+        FGLogging log(Logger, LogLevel::DEBUG);
+        log << "Successfully bound to " << ProtocolName
+            << " input socket on port " << port << "\n\n";
+      }
 
       if (Protocol == ptTCP) {
         if (listen(sckt, 5) != SOCKET_ERROR) { // successful listen()
@@ -224,19 +237,23 @@ FGfdmSocket::FGfdmSocket(int port, int protocol, int precision)
         } else {
           closesocket(sckt);
           sckt = INVALID_SOCKET;
-          cerr << "Could not listen ..." << endl;
+          FGLogging log(Logger, LogLevel::ERROR);
+          log << "Could not listen ...\n";
         }
       } else
         connected = true;
     } else {                // unsuccessful
       closesocket(sckt);
       sckt = INVALID_SOCKET;
-      cerr << "Could not bind to " << ProtocolName << " input socket, error = "
-           << errno << endl;
+      FGLogging log(Logger, LogLevel::ERROR);
+      log << "Could not bind to " << ProtocolName << " input socket, error = "
+          << errno << "\n";
     }
-  } else          // unsuccessful
-      cerr << "Could not create " << ProtocolName << " socket for input, error = "
-           << errno << endl;
+  } else { // unsuccessful
+    FGLogging log(Logger, LogLevel::ERROR);
+    log << "Could not create " << ProtocolName << " socket for input, error = "
+          << errno << "\n";
+  }
 
   Debug(0);
 }
@@ -271,8 +288,10 @@ string FGfdmSocket::Receive(void)
         int flags = fcntl(sckt_in, F_GETFL, 0);
         fcntl(sckt_in, F_SETFL, flags | O_NONBLOCK);
 #endif
-        if (send(sckt_in, "Connected to JSBSim server\r\nJSBSim> ", 36, 0) == SOCKET_ERROR)
-          LogSocketError("Receive - TCP connection acknowledgement");
+        if (send(sckt_in, "Connected to JSBSim server\r\nJSBSim> ", 36, 0) == SOCKET_ERROR) {
+          FGLogging log(Logger, LogLevel::ERROR);
+          LogSocketError(log, "Receive - TCP connection acknowledgement");
+        }
       }
     }
 
@@ -289,10 +308,11 @@ string FGfdmSocket::Receive(void)
         if (errno != EWOULDBLOCK)
 #endif
         {
-          LogSocketError("Receive - TCP data reception");
+          FGLogging log(Logger, LogLevel::ERROR);
+          LogSocketError(log, "Receive - TCP data reception");
           // when nothing received and the error isn't "would block"
           // then assume that the client has closed the socket.
-          cout << "Socket Closed. Back to listening" << endl;
+          log << "Socket Closed. Back to listening\n";
           closesocket(sckt_in);
           sckt_in = INVALID_SOCKET;
         }
@@ -308,11 +328,13 @@ string FGfdmSocket::Receive(void)
     if (num_chars > 0) data.append(buf, num_chars);
     if (num_chars == SOCKET_ERROR) {
 #ifdef _WIN32
-      if (WSAGetLastError() != WSAEWOULDBLOCK)
+      if (WSAGetLastError() != WSAEWOULDBLOCK) {
 #else
-      if (errno != EWOULDBLOCK)
+      if (errno != EWOULDBLOCK) {
 #endif
-        LogSocketError("Receive - UDP data reception");
+        FGLogging log(Logger, LogLevel::ERROR);
+        LogSocketError(log, "Receive - UDP data reception");
+      }
     }
   }
 
@@ -328,10 +350,17 @@ int FGfdmSocket::Reply(const string& text)
 
   if (sckt_in != INVALID_SOCKET) {
     num_chars_sent = send(sckt_in, text.c_str(), text.size(), 0);
-    if (num_chars_sent == SOCKET_ERROR) LogSocketError("Reply - Send data");
-    if (send(sckt_in, "JSBSim> ", 8, 0) == SOCKET_ERROR) LogSocketError("Reply - Prompt");
+    if (num_chars_sent == SOCKET_ERROR) {
+      FGLogging log(Logger, LogLevel::ERROR);
+      LogSocketError(log, "Reply - Send data");
+    }
+    if (send(sckt_in, "JSBSim> ", 8, 0) == SOCKET_ERROR) {
+      FGLogging log(Logger, LogLevel::ERROR);
+      LogSocketError(log, "Reply - Prompt");
+    }
   } else {
-    cerr << "Socket reply must be to a valid socket" << endl;
+    FGLogging log(Logger, LogLevel::ERROR);
+    log << "Socket reply must be to a valid socket\n";
     return -1;
   }
   return num_chars_sent;
@@ -399,16 +428,23 @@ void FGfdmSocket::Send(void)
 void FGfdmSocket::Send(const char *data, int length)
 {
   if (Protocol == ptTCP && sckt_in != INVALID_SOCKET) {
-    if ((send(sckt_in, data, length, 0)) == SOCKET_ERROR) LogSocketError("Send - TCP data sending");
+    if ((send(sckt_in, data, length, 0)) == SOCKET_ERROR) {
+      FGLogging log(Logger, LogLevel::ERROR);
+      LogSocketError(log, "Send - TCP data sending");
+    }
     return;
   }
 
   if (Protocol == ptUDP && sckt != INVALID_SOCKET) {
-    if ((send(sckt, data, length, 0)) == SOCKET_ERROR) LogSocketError("Send - UDP data sending");
+    if ((send(sckt, data, length, 0)) == SOCKET_ERROR) {
+      FGLogging log(Logger, LogLevel::ERROR);
+      LogSocketError(log, "Send - UDP data sending");
+    }
     return;
   }
 
-  cerr << "Data sending must be to a valid socket" << endl;
+  FGLogging log(Logger, LogLevel::ERROR);
+  log << "Data sending must be to a valid socket\n";
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -425,29 +461,31 @@ void FGfdmSocket::WaitUntilReadable(void)
   int result = select(FD_SETSIZE, &fds, nullptr, nullptr, nullptr);
 
   if (result == 0) {
-    cerr << "Socket timeout." << endl;
+    FGLogging log(Logger, LogLevel::ERROR);
+    log << "Socket timeout.\n";
     return;
   } else if (result != SOCKET_ERROR)
     return;
 
-  LogSocketError("WaitUntilReadable");
+  FGLogging log(Logger, LogLevel::ERROR);
+  LogSocketError(log, "WaitUntilReadable");
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGfdmSocket::LogSocketError(const std::string& msg)
+void FGfdmSocket::LogSocketError(FGLogging& log, const std::string& msg)
 {
   // An error has occurred, display the error message.
-  cerr << "Socket error in " << msg << ": ";
+  log << "Socket error in " << msg << ": ";
 #ifdef _WIN32
   LPSTR errorMessage = nullptr;
   DWORD errorCode = WSAGetLastError();
   FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                 nullptr, errorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&errorMessage, 0, nullptr);
-  cerr << errorMessage << endl;
+  log << errorMessage << "\n";
   LocalFree(errorMessage);
 #else
-  cerr << strerror(errno) << endl;
+  log << strerror(errno) << "\n";
 #endif
 }
 
@@ -479,8 +517,9 @@ void FGfdmSocket::Debug(int from)
     }
   }
   if (debug_lvl & 2 ) { // Instantiation/Destruction notification
-    if (from == 0) cout << "Instantiated: FGfdmSocket" << endl;
-    if (from == 1) cout << "Destroyed:    FGfdmSocket" << endl;
+    FGLogging log(Logger, LogLevel::DEBUG);
+    if (from == 0) log << "Instantiated: FGfdmSocket\n";
+    if (from == 1) log << "Destroyed:    FGfdmSocket\n";
   }
   if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
   }
