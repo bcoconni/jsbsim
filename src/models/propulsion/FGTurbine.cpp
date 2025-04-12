@@ -49,6 +49,7 @@ INCLUDES
 #include "FGThruster.h"
 #include "input_output/FGXMLElement.h"
 #include "input_output/string_utilities.h"
+#include "input_output/FGLog.h"
 
 using namespace std;
 
@@ -59,7 +60,7 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGTurbine::FGTurbine(FGFDMExec* exec, Element *el, int engine_number, struct Inputs& input)
-  : FGEngine(engine_number, input), FDMExec(exec)
+  : FGEngine(engine_number, input, exec->GetLogger()), FDMExec(exec)
 {
   Type = etTurbine;
 
@@ -647,27 +648,29 @@ void FGTurbine::Debug(int from)
 
     }
     if (from == 2) { // called from Load()
-      cout << "\n    Engine Name: "         << Name << endl;
-      cout << "      MilThrust:   "         << MilThrust << endl;
-      cout << "      MaxThrust:   "         << MaxThrust << endl;
-      cout << "      BypassRatio: "         << BypassRatio << endl;
-      cout << "      TSFC:        "         << TSFC->GetValue() << endl;
-      cout << "      ATSFC:       "         << ATSFC->GetValue() << endl;
-      cout << "      IdleN1:      "         << IdleN1 << endl;
-      cout << "      IdleN2:      "         << IdleN2 << endl;
-      cout << "      MaxN1:       "         << MaxN1 << endl;
-      cout << "      MaxN2:       "         << MaxN2 << endl;
-      cout << "      Augmented:   "         << Augmented << endl;
-      cout << "      AugMethod:   "         << AugMethod << endl;
-      cout << "      Injected:    "         << Injected << endl;
-      cout << "      MinThrottle: "         << MinThrottle << endl;
+      FGLogging log(Logger, LogLevel::DEBUG);
+      log << "\n    Engine Name: "         << Name << "\n";
+      log << "      MilThrust:   "         << MilThrust << "\n";
+      log << "      MaxThrust:   "         << MaxThrust << "\n";
+      log << "      BypassRatio: "         << BypassRatio << "\n";
+      log << "      TSFC:        "         << TSFC->GetValue() << "\n";
+      log << "      ATSFC:       "         << ATSFC->GetValue() << "\n";
+      log << "      IdleN1:      "         << IdleN1 << "\n";
+      log << "      IdleN2:      "         << IdleN2 << "\n";
+      log << "      MaxN1:       "         << MaxN1 << "\n";
+      log << "      MaxN2:       "         << MaxN2 << "\n";
+      log << "      Augmented:   "         << Augmented << "\n";
+      log << "      AugMethod:   "         << AugMethod << "\n";
+      log << "      Injected:    "         << Injected << "\n";
+      log << "      MinThrottle: "         << MinThrottle << "\n";
 
-      cout << endl;
+      log << "\n";
     }
   }
   if (debug_lvl & 2 ) { // Instantiation/Destruction notification
-    if (from == 0) cout << "Instantiated: FGTurbine" << endl;
-    if (from == 1) cout << "Destroyed:    FGTurbine" << endl;
+    FGLogging log(Logger, LogLevel::DEBUG);
+    if (from == 0) log << "Instantiated: FGTurbine\n";
+    if (from == 1) log << "Destroyed:    FGTurbine\n";
   }
   if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
   }

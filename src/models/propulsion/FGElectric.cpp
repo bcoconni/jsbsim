@@ -46,6 +46,7 @@ INCLUDES
 #include "FGElectric.h"
 #include "FGPropeller.h"
 #include "input_output/FGXMLElement.h"
+#include "input_output/FGLog.h"
 
 using namespace std;
 
@@ -56,7 +57,7 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGElectric::FGElectric(FGFDMExec* exec, Element *el, int engine_number, struct FGEngine::Inputs& input)
-  : FGEngine(engine_number, input)
+  : FGEngine(engine_number, input, exec->GetLogger())
 {
   Load(exec,el);
 
@@ -162,15 +163,16 @@ void FGElectric::Debug(int from)
 
   if (debug_lvl & 1) { // Standard console startup message output
     if (from == 0) { // Constructor
-
-      cout << "\n    Engine Name: "         << Name << endl;
-      cout << "      Power Watts: "         << PowerWatts << endl;
+      FGLogging log(Logger, LogLevel::DEBUG);
+      log << "\n    Engine Name: "         << Name << "\n";
+      log << "      Power Watts: "         << PowerWatts << "\n";
 
     }
   }
   if (debug_lvl & 2 ) { // Instantiation/Destruction notification
-    if (from == 0) cout << "Instantiated: FGElectric" << endl;
-    if (from == 1) cout << "Destroyed:    FGElectric" << endl;
+    FGLogging log(Logger, LogLevel::DEBUG);
+    if (from == 0) log << "Instantiated: FGElectric\n";
+    if (from == 1) log << "Destroyed:    FGElectric\n";
   }
   if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
   }

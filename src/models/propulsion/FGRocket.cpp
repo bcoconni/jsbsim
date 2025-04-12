@@ -42,6 +42,7 @@ INCLUDES
 #include "FGRocket.h"
 #include "FGThruster.h"
 #include "input_output/FGXMLElement.h"
+#include "input_output/FGLog.h"
 
 using namespace std;
 
@@ -52,7 +53,7 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGRocket::FGRocket(FGFDMExec* exec, Element *el, int engine_number, struct Inputs& input)
-  : FGEngine(engine_number, input), isp_function(nullptr), FDMExec(exec)
+  : FGEngine(engine_number, input, exec->GetLogger()), isp_function(nullptr), FDMExec(exec)
 {
   Load(exec, el);
 
@@ -97,9 +98,11 @@ FGRocket::FGRocket(FGFDMExec* exec, Element *el, int engine_number, struct Input
       Isp = el->FindElementValueAsNumber("isp");
     }
   } else {
-    throw("Specific Impulse <isp> must be specified for a rocket engine");
+    XMLLogException err(Logger, el);
+    err << "Specific Impulse <isp> must be specified for a rocket engine";
+    throw err;
   }
-  
+
   if (el->FindElement("builduptime"))
     BuildupTime = el->FindElementValueAsNumber("builduptime");
   if (el->FindElement("maxthrottle"))
@@ -196,7 +199,7 @@ void FGRocket::Calculate(void)
     } else { // Calculate thrust
 
       // PctPower = Throttle / MaxThrottle; // Min and MaxThrottle range from 0.0 to 1.0, normally.
-      
+
       PctPower = in.ThrottlePos[EngineNumber];
       Flameout = false;
       VacThrust = Isp * PropellantFlowRate;
@@ -213,7 +216,7 @@ void FGRocket::Calculate(void)
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// 
+//
 // The FuelFlowRate can be affected by the TotalIspVariation value (settable
 // in a config file or via properties). The TotalIspVariation parameter affects
 // thrust, but the thrust determines fuel flow rate, so it must be adjusted
@@ -268,8 +271,8 @@ string FGRocket::GetEngineValues(const string& delimiter)
 {
   std::ostringstream buf;
 
-  buf << It << delimiter 
-      << ItVac << delimiter 
+  buf << It << delimiter
+      << ItVac << delimiter
       << GetMoments().Dump(delimiter) << delimiter
       << Thruster->GetBodyForces().Dump(delimiter) << delimiter
       << Thruster->GetThrusterValues(EngineNumber, delimiter);
@@ -337,19 +340,21 @@ void FGRocket::Debug(int from)
 
   if (debug_lvl & 1) { // Standard console startup message output
     if (from == 0) { // Constructor
-      cout << "      Engine Name: " << Name << endl;
-      cout << "      Vacuum Isp = " << Isp << endl;
-      cout << "      Maximum Throttle = " << MaxThrottle << endl;
-      cout << "      Minimum Throttle = " << MinThrottle << endl;
-      cout << "      Fuel Flow (max) = " << SLFuelFlowMax << endl;
-      cout << "      Oxidizer Flow (max) = " << SLOxiFlowMax << endl;
+      FGLogging log(Logger, LogLevel::DEBUG);
+      log << "      Engine Name: " << Name << "\n";
+      log << "      Vacuum Isp = " << Isp << "\n";
+      log << "      Maximum Throttle = " << MaxThrottle << "\n";
+      log << "      Minimum Throttle = " << MinThrottle << "\n";
+      log << "      Fuel Flow (max) = " << SLFuelFlowMax << "\n";
+      log << "      Oxidizer Flow (max) = " << SLOxiFlowMax << "\n";
       if (SLFuelFlowMax > 0)
-        cout << "      Mixture ratio = " << SLOxiFlowMax/SLFuelFlowMax << endl;
+        log << "      Mixture ratio = " << SLOxiFlowMax/SLFuelFlowMax << "\n";
     }
   }
   if (debug_lvl & 2 ) { // Instantiation/Destruction notification
-    if (from == 0) cout << "Instantiated: FGRocket" << endl;
-    if (from == 1) cout << "Destroyed:    FGRocket" << endl;
+    FGLogging log(Logger, LogLevel::DEBUG);
+    if (from == 0) log << "Instantiated: FGRocket\n";
+    if (from == 1) log << "Destroyed:    FGRocket\n";
   }
   if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
   }

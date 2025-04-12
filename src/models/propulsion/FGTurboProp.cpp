@@ -50,6 +50,7 @@ INCLUDES
 #include "FGRotor.h"
 #include "math/FGFunction.h"
 #include "input_output/FGXMLElement.h"
+#include "input_output/FGLog.h"
 
 using namespace std;
 
@@ -60,7 +61,7 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGTurboProp::FGTurboProp(FGFDMExec* exec, Element *el, int engine_number, struct Inputs& input)
-  : FGEngine(engine_number, input)
+  : FGEngine(engine_number, input, exec->GetLogger())
 {
   SetDefaults();
   Load(exec, el);
@@ -107,8 +108,9 @@ bool FGTurboProp::Load(FGFDMExec* exec, Element *el)
   if (el->FindElement("maxpower"))
     MaxPower = el->FindElementValueAsNumber("maxpower");
   if (el->FindElement("idlefuelflow")) {
-    cerr << el->ReadFrom() << "Note: 'idlefuelflow' is obsolete, "
-         << "use the 'CombustionEfficiency_N1' table instead." << endl;
+    FGXMLLogging log(Logger, el, LogLevel::ERROR);
+    log << "Note: 'idlefuelflow' is obsolete, "
+        << "use the 'CombustionEfficiency_N1' table instead.\n";
   }
   if (el->FindElement("psfc"))
     PSFC = el->FindElementValueAsNumber("psfc");
@@ -137,9 +139,8 @@ bool FGTurboProp::Load(FGFDMExec* exec, Element *el)
       EnginePowerVC = std::make_shared<FGTable>(PropertyManager, table_element,
                                   to_string((int)EngineNumber));
       table_element->SetAttributeValue("name", name);
-      cerr << table_element->ReadFrom()
-           <<"Note: Using the EnginePowerVC without enclosed <function> tag is deprecated"
-           << endl;
+      FGXMLLogging log(Logger, table_element, LogLevel::WARN);
+      log <<"Note: Using the EnginePowerVC without enclosed <function> tag is deprecated\n";
     } else if (name == "EnginePowerRPM_N1") {
       EnginePowerRPM_N1 = std::make_unique<FGTable>(PropertyManager, table_element);
     } else if (name == "ITT_N1") {
@@ -147,8 +148,8 @@ bool FGTurboProp::Load(FGFDMExec* exec, Element *el)
     } else if (name == "CombustionEfficiency_N1") {
       CombustionEfficiency_N1 = std::make_unique<FGTable>(PropertyManager, table_element);
     } else {
-      cerr << el->ReadFrom() << "Unknown table type: " << name
-           << " in turboprop definition." << endl;
+      FGXMLLogging log(Logger, el, LogLevel::ERROR);
+      log << "Unknown table type: " << name << " in turboprop definition.\n";
     }
     table_element = el->FindNextElement("table");
   }
@@ -577,17 +578,19 @@ void FGTurboProp::Debug(int from)
 
     }
     if (from == 2) { // called from Load()
-      cout << "\n ****MUJ MOTOR TURBOPROP****\n";
-      cout << "\n    Engine Name: "         << Name << endl;
-      cout << "      IdleN1:      "         << IdleN1 << endl;
-      cout << "      MaxN1:       "         << MaxN1 << endl;
+      FGLogging log(Logger, LogLevel::DEBUG);
+      log << "\n ****MUJ MOTOR TURBOPROP****\n";
+      log << "\n    Engine Name: "         << Name << "\n";
+      log << "      IdleN1:      "         << IdleN1 << "\n";
+      log << "      MaxN1:       "         << MaxN1 << "\n";
 
-      cout << endl;
+      log << "\n";
     }
   }
   if (debug_lvl & 2 ) { // Instantiation/Destruction notification
-    if (from == 0) cout << "Instantiated: FGTurboProp" << endl;
-    if (from == 1) cout << "Destroyed:    FGTurboProp" << endl;
+    FGLogging log(Logger, LogLevel::DEBUG);
+    if (from == 0) log << "Instantiated: FGTurboProp\n";
+    if (from == 1) log << "Destroyed:    FGTurboProp\n";
   }
   if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
   }

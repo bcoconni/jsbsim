@@ -53,6 +53,7 @@ INCLUDES
 #include "FGBrushLessDCMotor.h"
 #include "FGPropeller.h"
 #include "input_output/FGXMLElement.h"
+#include "input_output/FGLog.h"
 
 using namespace std;
 
@@ -63,7 +64,7 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGBrushLessDCMotor::FGBrushLessDCMotor(FGFDMExec* exec, Element* el, int engine_number, struct FGEngine::Inputs& input)
-  : FGEngine(engine_number, input)
+  : FGEngine(engine_number, input, exec->GetLogger())
 {
   Load(exec, el);
 
@@ -72,32 +73,32 @@ FGBrushLessDCMotor::FGBrushLessDCMotor(FGFDMExec* exec, Element* el, int engine_
   if (el->FindElement("maxvolts"))
     MaxVolts = el->FindElementValueAsNumberConvertTo("maxvolts", "VOLTS");
   else {
-    cerr << el->ReadFrom()
-         << "<maxvolts> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLLogException err(Logger, el);
+    err << "<maxvolts> is a mandatory parameter\n";
+    throw err;
   }
 
   if (el->FindElement("velocityconstant"))
     Kv = el->FindElementValueAsNumber("velocityconstant");
   else {
-    cerr << el->ReadFrom()
-         << "<velocityconstant> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLLogException err(Logger, el);
+    err << "<velocityconstant> is a mandatory parameter\n";
+    throw err;
   }
 
   if (el->FindElement("coilresistance"))
     CoilResistance = el->FindElementValueAsNumberConvertTo("coilresistance", "OHMS");
   else {
-    cerr << el->ReadFrom()
-         << "<coilresistance> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLLogException err(Logger, el);
+    err << "<coilresistance> is a mandatory parameter\n";
+    throw err;
   }
   if (el->FindElement("noloadcurrent"))
     ZeroTorqueCurrent = el->FindElementValueAsNumberConvertTo("noloadcurrent", "AMPERES");
   else {
-    cerr << el->ReadFrom()
-         << "<noloadcurrent> is a mandatory parameter" << endl;
-    throw BaseException("Missing parameter");
+    XMLLogException err(Logger, el);
+    err << "<noloadcurrent> is a mandatory parameter\n";
+    throw err;
   }
 
   double MaxCurrent = MaxVolts / CoilResistance + ZeroTorqueCurrent;
@@ -206,17 +207,18 @@ void FGBrushLessDCMotor::Debug(int from)
 
   if (debug_lvl & 1) { // Standard console startup message output
     if (from == 0) { // Constructor
-
-      cout << "\n    Engine Name:        " << Name << endl;
-      cout << "      Power Watts:        " << PowerWatts << endl;
-      cout << "      Speed Factor:       " << Kv << endl;
-      cout << "      Coil Resistance:    " << CoilResistance << endl;
-      cout << "      NoLoad Current:     " << ZeroTorqueCurrent << endl;
+      FGLogging log(Logger, LogLevel::DEBUG);
+      log << "\n    Engine Name:        " << Name << "\n";
+      log << "      Power Watts:        " << PowerWatts << "\n";
+      log << "      Speed Factor:       " << Kv << "\n";
+      log << "      Coil Resistance:    " << CoilResistance << "\n";
+      log << "      NoLoad Current:     " << ZeroTorqueCurrent << "\n";
     }
   }
   if (debug_lvl & 2 ) { // Instantiation/Destruction notification
-    if (from == 0) cout << "Instantiated: FGBrushLessDCMotor" << endl;
-    if (from == 1) cout << "Destroyed:    FGBrushLessDCMotor" << endl;
+    FGLogging log(Logger, LogLevel::DEBUG);
+    if (from == 0) log << "Instantiated: FGBrushLessDCMotor\n";
+    if (from == 1) log << "Destroyed:    FGBrushLessDCMotor\n";
   }
   if (debug_lvl & 4 ) { // Run() method entry print for FGModel-derived objects
   }
