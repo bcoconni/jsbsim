@@ -29,12 +29,10 @@ INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 #include <iostream>
-#include <sstream>  // for assembling the error messages / what of exceptions.
-#include <stdexcept>  // using domain_error, invalid_argument, and length_error.
 
 #include "FGXMLElement.h"
-#include "FGJSBBase.h"
-#include "input_output/string_utilities.h"
+#include "string_utilities.h"
+#include "FGLog.h"
 
 using namespace std;
 
@@ -288,19 +286,17 @@ double Element::GetAttributeValueAsNumber(const string& attr)
   string attribute = GetAttributeValue(attr);
 
   if (attribute.empty()) {
-    std::stringstream s;
+    std::ostringstream s;
     s << ReadFrom() << "Expecting numeric attribute value, but got no data";
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    throw BaseException(s.str());
   }
   else {
     double number=0;
     try {
       number = atof_locale_c(attribute);
     } catch (InvalidNumber& e) {
-      std::stringstream s;
+      std::ostringstream s;
       s << ReadFrom() << e.what();
-      cerr << s.str() << endl;
       throw BaseException(s.str());
     }
 
@@ -352,29 +348,24 @@ double Element::GetDataAsNumber(void)
     try {
       number = atof_locale_c(data_lines[0]);
     } catch (InvalidNumber& e) {
-      std::stringstream s;
+      std::ostringstream s;
       s << ReadFrom() << e.what();
-      cerr << s.str() << endl;
       throw BaseException(s.str());
     }
 
     return number;
   } else if (data_lines.empty()) {
-    std::stringstream s;
+    std::ostringstream s;
     s << ReadFrom() << "Expected numeric value, but got no data";
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    throw BaseException(s.str());
   } else {
-    cerr << ReadFrom() << "Attempting to get single data value in element "
+    std::ostringstream s;
+    s << ReadFrom() << "Attempting to get single data value in element "
          << "<" << name << ">" << endl
          << " from multiple lines:" << endl;
     for(unsigned int i=0; i<data_lines.size(); ++i)
-      cerr << data_lines[i] << endl;
-    std::stringstream s;
-    s << ReadFrom() << "Attempting to get single data value in element "
-      << "<" << name << ">"
-      << " from multiple lines (" << data_lines.size() << ").";
-    throw length_error(s.str());
+      s << data_lines[i] << endl;
+    throw BaseException(s.str());
   }
 }
 
@@ -441,10 +432,9 @@ double Element::FindElementValueAsNumber(const string& el)
     value = DisperseValue(element, value);
     return value;
   } else {
-    std::stringstream s;
+    std::ostringstream s;
     s << ReadFrom() << "Attempting to get non-existent element " << el;
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    throw BaseException(s.str());
   }
 }
 
@@ -464,9 +454,9 @@ bool Element::FindElementValueAsBoolean(const string& el)
       return true;
     }
   } else {
-    cerr << ReadFrom() << "Attempting to get non-existent element " << el << " ;returning false"
-         << endl;
-    return false;
+    std::ostringstream s;
+    s << ReadFrom() << "Attempting to get non-existent element " << el << "\n";
+    throw BaseException(s.str());
   }
 }
 
@@ -489,28 +479,25 @@ double Element::FindElementValueAsNumberConvertTo(const string& el, const string
   Element* element = FindElement(el);
 
   if (!element) {
-    std::stringstream s;
+    std::ostringstream s;
     s << ReadFrom() << "Attempting to get non-existent element " << el;
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    throw BaseException(s.str());
   }
 
   string supplied_units = element->GetAttributeValue("unit");
 
   if (!supplied_units.empty()) {
     if (convert.find(supplied_units) == convert.end()) {
-      std::stringstream s;
+      std::ostringstream s;
       s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
         << "\" does not exist (typo?).";
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      throw BaseException(s.str());
     }
     if (convert[supplied_units].find(target_units) == convert[supplied_units].end()) {
-      std::stringstream s;
+      std::ostringstream s;
       s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
         << "\" cannot be converted to " << target_units;
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      throw BaseException(s.str());
     }
   }
 
@@ -558,26 +545,23 @@ double Element::FindElementValueAsNumberConvertFromTo( const string& el,
   Element* element = FindElement(el);
 
   if (!element) {
-    std::stringstream s;
+    std::ostringstream s;
     s << ReadFrom() << "Attempting to get non-existent element " << el;
-    cerr << s.str() << endl;
-    throw length_error(s.str());
+    throw BaseException(s.str());
   }
 
   if (!supplied_units.empty()) {
     if (convert.find(supplied_units) == convert.end()) {
-      std::stringstream s;
+      std::ostringstream s;
       s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
         << "\" does not exist (typo?).";
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      throw BaseException(s.str());
     }
     if (convert[supplied_units].find(target_units) == convert[supplied_units].end()) {
-      std::stringstream s;
+      std::ostringstream s;
       s << element->ReadFrom() << "Supplied unit: \"" << supplied_units
         << "\" cannot be converted to " << target_units;
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      throw BaseException(s.str());
     }
   }
 
@@ -602,18 +586,16 @@ FGColumnVector3 Element::FindElementTripletConvertTo( const string& target_units
 
   if (!supplied_units.empty()) {
     if (convert.find(supplied_units) == convert.end()) {
-      std::stringstream s;
+      std::ostringstream s;
       s << ReadFrom() << "Supplied unit: \"" << supplied_units
         << "\" does not exist (typo?).";
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      throw BaseException(s.str());
     }
     if (convert[supplied_units].find(target_units) == convert[supplied_units].end()) {
-      std::stringstream s;
+      std::ostringstream s;
       s << ReadFrom() << "Supplied unit: \"" << supplied_units
         << "\" cannot be converted to " << target_units;
-      cerr << s.str() << endl;
-      throw invalid_argument(s.str());
+      throw BaseException(s.str());
     }
   }
 
@@ -659,15 +641,8 @@ double Element::DisperseValue(Element *e, double val, const std::string& supplie
   double value=val;
 
   bool disperse = false;
-  try {
-    char* num = getenv("JSBSIM_DISPERSE");
-    if (num) {
-      disperse = (atoi(num) == 1);  // set dispersions
-    }
-  } catch (...) {                   // if error set to false
-    disperse = false;
-    std::cerr << "Could not process JSBSIM_DISPERSE environment variable: Assumed NO dispersions." << endl;
-  }
+  if (const char* num = getenv("JSBSIM_DISPERSE"); num != nullptr)
+      disperse = (strtol(num, nullptr, 0) == 1);  // set dispersions
 
   if (e->HasAttribute("dispersion") && disperse) {
     double disp = e->GetAttributeValueAsNumber("dispersion");
@@ -688,38 +663,13 @@ double Element::DisperseValue(Element *e, double val, const std::string& supplie
       else // Assume uniformsigned
         value = (val + disp * urn)*FGJSBBase::sign(urn);
     } else {
-      std::stringstream s;
+      std::ostringstream s;
       s << ReadFrom() << "Unknown dispersion type" << attType;
-      cerr << s.str() << endl;
-      throw domain_error(s.str());
+      throw BaseException(s.str());
     }
 
   }
   return value;
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-void Element::Print(unsigned int level)
-{
-  unsigned int i, spaces;
-
-  level+=2;
-  for (spaces=0; spaces<=level; spaces++) cout << " "; // format output
-  cout << "Element Name: " << name;
-
-  map<string, string>::iterator it;
-  for (it = attributes.begin(); it != attributes.end(); ++it)
-    cout << "  " << it->first << " = " << it->second;
-
-  cout << endl;
-  for (i=0; i<data_lines.size(); i++) {
-    for (spaces=0; spaces<=level; spaces++) cout << " "; // format output
-    cout << data_lines[i] << endl;
-  }
-  for (i=0; i<children.size(); i++) {
-    children[i]->Print(level);
-  }
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -755,19 +705,19 @@ string Element::ReadFrom(void) const
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void Element::MergeAttributes(Element* el)
+void Element::MergeAttributes(Element* el, std::shared_ptr<FGLogger> logger)
 {
-  map<string, string>::iterator it;
-
-  for (it=el->attributes.begin(); it != el->attributes.end(); ++it) {
-    if (attributes.find(it->first) == attributes.end())
-      attributes[it->first] = it->second;
+  for (const auto& attr: el->attributes) {
+    if (attributes.find(attr.first) == attributes.end())
+      attributes[attr.first] = attr.second;
     else {
-      if (FGJSBBase::debug_lvl > 0 && (attributes[it->first] != it->second))
-        cout << el->ReadFrom() << " Attribute '" << it->first << "' is overridden in file "
-             << GetFileName() << ": line " << GetLineNumber() << endl
-             << " The value '" << attributes[it->first] << "' will be used instead of '"
-             << it->second << "'." << endl;
+      if (FGJSBBase::debug_lvl > 0 && (attributes[attr.first] != attr.second)) {
+        FGXMLLogging log(logger, el, LogLevel::DEBUG);
+        log << " Attribute '" << attr.first << "' is overridden in file "
+            << GetFileName() << ": line " << GetLineNumber()
+            << "\n The value '" << attributes[attr.first] << "' will be used instead of '"
+            << attr.second << "'.\n";
+      }
     }
   }
 }
