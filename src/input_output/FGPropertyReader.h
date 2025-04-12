@@ -50,6 +50,7 @@ FORWARD DECLARATIONS
 namespace JSBSim {
 
 class Element;
+class FGLogger;
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS DOCUMENTATION
@@ -62,7 +63,8 @@ CLASS DECLARATION
 class FGPropertyReader
 {
 public:
-  void Load(Element* el, FGPropertyManager* PropertyManager, bool override_props);
+  void Load(Element* el, FGPropertyManager* PropertyManager, bool override_props,
+            std::shared_ptr<FGLogger> logger);
   bool ResetToIC(void);
 
   class const_iterator

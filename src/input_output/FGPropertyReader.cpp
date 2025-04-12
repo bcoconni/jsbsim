@@ -37,9 +37,8 @@ INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 #include "FGPropertyReader.h"
-#include "FGPropertyManager.h"
 #include "FGXMLElement.h"
-#include "FGJSBBase.h"
+#include "FGLog.h"
 
 using namespace std;
 
@@ -64,16 +63,18 @@ bool FGPropertyReader::ResetToIC(void)
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override_props)
+void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override_props,
+                            std::shared_ptr<FGLogger> logger)
 {
   Element *property_element = el->FindElement("property");
   if (property_element && FGJSBBase::debug_lvl > 0) {
-    cout << endl << "    ";
+    FGLogging log(logger, LogLevel::DEBUG);
+    log << "\n    ";
     if (override_props)
-      cout << "Overriding";
+      log << "Overriding";
     else
-      cout << "Declared";
-    cout << " properties" << endl << endl;
+      log << "Declared";
+    log << " properties\n\n";
   }
 
   while (property_element) {
@@ -91,25 +92,24 @@ void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override_pr
 
         if (FGJSBBase::debug_lvl > 0) {
           if (interface_prop_initial_value.find(node) == interface_prop_initial_value.end()) {
-            cout << property_element->ReadFrom()
-                 << "  The following property will be overridden but it has not been" << endl
-                 << "  defined in the current model '" << el->GetName() << "'" << endl;
+            FGXMLLogging log(logger, property_element, LogLevel::DEBUG);
+            log << "  The following property will be overridden but it has not been\n"
+                << "  defined in the current model '" << el->GetName() << "'\n";
           }
-
-          cout << "      " << "Overriding value for property " << interface_property_string << endl
-               << "       (old value: " << node->getDoubleValue() << "  new value: " << value << ")"
-               << endl << endl;
+          FGLogging log(logger, LogLevel::DEBUG);
+          log << "      Overriding value for property " << interface_property_string << "\n"
+              << "       (old value: " << node->getDoubleValue() << "  new value: " << value << ")\n\n";
         }
 
         node->setDoubleValue(value);
       }
       else {
         if (has_value_attribute) {
-          cerr << property_element->ReadFrom()
-              << "      Property " << interface_property_string
+          FGXMLLogging log(logger, property_element, LogLevel::WARN);
+          log << "      Property " << interface_property_string
               << " is already defined." << endl
               << "      Its value (" << node->getDoubleValue() << ") will not"
-              << " be overridden." << endl;
+              << " be overridden.\n";
         }
         property_element = el->FindNextElement("property");
         continue;
@@ -119,13 +119,15 @@ void FGPropertyReader::Load(Element* el, FGPropertyManager* PM, bool override_pr
       if (node) {
         node->setDoubleValue(value);
 
-        if (FGJSBBase::debug_lvl > 0)
-          cout << "      " << interface_property_string << " (initial value: "
-               << value << ")" << endl << endl;
+        if (FGJSBBase::debug_lvl > 0) {
+          FGLogging log(logger, LogLevel::DEBUG);
+          log << "      " << interface_property_string << " (initial value: "
+              << value << ")\n\n";
+        }
       }
       else {
-        cerr << "Could not create property " << interface_property_string
-             << endl;
+        FGLogging log(logger, LogLevel::ERROR);
+        log << "Could not create property " << interface_property_string << "\n";
         property_element = el->FindNextElement("property");
         continue;
       }
