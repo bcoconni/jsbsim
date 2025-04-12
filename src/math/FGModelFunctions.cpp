@@ -60,7 +60,7 @@ bool FGModelFunctions::InitModel(void)
 
 bool FGModelFunctions::Load(Element* el, FGFDMExec* fdmex, string prefix)
 {
-  LocalProperties.Load(el, fdmex->GetPropertyManager().get(), false);
+  LocalProperties.Load(el, fdmex->GetPropertyManager().get(), false, fdmex->GetLogger());
   PreLoad(el, fdmex, prefix);
 
   return true; // TODO: Need to make this value mean something.
