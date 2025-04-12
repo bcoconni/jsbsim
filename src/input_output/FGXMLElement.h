@@ -37,6 +37,7 @@ INCLUDES
 #include <string>
 #include <map>
 #include <vector>
+#include <memory>
 
 #include "simgear/structure/SGSharedPtr.hxx"
 #include "math/FGColumnVector3.h"
@@ -128,11 +129,12 @@ CLASS DOCUMENTATION
     - HP = horsepower
     - HR = hour
     - L = liter
-    - GAL = gallon (U.S. liquid) 
+    - GAL = gallon (U.S. liquid)
 
     @author Jon S. Berndt
 */
 
+class FGLogger;
 class Element;
 typedef SGSharedPtr<Element> Element_ptr;
 
@@ -282,7 +284,7 @@ public:
       @return the data value for the named element as a bool, or false if the
               data is missing. Zero will be false, while any other number will be true. */
   bool FindElementValueAsBoolean(const std::string& el="");
-  
+
   /** Searches for the named element and converts and returns the data belonging to it.
       This function allows the data belonging to a named element to be returned
       as a double. If no element is found, HUGE_VAL is returned. If no
@@ -353,11 +355,6 @@ public:
   *   @param d the data to store. */
   void AddData(std::string d);
 
-  /** Prints the element.
-  *   Prints this element and calls the Print routine for child elements.
-  *   @param d The tab level. A level corresponds to a single space. */
-  void Print(unsigned int level=0);
-
   /** Set the line number at which the element has been read.
    *  @param line line number.
    */
@@ -382,7 +379,7 @@ public:
    *  corresponding attribute of the other element is ignored.
    *  @param el element with which the current element will merge its attributes.
    */
-  void MergeAttributes(Element* el);
+  void MergeAttributes(Element* el, std::shared_ptr<FGLogger> logger);
 
 private:
   std::string name;

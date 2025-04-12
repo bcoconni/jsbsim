@@ -128,14 +128,15 @@ bool FGModel::Upload(Element* el, bool preLoad)
     result = FGModelFunctions::Load(document, FDMExec);
 
   if (document != el) {
-    el->MergeAttributes(document);
+    auto logger = FDMExec->GetLogger();
+    el->MergeAttributes(document, logger);
 
     if (preLoad) {
       // After reading interface properties in a file, read properties in the
       // local model element. This allows general-purpose models to be defined
       // in a file, with overrides or initial loaded constants supplied in the
       // relevant element of the aircraft configuration file.
-      LocalProperties.Load(el, PropertyManager.get(), true, FDMExec->GetLogger());
+      LocalProperties.Load(el, PropertyManager.get(), true, logger);
     }
 
     Element* element = document->FindElement();
