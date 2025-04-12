@@ -155,17 +155,18 @@ bool FGInput::Run(bool Holding)
 
 bool FGInput::SetDirectivesFile(const SGPath& fname)
 {
-  FGXMLFileRead XMLFile;
+  auto logger = FDMExec->GetLogger();
+  FGXMLFileRead XMLFile(logger);
   Element* document = XMLFile.LoadXMLDocument(fname);
   if (!document) {
-    LogException err(FDMExec->GetLogger());
+    LogException err(logger);
     err << "Could not read directive file: " << fname << endl;
     throw err;
   }
   bool result = Load(document);
 
   if (!result) {
-    FGLogging log(FDMExec->GetLogger(), LogLevel::ERROR);
+    FGLogging log(logger, LogLevel::ERROR);
     log << endl << "Aircraft input element has problems in file " << fname << endl;
   }
 

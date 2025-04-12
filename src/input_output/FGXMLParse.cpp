@@ -76,9 +76,10 @@ void FGXMLParse::startElement (const char * name, const XMLAttributes &atts)
   }
 
   if (!current_element) {
-    cerr << "In file " << getPath() << ": line " << getLine() << endl
-         << "No current element read (running out of memory?)" << endl;
-    throw("Fatal error");
+    LogException err(Logger);
+    err << "In file " << getPath() << ": line " << getLine()
+        << "\nNo current element read (running out of memory?)\n";
+    throw err;
   }
 
   current_element->SetLineNumber(getLine());
@@ -108,8 +109,9 @@ void FGXMLParse::data (const char * s, int length)
 
 void FGXMLParse::warning (const char * message, int line, int column)
 {
-  cerr << "Warning: " << message << " line: " << line << " column: " << column
-       << endl;
+  FGLogging log(Logger, LogLevel::WARN);
+  log << "Warning: " << message << " line: " << line << " column: " << column
+      << "\n";
 }
 
 } // end namespace JSBSim

@@ -35,7 +35,8 @@ INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 #include "simgear/xml/easyxml.hxx"
-#include "input_output/FGXMLElement.h"
+#include "FGXMLElement.h"
+#include "FGLog.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 DEFINITIONS
@@ -67,7 +68,8 @@ CLASS DECLARATION
 class JSBSIM_API FGXMLParse : public XMLVisitor
 {
 public:
-  FGXMLParse(void) : current_element(nullptr) {}
+  FGXMLParse(std::shared_ptr<FGLogger> logger)
+    : current_element(nullptr), Logger(std::move(logger)) {}
 
   Element* GetDocument(void) {return document;}
 
@@ -83,6 +85,7 @@ private:
   std::string working_string;
   Element_ptr document;
   Element *current_element;
+  std::shared_ptr<FGLogger> Logger;
 };
 
 } // namespace JSBSim

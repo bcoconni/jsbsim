@@ -1012,7 +1012,7 @@ bool FGInitialCondition::Load(const SGPath& rstfile, bool useAircraftPath)
     init_file_name = rstfile;
   }
 
-  FGXMLFileRead XMLFileRead;
+  FGXMLFileRead XMLFileRead(fdmex->GetLogger());
   Element* document = XMLFileRead.LoadXMLDocument(init_file_name);
 
   // Make sure that the document is valid
