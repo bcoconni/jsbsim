@@ -55,6 +55,9 @@ FORWARD DECLARATIONS
 
 namespace JSBSim {
 
+class FGLogger;
+class FGLogging;
+
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS DOCUMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -75,24 +78,30 @@ CLASS DECLARATION
 class FGfdmSocket : public FGJSBBase
 {
 public:
+  enum ProtocolType {ptUDP, ptTCP};
+
   /**
    * @brief Construct a client socket.
    *
    * @param address The IP address or hostname of the server to connect to.
    * @param port The port number to connect to.
    * @param protocol The protocol to use for communication (ptUDP or ptTCP).
+   * @param logger The instance of FGLogger to use for logging.
    * @param precision The precision to use for floating-point numbers (default is 7).
    */
-  FGfdmSocket(const std::string& address, int port, int protocol, int precision = 7);
+  FGfdmSocket(const std::string& address, int port, ProtocolType protocol,
+              std::shared_ptr<FGLogger> logger, int precision = 7);
 
   /**
    * @brief Construct a server socket.
    *
    * @param port The port number to listen on.
    * @param protocol The protocol to use for communication (ptUDP or ptTCP).
+   * @param logger The instance of FGLogger to use for logging.
    * @param precision The precision to use for floating-point numbers (default is 7).
    */
-  FGfdmSocket(int port, int protocol, int precision = 7);
+  FGfdmSocket(int port, ProtocolType protocol, std::shared_ptr<FGLogger> logger,
+              int precision = 7);
 
   ~FGfdmSocket();
 
@@ -174,8 +183,6 @@ public:
   /// Wait until the TCP socket is readable.
   void WaitUntilReadable(void);
 
-  enum ProtocolType {ptUDP, ptTCP};
-
 private:
 #if defined(_MSC_VER) || defined(__MINGW32__)
   SOCKET sckt;
@@ -186,11 +193,11 @@ private:
 #endif
   ProtocolType Protocol;
   struct sockaddr_in scktName;
-  struct hostent *host;
   std::ostringstream buffer;
   int precision;
   bool connected;
-  void LogSocketError(const std::string& msg);
+  void LogSocketError(FGLogging &log, const std::string& msg);
+  std::shared_ptr<FGLogger> Logger;
   void Debug(int from);
 };
 }
