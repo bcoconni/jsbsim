@@ -61,6 +61,7 @@ FGAtmosphere::FGAtmosphere(FGFDMExec* fdmex)
   Name = "FGAtmosphere";
 
   bind();
+  atmosNode = PropertyManager->GetNode("atmosphere");
   Debug(0);
 }
 
@@ -141,25 +142,39 @@ double FGAtmosphere::ValidateTemperature(double t, const string& msg, bool quiet
 
 void FGAtmosphere::Calculate(double altitude)
 {
-  FGPropertyNode* node = PropertyManager->GetNode();
-  double t =0.0;
-  if (!PropertyManager->HasNode("atmosphere/override/temperature"))
-    t = GetTemperature(altitude);
-  else
-    t = node->GetDouble("atmosphere/override/temperature");
-  Temperature = ValidateTemperature(t, "", true);
+  auto atmos_override = atmosNode->getNode("override", false);
 
-  double p = 0.0;
-  if (!PropertyManager->HasNode("atmosphere/override/pressure"))
-    p = GetPressure(altitude);
-  else
-    p = node->GetDouble("atmosphere/override/pressure");
-  Pressure = ValidatePressure(p, "", true);
+  if (atmos_override) {
+    double t = 0.0;
+    double p = 0.0;
+    auto node = atmos_override->getNode("temperature", false);
 
-  if (!PropertyManager->HasNode("atmosphere/override/density"))
+    if (node)
+      t = node->getDoubleValue();
+    else
+      t = GetTemperature(altitude);
+
+    node = atmos_override->getNode("pressure", false);
+    if (node)
+      p = node->getDoubleValue();
+    else
+      p = GetPressure(altitude);
+
+    Temperature = ValidateTemperature(t, "", true);
+    Pressure = ValidatePressure(p, "", true);
+
+    node = atmos_override->getNode("density", false);
+    if (node)
+      Density = node->getDoubleValue();
+    else
+      Density = Pressure/(Reng*Temperature);
+  } else {
+    double t = GetTemperature(altitude);
+    double p = GetPressure(altitude);
+    Temperature = ValidateTemperature(t, "", true);
+    Pressure = ValidatePressure(p, "", true);
     Density = Pressure/(Reng*Temperature);
-  else
-    Density = node->GetDouble("atmosphere/override/density");
+  }
 
   Soundspeed  = sqrt(SHRatio*Reng*Temperature);
   PressureAltitude = CalculatePressureAltitude(Pressure, altitude);

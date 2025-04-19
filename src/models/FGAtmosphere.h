@@ -236,6 +236,8 @@ protected:
   double Viscosity = 0.0;
   double KinematicViscosity = 0.0;
 
+  SGPropertyNode_ptr atmosNode;
+
   /// Calculate the atmosphere for the given altitude.
   virtual void Calculate(double altitude);
 
