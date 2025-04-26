@@ -44,16 +44,16 @@ double FGDefaultGroundCallback::GetAGLevel(double t, const FGLocation& loc,
 {
   vel.InitMatrix();
   angularVel.InitMatrix();
-  FGLocation l = loc;
-  l.SetEllipse(a,b);
-  double latitude = l.GetGeodLatitudeRad();
-  double cosLat = cos(latitude);
-  double longitude = l.GetLongitude();
-  normal = FGColumnVector3(cosLat*cos(longitude), cosLat*sin(longitude),
-                           sin(latitude));
-  contact.SetEllipse(a, b);
-  contact.SetPositionGeodetic(longitude, latitude, mTerrainElevation);
-  return l.GetGeodAltitude() - mTerrainElevation;
+  contact = loc;
+  contact.SetEllipse(a,b);
+  const FGMatrix33& Tec2l = contact.GetTec2l();
+  // The normal vector is the opposite of the Down vector in the NED frame.
+  // Hence the normal vector is the opposite of the last row of the Tec2l
+  // transformation matrix.
+  normal = FGColumnVector3(-Tec2l(3,1), -Tec2l(3,2), -Tec2l(3,3));
+  double agl = contact.GetGeodAltitude() - mTerrainElevation;
+  contact -= agl*normal;
+  return agl;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

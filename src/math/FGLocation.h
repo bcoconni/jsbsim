@@ -307,7 +307,7 @@ public:
       @param target_latitude the target geodetic latitude in radians
       @return The geodetic distance in feet between the two locations */
   double GetDistanceTo(double target_longitude, double target_latitude) const;
-  
+
   /** Get the heading that should be followed from the current location to
       a given location along the shortest path. Earth curvature is taken into
       account.
@@ -423,6 +423,16 @@ public:
   const FGLocation& operator-=(const FGLocation &l) {
     mCacheValid = false;
     mECLoc -= l.mECLoc;
+    return *this;
+  }
+
+  /** This operator substracts the ECEF position vectors.
+      The cartesian coordinates of the supplied vector (right side) are
+      substracted from the ECEF position vector on the left side of the
+      equality, and a reference to this object is returned. */
+  const FGLocation& operator-=(const FGColumnVector3 &v) {
+    mCacheValid = false;
+    mECLoc -= v;
     return *this;
   }
 
