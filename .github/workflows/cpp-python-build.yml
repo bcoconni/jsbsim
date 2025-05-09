@@ -4,6 +4,8 @@ on:
   push:
     branches-ignore:
       - 'dependabot/**'
+    tags:
+      - 'v0.99.*'
   pull_request:
 
 env:
@@ -813,6 +815,8 @@ jobs:
           python-version: '3.9'
       - name: PyPI deployment
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
     # Deploy stable release to GitHub
       - name: Get JSBSim version
