@@ -89,14 +89,14 @@
       <output>fcs/wing-alpha-scaled-deg</output>
     </fcs_function>
 
-    <summer>
+    <summer name="Wing Alpha">
       <input>-aero/alpha-deg</input>
       <input>fcs/wing-alpha-scaled-deg</input>
-      <output>fcs/wing-alpha-deg</output>
       <clipto>
         <min>-30.0</min>
         <max> 30.0</max>
       </clipto>
+      <output>fcs/wing-alpha-deg</output>
     </summer>
 
   </channel>

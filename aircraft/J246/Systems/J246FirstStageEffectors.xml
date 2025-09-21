@@ -32,9 +32,9 @@
     <actuator name="fcs/pitch-actuator-pos">
       <input>fcs/pitch-actuator-cmd</input>
       <lag> 60 </lag>
+      <rate_limit> 0.085 </rate_limit>
       <bias> 0.0017 </bias>
       <hysteresis_width> 0.0017 </hysteresis_width>
-      <rate_limit> 0.085 </rate_limit>
       <clipto>
         <min> -0.17 </min>
         <max>  0.17 </max>
@@ -71,9 +71,9 @@
     <actuator name="fcs/yaw-actuator-pos">
       <input>fcs/yaw-actuator-cmd</input>
       <lag> 60 </lag>
+      <rate_limit> 0.085 </rate_limit>
       <bias> 0.0011 </bias>
       <hysteresis_width> 0.0017 </hysteresis_width>
-      <rate_limit> 0.085 </rate_limit>
       <clipto>
         <min> -0.17 </min>
         <max>  0.17 </max>

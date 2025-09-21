@@ -20,9 +20,9 @@
     <actuator name="control/stage2-pitch-actuator-pos">
       <input> control/stage2-pitch-actuator-cmd </input>
       <lag> 60 </lag>
+      <rate_limit> 0.085 </rate_limit>
       <bias> 0.00017 </bias>
       <hysteresis_width> 0.00017 </hysteresis_width>
-      <rate_limit> 0.085 </rate_limit>
       <clipto>
         <min> -0.17 </min>
         <max>  0.17 </max>
@@ -44,9 +44,9 @@
     <actuator name="fcs/stage2-yaw-actuator-pos">
       <input>fcs/yaw-actuator-cmd</input>
       <lag> 60 </lag>
+      <rate_limit> 0.085 </rate_limit>
       <bias> 0.00011 </bias>
       <hysteresis_width> 0.00017 </hysteresis_width>
-      <rate_limit> 0.085 </rate_limit>
       <clipto>
         <min> -0.17 </min>
         <max>  0.17 </max>

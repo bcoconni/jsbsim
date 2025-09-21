@@ -170,6 +170,7 @@
       <xs:element name="asin" type="single-argument"/>
       <xs:element name="acos" type="single-argument"/>
       <xs:element name="atan" type="single-argument"/>
+      <xs:element name="sign" type="single-argument"/>
       <xs:element name="atan2" type="two-arguments"/>
       <xs:element name="min" type="multiple-arguments"/>
       <xs:element name="max" type="multiple-arguments"/>
@@ -253,7 +254,10 @@
   <xs:element name="channel">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="description" minOccurs="0" type="xs:string"/>
+        <xs:choice minOccurs="0">
+          <xs:element name="description" type="xs:string"/>
+          <xs:element name="documentation" type="xs:string"/>
+        </xs:choice>
         <xs:choice minOccurs="0" maxOccurs="unbounded">
           <xs:element name="accelerometer" type="sensor-with-location"/>
           <xs:element ref="actuator"/>
@@ -374,7 +378,7 @@
       <xs:all>
         <xs:element name="description" minOccurs="0" type="xs:string"/>
         <xs:element name="input" type="signed-property-name"/>
-        <xs:element name="c1" type="xs:double"/>
+        <xs:element name="c1" type="property-or-value"/>
         <xs:element name="delay" minOccurs="0" type="delay"/>
         <xs:element ref="clipto" minOccurs="0"/>
         <xs:element name="output" type="property-name" minOccurs="0"/>
@@ -411,21 +415,31 @@
       the range, from the minimum range value.
     </xs:documentation></xs:annotation>
     <xs:complexType>
-      <xs:choice maxOccurs="unbounded">
+      <xs:sequence>
         <xs:element name="description" minOccurs="0" type="xs:string"/>
         <xs:element name="input" type="signed-property-name"/>
-        <xs:element name="domain" minOccurs="0" type="range"/>
-        <xs:element name="range" type="range"/>
         <xs:element name="gain" minOccurs="0">
           <xs:annotation><xs:documentation>
             The Gain element may contain a fixed numeric value, or it may be a
             property name.
           </xs:documentation></xs:annotation>
         </xs:element>
+        <xs:element name="domain" minOccurs="0" type="range"/>
+        <xs:element name="range" type="range"/>
+        <xs:element name="zero_centered" minOccurs="0">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="false"/>
+              <xs:enumeration value="0"/>
+              <xs:enumeration value="true"/>
+              <xs:enumeration value="1"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
         <xs:element name="delay" minOccurs="0" type="delay"/>
         <xs:element ref="clipto" minOccurs="0"/>
         <xs:element name="output" minOccurs="0" maxOccurs="unbounded" type="property-name"/>
-      </xs:choice>
+      </xs:sequence>
       <xs:attribute name="name" use="required" type="xs:string"/>
     </xs:complexType>
   </xs:element>
@@ -736,7 +750,7 @@
         feature a bias, can have a deadband, and it can feature hysteresis.
     </xs:documentation></xs:annotation>
     <xs:complexType>
-      <xs:all>
+      <xs:sequence>
         <xs:element name="description" minOccurs="0" type="xs:string"/>
         <xs:element name="input" type="signed-property-name"/>
         <xs:element name="lag" type="xs:double" minOccurs="0"/>
@@ -775,8 +789,8 @@
         <xs:element name="hysteresis_width" type="xs:double" minOccurs="0"/>
         <xs:element name="delay" type="delay" minOccurs="0"/>
         <xs:element ref="clipto" minOccurs="0"/>
-        <xs:element name="output" minOccurs="0" type="property-name"/>
-      </xs:all>
+        <xs:element name="output" minOccurs="0" maxOccurs="unbounded" type="property-name"/>
+      </xs:sequence>
       <xs:attribute name="name" use="required" type="xs:string"/>
     </xs:complexType>
   </xs:element>
@@ -806,7 +820,10 @@
   <xs:element name="fcs_function">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="description" minOccurs="0" type="xs:string"/>
+        <xs:choice minOccurs="0">
+          <xs:element name="description" type="xs:string"/>
+          <xs:element name="documentation" type="xs:string"/>
+        </xs:choice>
         <xs:element name="input" type="signed-property-name" minOccurs="0"/>
         <xs:element name="function" type="function"/>
         <xs:element name="delay" type="delay" minOccurs="0"/>

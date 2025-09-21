@@ -1,11 +1,11 @@
-<?xml version="1.0"?> 
+<?xml version="1.0"?>
 
 <system name="Autothrottle">
 
     <!-- INTERFACE PROPERTIES -->
     <property value="0.0">ap/ap_map_hold</property>
     <property>ap/throttle-cmd-norm</property>
-    
+
     <!-- INITIAL GAIN and control VALUES -->
 
     <property value="0.05"> ap/map-pid-kp </property>
@@ -18,49 +18,49 @@
     <!--
     =====================================================
 
-    MANIFOLD PRESSURE CHANNEL 
-    
-    Implements the RR Merlin engine monifold control system. 
+    MANIFOLD PRESSURE CHANNEL
+
+    Implements the RR Merlin engine monifold control system.
 
     =====================================================
-    -->     
+    -->
 
     <!-- Manifold Pressure hold -->
 
     <channel name="Manifold pressure hold">
-    
-    
+
+
        <!-- deal with corner cases -->
        <switch name="ap/ap_map_trigger">
           <default value="0.0"/>
-          
+
           <!-- disable pid if engine not running -->
-          <test value="1.0">  
+          <test value="1.0">
               propulsion/engine/set-running == 0
           </test>
-          
+
           <!-- disable pid if target-mp < actual mp and butterfly fully closed -->
-          <test LOGIC="AND" value="1.0">
+          <test logic="AND" value="1.0">
              ap/map-error LT 0.0
              fcs/throttle-pos-norm LE 0.001
           </test>
-          
+
           <!-- disable pid if target-mp > actual mp and butterfly fully open -->
           <test logic="AND" value="1.0">
              ap/map-error GT 0.0
              fcs/throttle-pos-norm GT 0.99
-          </test>  
+          </test>
        </switch>
 
         <!--
-            The difference between the desired manifold pressure and the actual 
+            The difference between the desired manifold pressure and the actual
             manifold pressure is determined.
-            
+
             systems/engine/target-mp-inhg is defined and set in the propulsion module
         -->
 
         <summer name="ap/map-error">
-            <input> systems/engine/target-mp-inhg </input> 
+            <input> systems/engine/target-mp-inhg </input>
             <input> -/engines/engine/mp-inhg </input>
             <clipto>
                <min>-ap/max_MP </min>
@@ -90,7 +90,7 @@
                 ap/ap_map_hold == 0
             </test>
         </switch>
-        
+
         <pid name="ap/map-error-pid">
             <input>ap/map-switch</input>
             <kp> ap/map-pid-kp </kp>
@@ -107,7 +107,7 @@
               <max> 1</max>
             </clipto>
             <output>ap/throttle-cmd-norm</output>
-        </pure_gain>      
+        </pure_gain>
 
    </channel>
 </system>

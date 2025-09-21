@@ -346,11 +346,11 @@
 
             <aerosurface_scale name="Elevator Control">
                 <input>fcs/pitch-trim-sum</input>
+                <gain>0.01745</gain>
                 <range>
                     <min> -14.0 </min>
                     <max>   4.0 </max>
                 </range>
-                <gain>0.01745</gain>
                 <output>fcs/elevator-pos-rad</output>
             </aerosurface_scale>
 
@@ -382,11 +382,11 @@
 
             <aerosurface_scale name="Left Aileron Control">
                 <input>fcs/roll-trim-sum</input>   <!-- input is normalized  -->
+                <gain>0.01745</gain>               <!-- convert to radians   -->
                 <range>
                     <min> -18.0 </min>             <!-- map to degree limits -->
                     <max>  14.0 </max>
                 </range>
-                <gain>0.01745</gain>               <!-- convert to radians   -->
                 <output>fcs/left-aileron-pos-rad</output>
             </aerosurface_scale>
 
@@ -405,11 +405,11 @@
 
             <aerosurface_scale name="Right Aileron Control">
                 <input>-fcs/roll-trim-sum</input>
+                <gain>0.01745</gain>
                 <range>
                     <min> -18.0 </min>
                     <max>  14.0 </max>
                 </range>
-                <gain>0.01745</gain>
                 <output>fcs/right-aileron-pos-rad</output>
             </aerosurface_scale>
 
