@@ -93,13 +93,13 @@
   </channel> -->
 
   <channel name="InnerLoop-Rates">
-    <summer name="errRoll_rps">
+    <summer name="fcs/errRoll_rps">
       <input>fcs/refRoll_rps</input>
       <input>-velocities/pi-rad_sec</input>
       <!-- <input>-sensor/imu/gyroX_rps</input> -->
     </summer>
 
-    <pure_gain name="errRoll_rps">
+    <pure_gain name="fcs/errRoll_rps">
       <input>fcs/errRoll_rps</input>
       <gain>fcs/ScasEngage</gain>
     </pure_gain>
@@ -111,13 +111,13 @@
       <kd>0.003</kd>
     </pid>
 
-    <summer name="errPitch_rps">
+    <summer name="fcs/errPitch_rps">
       <input>fcs/refPitch_rps</input>
       <input>-velocities/qi-rad_sec</input>
       <!-- <input>-sensor/imu/gyroY_rps</input> -->
     </summer>
 
-    <pure_gain name="errPitch_rps">
+    <pure_gain name="fcs/errPitch_rps">
       <input>fcs/errPitch_rps</input>
       <gain>fcs/ScasEngage</gain>
     </pure_gain>
@@ -129,13 +129,13 @@
       <kd>0.003</kd>
     </pid>
 
-    <summer name="errYaw_rps">
+    <summer name="fcs/errYaw_rps">
       <input>fcs/refYaw_rps</input>
       <!-- <input>-velocities/ri-rad_sec</input> -->
       <input>-sensor/imu/gyroZ_rps</input>
     </summer>
 
-    <pure_gain name="errYaw_rps">
+    <pure_gain name="fcs/errYaw_rps">
       <input>fcs/errYaw_rps</input>
       <gain>fcs/ScasEngage</gain>
     </pure_gain>
@@ -268,19 +268,19 @@
   <property value="0.0">fcs/cmdAR_ext_nd</property>
 
   <channel name="External Input Summations">
-    <summer name="cmdEscFR_nd">
+    <summer name="fcs/cmdEscFR_nd">
       <input>fcs/cmdFR_nd</input>
       <input>fcs/cmdFR_ext_nd</input>
     </summer>
-    <summer name="cmdEscAL_nd">
+    <summer name="fcs/cmdEscAL_nd">
       <input>fcs/cmdAL_nd</input>
       <input>fcs/cmdAL_ext_nd</input>
     </summer>
-    <summer name="cmdEscFL_nd">
+    <summer name="fcs/cmdEscFL_nd">
       <input>fcs/cmdFL_nd</input>
       <input>fcs/cmdFL_ext_nd</input>
     </summer>
-    <summer name="cmdEscAR_nd">
+    <summer name="fcs/cmdEscAR_nd">
       <input>fcs/cmdAR_nd</input>
       <input>fcs/cmdAR_ext_nd</input>
     </summer>
