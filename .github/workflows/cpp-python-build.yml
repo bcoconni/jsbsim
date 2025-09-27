@@ -21,11 +21,11 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v5
       - name: Validate scripts files
-        run: sh ./admin/test_scripts.sh
+        run: bash ./admin/test_scripts.sh
       - name: Validate systems files
-        run: sh ./admin/test_systems.sh
+        run: bash ./admin/test_systems.sh
       - name: Valide aircraft files and their systems
-        run: sh ./admin/test_aircraft.sh
+        run: bash ./admin/test_aircraft.sh
   MSIS-validation:
     name: MSIS code validation
     strategy:
