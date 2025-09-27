@@ -12,7 +12,7 @@
     when an event is reached.
   </xs:documentation></xs:annotation>
 
-  <xs:include schemaLocation="JSBSimCommon.xsd"/>
+  <xs:include schemaLocation="../aircraft/JSBSimCommon.xsd"/>
 
   <xs:element name="runscript">
     <xs:annotation><xs:documentation>

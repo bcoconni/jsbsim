@@ -4,13 +4,13 @@ for dir in $(ls -d aircraft/*); do
     [ "$name" != "blank" ] || continue
     filename="${dir}/${name}.xml"
     [ -e "$filename" ] || continue
-    xmllint --noout --schema JSBSim.xsd "$filename"
+    xmllint --noout --schema aircraft/JSBSim.xsd "$filename"
 
     if [ -d "${dir}"/Systems ]; then
         for filename in "${dir}"/Systems/*.xml; do
             [ -e "$filename" ] || continue
             [[ $filename != *_aero.xml ]] || continue
-            xmllint --noout --schema JSBSimSystem.xsd "$filename"
+            xmllint --noout --schema systems/JSBSimSystem.xsd "$filename"
         done
     fi
 
@@ -20,5 +20,5 @@ for dir in $(ls -d aircraft/*); do
     done
 done
 
-xmllint --noout --schema JSBSimSystem.xsd aircraft/F450/Effectors.xml
+xmllint --noout --schema systems/JSBSimSystem.xsd aircraft/F450/Effectors.xml
 xmllint --noout --schema aircraft/JSBSimFlightControl.xsd aircraft/F450/FlightControl.xml
