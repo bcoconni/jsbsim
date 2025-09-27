@@ -101,7 +101,7 @@ ROLL CHANNEL
 
   <!-- The heading setpoint selector selects the heading
        command (setpoint), which can either be set directly, or
-       calculated by the specification of waypoint. If the 
+       calculated by the specification of waypoint. If the
        heading setpoint selector is 0, then the heading setpoint
        is used, if the selector is 1, then the heading calculated
        from the waypoint is used. -->
@@ -308,8 +308,8 @@ PITCH CHANNEL
   -->
   <integrator name="fcs/integral">
     <input> fcs/ap-alt-hold-switch </input>
-    <trigger> fcs/windup-trigger </trigger>
     <c1> 0.001 </c1>
+    <trigger> fcs/windup-trigger </trigger>
   </integrator>
 
   <!--

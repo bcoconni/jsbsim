@@ -29,6 +29,8 @@ jobs:
             [ "$filename" != "scripts/unitconversions.xml" ] || continue
             xmllint --noout --schema JSBSimScript.xsd "$filename"
           done
+
+          xmllint --noout --schema JSBSimScript.xsd aircraft/Submarine_Scout/takeoff.xml
       - name: Validate systems files
         run: |
           for filename in systems/*.xml; do
@@ -50,7 +52,15 @@ jobs:
                 xmllint --noout --schema JSBSimSystem.xsd "$filename"
               done
             fi
+
+            for filename in ${dir}/*ap{,x}.xml; do
+                [ -e "$filename" ] || continue
+                xmllint --noout --schema aircraft/JSBSimAutopilot.xsd "$filename"
+            done
           done
+
+          xmllint --noout --schema JSBSimSystem.xsd aircraft/F450/Effectors.xml
+          xmllint --noout --schema aircraft/JSBSimFlightControl.xsd aircraft/F450/FlightControl.xml
 
   MSIS-validation:
     name: MSIS code validation

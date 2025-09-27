@@ -93,17 +93,15 @@
   </channel> -->
 
   <channel name="InnerLoop-Rates">
-    <summer>
+    <summer name="errRoll_rps">
       <input>fcs/refRoll_rps</input>
       <input>-velocities/pi-rad_sec</input>
       <!-- <input>-sensor/imu/gyroX_rps</input> -->
-      <output>fcs/errRoll_rps</output>
     </summer>
 
-    <pure_gain>
+    <pure_gain name="errRoll_rps">
       <input>fcs/errRoll_rps</input>
       <gain>fcs/ScasEngage</gain>
-      <output>fcs/errRoll_rps</output>
     </pure_gain>
 
     <pid name="fcs/cmdRoll_rps">
@@ -113,17 +111,15 @@
       <kd>0.003</kd>
     </pid>
 
-    <summer>
+    <summer name="errPitch_rps">
       <input>fcs/refPitch_rps</input>
       <input>-velocities/qi-rad_sec</input>
       <!-- <input>-sensor/imu/gyroY_rps</input> -->
-      <output>fcs/errPitch_rps</output>
     </summer>
 
-    <pure_gain>
+    <pure_gain name="errPitch_rps">
       <input>fcs/errPitch_rps</input>
       <gain>fcs/ScasEngage</gain>
-      <output>fcs/errPitch_rps</output>
     </pure_gain>
 
     <pid name="fcs/cmdPitch_rps">
@@ -133,17 +129,15 @@
       <kd>0.003</kd>
     </pid>
 
-    <summer>
+    <summer name="errYaw_rps">
       <input>fcs/refYaw_rps</input>
       <!-- <input>-velocities/ri-rad_sec</input> -->
       <input>-sensor/imu/gyroZ_rps</input>
-      <output>fcs/errYaw_rps</output>
     </summer>
 
-    <pure_gain>
+    <pure_gain name="errYaw_rps">
       <input>fcs/errYaw_rps</input>
       <gain>fcs/ScasEngage</gain>
-      <output>fcs/errYaw_rps</output>
     </pure_gain>
 
     <pid name="fcs/cmdYaw_rps">
@@ -274,25 +268,21 @@
   <property value="0.0">fcs/cmdAR_ext_nd</property>
 
   <channel name="External Input Summations">
-    <summer>
+    <summer name="cmdEscFR_nd">
       <input>fcs/cmdFR_nd</input>
       <input>fcs/cmdFR_ext_nd</input>
-      <output>fcs/cmdEscFR_nd</output>
     </summer>
-    <summer>
+    <summer name="cmdEscAL_nd">
       <input>fcs/cmdAL_nd</input>
       <input>fcs/cmdAL_ext_nd</input>
-      <output>fcs/cmdEscAL_nd</output>
     </summer>
-    <summer>
+    <summer name="cmdEscFL_nd">
       <input>fcs/cmdFL_nd</input>
       <input>fcs/cmdFL_ext_nd</input>
-      <output>fcs/cmdEscFL_nd</output>
     </summer>
-    <summer>
+    <summer name="cmdEscAR_nd">
       <input>fcs/cmdAR_nd</input>
       <input>fcs/cmdAR_ext_nd</input>
-      <output>fcs/cmdEscAR_nd</output>
     </summer>
   </channel>
 </flight_control>

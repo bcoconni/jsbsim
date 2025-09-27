@@ -906,7 +906,7 @@
   <xs:element name="quantization">
     <xs:complexType>
       <xs:all>
-        <xs:element name="bits" type="xs:int"/>
+        <xs:element name="bits" type="xs:integer"/>
         <xs:element name="min" type="xs:double"/>
         <xs:element name="max" type="xs:double"/>
       </xs:all>
