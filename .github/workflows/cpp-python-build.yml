@@ -582,12 +582,6 @@ jobs:
     steps:
       - name: Checkout JSBSim
         uses: actions/checkout@v6
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.10'
-      - name: Install Python packages
-        run: pip install -U 'numpy>=1.20' mypy
       - name: Download source package
         uses: actions/download-artifact@v7
         with:
@@ -606,6 +600,12 @@ jobs:
           SKBUILD_BUILD_DIR: "${{ runner.temp }}/jsbsim_build_cache"
         with:
           package-dir: ${{ env.SDIST_PATH }}
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install Python packages
+        run: pip install -U 'numpy>=1.20' mypy
       - name: Test wheel package
         run: |
           echo "::group::Test module execution"
