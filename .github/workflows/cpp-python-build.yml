@@ -601,7 +601,7 @@ jobs:
           CIBW_ARCHS_MACOS: universal2
           CIBW_SKIP: cp*-musllinux_*
           CIBW_ARCHS_WINDOWS: native
-          SKBUILD_BUILD_DIR: "/tmp/jsbsim_build_cache"
+          SKBUILD_BUILD_DIR: "${{ runner.temp }}/jsbsim_build_cache"
         with:
           package-dir: ${{ env.SDIST_PATH }}
       - name: Test wheel package
