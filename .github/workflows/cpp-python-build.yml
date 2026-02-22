@@ -547,14 +547,9 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: macOS.binaries
-      - name: Build Python module from sources (Linux & MacOSX)
-        if: runner.os != 'Windows'
-        run: pip install dist/*.tar.gz -vv
-      - name: Build Python module from sources (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          $PyPackage = Get-ChildItem -Path dist -Filter *.tar.gz | Select-Object -First 1
-          pip install $PyPackage.FullName -vv
+      - name: Build Python module from sources
+        shell: bash
+        run: pip install *.tar.gz -vv
       - name: Test Python module
         shell: python
         run: |
@@ -595,6 +590,11 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: macOS.binaries
+      - name: Identify the source distribution
+        shell: bash
+        run: |
+          SDIST_PATH=$(ls jsbsim-*.tar.gz | head -n 1)
+          echo "SDIST_PATH=$SDIST_PATH" >> $GITHUB_ENV
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.3
         env:
@@ -603,7 +603,7 @@ jobs:
           CIBW_ARCHS_WINDOWS: native
           SKBUILD_BUILD_DIR: "/tmp/jsbsim_build_cache"
         with:
-          package-dir: dist
+          package-dir: ${{ env.SDIST_PATH }}
       - name: Test wheel package
         run: |
           echo "::group::Test module execution"
