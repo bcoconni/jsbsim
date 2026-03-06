@@ -711,6 +711,8 @@ jobs:
           python-version: '3.10'
       - name: PyPI deployment
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
     # Deploy stable release to GitHub
       - name: Get JSBSim version
