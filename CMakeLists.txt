@@ -5,9 +5,9 @@ cmake_minimum_required (VERSION 3.18)
 ################################################################################
 project(JSBSim)
 
-set(PROJECT_VERSION_MAJOR "1")
-set(PROJECT_VERSION_MINOR "3")
-set(PROJECT_VERSION_PATCH "1")
+set(PROJECT_VERSION_MAJOR "0")
+set(PROJECT_VERSION_MINOR "99")
+set(PROJECT_VERSION_PATCH "121")
 set(PROJECT_CONTACT_EMAIL "jsbsim-devel@lists.sourceforge.net")
 set(PROJECT_CONTACT_VENDOR "The JSBSim team")
 

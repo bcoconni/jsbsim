@@ -7,14 +7,14 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [master]
+    branches: [master, test-release/v0.99]
     paths-ignore:
       - "**/*.md"
       - "joss_paper/**"
       - "**/*.ipynb"
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [master]
+    branches: [master, test-release/v0.99]
     paths-ignore:
       - "**/*.md"
       - "joss_paper/**"
