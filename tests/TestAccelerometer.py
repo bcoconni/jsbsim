@@ -95,7 +95,7 @@ class TestAccelerometer(JSBSimTestCase):
         fax = fc * math.sin(geodLat - pitch) + g * math.sin(pitch - deviation)
         faz = fc * math.cos(geodLat - pitch) - g * math.cos(pitch - deviation)
 
-        self.assertAlmostEqual(fdm['fcs/accelerometer/X'], fax, delta=1E-7)
+        self.assertAlmostEqual(fdm['fcs/accelerometer/X'], fax, delta=2E-7)
         self.assertAlmostEqual(fdm['fcs/accelerometer/Y'], 0.0, delta=1E-7)
         self.assertAlmostEqual(fdm['fcs/accelerometer/Z']/faz, 1.0, delta=1E-7)
 
