@@ -642,6 +642,7 @@ bool FGFDMExec::RunIC(void)
   Models[eOutput]->InitModel();
 
   Run();
+  LoadInputs(ePropagate);
   Propagate->InitializeDerivatives();
   ResumeIntegration(); // Restores the integration rate to what it was.
 
