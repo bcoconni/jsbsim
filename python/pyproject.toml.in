@@ -36,6 +36,17 @@ jsbsim = "jsbsim.script:main"
 GitHub = "https://github.com/JSBSim-Team/jsbsim"
 documentation = "https://jsbsim-team.github.io/jsbsim/python/"
 
+[dependency-groups]
+dev = [
+    "cython",
+    "mypy",
+    "numpy>=1.20",
+    "pandas",
+    "scipy>=1.7.0",
+    "scikit-build-core",
+    "telnetlib3",
+]
+
 [tool.scikit-build]
 cmake.define.BUILD_DOCS = "OFF"
 build.targets = ["_jsbsim"]
