@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 title: JSBSim - An Open Source Flight Dynamics Software Library
-version: '0.99.126'
+version: '0.99.126.dev1'
 message: >-
   If you use this software, please cite it using these
   metadata.
@@ -38,4 +38,4 @@ keywords:
   - Flight Dynamics Modeling
   - Flight simulation
 license: LGPL-2.1
-date-released: '2026-10-16'
+date-released: '2026-10-19'
