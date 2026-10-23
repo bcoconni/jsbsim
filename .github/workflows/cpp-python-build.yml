@@ -747,6 +747,7 @@ jobs:
       - name: Checkout JSBSim
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           fetch-depth: 0
       - name: Download files
         uses: actions/download-artifact@v8
@@ -848,6 +849,7 @@ jobs:
         with:
           ref: master
           path: _master
+          persist-credentials: false
       - name: Bump stable version in README.md
         working-directory: _master
         run: |
