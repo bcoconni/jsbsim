@@ -492,7 +492,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: build/Testing/Temporary/CTestCostData.txt
-          key: macos14-${{ hashFiles('tests/CMakeLists.txt') }}
+          key: ${{ runner.os }}-${{ hashFiles('tests/CMakeLists.txt') }}
       - name: Set up Python 3.11
         uses: actions/setup-python@v7
         with:
