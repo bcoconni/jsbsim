@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 title: JSBSim, An Open Source Flight Dynamics Software Library
-version: '0.99.128'
+version: '0.99.129'
 type: software
 authors:
   - family-names: Berndt
