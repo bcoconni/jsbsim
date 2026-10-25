@@ -769,6 +769,8 @@ jobs:
           [[ "$citation_date" == "$today" ]] || { echo "CITATION.cff date-released '$citation_date' does not match today's UTC date '$today'"; exit 1; }
       - name: PyPI deployment
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
     # Deploy stable release to GitHub
       - name: Get MSVC version
