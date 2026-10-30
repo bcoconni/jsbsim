@@ -45,10 +45,6 @@ HISTORY
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#include <iostream>
-#include <sstream>
-#include <math.h>
-
 #include "FGFDMExec.h"
 #include "FGBrushLessDCMotor.h"
 #include "FGPropeller.h"
@@ -63,12 +59,8 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGBrushLessDCMotor::FGBrushLessDCMotor(FGFDMExec* exec, Element* el, int engine_number, struct FGEngine::Inputs& input)
-  : FGEngine(engine_number, input)
+  : FGElectric(exec, el, engine_number, input)
 {
-  Load(exec, el);
-
-  Type = etElectric;
-
   if (el->FindElement("maxvolts"))
     MaxVolts = el->FindElementValueAsNumberConvertTo("maxvolts", "VOLTS");
   else {
@@ -105,9 +97,7 @@ FGBrushLessDCMotor::FGBrushLessDCMotor(FGFDMExec* exec, Element* el, int engine_
   PowerWatts = MaxCurrent * MaxVolts;
 
   string base_property_name = CreateIndexedPropertyName("propulsion/engine", EngineNumber);
-  auto pm = exec->GetPropertyManager();
-  pm->Tie(base_property_name + "/power-hp", &HP);
-  pm->Tie(base_property_name + "/current-amperes", &Current);
+  exec->GetPropertyManager()->Tie(base_property_name + "/current-amperes", &Current);
 
   Debug(0); // Call Debug() routine from constructor if needed
 }
@@ -160,30 +150,6 @@ void FGBrushLessDCMotor::Calculate(void)
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-string FGBrushLessDCMotor::GetEngineLabels(const string& delimiter)
-{
-  std::ostringstream buf;
-
-  buf << Name << " HP (engine " << EngineNumber << ")" << delimiter
-    << Thruster->GetThrusterLabels(EngineNumber, delimiter);
-
-  return buf.str();
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-string FGBrushLessDCMotor::GetEngineValues(const string& delimiter)
-{
-  std::ostringstream buf;
-
-  buf << HP << delimiter
-     << Thruster->GetThrusterValues(EngineNumber, delimiter);
-
-  return buf.str();
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //
 //    The bitmasked value choices are as follows:
 //    unset: In this case (the default) JSBSim would only print
@@ -210,7 +176,7 @@ void FGBrushLessDCMotor::Debug(int from)
   if (debug_lvl & 1) { // Standard console startup message output
     if (from == 0) { // Constructor
       FGLogging log(LogLevel::DEBUG);
-      log << "\n    Engine Name:        " << Name << "\n";
+      log << "\n      Engine Name:        " << Name << "\n";
       log << "      Power Watts:        " << PowerWatts << "\n";
       log << "      Speed Factor:       " << Kv << "\n";
       log << "      Coil Resistance:    " << CoilResistance << "\n";

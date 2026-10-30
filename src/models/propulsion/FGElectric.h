@@ -80,10 +80,11 @@ public:
   std::string GetEngineLabels(const std::string& delimiter) override;
   std::string GetEngineValues(const std::string& delimiter) override;
 
-private:
+protected:
   double PowerWatts;         // maximum engine power
   double HP;                 // engine output, in horsepower
 
+private:
   void Debug(int from);
 };
 }

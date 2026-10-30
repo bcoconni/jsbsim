@@ -37,7 +37,7 @@ SENTRY
 INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-#include "FGEngine.h"
+#include "FGElectric.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -73,7 +73,7 @@ Input format :
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
-class FGBrushLessDCMotor : public FGEngine
+class FGBrushLessDCMotor : public FGElectric
 {
 public:
   /// Constructor
@@ -82,18 +82,12 @@ public:
   ~FGBrushLessDCMotor() override;
 
   void Calculate(void) override;
-  double GetPowerAvailable(void) const override { return (HP * hptoftlbssec); }
-  double CalcFuelNeed(void) override { return 0.; }
-  std::string GetEngineLabels(const std::string& delimiter) override;
-  std::string GetEngineValues(const std::string& delimiter) override;
 
 private:
   double ZeroTorqueCurrent; // Zero torque current [A]
   double CoilResistance;    // Internal resistance [Ohm]
-  double PowerWatts;        // Maximum engine power
   double MaxVolts;          // Max voltage available from battery [V]
   double Kv;                // Speed constant of brusless DC motors [RPM/V]
-  double HP;                // Engine output, in horsepower
   double Current;           // Current [A]
   void Debug(int from);
 };
