@@ -56,13 +56,12 @@ CLASS IMPLEMENTATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 FGElectric::FGElectric(FGFDMExec* exec, Element *el, int engine_number, struct FGEngine::Inputs& input)
-  : FGEngine(engine_number, input)
+  : FGEngine(engine_number, input), HP(1.0)
 {
   Load(exec,el);
 
   Type = etElectric;
-  PowerWatts = 745.7;
-  hptowatts = 745.7;
+  PowerWatts = HP / watttohp;
 
   if (el->FindElement("power"))
     PowerWatts = el->FindElementValueAsNumberConvertTo("power","WATTS");
@@ -92,24 +91,16 @@ void FGElectric::Calculate(void)
     ((FGPropeller*)Thruster)->SetFeather(in.PropFeather[EngineNumber]);
   }
 
-  RPM = Thruster->GetRPM() * Thruster->GetGearRatio();
+  HP = PowerWatts * in.ThrottlePos[EngineNumber] * watttohp;
 
-  HP = PowerWatts * in.ThrottlePos[EngineNumber] / hptowatts;
-
-  LoadThrusterInputs();
   // Filters out negative powers when the propeller is not rotating.
   double power = HP * hptoftlbssec;
-  if (RPM <= 0.1) power = max(power, 0.0);
+  if (getRPM() <= 0.1) power = max(power, 0.0);
+
+  LoadThrusterInputs();
   Thruster->Calculate(power);
 
   RunPostFunctions();
-}
-
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-double FGElectric::CalcFuelNeed(void)
-{
-  return 0;
 }
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

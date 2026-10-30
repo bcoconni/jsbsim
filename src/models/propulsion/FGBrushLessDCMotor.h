@@ -69,11 +69,6 @@ Input format :
 
   */
 
-// conversion factors
-constexpr double NMtoftpound = 1.3558;
-constexpr double hptowatts = 745.7;
-constexpr double WattperRPMtoftpound = 60 / (2 * M_PI * NMtoftpound);
-
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 CLASS DECLARATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
@@ -84,13 +79,13 @@ public:
   /// Constructor
   FGBrushLessDCMotor(FGFDMExec* exec, Element *el, int engine_number, FGEngine::Inputs& input);
   /// Destructor
-  ~FGBrushLessDCMotor();
+  ~FGBrushLessDCMotor() override;
 
-  void Calculate(void);
-  double GetPowerAvailable(void) const {return (HP * hptoftlbssec);}
-  double CalcFuelNeed(void) { return 0.; }
-  std::string GetEngineLabels(const std::string& delimiter);
-  std::string GetEngineValues(const std::string& delimiter);
+  void Calculate(void) override;
+  double GetPowerAvailable(void) const override { return (HP * hptoftlbssec); }
+  double CalcFuelNeed(void) override { return 0.; }
+  std::string GetEngineLabels(const std::string& delimiter) override;
+  std::string GetEngineValues(const std::string& delimiter) override;
 
 private:
   double ZeroTorqueCurrent; // Zero torque current [A]

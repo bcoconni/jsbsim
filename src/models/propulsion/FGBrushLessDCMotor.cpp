@@ -130,7 +130,7 @@ void FGBrushLessDCMotor::Calculate(void)
     ((FGPropeller*)Thruster)->SetFeather(in.PropFeather[EngineNumber]);
   }
 
-  double RPM = Thruster->GetRPM();
+  double RPM = Thruster->GetEngineRPM();
   double V = MaxVolts * in.ThrottlePos[EngineNumber];
 
   Current = (V - RPM / Kv) / CoilResistance; // Equation (4) from Drela's document
@@ -149,13 +149,12 @@ void FGBrushLessDCMotor::Calculate(void)
   else
     FrictionCurrent = Constrain(-ZeroTorqueCurrent, Current, ZeroTorqueCurrent);
 
-  double Torque = (Current - FrictionCurrent) / Kv * WattperRPMtoftpound;
+  double Torque = (Current - FrictionCurrent) / Kv; // units [W/RPM]
 
   // EnginePower must be non zero when accelerating from RPM == 0.0
-  double EnginePower = ((2 * M_PI) * max(RPM, 0.0001) * Torque) / 60;  //units [#*ft/s]
-  HP = EnginePower / hptowatts * NMtoftpound;  // units[HP]
+  HP = max(RPM, 0.0001) * Torque * watttohp;  // units [HP]
   LoadThrusterInputs();
-  Thruster->Calculate(EnginePower);
+  Thruster->Calculate(HP * hptoftlbssec);
 
   RunPostFunctions();
 }

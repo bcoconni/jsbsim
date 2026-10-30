@@ -39,6 +39,7 @@ INCLUDES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
 
 #include "FGEngine.h"
+#include "FGThruster.h"
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
@@ -70,25 +71,17 @@ public:
   /// Constructor
   FGElectric(FGFDMExec* exec, Element *el, int engine_number, FGEngine::Inputs& input);
   /// Destructor
-  ~FGElectric();
+  ~FGElectric() override;
 
-  void Calculate(void);
-  double GetPowerAvailable(void) const {return (HP * hptoftlbssec);}
-  double getRPM(void) {return RPM;}
-  std::string GetEngineLabels(const std::string& delimiter);
-  std::string GetEngineValues(const std::string& delimiter);
+  void Calculate(void) override;
+  double GetPowerAvailable(void) const override { return (HP * hptoftlbssec); }
+  double CalcFuelNeed(void) override { return 0.; }
+  double getRPM(void) { return Thruster->GetEngineRPM(); }
+  std::string GetEngineLabels(const std::string& delimiter) override;
+  std::string GetEngineValues(const std::string& delimiter) override;
 
 private:
-
-  double CalcFuelNeed(void);
-
-  //double BrakeHorsePower;
-
-  // constants
-  double hptowatts;
-
   double PowerWatts;         // maximum engine power
-  double RPM;                // revolutions per minute
   double HP;                 // engine output, in horsepower
 
   void Debug(int from);
