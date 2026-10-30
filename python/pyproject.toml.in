@@ -1,5 +1,5 @@
 [build-system]
-requires = ["scikit-build-core", "cython"]
+requires = ["scikit-build-core", "cython", "cython-cmake"]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -63,7 +63,6 @@ sdist.include = [
     "python/*.pyi",
     "python/**/*.h",
     "python/src/*.cxx",
-    "python/CMakeModules/*.cmake",
     "python/py.typed",
     "aircraft/**/*.xml",
     "engine/**/*.xml",

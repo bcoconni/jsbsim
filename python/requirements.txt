@@ -1,6 +1,7 @@
 # Dependencies for CI/CD
 numpy>=1.20
 cython
+cython-cmake
 pandas
 scipy>=1.7.0
 scikit-build-core

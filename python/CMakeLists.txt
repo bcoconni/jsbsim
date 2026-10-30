@@ -10,8 +10,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(JSBSIM_PYX ${CMAKE_CURRENT_BINARY_DIR}/_jsbsim.pyx)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jsbsim.pyx.in ${JSBSIM_PYX})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jsbsim.pxd ${CMAKE_CURRENT_BINARY_DIR}/_jsbsim.pxd COPYONLY)
-set_source_files_properties(${JSBSIM_PYX} PROPERTIES CYTHON_IS_CXX TRUE
-                                          INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/src)
 
 # Autogenerate the Python module doc strings from Doxygen docs
 if(DOXYGEN_FOUND AND BUILD_DOCS)
@@ -24,7 +22,7 @@ if(DOXYGEN_FOUND AND BUILD_DOCS)
 endif(DOXYGEN_FOUND AND BUILD_DOCS)
 
 # Build the Python module using Cython and the JSBSim library
-compile_pyx(_jsbsim _JSBSIM_CXX ${JSBSIM_PYX})
+cython_transpile(${JSBSIM_PYX} LANGUAGE CXX OUTPUT_VARIABLE _JSBSIM_CXX)
 file(RELATIVE_PATH JSBSIM_CXX ${CMAKE_CURRENT_BINARY_DIR} ${_JSBSIM_CXX})
 
 # Build the package directory in the test folder

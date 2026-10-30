@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.18)
+cmake_minimum_required (VERSION 3.20)
 
 ################################################################################
 # Project description                                                          #
@@ -73,7 +73,6 @@ option(BUILD_PYTHON_MODULE "Set to ON to build the Python module for JSBSim" ON)
 option(INSTALL_JSBSIM_PYTHON_MODULE "Set to ON to install the Python module for JSBSim" OFF)
 
 if (BUILD_PYTHON_MODULE)
-  list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/python/CMakeModules)
   cmake_policy(SET CMP0094 NEW)  # makes FindPython3 prefer activated virtualenv Python to the latest version
   find_package(Python3 COMPONENTS Interpreter Development.Module)
   find_package(Cython)
